@@ -1,0 +1,58 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Purge clears url's from reverse proxy caches like Varnish and Squid by issuing HTTP PURGE requests.
+ */
+
+/**
+ * Implementation of hook_menu().
+ *
+ * Set up admin settings callbacks, etc.
+ */
+function purge_menu() {
+  $items = array();
+  $items['admin/settings/purge'] = array(
+    'title' => 'Purge settings',
+    'description' => 'Configure proxy cache purges.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('purge_admin_settings_form'),
+    'access arguments' => array('administer purge'),
+  );
+  return $items;
+}
+
+/**
+ * Menu callback for purge admin settings.
+ */
+function purge_admin_settings_form() {
+  $form = array();
+  $form['purge_proxy_urls'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Proxy Url'),
+    '#default_value' => variable_get('purge_proxy_urls', 'http://localhost:80'),
+    '#description' => t('Set this to the server IP or hostname that your proxy server(s) runs on (e.g. http://127.0.0.1:80). Separate multiple servers with spaces.')
+  );
+  return system_settings_form($form);
+}
+
+/**
+ * Implementation of hook_perm().
+ *
+ * Allows admins to control access to purge settings.
+ */
+function purge_perm() {
+  return array('administer purge');
+}
+
+/**
+ * Implementation of hook_expire_cache().
+ *
+ * Takes an array from expire.module and issues purges.
+ */
+function purge_expire_cache($expire_urls) {
+  module_load_include('inc', 'purge');
+  $results = purge_urls($expire_urls);
+  purge_logging($results);
+}

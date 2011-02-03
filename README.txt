@@ -34,7 +34,7 @@ proxy your should see PURGE requests scrolling by when you (for instance)
 update an existing node.
 You can also test if your proxy is configured correctly by issuing a curl
 command in a shell on any machine in the access list of your proxy: 
-curl -X PURGE -H example.com http://192.168.1.23/node/2
+curl -X PURGE -H "Host: example.com" http://192.168.1.23/node/2
 
 Q: Why choose this over the Varnish module (http://drupal.org/project/varnish)?
 A: Purge just issues purge requests to your proxy server(s) over standard http

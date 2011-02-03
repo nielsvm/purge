@@ -39,11 +39,11 @@ function purge_urls($purge_urls) {
       // Make it a PURGE request (not GET or POST)
       curl_setopt($purge_requests[$current_purge_request], CURLOPT_CUSTOMREQUEST, "PURGE");
       // Replace the sites host with the proxy host
-      $proxy_purge_url = str_replace($purge_url_parts['scheme'] . $purge_url_host , $proxy_url , $purge_url);
+      $proxy_purge_url = str_replace($purge_url_parts['scheme'] . "://" . $purge_url_host , $proxy_url , $purge_url);
       curl_setopt($purge_requests[$current_purge_request], CURLOPT_URL, $proxy_purge_url);
       // Set the host header to the sites hostname
       curl_setopt($purge_requests[$current_purge_request], CURLOPT_HEADER, 1);
-      curl_setopt($purge_requests[$current_purge_request], CURLOPT_HTTP_HEADER, array("Host: " . $purge_url_host));
+      curl_setopt($purge_requests[$current_purge_request], CURLOPT_HTTPHEADER, array("Host: " . $purge_url_host));
       curl_setopt($purge_requests[$current_purge_request], CURLOPT_RETURNTRANSFER, 0);
       curl_multi_add_handle($curl_multi_obj, $purge_requests[$current_purge_request]);
       $current_purge_request++;

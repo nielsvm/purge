@@ -1,4 +1,3 @@
-$Id$
 Purge
 The purge module clears urls from reverse proxy caches like Varnish
 (http://varnish-cache.org/) or Squid (http://www.squid-cache.org/) by issuing

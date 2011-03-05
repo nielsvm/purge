@@ -17,9 +17,7 @@
 function purge_urls($purge_urls) {
   // Get settings
   $proxy_urls = explode(' ', variable_get('purge_proxy_urls', 'http://localhost:80'));
-  // Initialise a curl_multi object
   $purge_requests = array();
-  $curl_multi_obj = curl_multi_init();
   $current_purge_request = 0;
 
   // Find out the url parts we need from the urls to be purged
@@ -28,44 +26,64 @@ function purge_urls($purge_urls) {
     // Determine the host
     $purge_url_host = $purge_url_parts['host'];
     // Add portnames to the host if any are set
-    if ($purge_url_parts['port']) {
+    if (array_key_exists('port', $purge_url_parts)) {
       $purge_url_host = $purge_url_host . ":" . $purge_url_parts['port'];
     }
 
     foreach ($proxy_urls as $proxy_url) {
-      // Initialize a curl object for each request
-      $purge_requests[$current_purge_request] = curl_init();
+      // Add url and proxy url to the array for later processing
+      $purge_requests[$current_purge_request]['purge_url'] = $purge_url;
+      $purge_requests[$current_purge_request]['proxy_url'] = $proxy_url;
       // Make it a PURGE request (not GET or POST)
-      curl_setopt($purge_requests[$current_purge_request], CURLOPT_CUSTOMREQUEST, "PURGE");
+      $purge_requests[$current_purge_request]['request_method'] = 'PURGE';
       // Replace the sites host with the proxy host
       $proxy_purge_url = str_replace($purge_url_parts['scheme'] . "://" . $purge_url_host , $proxy_url , $purge_url);
-      curl_setopt($purge_requests[$current_purge_request], CURLOPT_URL, $proxy_purge_url);
+      $purge_requests[$current_purge_request]['purge_url'] = $proxy_purge_url;
       // Set the host header to the sites hostname
-      curl_setopt($purge_requests[$current_purge_request], CURLOPT_HEADER, 1);
-      curl_setopt($purge_requests[$current_purge_request], CURLOPT_HTTPHEADER, array("Host: " . $purge_url_host));
-      curl_setopt($purge_requests[$current_purge_request], CURLOPT_RETURNTRANSFER, 0);
-      curl_multi_add_handle($curl_multi_obj, $purge_requests[$current_purge_request]);
+      $purge_requests[$current_purge_request]['headers'] = array("Host: " . $purge_url_host);
       $current_purge_request++;
     }
   }
+  // Issue the requests using curl (for now)
+  $purge_request_results = purge_issue_requests_curl($purge_requests);
+  return $purge_request_results;
+}
+
+/**
+ * Issue purge request using curl
+ *
+ */
+function purge_issue_requests_curl($purges) {
+  // Initialise a curl_multi object
+  $curl_purges = curl_multi_init();
+  $current_curl_purge = 0;
+  foreach ($purges as $purge) {
+    $curl_purge[$current_curl_purge] = curl_init();
+    curl_setopt($curl_purge[$current_curl_purge], CURLOPT_CUSTOMREQUEST, $purge['request_method']);
+    curl_setopt($curl_purge[$current_curl_purge], CURLOPT_URL, $purge['purge_url']);
+    curl_setopt($curl_purge[$current_curl_purge], CURLOPT_HEADER, 1);
+    curl_setopt($curl_purge[$current_curl_purge], CURLOPT_HTTPHEADER, $purge['headers']);
+    curl_setopt($curl_purge[$current_curl_purge], CURLOPT_RETURNTRANSFER, 0);
+    curl_multi_add_handle($curl_purges, $curl_purge[$current_curl_purge]);
+    $current_curl_purge++;
+  }
   // Execute the purge requests
   do {
-    curl_multi_exec($curl_multi_obj, $running);
+    curl_multi_exec($curl_purges, $running);
   } while ($running > 0);
 
   // Result collection. Collects the http code returned for each url purged
-  $current_purge_request = 0;
-  $purge_request_results = array();
-  foreach ($purge_requests as $purge_request) {
-    $info = curl_getinfo($purge_request);
-    $purge_request_results[$current_purge_request]['url'] = $info['url'];
-    $purge_request_results[$current_purge_request]['http_code'] = $info['http_code'];
-    curl_multi_remove_handle($curl_multi_obj, $purge_request);
-    $current_purge_request++;
+  $current_curl_purge = 0;
+  foreach ($purges as $purge) {
+    $info = curl_getinfo($curl_purge[$current_curl_purge]);
+    $purges[$current_curl_purge]['http_code'] = $info['http_code'];
+    curl_multi_remove_handle($curl_purges, $curl_purge[$current_curl_purge]);
+    $current_curl_purge++;
   }
-  curl_multi_close($curl_multi_obj);
-  return $purge_request_results;
+  curl_multi_close($curl_purges);
+  return $purges;
 }
+
 
 /**
  * Logs successful purges and errors to the watchdog.
@@ -76,55 +94,67 @@ function purge_urls($purge_urls) {
 function purge_logging($purge_request_results) {
   $purge_success = 0;
   $purge_blocking = array();
-  $purge_errors = array();
+  $purge_log = array();
   foreach ($purge_request_results as $purge_request_result) {
     switch ($purge_request_result['http_code']) {
       // First check if everything went ok.
       case 200;
+        $purge_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' ' . 'Ok';
+        $purge_success++;
+        break;
+      // Notice if the request was not found in the proxy cache
+      case 404;
+        $purge_log = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' ' . 'Not Found';
         $purge_success++;
         break;
       // Collect all proxy hosts that are blocking the url requests
       case 405;
+        $purge_log = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' ' . 'Forbidden';
         $purge_blocking[] = parse_url($purge_request_result['url'], PHP_URL_HOST);
+        break;
       // Collect all urls and their http error codes
       default;
-      $purge_errors[] = $purge_request_result['url'] . '(' . $purge_request_result['http_code'] . ')';
+      $purge_log[] = $purge_request_result['purge_url'] . ' on ' 
+        . $purge_request_result['proxy_url'] . ' ' . $purge_request_result['http_code'];
       break;
     }
+
   }
 
   // Watchdog barking
+  $purge_errors = count($purge_request_results) - $purge_success;
   // Just a notice when all is ok
-  if (count($purge_errors) == 0) {
+  if ($purge_errors == 0) {
     if ($purge_success == 1) {
       watchdog(
         'purge',
-        '1 URL has been successfully purged from the reverse proxy caches.'
+        '1 URL has been successfully purged from the reverse proxy caches: !purge_log',
+        array('!purge_log' => expire_print_r($purge_log))
       );
     }
     else {
       watchdog(
         'purge',
-        '!purge_success_count URLs have been successfully purged from the reverse proxy caches.',
-        array('!purge_success_count' => $purge_success)
+        '!purge_success_count URLs have been successfully purged from the reverse proxy caches: !purge_log',
+         array('!purge_success_count' => $purge_success, '!purge_log' => expire_print_r($purge_log))
       );
     }
   }
   else {
     // Report all urls with errors
-    if (count($purge_errors) == 1) {
+    if ($purge_errors == 1) {
       watchdog(
         'purge',
-        '1 error has been encountered when purging URL @purge_errors',
-        array('@purge_errors' => $purge_errors),
+        '1 error has been encountered when purging URLs !purge_log',
+        array('!purge_log' => expire_print_r($purge_log)),
         $severity = WATCHDOG_ERROR
       );
     }
     else {
       watchdog(
         'purge',
-        '!purge_errors_count errors have been encountered when purging these URLs. @purge_errors',
-        array('!purge_errors_count' => count($purge_errors), '@purge_errors' => implode(',', $purge_errors)),
+        '!purge_errors_count errors have been encountered when purging these URLs. !purge_log',
+        array('!purge_errors_count' => count($purge_errors), '@purge_log' => expire_print_r($purge_log)),
         $severity = WATCHDOG_ERROR
       );
     }

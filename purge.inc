@@ -30,17 +30,53 @@ function purge_urls($purge_urls) {
       $purge_url_host = $purge_url_host . ":" . $purge_url_parts['port'];
     }
 
+    // Process all urls for each proxy
     foreach ($proxy_urls as $proxy_url) {
       // Add url and proxy url to the array for later processing
       $purge_requests[$current_purge_request]['purge_url'] = $purge_url;
       $purge_requests[$current_purge_request]['proxy_url'] = $proxy_url;
-      // Make it a PURGE request (not GET or POST)
-      $purge_requests[$current_purge_request]['request_method'] = 'PURGE';
-      // Replace the sites host with the proxy host
-      $proxy_purge_url = str_replace($purge_url_parts['scheme'] . "://" . $purge_url_host , $proxy_url , $purge_url);
-      $purge_requests[$current_purge_request]['purge_url'] = $proxy_purge_url;
-      // Set the host header to the sites hostname
-      $purge_requests[$current_purge_request]['headers'] = array("Host: " . $purge_url_host);
+
+      // Select which method to use
+      $proxy_url_parts = parse_url($proxy_url);
+      if (array_key_exists('query', $proxy_url_parts)) {
+        if (strstr($proxy_url_parts['query'], 'purge_method=get')) {
+          $method = 'get';
+        }
+      }
+      else {
+        $method = 'purge';
+      }
+      print($method);
+
+      // The default PURGE method. Native to Squid and configurable in Varnish and Nginx
+      if ($method == 'purge') {
+        // Make it a PURGE request (not GET or POST)
+        $purge_requests[$current_purge_request]['request_method'] = 'PURGE';
+        // Construct a new url
+        $proxy_url_base = $proxy_url_parts['scheme'] . "://" . $proxy_url_parts['host'];
+        if (array_key_exists('port', $proxy_url_parts)) {
+          $proxy_url_base = $proxy_url_base . ":" . $proxy_url_parts['port'];
+        }
+        $purge_requests[$current_purge_request]['purge_url'] = $proxy_url_base . $purge_url_parts['path'];
+        // Set the host header to the sites hostname
+        $purge_requests[$current_purge_request]['headers'] = array("Host: " . $purge_url_host);
+      }
+
+      // The GET method, native suport on nginx
+      elseif ($method == 'get') {
+        $purge_requests[$current_purge_request]['request_method'] = 'GET';
+        // Construct a new url
+        $proxy_url_base = $proxy_url_parts['scheme'] . "://" . $proxy_url_parts['host'];
+        if (array_key_exists('port', $proxy_url_parts)) {
+          $proxy_url_base = $proxy_url_base . ":" . $proxy_url_parts['port'];
+        }
+        if (array_key_exists('path', $proxy_url_parts)) {
+          $proxy_url_base = $proxy_url_base . $proxy_url_parts['path'];
+        }
+        $purge_requests[$current_purge_request]['purge_url'] = $proxy_url_base . $purge_url_parts['path'];
+        //  Set the host header to the sites hostname
+        $purge_requests[$current_purge_request]['headers'] = array("Host: " . $purge_url_host);
+      }
       $current_purge_request++;
     }
   }
@@ -114,7 +150,7 @@ function purge_logging($purge_request_results) {
         break;
       // Collect all urls and their http error codes
       default;
-      $purge_log[] = $purge_request_result['purge_url'] . ' on ' 
+      $purge_log[] = $purge_request_result['purge_url'] . ' on '
         . $purge_request_result['proxy_url'] . ' ' . $purge_request_result['http_code'];
       break;
     }
@@ -136,7 +172,7 @@ function purge_logging($purge_request_results) {
       watchdog(
         'purge',
         '!purge_success_count URLs have been successfully purged from the reverse proxy caches: !purge_log',
-         array('!purge_success_count' => $purge_success, '!purge_log' => expire_print_r($purge_log))
+        array('!purge_success_count' => $purge_success, '!purge_log' => expire_print_r($purge_log))
       );
     }
   }

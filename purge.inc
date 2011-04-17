@@ -46,7 +46,6 @@ function purge_urls($purge_urls) {
       else {
         $method = 'purge';
       }
-      print($method);
 
       // The default PURGE method. Native to Squid and configurable in Varnish and Nginx
       if ($method == 'purge') {

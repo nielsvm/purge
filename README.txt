@@ -65,3 +65,7 @@ paul@krischer.nl / sqyd@sqyd.net
 Thanks:
 Mike Carper / mikeytown2 on drupal.org, Author of Expire
 Brian Mercer / brianmercer on drupal.org, nginx testing and debugging
+
+Changelog:
+1.0 Initial release. Basic purge functionality in place
+1.1 Refactoring for Nginx and future platform support and better error handling

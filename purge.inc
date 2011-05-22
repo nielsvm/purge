@@ -42,6 +42,10 @@ function purge_urls($purge_urls) {
         if (strstr($proxy_url_parts['query'], 'purge_method=get')) {
           $method = 'get';
         }
+        if (strstr($proxy_url_parts['query'], 'purge_method=ah')) {
+          $method = 'ah';
+        }
+
       }
       else {
         $method = 'purge';
@@ -75,6 +79,16 @@ function purge_urls($purge_urls) {
         $purge_requests[$current_purge_request]['purge_url'] = $proxy_url_base . $purge_url_parts['path'];
         //  Set the host header to the sites hostname
         $purge_requests[$current_purge_request]['headers'] = array("Host: " . $purge_url_host);
+      }
+
+      // The AH (Acquia Hosting) option.
+      elseif ($method == 'ah') {
+        // Make it a PURGE request (not GET or POST)
+        $purge_requests[$current_purge_request]['request_method'] = 'PURGE';
+        // Just use the url passed by expire
+        $purge_requests[$current_purge_request]['purge_url'] = $purge_url;
+        //  Set the Acquia purge header to the Acquia Hosting site name
+        $purge_requests[$current_purge_request]['headers'] = array("X-Acquia-Purge:" . $_SERVER['AH_SITE_NAME']);
       }
       $current_purge_request++;
     }

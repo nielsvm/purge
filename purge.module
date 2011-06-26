@@ -37,6 +37,27 @@ function purge_admin_settings_form() {
 }
 
 /**
+ * Validate the Purge settings
+ */
+function purge_admin_settings_form_validate($form, &$form_state) {
+  // Fill an array with the proxy server settings
+  $proxy_urls = explode(' ', $form_state['values']['purge_proxy_urls']);
+  // Check all proxy server urls
+  foreach ($proxy_urls as $proxy_url) {
+    // Check if it's a valid url
+    if (!valid_url($proxy_url, TRUE)) {
+      form_set_error('purge_proxy_urls', t('This is not a valid URL: !url.', array('!url' => $proxy_url)));
+    }
+    // Check for the Acquia Hosting environment setting
+    if (strstr(parse_url($proxy_url, PHP_URL_QUERY), 'purge_method=ah')) {
+      if (!isset($_SERVER['AH_SITE_NAME'])) {
+        form_set_error('purge_proxy_urls', t('Acquia Hosting environment variable not found.'));
+      }
+    }
+  }
+}
+
+/**
  * Implementation of hook_perm().
  *
  * Allows admins to control access to purge settings.

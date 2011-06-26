@@ -21,6 +21,8 @@ a patch applied (http://drupal.org/node/466444) or use Pressflow
 (http://pressflow.org/), a cachable friendly fork of Drupal.
 - PHP with curl(http://php.net/manual/en/book.curl.php) enabled. The Purge
 module uses curl for issuing the http PURGE requests.
+- Acquia Managed Cloud and Dev Cloud hosting services support Purging. See the 
+configuration settings below.
 - Purge requires the expire module http://drupal.org/project/expire
 
 Installation:
@@ -31,6 +33,8 @@ Installation:
 - If your using nginx you need to specify the purge path and the get method in
 your proxy setting like this:
 "http://192.168.1.76:8080/purge?purge_method=get"
+- If your site is on one of the Acquia Hosting services configure like:
+"http://yoursite.com/?purge_method=ah"
 
 Q&A:
 Q: How do I know if its working?
@@ -69,3 +73,4 @@ Brian Mercer / brianmercer on drupal.org, nginx testing and debugging
 Changelog:
 1.0 Initial release. Basic purge functionality in place
 1.1 Refactoring for Nginx and future platform support and better error handling
+1.2 (Upcoming) Acquia Hosting support, form validation

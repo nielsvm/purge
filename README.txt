@@ -9,8 +9,8 @@ This allows delivering content updates faster to end users.
 Requirements:
 - One or more reverse proxy caches (http://en.wikipedia.org/wiki/Reverse_proxy)
 like Varnish (recommended), Squid or Nginx that point to your webserver(s).
-- Varnish needs a modification to its configuration file. See the included
-varnish_example.vcl for details.
+- Varnish needs a modification to its configuration file. See this section in the
+Varnish section in the Drupal handbook: http://drupal.org/node/1054886#purge
 - Squid needs to have purging enabled in its configuration. See
 http://docstore.mik.ua/squid/FAQ-7.html#ss7.5
 - Nginx needs an extra module and configuration. See 

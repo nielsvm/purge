@@ -117,9 +117,11 @@ function purge_issue_requests_curl($purges) {
     $current_curl_purge++;
   }
   // Execute the purge requests
+  ob_start();
   do {
     curl_multi_exec($curl_purges, $running);
   } while ($running > 0);
+  ob_end_clean();
 
   // Result collection. Collects the http code returned for each url purged
   $current_curl_purge = 0;

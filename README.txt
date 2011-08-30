@@ -74,3 +74,4 @@ Changelog:
 1.0 Initial release. Basic purge functionality in place
 1.1 Refactoring for Nginx and future platform support and better error handling
 1.2 (Upcoming) Acquia Hosting support, form validation
+1.3 Bugfix release. Issue 1235674. Output buffering patch by mauritsl on drupal.org.

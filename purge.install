@@ -6,7 +6,7 @@
  */
 
 /**
- * Implementation of hook_requirements().
+ * Implements hook_requirements().
  */
 function purge_requirements($phase) {
   $requirements = array();
@@ -25,7 +25,7 @@ function purge_requirements($phase) {
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function purge_uninstall() {
   // Clean up the settings variable

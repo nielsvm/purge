@@ -6,7 +6,7 @@
  */
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  *
  * Set up admin settings callbacks, etc.
  */
@@ -58,16 +58,20 @@ function purge_admin_settings_form_validate($form, &$form_state) {
 }
 
 /**
- * Implementation of hook_perm().
+ * Implements hook_permission().
  *
  * Allows admins to control access to purge settings.
  */
-function purge_perm() {
-  return array('administer purge');
+function purge_permission() {
+  return array(
+    'administer purge' => array(
+      'title' => t('Administer Purge'),
+      'description' => t('Configure how to purge URLs from you reverse proxy caches')
+  );
 }
 
 /**
- * Implementation of hook_expire_cache().
+ * Implements hook_expire_cache().
  *
  * Takes an array from expire.module and issues purges.
  */

@@ -150,17 +150,17 @@ function purge_logging($purge_request_results) {
     switch ($purge_request_result['http_code']) {
       // First check if everything went ok.
       case 200:
-        $purge_log[] = $purge_request_result['purge_url'] .' on '. $purge_request_result['proxy_url'] .' Ok';
+        $purge_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Ok';
         $purge_success++;
         break;
       // Notice if the request was not found in the proxy cache
       case 404:
-        $purge_log[] = $purge_request_result['purge_url'] .' on '. $purge_request_result['proxy_url'] .' Not Found';
+        $purge_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Not Found';
         $purge_success++;
         break;
       // Collect all proxy hosts that are blocking the url requests
       case 405:
-        $purge_log[] = $purge_request_result['purge_url'] .' on '. $purge_request_result['proxy_url'] .' Forbidden';
+        $purge_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Forbidden';
         $purge_blocking[] = parse_url($purge_request_result['url'], PHP_URL_HOST);
         break;
       // Collect all urls and their http error codes

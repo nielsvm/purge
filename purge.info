@@ -6,3 +6,4 @@ dependencies[] = expire
 
 files [] = purge.module
 files [] = purge.inc
+configure = admin/config/development/performance/purge

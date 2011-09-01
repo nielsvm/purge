@@ -12,12 +12,13 @@
  */
 function purge_menu() {
   $items = array();
-  $items['admin/settings/purge'] = array(
+  $items['admin/config/development/performance/purge'] = array(
     'title' => 'Purge settings',
     'description' => 'Configure proxy cache purges.',
     'page callback' => 'drupal_get_form',
+    'type'              => MENU_LOCAL_TASK,
     'page arguments' => array('purge_admin_settings_form'),
-    'access arguments' => array('administer purge'),
+    'access arguments' => array('administer site configuration'),
   );
   return $items;
 }
@@ -57,18 +58,6 @@ function purge_admin_settings_form_validate($form, &$form_state) {
   }
 }
 
-/**
- * Implements hook_permission().
- *
- * Allows admins to control access to purge settings.
- */
-function purge_permission() {
-  return array(
-    'administer purge' => array(
-      'title' => t('Administer Purge'),
-      'description' => t('Configure how to purge URLs from you reverse proxy caches')
-  );
-}
 
 /**
  * Implements hook_expire_cache().

@@ -55,12 +55,15 @@ function purge_urls($purge_urls) {
       if ($method == 'purge') {
         // Make it a PURGE request (not GET or POST)
         $purge_requests[$current_purge_request]['request_method'] = 'PURGE';
-        // Construct a new url
+        // Construct a new url base
         $proxy_url_base = $proxy_url_parts['scheme'] . "://" . $proxy_url_parts['host'];
         if (array_key_exists('port', $proxy_url_parts)) {
           $proxy_url_base = $proxy_url_base . ":" . $proxy_url_parts['port'];
         }
-        $purge_requests[$current_purge_request]['purge_url'] = $proxy_url_base . $purge_url_parts['path'];
+        // Construct a new path retaining the url query string (#1299776 by djboddydrake)
+        $purge_path = array_key_exists('query', $purge_url_parts) ? $purge_url_parts['path'] 
+          . '?' . $purge_url_parts['query'] : $purge_url_parts['path'];
+        $purge_requests[$current_purge_request]['purge_url'] = $proxy_url_base . $purge_path;
         // Set the host header to the sites hostname
         $purge_requests[$current_purge_request]['headers'] = array("Host: " . $purge_url_host);
       }

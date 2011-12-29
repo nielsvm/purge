@@ -187,7 +187,7 @@ function purge_logging($purge_request_results) {
       watchdog(
         'purge',
         '!purge_success_count URLs have been successfully purged from the reverse proxy caches: !purge_log',
-        array('!purge_success_count' => $purge_success, '@purge_log' => expire_print_r($purge_log))
+        array('!purge_success_count' => $purge_success, '!purge_log' => expire_print_r($purge_log))
       );
     }
   }
@@ -205,7 +205,7 @@ function purge_logging($purge_request_results) {
       watchdog(
         'purge',
         '!purge_errors_count errors have been encountered when purging these URLs. !purge_log',
-        array('!purge_errors_count' => count($purge_errors), '@purge_log' => expire_print_r($purge_log)),
+        array('!purge_errors_count' => count($purge_errors), '!purge_log' => expire_print_r($purge_log)),
         $severity = WATCHDOG_ERROR
       );
     }

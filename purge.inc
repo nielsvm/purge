@@ -233,7 +233,7 @@ function purge_logging($purge_request_results) {
         watchdog(
           'purge',
           'The proxy server host %blocking_server is blocking purge requests. Please review the proxy configuration.',
-          array('%blocking_server' => $purge_blocking),
+          array('%blocking_server' => $purge_blocking_server),
           $severity = WATCHDOG_ERROR
         );
       }

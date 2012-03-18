@@ -122,8 +122,21 @@ function purge_issue_requests_curl($purges) {
   // Execute the purge requests
   ob_start();
   do {
-    $mrc = curl_multi_exec($curl_purges, $running);
-  } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+    // This loop is only necessary for libcurl earlier than 7.20.0, however
+    // RHEL 5 has just that. Otherwise a simple call would do.
+    do {
+      $multi_result = curl_multi_exec($curl_purges, $active);
+    } while ($multi_result == CURLM_CALL_MULTI_PERFORM);
+    // Block until there is activity on any of the handlers. Avoids
+    // busywaiting.
+    if ($multi_result == CURLM_OK) {
+      $select_result = curl_multi_select($curl_purges);
+    }
+    if ($multi_result != CURLM_OK || $select_result == -1) {
+    // @TODO: error handling. Something truly awkward happened.
+    return FALSE;
+    }
+  } while ($select_result != -1 && $active && $multi_result == CURLM_OK);
   ob_end_clean();
 
   // Result collection. Collects the http code returned for each url purged

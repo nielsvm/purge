@@ -16,9 +16,6 @@ http://docstore.mik.ua/squid/FAQ-7.html#ss7.5
 - Nginx needs an extra module and configuration. See 
 http://labs.frickle.com/nginx_ngx_cache_purge/ and the installation hints below.
 Also see this issue http://drupal.org/node/1048000 for more background info
-- A cachable version of Drupal 6. This can be an official Drupal release with
-a patch applied (http://drupal.org/node/466444) or use Pressflow
-(http://pressflow.org/), a cachable friendly fork of Drupal.
 - PHP with curl(http://php.net/manual/en/book.curl.php) enabled. The Purge
 module uses curl for issuing the http PURGE requests.
 - Acquia Managed Cloud and Dev Cloud hosting services support Purging. See the 

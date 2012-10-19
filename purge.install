@@ -6,6 +6,109 @@
  */
 
 /**
+ * Implements hook_schema().
+ */
+function purge_schema() {
+  $schema['purge_proxy'] = array(
+    'description' => t('Table storing proxy configurations'),
+    'export' => array(
+      'key' => 'name',
+      'key' => 'Name',
+      'primary key' => 'pid',
+      'identifier' => 'proxy',
+      'default hook' => 'default_purge_proxy',
+      'api' => array(
+        'owner' => 'purge',
+        'api' => 'default_purge_proxies',
+        'minimum_version' => 1,
+        'current_version' => 1,
+      ),
+    ),
+    'fields' => array(
+      'name' => array(
+        'type' => 'varchar',
+        'length' => '40',
+        'description' => 'Machine readable name of the proxy configuration.',
+      ),
+      'pid' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary ID field for the table. Not used for anything except internal lookups.',
+        'no export' => TRUE, // Do not export database-only keys.
+      ),
+      'enabled' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'description' => 'Is the proxy enabled?',
+      ),
+      'active' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'description' => 'Is the proxy currenty active?',
+      ),
+      'isdefault' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'description' => 'Is this proxy the default configuration?',
+      ),
+      'proxy_protocol' => array(
+        'type' => 'varchar',
+        'length' => '8',
+        'description' => 'The request protocol used by the proxy. Either http or https.',
+      ),
+      'proxy_host' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => 'The host name or ip address.',
+      ),
+      'proxy_port' => array(
+        'type' => 'varchar',
+        'length' => '8',
+      ),
+      'proxy_wildcards' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'description' => 'Does this proxy accept wildcard purges?',
+      ),
+      'purge_type' => array(
+        'type' => 'varchar',
+        'length' => '8',
+        'description' => 'The type of http request issued. Either PURGE or GET.',
+      ),
+      'host_expire' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'description' => 'use hostnames from expire?',
+      ),
+      'host_drupal' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'description' => 'Use hostname from Drupal?',
+      ),
+      'host_custom' => array(
+        'type' => 'text',
+        'description' => 'Custom hostnames',
+      ),
+      'url_prefix' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => 'The string inserted before the purged url.',
+      ),
+      'headers' => array(
+        'type' => 'text',
+        'description' => 'Additional headers to be added to the request.',
+      ),
+    ),
+    'primary key' => array('pid'),
+    'unique keys' => array(
+      'name' => array('name'),
+    ),
+  );
+  return $schema;
+}
+    
+/**
  * Implements hook_requirements().
  */
 function purge_requirements($phase) {

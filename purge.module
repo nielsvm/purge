@@ -73,3 +73,56 @@ function purge_expire_cache($expire_urls) {
   $results = purge_urls($expire_urls);
   purge_logging($results);
 }
+
+/**
+ * Function to retrieve proxy configurations
+ */
+function purge_proxy_get_config($pid = 0, $status = 'ACTIVE', $view = 'FULL') {
+  $proxy_confs = array();
+ // $active_proxies = &drupal_static(__FUNCTION__);
+ // if (!isset($all_proxies)) {
+ // }
+  //Query the proxy configuration table
+  $query = db_select('purge_proxy', 'p');
+
+  // Gather the fields needed
+  if ($view = 'NAME') {
+    $fields = array('name');
+  }
+  if ($view = 'LIST') {
+    $fields = array('name', 'pid', 'enabled', 'active', 'isdefault');
+  }
+  if ($view = 'FULL') {
+    $full_fields = array('proxy_protocol', 'proxy_host', 'proxy_port', 'proxy_wildcards', 'purge_type', 'host_expire',
+      'host_drupal', 'host_custom', 'url_prefix', 'headers');
+    $fields = array_merge($fields, $full_fields);
+  }
+  $query->fields('p', $fields);
+
+  // Set conditions
+  if ($status = 'ACTIVE') {
+    $query->condition('active', 1);
+  }
+  if ($pid > 0) {
+    $query->condition('pid', $pid);
+  }
+
+  // Order, order, order.
+  $query->orderBy('isdefault', 'DESC');
+  $query->orderBy('active', 'DESC');
+  $query->orderBy('enabled', 'DESC');
+
+// print_r($query->__toString());
+  // Execute query and parse results
+  $result = $query->execute();
+  foreach ($result as $record) {
+    $proxy_confs[$record->pid]['pid'] = $record->pid;
+    $proxy_confs[$record->pid]['name'] = $record->name;
+    $proxy_confs[$record->pid]['enabled'] = $record->enabled;
+    $proxy_confs[$record->pid]['active'] = $record->active;
+    $proxy_confs[$record->pid]['isdefault'] = $record->isdefault;
+  }
+  // dprint_r($proxy_confs);
+  return $proxy_confs;
+}
+

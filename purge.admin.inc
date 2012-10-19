@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Provides form for changing settings
+ * Provides administrative interface for the Purge module.
  */
 
 
@@ -11,12 +11,6 @@
  */
 function purge_admin_settings_form() {
   $form = array();
-  $form['purge_proxy_urls'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Proxy Url'),
-    '#default_value' => variable_get('purge_proxy_urls', 'http://localhost:80'),
-    '#description' => t('Set this to the server IP or hostname that your proxy server(s) runs on (e.g. http://127.0.0.1:80). Use the optional method parameter for nginx support like http://192.168.1.76:8080/purge?purge_method=get For Acquia Hosting platforms configure like http://yoursite.com/?purge_method=ah Separate multiple servers with spaces.')
-  );
   $form['purge_expire'] = array(
     '#type' => 'checkbox',
     '#title' => t('Expire Integration'),
@@ -27,30 +21,9 @@ function purge_admin_settings_form() {
 }
 
 /**
- * Validate the Purge settings
- */
-function purge_admin_settings_form_validate($form, &$form_state) {
-  // Fill an array with the proxy server settings
-  $proxy_urls = explode(' ', $form_state['values']['purge_proxy_urls']);
-  // Check all proxy server urls
-  foreach ($proxy_urls as $proxy_url) {
-    // Check if it's a valid url
-    if (!valid_url($proxy_url, TRUE)) {
-      form_set_error('purge_proxy_urls', t('This is not a valid URL: !url.', array('!url' => $proxy_url)));
-    }
-    // Check for the Acquia Hosting environment setting
-    if (strstr(parse_url($proxy_url, PHP_URL_QUERY), 'purge_method=ah')) {
-      if (!isset($_SERVER['AH_SITE_NAME'])) {
-        form_set_error('purge_proxy_urls', t('Acquia Hosting environment variable not found.'));
-      }
-    }
-  }
-}
-
-/**
  * Menu callback for purge proxy configuration.
  */
-function purge_proxy_form($formstate, $pid = NULL) {
+function purge_proxy_form($pid = NULL) {
   if ($pid) {
     $proxy = array();
     $proxy = purge_proxy_get_config($pid);
@@ -60,15 +33,15 @@ function purge_proxy_form($formstate, $pid = NULL) {
     '#type' => 'fieldset',
     '#title' => t('General Proxy Configuration'),
   );
-  $form['purge_proxy_general']['purge_proxy_name'] = array(
+  $form['purge_proxy_general']['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
-    // '#default_value' => 
+    '#default_value' => $proxy['name'],
     '#description' => t('The unique machine readable name of this proxy configuration.'),
+    '#required' => TRUE,
   );
-  $form['purge_proxy_general']['purge_proxy_protocol'] = array(
+  $form['purge_proxy_general']['protocol'] = array(
     '#type' => 'select',
-    // '#default_value' => '
     '#title' => t('Protocol'),
     '#description' => t('The request protocol the proxy server accepts purge requests in.'),
     '#options' => array(
@@ -76,11 +49,16 @@ function purge_proxy_form($formstate, $pid = NULL) {
       'https' => 'https',
     ),
   );
-  $form['purge_proxy_general']['purge_proxy_host'] = array(
+  $form['purge_proxy_general']['host'] = array(
     '#type' => 'textfield',
     '#title' => t('Host'),
-    // '#default_value' => 
     '#description' => t('The hostname or ip adress of the proxy server.'),
+    '#required' => TRUE,
+  );
+  $form['purge_proxy_general']['port'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Port'),
+    '#description' => t('The tcp port where the proxy is listening.'),
   );
   $form['purge_proxy_advanced'] = array(
     '#type' => 'vertical_tabs',
@@ -88,7 +66,7 @@ function purge_proxy_form($formstate, $pid = NULL) {
   );
   $form['purge_proxy_advanced']['options'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Proxy options'),
+    '#title' => t('Options'),
   );
   $form['purge_proxy_advanced']['options']['type'] = array(
     '#type' => 'select',
@@ -156,52 +134,14 @@ function purge_proxy_form($formstate, $pid = NULL) {
     '#title' => t('Fastly API Key'),
     '#description' => t('Insert a header with your Fastly API key.'),
   );
+  $form['purge_proxy_advanced']['headers']['custom'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Custom headers'),
+    '#description' => t('Provide custom headers to be added to each request. One line each'),
+  );
+
 
   return $form;
-}
-
-/**
- * Function to retrieve proxy configurations
- */
-function purge_proxy_get_config($proxy = 0, $status = 'ACTIVE', $view = 'FULL') {
-  $proxy_confs = array();
- // $active_proxies = &drupal_static(__FUNCTION__);
- // if (!isset($all_proxies)) {
- // }
-  //Query the proxy configuration table
-  $query = db_select('purge_proxy', 'p');
-
-  // Gather the fields needed
-  $fields = array('name', 'pid', 'enabled', 'active', 'isdefault');
-  if ($view = 'FULL') {
-    $full_fields = array('proxy_protocol', 'proxy_host', 'proxy_port', 'proxy_wildcards', 'purge_type', 'host_expire', 
-      'host_drupal', 'host_custom', 'url_prefix', 'headers');
-    $fields = array_merge($fields, $full_fields);
-  }
-  $query->fields('p', $fields);
-
-  // Set conditions
-  if ($status = 'ACTIVE') {
-    $query->condition('active', 1);
-  }
-
-  // Order, order, order.
-  $query->orderBy('isdefault', 'DESC');
-  $query->orderBy('active', 'DESC');
-  $query->orderBy('enabled', 'DESC');
-
-// print_r($query->__toString());
-  // Execute query and parse results
-  $result = $query->execute();
-  foreach ($result as $record) {
-    $proxy_confs[$record->pid]['pid'] = $record->pid;
-    $proxy_confs[$record->pid]['name'] = $record->name;
-    $proxy_confs[$record->pid]['enabled'] = $record->enabled;
-    $proxy_confs[$record->pid]['active'] = $record->active;
-    $proxy_confs[$record->pid]['isdefault'] = $record->isdefault;
-  }
-  // dprint_r($proxy_confs);
-  return $proxy_confs;
 }
 
 /**

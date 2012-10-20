@@ -77,7 +77,7 @@ function purge_expire_cache($expire_urls) {
 /**
  * Function to retrieve proxy configurations
  */
-function purge_proxy_get_config($pid = 0, $status = 'ACTIVE', $view = 'FULL') {
+function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
   $proxy_confs = array();
  // $active_proxies = &drupal_static(__FUNCTION__);
  // if (!isset($all_proxies)) {
@@ -86,13 +86,13 @@ function purge_proxy_get_config($pid = 0, $status = 'ACTIVE', $view = 'FULL') {
   $query = db_select('purge_proxy', 'p');
 
   // Gather the fields needed
-  if ($view = 'NAME') {
-    $fields = array('name');
+  if ($view == 'NAME') {
+    $fields = array('pid', 'type', 'name');
   }
-  if ($view = 'LIST') {
+  if ($view == 'LIST') {
     $fields = array('pid', 'type', 'name', 'enabled', 'active', 'isdefault');
   }
-  if ($view = 'FULL') {
+  if ($view == 'FULL') {
     $full_fields = array('proxy_ssl', 'proxy_host', 'proxy_port', 'options_type', 'options_parallel',
       'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers');
     $fields = array_merge($fields, $full_fields);
@@ -100,7 +100,11 @@ function purge_proxy_get_config($pid = 0, $status = 'ACTIVE', $view = 'FULL') {
   $query->fields('p', $fields);
 
   // Set conditions
-  if ($status = 'ACTIVE') {
+  if ($status == 'FULL_SYSTEM') {
+    $query->condition('type', 1);
+  }
+  print('status: ' . $status . '<br>');
+  if ($status == 'ACTIVE') {
     $query->condition('active', 1);
   }
   if ($pid > 0) {
@@ -112,19 +116,20 @@ function purge_proxy_get_config($pid = 0, $status = 'ACTIVE', $view = 'FULL') {
   $query->orderBy('active', 'DESC');
   $query->orderBy('enabled', 'DESC');
 
-// print_r($query->__toString());
+ print_r($query->__toString());
   // Execute query and parse results
   $result = $query->execute();
   foreach ($result as $record) {
+    dprint_r($record);
     $proxy_confs[$record->pid]['pid'] = $record->pid;
     $proxy_confs[$record->pid]['type'] = $record->type;
     $proxy_confs[$record->pid]['name'] = $record->name;
-    if (($view = 'LIST') or ($view = 'FULL') {
+    if (($view == 'LIST') or ($view = 'FULL')) {
       $proxy_confs[$record->pid]['enabled'] = $record->enabled;
       $proxy_confs[$record->pid]['active'] = $record->active;
       $proxy_confs[$record->pid]['isdefault'] = $record->isdefault;
     }
-    if ($view = 'FULL') {
+    if ($view == 'FULL') {
       // Check to use the base url or manual settings
       if ($record->proxy_host = '_USE_BASEURL_') {
         $proxy_confs[$record->pid]['proxy_use_baseurl'] = True;
@@ -133,12 +138,12 @@ function purge_proxy_get_config($pid = 0, $status = 'ACTIVE', $view = 'FULL') {
       else {
         $proxy_confs[$record->pid]['proxy_host'] = $record->proxy_host;
       }
-      $proxy_confs[$record->pid]['proxy_ssl'] = $record->proxy_protocol;
+      $proxy_confs[$record->pid]['proxy_ssl'] = $record->proxy_ssl;
       $proxy_confs[$record->pid]['proxy_port'] = $record->proxy_port;
 
       // Set options
       $proxy_confs[$record->pid]['options_type'] = $record->options_type;
-      $proxy_confs[$record->pid]['options_parallel'] = $record->options_parralel;
+      $proxy_confs[$record->pid]['options_parallel'] = $record->options_parallel;
       $proxy_confs[$record->pid]['options_nonblocking'] = $record->options_nonblocking;
 
       // Set domains
@@ -146,15 +151,15 @@ function purge_proxy_get_config($pid = 0, $status = 'ACTIVE', $view = 'FULL') {
       $domains = preg_split ('/$\R?^/m', $record->domains);
       foreach ($domains as $domain) {
         // Set Expire option
-        if ($domain = '_DOMAINS_EXPIRE_') {
+        if ($domain == '_DOMAINS_EXPIRE_') {
           $proxy_confs[$record->pid]['domains_expire'] = True;
-          unset($domains['_DOMAINS_EXPIRE_');
+          unset($domains['_DOMAINS_EXPIRE_']);
         }
         else {
           $proxy_confs[$record->pid]['domains_expire'] = False;
         }
         // Set Drupal option
-        if ($domain = '_DOMAINS_DRUPAL_') {
+        if ($domain == '_DOMAINS_DRUPAL_') {
           $proxy_confs[$record->pid]['domains_drupal'] = True;
           unset($domains['_DOMAINS_DRUPAL_']);
         }
@@ -165,7 +170,7 @@ function purge_proxy_get_config($pid = 0, $status = 'ACTIVE', $view = 'FULL') {
       $proxy_confs[$record->pid]['domains_custom'] = $domains;
       // Set URL options
       $proxy_confs[$record->pid]['url_prefix'] = $record->url_prefix;
-      $proxy_confs[$record->pid]['url_wildcards'] = $record->wildcards;
+      $proxy_confs[$record->pid]['url_wildcards'] = $record->url_wildcards;
       // Set headers
       $headers = array();
       $headers = preg_split ('/$\R?^/m', $record->headers);

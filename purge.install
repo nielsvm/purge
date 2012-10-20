@@ -102,7 +102,7 @@ function purge_schema() {
         'type' => 'int',
         'size' => 'tiny',
         'description' => 'Does this proxy accept wildcard purges?',
-      )
+      ),
       'headers' => array(
         'type' => 'text',
         'description' => 'Additional headers to be added to the request.',

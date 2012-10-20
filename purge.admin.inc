@@ -23,21 +23,25 @@ function purge_admin_settings_form() {
 /**
  * Menu callback for purge proxy configuration.
  */
-function purge_proxy_form($pid = NULL) {
+function purge_proxy_form($pid = 1) {
   $proxy = array();
   // Load the proxy configuration for editing.
-  if ($pid) {
-    $proxy = purge_proxy_get_config($pid);
-  }
+  $proxy = purge_proxy_get_config($pid, 'FULL', 'FULL_SYSTEM');
+  dprint_r($proxy);
   $form = array();
   $form['purge_proxy_general'] = array(
     '#type' => 'fieldset',
     '#title' => t('General Proxy Configuration'),
   );
+  $form['purge_proxy_general']['use_base_url'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use the base URL provided by Drupal'),
+    //'#default_value' =>
+  );
   $form['purge_proxy_general']['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
-    '#default_value' => $proxy['name'],
+    '#default_value' => $proxy[$pid]['name'],
     '#description' => t('The unique machine readable name of this proxy configuration.'),
     '#required' => TRUE,
   );
@@ -151,7 +155,7 @@ function purge_proxy_form($pid = NULL) {
 function purge_proxy_list() {
   $rows = array();
   $header = array(t('Name'), t('Status'), t('Actions'));
-  $proxies = purge_proxy_get_config(0,'ALL','LIST');
+  $proxies = purge_proxy_get_config(0, 'LIST', 'ACTIVE');
   foreach ($proxies as $proxy) {
     // Get the proxy configuration name
     $row = array();

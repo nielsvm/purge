@@ -93,15 +93,15 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
     $fields = array('pid', 'type', 'name', 'enabled', 'active', 'isdefault');
   }
   if ($view == 'FULL') {
-    $full_fields = array('proxy_ssl', 'proxy_host', 'proxy_port', 'options_type', 'options_parallel',
+    $fields = array('pid', 'type', 'name', 'enabled', 'active', 'isdefault',
+      'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type', 'options_parallel',
       'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers');
-    $fields = array_merge($fields, $full_fields);
   }
   $query->fields('p', $fields);
 
   // Set conditions
-  if ($status == 'FULL_SYSTEM') {
-    $query->condition('type', 1);
+  if ($status == !('SYSTEM')) {
+    $query->condition('type', 1, '<');
   }
   print('status: ' . $status . '<br>');
   if ($status == 'ACTIVE') {
@@ -131,11 +131,12 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
     }
     if ($view == 'FULL') {
       // Check to use the base url or manual settings
-      if ($record->proxy_host = '_USE_BASEURL_') {
+      if ($record->proxy_host == '_USE_BASEURL_') {
         $proxy_confs[$record->pid]['proxy_use_baseurl'] = True;
         $proxy_confs[$record->pid]['proxy_host'] = '';
       }
       else {
+        $proxy_confs[$record->pid]['proxy_use_baseurl'] = False;
         $proxy_confs[$record->pid]['proxy_host'] = $record->proxy_host;
       }
       $proxy_confs[$record->pid]['proxy_ssl'] = $record->proxy_ssl;
@@ -176,7 +177,7 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
       $headers = preg_split ('/$\R?^/m', $record->headers);
       foreach ($headers as $header) {
         // Set Acquia option
-        if ($header = '_ACQUIA_') {
+        if ($header == '_ACQUIA_') {
           $proxy_confs[$record->pid]['headers_acquia'] = True;
           unset($headers['_ACQUIA_']);
         }

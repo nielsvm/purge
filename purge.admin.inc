@@ -24,8 +24,9 @@ function purge_admin_settings_form() {
  * Menu callback for purge proxy configuration.
  */
 function purge_proxy_form($pid = NULL) {
+  $proxy = array();
+  // Load the proxy configuration for editing.
   if ($pid) {
-    $proxy = array();
     $proxy = purge_proxy_get_config($pid);
   }
   $form = array();

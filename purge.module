@@ -90,11 +90,11 @@ function purge_proxy_get_config($pid = 0, $status = 'ACTIVE', $view = 'FULL') {
     $fields = array('name');
   }
   if ($view = 'LIST') {
-    $fields = array('name', 'pid', 'enabled', 'active', 'isdefault');
+    $fields = array('pid', 'type', 'name', 'enabled', 'active', 'isdefault');
   }
   if ($view = 'FULL') {
-    $full_fields = array('proxy_protocol', 'proxy_host', 'proxy_port', 'proxy_wildcards', 'purge_type', 'host_expire',
-      'host_drupal', 'host_custom', 'url_prefix', 'headers');
+    $full_fields = array('proxy_ssl', 'proxy_host', 'proxy_port', 'options_type', 'options_parallel',
+      'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers');
     $fields = array_merge($fields, $full_fields);
   }
   $query->fields('p', $fields);
@@ -117,10 +117,70 @@ function purge_proxy_get_config($pid = 0, $status = 'ACTIVE', $view = 'FULL') {
   $result = $query->execute();
   foreach ($result as $record) {
     $proxy_confs[$record->pid]['pid'] = $record->pid;
+    $proxy_confs[$record->pid]['type'] = $record->type;
     $proxy_confs[$record->pid]['name'] = $record->name;
-    $proxy_confs[$record->pid]['enabled'] = $record->enabled;
-    $proxy_confs[$record->pid]['active'] = $record->active;
-    $proxy_confs[$record->pid]['isdefault'] = $record->isdefault;
+    if (($view = 'LIST') or ($view = 'FULL') {
+      $proxy_confs[$record->pid]['enabled'] = $record->enabled;
+      $proxy_confs[$record->pid]['active'] = $record->active;
+      $proxy_confs[$record->pid]['isdefault'] = $record->isdefault;
+    }
+    if ($view = 'FULL') {
+      // Check to use the base url or manual settings
+      if ($record->proxy_host = '_USE_BASEURL_') {
+        $proxy_confs[$record->pid]['proxy_use_baseurl'] = True;
+        $proxy_confs[$record->pid]['proxy_host'] = '';
+      }
+      else {
+        $proxy_confs[$record->pid]['proxy_host'] = $record->proxy_host;
+      }
+      $proxy_confs[$record->pid]['proxy_ssl'] = $record->proxy_protocol;
+      $proxy_confs[$record->pid]['proxy_port'] = $record->proxy_port;
+
+      // Set options
+      $proxy_confs[$record->pid]['options_type'] = $record->options_type;
+      $proxy_confs[$record->pid]['options_parallel'] = $record->options_parralel;
+      $proxy_confs[$record->pid]['options_nonblocking'] = $record->options_nonblocking;
+
+      // Set domains
+      $domains = array();
+      $domains = preg_split ('/$\R?^/m', $record->domains);
+      foreach ($domains as $domain) {
+        // Set Expire option
+        if ($domain = '_DOMAINS_EXPIRE_') {
+          $proxy_confs[$record->pid]['domains_expire'] = True;
+          unset($domains['_DOMAINS_EXPIRE_');
+        }
+        else {
+          $proxy_confs[$record->pid]['domains_expire'] = False;
+        }
+        // Set Drupal option
+        if ($domain = '_DOMAINS_DRUPAL_') {
+          $proxy_confs[$record->pid]['domains_drupal'] = True;
+          unset($domains['_DOMAINS_DRUPAL_']);
+        }
+        else {
+          $proxy_confs[$record->pid]['domains_drupal'] = False;
+        }
+      }
+      $proxy_confs[$record->pid]['domains_custom'] = $domains;
+      // Set URL options
+      $proxy_confs[$record->pid]['url_prefix'] = $record->url_prefix;
+      $proxy_confs[$record->pid]['url_wildcards'] = $record->wildcards;
+      // Set headers
+      $headers = array();
+      $headers = preg_split ('/$\R?^/m', $record->headers);
+      foreach ($headers as $header) {
+        // Set Acquia option
+        if ($header = '_ACQUIA_') {
+          $proxy_confs[$record->pid]['headers_acquia'] = True;
+          unset($headers['_ACQUIA_']);
+        }
+        else {
+          $proxy_confs[$record->pid]['headers_acquia'] = False;
+        }
+      }
+      $proxy_confs[$record->pid]['headers_custom'] = $headers;
+    }
   }
   // dprint_r($proxy_confs);
   return $proxy_confs;

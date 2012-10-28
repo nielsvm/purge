@@ -48,11 +48,11 @@ function purge_menu() {
     'file'              => 'purge.admin.inc',
   //  'tab_parent'        => 'admin/config/system/purge/proxy',
   );
-  $items['admin/config/system/purge/proxy/%proxy_name/edit'] = array(
+  $items['admin/config/system/purge/proxy/edit'] = array(
     'title' => 'Edit Proxy',
     'type' => MENU_LOCAL_TASK,
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('purge_proxy_form', 5),
+    'page arguments' => array('purge_proxy_form', 6),
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
@@ -90,18 +90,18 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
     $fields = array('pid', 'type', 'name');
   }
   if ($view == 'LIST') {
-    $fields = array('pid', 'type', 'name', 'enabled', 'active', 'isdefault');
+    $fields = array('pid', 'type', 'name', 'description', 'enabled', 'active', 'isdefault');
   }
   if ($view == 'FULL') {
-    $fields = array('pid', 'type', 'name', 'enabled', 'active', 'isdefault',
+    $fields = array('pid', 'type', 'name', 'description', 'enabled', 'active', 'isdefault',
       'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type', 'options_parallel',
       'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers');
   }
   $query->fields('p', $fields);
 
   // Set conditions
-  if ($status == !('SYSTEM')) {
-    $query->condition('type', 1, '<');
+  if ($status != 'SYSTEM') {
+    $query->condition('type', 0, '>');
   }
   print('status: ' . $status . '<br>');
   if ($status == 'ACTIVE') {
@@ -125,6 +125,7 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
     $proxy_confs[$record->pid]['type'] = $record->type;
     $proxy_confs[$record->pid]['name'] = $record->name;
     if (($view == 'LIST') or ($view = 'FULL')) {
+      $proxy_confs[$record->pid]['description'] = $record->description;
       $proxy_confs[$record->pid]['enabled'] = $record->enabled;
       $proxy_confs[$record->pid]['active'] = $record->active;
       $proxy_confs[$record->pid]['isdefault'] = $record->isdefault;

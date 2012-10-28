@@ -29,6 +29,11 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
   $proxy = purge_proxy_get_config($pid, 'FULL', 'SYSTEM');
   //dprint_r($proxy);
   $form = array();
+  // Hidden fields for internal use
+  $form['purge_pid'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $proxy[$pid]['pid'],
+  );
   $form['purge_proxy_general'] = array(
     '#type' => 'fieldset',
     '#title' => t('General Proxy Configuration'),
@@ -37,9 +42,15 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
   $form['purge_proxy_general']['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
-    '#default_value' => $proxy[$pid]['name'],
+    '#default_value' => check_plain($proxy[$pid]['name']),
     '#description' => t('The unique machine readable name of this proxy configuration.'),
     '#required' => TRUE,
+  );
+  $form['purge_proxy_general']['description'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Description'),
+    '#default_value' => check_plain($proxy[$pid]['description']),
+    '#description' => t('A human readable description of this proxy configuration.'),
   );
   $form['purge_proxy_general']['use_base_url'] = array(
     '#type' => 'checkbox',
@@ -115,7 +126,7 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
     '#description' => t('Get domain names from Drupal. Used as default when no other hostnames are provided.'),
     '#default_value' => $proxy[$pid]['domains_drupal'],
   );
-  $form['purge_proxy_advanced']['domains']['custom'] = array(
+  $form['purge_proxy_advanced']['domains']['custom_domains'] = array(
     '#type' => 'textarea',
     '#title' => t('Custom domains'),
     '#description' => t('Provide custom domains to be purged with each request. One line each'),
@@ -154,15 +165,141 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
     //'#description' => t('Insert a header with your Fastly API key.'),
     //'#default_value' => $proxy[$pid]['headers_fastly'],
   //);
-  $form['purge_proxy_advanced']['headers']['custom'] = array(
+  $form['purge_proxy_advanced']['headers']['custom_headers'] = array(
     '#type' => 'textarea',
     '#title' => t('Custom headers'),
     '#description' => t('Provide custom headers to be added to each request. One line each'),
     '#default_value' => implode("\n", $proxy[$pid]['headers_custom']),
   );
-
-
+  // Action buttons
+  $form['actions'] = array(
+    '#type' => 'actions'
+  );
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+    '#submit' => array('purge_proxy_form_submit'),
+  );
+  // Render an option to submit and enable the configuration 
+  if ($proxy[$pid]['enabled'] == False) {
+    $form['actions']['submit_enable'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save and Enable'),
+      '#submit' => array('purge_proxy_form_submit', 'purge_proxy_form_enable'),
+    );
+    $form['actions']['enable'] = array(
+      '#type' => 'submit',
+      '#value' => t('Enable'),
+      '#submit' => array('purge_proxy_form_enable'),
+    );
+  }
+  else {
+    $form['actions']['disable'] = array(
+      '#type' => 'submit',
+      '#value' => t('Disable'),
+      '#submit' => array('purge_proxy_form_disable'),
+    );
+  }
+  $form['actions']['delete'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete'),
+    '#submit' => array('purge_proxy_form_delete'),
+  );
   return $form;
+}
+
+function purge_proxy_form_validate($form, &$form_state) {
+  // Validate the name. should be a real machine_name field
+  if ($form_state['values']['name'] == '') {
+    form_set_error('', t('You must select a name for this proxy configuration.'));
+  }
+  // Check for use base url
+  if ($form_state['values']['use_base_url'] == False) {
+    // Check if hostname is unset
+    if ($form_state['values']['host'] == '') {
+      form_set_error('', t('You should provide a host name or ipaddress when not using the Drupal option'));
+    }
+    else {
+      // Check the hostname
+      if ((purge_validate_hostname($form_state['values']['host'])) == False) {
+        form_set_error('', t('This is not a valid hostname or ipaddress.'));
+      }
+    }
+  }
+  // Check the portname
+  if (!($form_state['values']['port'] == '')) {
+    if ((is_numeric($form_state['values']['port'])) == False) {
+      form_set_error('', t('This is not a valid port number.'));
+    }
+  }
+  // Check all domains
+  dprint_r($form_state['values']['custom_domains']);
+  if ((trim($form_state['values']['custom_domains'])) != '') {
+    $domains = preg_split('/$\R?^/m', $form_state['values']['custom_domains']);
+    $line = 1;
+    foreach($domains as $domain) {
+      if ((purge_validate_hostname(trim($domain))) == False) {
+        form_set_error('', t('There is an invalid custom domain %domain on line number @line', array('%domain' => check_plain($domain), '@line' => $line)));
+      }
+      $line = ($line + 1);
+    }
+  }
+  // Check headers
+}
+
+/**
+ * Submit the proxy configuration
+ */
+function purge_proxy_form_submit($form, &$form_state) {
+  // Render the proxy_host field
+  if ($form_state['values']['use_base_url'] == 1) {
+    $proxy_host = '_USE_BASEURL_';
+  }
+  else {
+    $proxy_host = trim($form_state['values']['host']);
+  }
+  // Generate the storage field for the domains
+  $domains = array();
+  $custom_domains = preg_split('/$\R?^/m', $form_state['values']['custom_domains']);
+  foreach ($custom_domains as $domain) {
+    if ((trim($domain)) != '') {
+      $domains[] = trim($domain);
+    }
+  }
+  if ($form_state['values']['expire'] == 1) {
+    $domains[] = '_DOMAINS_EXPIRE_';
+  }
+  if ($form_state['values']['drupal'] == 1) {
+    $domains[] = '_DOMAINS_DRUPAL_';
+  }
+  // Generate the headers field
+  $headers = array();
+  $headers = preg_split('/$\R?^/m', $form_state['values']['custom_headers']);
+  // See if the current form is filled from the empty template.
+  if ($form_state['values']['purge_pid'] == 1) {
+    // Insert a new record into the proxy configuration database table
+    $new_proxy_config = db_insert('purge_proxy')
+      ->fields(array('type', 'name', 'description', 'enabled', 'isdefault', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
+        'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
+      ->values(array(
+      'type' => 4, //Type 4 indicates this is a user controled configuration
+      'name' => $form_state['values']['name'],
+      'description' => check_plain($form_state['values']['description']),
+      'enabled' => 0, // Configurations are disabled by default
+      'isdefault' => 0,
+      'proxy_ssl' => $form_state['values']['protocol'],
+      'proxy_host' => $proxy_host,
+      'proxy_port' => check_plain($form_state['values']['port']),
+      'options_type' => $form_state['values']['type'],
+      'options_parallel' => $form_state['values']['parallel'],
+      'options_nonblocking' => $form_state['values']['nonblocking'],
+      'domains' => implode("\n", $domains),
+      'url_prefix' => check_plain($form_state['values']['prefix']),
+      'url_wildcards' => $form_state['values']['wildcards'],
+      'headers' => implode("\n", $headers),
+    ))
+    ->execute();
+  }
 }
 
 /**
@@ -170,12 +307,13 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
  */
 function purge_proxy_list() {
   $rows = array();
-  $header = array(t('Name'), t('Status'), t('Actions'));
-  $proxies = purge_proxy_get_config(1, 'FULL', 'SYSTEM');
+  $header = array(t('Name'), t('Description'), t('Status'), t('Actions'));
+  $proxies = purge_proxy_get_config(0, 'LIST', 'ALL');
   foreach ($proxies as $proxy) {
-    // Get the proxy configuration name
+    // Get the proxy configuration name and description
     $row = array();
     $row[] = $proxy['name'];
+    $row[] = $proxy['description'];
     // Generate the status and action fields 
     $status = '';
     $actions = array();
@@ -184,30 +322,30 @@ function purge_proxy_list() {
       $status = $status . t('Default, ');
     }
     else {
-      $actions[] = l(t('Set Default'), "admin/config/system/purge/proxy/{$proxy['name']}/setdefault");
+      $actions[] = l(t('Set Default'), "admin/config/system/purge/proxy/setdefault/{$proxy['pid']}");
     }
 
     if ($proxy['enabled']) {
       $status = $status . t('Enabled, ');
-      $actions[] = l(t('Disable'), "admin/config/system/purge/proxy/{$proxy['name']}/disable");
+      $actions[] = l(t('Disable'), "admin/config/system/purge/proxy/disable/{$proxy['pid']}");
     }
     else {
       $status = $status . t('Disabled, ');
-      $actions[] = l(t('Enable'), "admin/config/system/purge/proxy/{$proxy['name']}/enable");
+      $actions[] = l(t('Enable'), "admin/config/system/purge/proxy/enable/{$proxy['pid']}");
     }
 
     if ($proxy['active']) {
       $status = $status . t('and Active');
-      $actions[] = l(t('Deactivate'), "admin/config/system/purge/proxy/{$proxy['name']}/deactivate");
+      $actions[] = l(t('Deactivate'), "admin/config/system/purge/proxy/deactivate/{$proxy['pid']}");
     }
     else {
       $status = $status . t('and Deactivated');
-      $actions[] = l(t('Activate'), "admin/config/system/purge/proxy/{$proxy['name']}/activate");
+      $actions[] = l(t('Activate'), "admin/config/system/purge/proxy/activate/{$proxy['pid']}");
     }
 
     // Add actions for edit and delete
-    $actions[] = l(t('Edit'), "admin/config/system/purge/proxy/{$proxy['name']}/edit");
-    $actions[] = l(t('Delete'), "admin/config/system/purge/proxy/{$proxy['name']}/delete");
+    $actions[] = l(t('Edit'), "admin/config/system/purge/proxy/edit/{$proxy['pid']}");
+    $actions[] = l(t('Delete'), "admin/config/system/purge/proxy/delete/{$proxy['pid']}");
     $row[] = $status;
     $row[] = implode(' | ', $actions);
     $rows[] = $row;
@@ -216,4 +354,19 @@ function purge_proxy_list() {
   $output = theme('table', array('header' => $header, 'rows' => $rows));
   //print($output);
   return $output;
+}
+
+/**
+ * Helper function to validate hostnames
+ */
+function purge_validate_hostname($hostname) {
+ // $regex = '/^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|\b-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|\b-){0,61}[0-9A-Za-z])?)*\.?$/';
+ // $result = preg_match($regex, $hostname);
+  $pieces = explode(".",$hostname);
+  foreach($pieces as $piece) {
+    if (!preg_match('/^[a-z\d][a-z\d-]{0,62}$/i', $piece) || preg_match('/-$/', $piece) ) {
+      return false;
+    }
+  }
+  return true;
 }

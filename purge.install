@@ -45,6 +45,11 @@ function purge_schema() {
         'length' => '40',
         'description' => 'Machine readable name of the proxy configuration.',
       ),
+      'description' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => 'Describe the description field... yeah, right',
+      ),
       'enabled' => array(
         'type' => 'int',
         'size' => 'tiny',

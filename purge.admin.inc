@@ -300,6 +300,41 @@ function purge_proxy_form_submit($form, &$form_state) {
     ))
     ->execute();
   }
+  else {
+    // Update the existing record
+    $proxy_config = db_update('purge_proxy')
+      ->fields(array(
+        'name' => $form_state['values']['name'],
+        'description' => check_plain($form_state['values']['description']),
+        'proxy_ssl' => $form_state['values']['protocol'],
+        'proxy_host' => $proxy_host,
+        'proxy_port' => check_plain($form_state['values']['port']),
+        'options_type' => $form_state['values']['type'],
+        'options_parallel' => $form_state['values']['parallel'],
+        'options_nonblocking' => $form_state['values']['nonblocking'],
+        'domains' => implode("\n", $domains),
+        'url_prefix' => check_plain($form_state['values']['prefix']),
+        'url_wildcards' => $form_state['values']['wildcards'],
+        'headers' => implode("\n", $headers),
+      ))
+      ->condition('pid', $form_state['values']['purge_pid'])
+      ->execute();
+  }
+  drupal_set_message(t('The proxy configuration %proxy_name has been saved', array('%proxy_name' => $form_state['values']['name'])));
+}
+
+/**
+ * Callback to enable a proxy configuration
+ */
+function purge_proxy_form_enable($form, &$form_state) {
+  purge_proxy_enable($form_state['values']['purge_pid'], 1);
+}
+
+/**
+ * Callback to disable a proxy configuration
+ */
+function purge_proxy_form_disable($form, &$form_state) {
+  purge_proxy_enable($form_state['values']['purge_pid'], 0);
 }
 
 /**
@@ -360,8 +395,6 @@ function purge_proxy_list() {
  * Helper function to validate hostnames
  */
 function purge_validate_hostname($hostname) {
- // $regex = '/^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|\b-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|\b-){0,61}[0-9A-Za-z])?)*\.?$/';
- // $result = preg_match($regex, $hostname);
   $pieces = explode(".",$hostname);
   foreach($pieces as $piece) {
     if (!preg_match('/^[a-z\d][a-z\d-]{0,62}$/i', $piece) || preg_match('/-$/', $piece) ) {
@@ -370,3 +403,28 @@ function purge_validate_hostname($hostname) {
   }
   return true;
 }
+
+/**
+ * Helper function to enable or disable proxy configurations
+ */
+function purge_proxy_enable($pid, $value = 1) {
+  // Update the database field
+  $query = db_update('purge_proxy')
+    ->fields(array('enabled' => $value))
+    ->condition('pid', $pid)
+    ->execute();
+  // Get the name of the proxy configuration
+  $proxy_config = purge_proxy_get_config($pid, 'NAME', 'ALL');
+  $proxy_name = $proxy_config[$pid]['name'];
+  // Set the action label
+  if ($value == 1) {
+    $action = 'enabled';
+  }
+  else {
+    $action = 'disabled';
+  }
+  drupal_set_message(t('The proxy configuration %proxy_name has been @action.', array('%proxy_name' => $proxy_name, '@action' => $action)));
+  $ouput = drupal_goto('admin/config/system/purge/proxy/');
+  return $output;
+}
+

@@ -190,20 +190,20 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
     $form['actions']['enable'] = array(
       '#type' => 'submit',
       '#value' => t('Enable'),
-      '#submit' => array('purge_proxy_form_enable'),
+      '#submit' => array('purge_proxy_enable_form'),
     );
   }
   else {
     $form['actions']['disable'] = array(
       '#type' => 'submit',
       '#value' => t('Disable'),
-      '#submit' => array('purge_proxy_form_disable'),
+      '#submit' => array('purge_proxy_disable_form'),
     );
   }
   $form['actions']['delete'] = array(
     '#type' => 'submit',
     '#value' => t('Delete'),
-    '#submit' => array('purge_proxy_form_delete'),
+    '#submit' => array('purge_proxy_delete_form'),
   );
   return $form;
 }
@@ -233,7 +233,7 @@ function purge_proxy_form_validate($form, &$form_state) {
     }
   }
   // Check all domains
-  dprint_r($form_state['values']['custom_domains']);
+  // dprint_r($form_state['values']['custom_domains']);
   if ((trim($form_state['values']['custom_domains'])) != '') {
     $domains = preg_split('/$\R?^/m', $form_state['values']['custom_domains']);
     $line = 1;
@@ -326,15 +326,48 @@ function purge_proxy_form_submit($form, &$form_state) {
 /**
  * Callback to enable a proxy configuration
  */
-function purge_proxy_form_enable($form, &$form_state) {
+function purge_proxy_enable_form($form, &$form_state) {
   purge_proxy_enable($form_state['values']['purge_pid'], 1);
 }
 
 /**
  * Callback to disable a proxy configuration
  */
-function purge_proxy_form_disable($form, &$form_state) {
+function purge_proxy_disable_form($form, &$form_state) {
   purge_proxy_enable($form_state['values']['purge_pid'], 0);
+}
+
+/**
+ * Callback to delete a proxy configuration
+ */
+function purge_proxy_delete_form($form, &$form_state, $pid = NULL) {
+//  if (isset($form_state['values']['process'])) {
+  if (is_null($pid)) {
+    if (isset($form_state['values']['purge_pid'])) {
+      if ($form_state['values']['purge_pid'] > 1) {
+        $pid = $form_state['values']['purge_pid'];
+      }
+    }
+  }
+  purge_proxy_delete($pid);
+ //   return drupal_goto('admin/config/system/purge/proxy');
+  //}
+  //else {
+  //  return purge_proxy_delete_form_confirm($form, &$form_state);
+  //}
+}
+
+/**
+ * Confirm deletion of a proxy configuration
+ */
+function purge_proxy_delete_form_confirm($form, &$form_state) {
+  $form['process'] = array('#type' => 'hidden', '#value' => 'true');
+  return confirm_form($form,
+    t('Are you sure you want to delete %proxy_name?'), array('%proxy_name' => $form_state['values']['name']),
+    t('admin/config/system/purge/proxy'),
+    t('Delete'),
+    t('Cancel')
+  );
 }
 
 /**
@@ -386,9 +419,17 @@ function purge_proxy_list() {
     $rows[] = $row;
   }
   // Output themed table
-  $output = theme('table', array('header' => $header, 'rows' => $rows));
+  $proxy_list = theme('table', array('header' => $header, 'rows' => $rows));
   //print($output);
-  return $output;
+  $form = array();
+  $form['purge_expire'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Expire Integration'),
+    '#default_value' => variable_get('purge_expire', 1),
+    '#description' => t('Uncheck this box to disable integration with the Cache Expiration module.'),
+  );
+  // return system_settings_form($form);
+  return $proxy_list . drupal_render($form);
 }
 
 /**
@@ -424,7 +465,22 @@ function purge_proxy_enable($pid, $value = 1) {
     $action = 'disabled';
   }
   drupal_set_message(t('The proxy configuration %proxy_name has been @action.', array('%proxy_name' => $proxy_name, '@action' => $action)));
-  $ouput = drupal_goto('admin/config/system/purge/proxy/');
+  $ouput = drupal_goto('admin/config/system/purge/proxy');
   return $output;
 }
 
+/**
+ * Helper function to delete proxy configurations
+ */
+function purge_proxy_delete($pid) {
+  // Get the name of the proxy configuration
+  $proxy_config = purge_proxy_get_config($pid, 'NAME', 'ALL');
+  $proxy_name = $proxy_config[$pid]['name'];
+  // Delete the configuration from the database
+  $query = db_delete('purge_proxy')
+    ->condition('pid', $pid)
+    ->execute();
+  drupal_set_message(t('The proxy configuration %proxy_name has been deleted.', array('%proxy_name' => $proxy_name)));
+  $ouput = drupal_goto('admin/config/system/purge/proxy');
+  return $output;
+}

@@ -40,15 +40,15 @@ function purge_menu() {
   );
   $items['admin/config/system/purge/proxy/add'] = array(
     'title' => 'Add Proxy',
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_LOCAL_ACTION,
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('purge_proxy_form'),
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
-    //'tab_parent'        => 'admin/config/system/purge/proxy',
+    'tab_parent'        => 'admin/config/system/purge/proxy',
   );
-  $items['admin/config/system/purge/proxy/edit'] = array(
+  $items['admin/config/system/purge/proxy/edit/%'] = array(
     'title' => 'Edit Proxy',
     'type' => MENU_CALLBACK,
     'page callback' => 'drupal_get_form',
@@ -74,6 +74,15 @@ function purge_menu() {
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
   );
+  $items['admin/config/system/purge/proxy/delete/%'] = array(
+    'type' => MENU_CALLBACK,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('purge_proxy_delete_form', 6),
+    'access arguments'  => array('administer site configuration'),
+    'file path'         => drupal_get_path('module', 'purge'),
+    'file'              => 'purge.admin.inc',
+  );
+
 
   return $items;
 }
@@ -119,7 +128,7 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
   if ($status != 'SYSTEM') {
     $query->condition('type', 0, '>');
   }
-  print('status: ' . $status . '<br>');
+  // print('status: ' . $status . '<br>');
   if ($status == 'ACTIVE') {
     $query->condition('active', 1);
   }
@@ -132,11 +141,11 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
   $query->orderBy('active', 'DESC');
   $query->orderBy('enabled', 'DESC');
 
- print_r($query->__toString());
+  // print_r($query->__toString());
   // Execute query and parse results
   $result = $query->execute();
   foreach ($result as $record) {
-    dprint_r($record);
+    // dprint_r($record);
     $proxy_confs[$record->pid]['pid'] = $record->pid;
     $proxy_confs[$record->pid]['type'] = $record->type;
     $proxy_confs[$record->pid]['name'] = $record->name;

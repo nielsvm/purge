@@ -13,7 +13,7 @@ function purge_schema() {
     'description' => t('Table storing proxy configurations'),
     'export' => array(
       'key' => 'name',
-      'key' => 'Name',
+      'key name' => 'Name',
       'primary key' => 'pid',
       'identifier' => 'proxy',
       'default hook' => 'default_purge_proxy',
@@ -54,16 +54,13 @@ function purge_schema() {
         'type' => 'int',
         'size' => 'tiny',
         'description' => 'Is the proxy enabled?',
+        'no export' => TRUE,
       ),
       'active' => array(
         'type' => 'int',
         'size' => 'tiny',
         'description' => 'Is the proxy currenty active?',
-      ),
-      'isdefault' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'description' => 'Is this proxy the default configuration?',
+        'no export' => TRUE,
       ),
       'proxy_ssl' => array(
         'type' => 'int',

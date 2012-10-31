@@ -115,10 +115,10 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
     $fields = array('pid', 'type', 'name');
   }
   if ($view == 'LIST') {
-    $fields = array('pid', 'type', 'name', 'description', 'enabled', 'active', 'isdefault');
+    $fields = array('pid', 'type', 'name', 'description', 'enabled', 'active');
   }
   if ($view == 'FULL') {
-    $fields = array('pid', 'type', 'name', 'description', 'enabled', 'active', 'isdefault',
+    $fields = array('pid', 'type', 'name', 'description', 'enabled', 'active',
       'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type', 'options_parallel',
       'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers');
   }
@@ -137,7 +137,6 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
   }
 
   // Order, order, order.
-  $query->orderBy('isdefault', 'DESC');
   $query->orderBy('active', 'DESC');
   $query->orderBy('enabled', 'DESC');
 
@@ -153,7 +152,6 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
       $proxy_confs[$record->pid]['description'] = $record->description;
       $proxy_confs[$record->pid]['enabled'] = $record->enabled;
       $proxy_confs[$record->pid]['active'] = $record->active;
-      $proxy_confs[$record->pid]['isdefault'] = $record->isdefault;
     }
     if ($view == 'FULL') {
       // Check to use the base url or manual settings
@@ -216,5 +214,28 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
   }
   // dprint_r($proxy_confs);
   return $proxy_confs;
+}
+
+
+/**
+ * Implementation of hook_ctools_plugin_api().
+ *
+ * Tell CTools that we support the purge_proxy_config API.
+ */
+function purge_ctools_plugin_api($owner, $api) {
+  if ($owner == 'purge' && $api == 'purge_proxy_config') {
+    return array('version' => 1);
+  }
+}
+
+/**
+ * Implementation of hook_ctools_plugin_directory().
+ */
+function purge_ctools_plugin_directory($module, $type) {
+
+  // Load the export_ui plugin.
+  if ($type =='export_ui') {
+    return 'plugins/export_ui';
+  }
 }
 

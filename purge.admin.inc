@@ -279,14 +279,13 @@ function purge_proxy_form_submit($form, &$form_state) {
   if ($form_state['values']['purge_pid'] == 1) {
     // Insert a new record into the proxy configuration database table
     $new_proxy_config = db_insert('purge_proxy')
-      ->fields(array('type', 'name', 'description', 'enabled', 'isdefault', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
+      ->fields(array('type', 'name', 'description', 'enabled', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
         'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
       ->values(array(
       'type' => 4, //Type 4 indicates this is a user controled configuration
       'name' => $form_state['values']['name'],
       'description' => check_plain($form_state['values']['description']),
-      'enabled' => 0, // Configurations are disabled by default
-      'isdefault' => 0,
+      'enabled' => 1, // Configurations are enabled by default
       'proxy_ssl' => $form_state['values']['protocol'],
       'proxy_host' => $proxy_host,
       'proxy_port' => check_plain($form_state['values']['port']),
@@ -385,13 +384,6 @@ function purge_proxy_list() {
     // Generate the status and action fields 
     $status = '';
     $actions = array();
-
-    if ($proxy['isdefault']) {
-      $status = $status . t('Default, ');
-    }
-    else {
-      $actions[] = l(t('Set Default'), "admin/config/system/purge/proxy/setdefault/{$proxy['pid']}");
-    }
 
     if ($proxy['enabled']) {
       $status = $status . t('Enabled, ');

@@ -40,11 +40,15 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
   );
   // TODO: Make this a true machine field
   $form['purge_proxy_general']['name'] = array(
-    '#type' => 'textfield',
+    '#type' => 'machine_name',
     '#title' => t('Name'),
     '#default_value' => check_plain($proxy[$pid]['name']),
     '#description' => t('The unique machine readable name of this proxy configuration.'),
     '#required' => TRUE,
+    '#maxlength' => 21,
+    '#machine_name' => array(
+      'exists' => 'purge_proxy_name_exists',
+    ),
   );
   $form['purge_proxy_general']['description'] = array(
     '#type' => 'textfield',
@@ -208,6 +212,20 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
   return $form;
 }
 
+/**
+ * Function to determine if a proxy configuration name is allready taken
+ */
+function purge_proxy_name_exists($value) {
+  $exists = FALSE;
+  $proxies = purge_proxy_get_config(0, 'NAME', 'SYSTEM');
+  foreach ($proxies as $proxy) {
+    if ($proxy['name'] == $value) {
+      $exists = TRUE;
+    }
+  }
+  return $exists;
+}
+
 function purge_proxy_form_validate($form, &$form_state) {
   // Validate the name. should be a real machine_name field
   if ($form_state['values']['name'] == '') {
@@ -274,7 +292,15 @@ function purge_proxy_form_submit($form, &$form_state) {
   }
   // Generate the headers field
   $headers = array();
-  $headers = preg_split('/$\R?^/m', $form_state['values']['custom_headers']);
+  $custom_headers = preg_split('/$\R?^/m', $form_state['values']['custom_headers']);
+  foreach ($custom_headers as $header) {
+    if ((trim($header)) != '') {
+      $headers[] = trim($header);
+    }
+  }
+  if ($form_state['values']['acquia'] == 1) {
+    $headers[] = '_ACQUIA_';
+  }
   // See if the current form is filled from the empty template.
   if ($form_state['values']['purge_pid'] == 1) {
     // Insert a new record into the proxy configuration database table
@@ -292,10 +318,10 @@ function purge_proxy_form_submit($form, &$form_state) {
       'options_type' => $form_state['values']['type'],
       'options_parallel' => $form_state['values']['parallel'],
       'options_nonblocking' => $form_state['values']['nonblocking'],
-      'domains' => implode("\n", $domains),
+      'domains' => implode(",", $domains),
       'url_prefix' => check_plain($form_state['values']['prefix']),
       'url_wildcards' => $form_state['values']['wildcards'],
-      'headers' => implode("\n", $headers),
+      'headers' => implode(",", $headers),
     ))
     ->execute();
   }
@@ -311,10 +337,10 @@ function purge_proxy_form_submit($form, &$form_state) {
         'options_type' => $form_state['values']['type'],
         'options_parallel' => $form_state['values']['parallel'],
         'options_nonblocking' => $form_state['values']['nonblocking'],
-        'domains' => implode("\n", $domains),
+        'domains' => implode(",", $domains),
         'url_prefix' => check_plain($form_state['values']['prefix']),
         'url_wildcards' => $form_state['values']['wildcards'],
-        'headers' => implode("\n", $headers),
+        'headers' => implode(",", $headers),
       ))
       ->condition('pid', $form_state['values']['purge_pid'])
       ->execute();

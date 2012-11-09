@@ -5,6 +5,10 @@
  * Provides administrative interface for the Purge module.
  */
 
+if (module_exists('ctools')) {
+  ctools_include('export');
+  ctools_include('export-ui');
+}
 
 /**
  * Menu callback for purge admin settings.
@@ -38,7 +42,6 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
     '#type' => 'fieldset',
     '#title' => t('General Proxy Configuration'),
   );
-  // TODO: Make this a true machine field
   $form['purge_proxy_general']['name'] = array(
     '#type' => 'machine_name',
     '#title' => t('Name'),
@@ -410,28 +413,24 @@ function purge_proxy_list() {
     // Generate the status and action fields 
     $status = '';
     $actions = array();
-
-    if ($proxy['enabled']) {
-      $status = $status . t('Enabled, ');
-      $actions[] = l(t('Disable'), "admin/config/system/purge/proxy/disable/{$proxy['pid']}");
+    // See if this is a template
+    if ($proxy['type'] == 2) {
+      $status = t('Template');
     }
     else {
-      $status = $status . t('Disabled, ');
-      $actions[] = l(t('Enable'), "admin/config/system/purge/proxy/enable/{$proxy['pid']}");
+      if ($proxy['enabled']) {
+        $status = $status . t('Enabled');
+        $actions[] = l(t('Disable'), "admin/config/system/purge/proxy/disable/{$proxy['pid']}");
+      }
+      else {
+        $status = $status . t('Disabled');
+        $actions[] = l(t('Enable'), "admin/config/system/purge/proxy/enable/{$proxy['pid']}");
+      }
+      // Add actions for edit and delete
+      $actions[] = l(t('Edit'), "admin/config/system/purge/proxy/edit/{$proxy['pid']}");
+      $actions[] = l(t('Delete'), "admin/config/system/purge/proxy/delete/{$proxy['pid']}");
     }
 
-    if ($proxy['active']) {
-      $status = $status . t('and Active');
-      $actions[] = l(t('Deactivate'), "admin/config/system/purge/proxy/deactivate/{$proxy['pid']}");
-    }
-    else {
-      $status = $status . t('and Deactivated');
-      $actions[] = l(t('Activate'), "admin/config/system/purge/proxy/activate/{$proxy['pid']}");
-    }
-
-    // Add actions for edit and delete
-    $actions[] = l(t('Edit'), "admin/config/system/purge/proxy/edit/{$proxy['pid']}");
-    $actions[] = l(t('Delete'), "admin/config/system/purge/proxy/delete/{$proxy['pid']}");
     $row[] = $status;
     $row[] = implode(' | ', $actions);
     $rows[] = $row;
@@ -439,15 +438,7 @@ function purge_proxy_list() {
   // Output themed table
   $proxy_list = theme('table', array('header' => $header, 'rows' => $rows));
   //print($output);
-  $form = array();
-  $form['purge_expire'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Expire Integration'),
-    '#default_value' => variable_get('purge_expire', 1),
-    '#description' => t('Uncheck this box to disable integration with the Cache Expiration module.'),
-  );
-  // return system_settings_form($form);
-  return $proxy_list . drupal_render($form);
+  return $proxy_list;
 }
 
 /**

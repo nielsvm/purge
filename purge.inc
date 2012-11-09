@@ -15,26 +15,97 @@
  *   Array of urls and their http status codes after purging.
  */
 function purge_urls($purge_urls) {
-  // Get settings
-  $proxy_urls = explode(' ', variable_get('purge_proxy_urls', 'http://localhost:80'));
+  // Get the Drupal base url and parse it.
+  global $base_url;
+  $base_url_parts = parse_url_parts($base_url);
+  // Get all enabled and active proxy configurations
+  $proxy_configs = array();
+  $proxy_configs = purge_proxy_get_config(0, 'FULL', 'ACTIVE');
+
+  // This array will be filled with requests.
   $purge_requests = array();
   $current_purge_request = 0;
 
   // Find out the url parts we need from the urls to be purged
   foreach ($purge_urls as $purge_url) {
     $purge_url_parts = parse_url($purge_url);
-    // Determine the host
-    $purge_url_host = $purge_url_parts['host'];
-    // Add portnames to the host if any are set
-    if (array_key_exists('port', $purge_url_parts)) {
-      $purge_url_host = $purge_url_host . ":" . $purge_url_parts['port'];
-    }
 
     // Process all urls for each proxy
-    foreach ($proxy_urls as $proxy_url) {
-      // Add url and proxy url to the array for later processing
-      $purge_requests[$current_purge_request]['purge_url'] = $purge_url;
-      $purge_requests[$current_purge_request]['proxy_url'] = $proxy_url;
+    foreach ($proxy_configs as $proxy_config) {
+      // Get the pid of the current proxy config
+      $pid = $proxy_config['pid'];
+
+      // Set the base url of the proxy request (scheme + domain)
+      // First check if the use base url option is set
+      if ($proxy_config[$pid]['proxy_use_baseurl'] {
+        $purge_base_url = $base_url_parts['scheme'] . $base_url_parts['host'];
+        // Add port to the host if set
+        if (array_key_exists('port', $base_url_parts)) {
+          $purge_base_url = $purge_base_url . ":" . $base_url_parts['port'];
+        }
+      }
+      else {
+        // Check for ssl/https
+        if ($proxy_config[$pid]['proxy_ssl']) {
+          $purge_base_url = "https://";
+        }
+        else {
+          $purge_base_url = "http://";
+        }
+        $purge_base_url = $purge_base_url . $proxy_config[$pid]['proxy_host'];
+        if ($proxy_config[$pid]['proxy_port'] != '') {
+   
+
+
+      // Set the request method
+
+      // Set the request options
+     
+      // Determine all host headers to set.
+      $purge_url_domains = array();
+      // First check for a domain from the expire hook
+      if ($proxy_config[$pid]['domains_expire'] == TRUE) {
+        if (array_key_exists('host'], $purge_url_parts)) {
+          $purge_url_domain = $purge_url_parts['host'];
+          // Add port to the host if set
+          if (array_key_exists('port', $purge_url_parts)) {
+            $purge_url_domain = $purge_url_domain . ":" . $purge_url_parts['port'];
+          }
+          $purge_url_domains[] = $purge_url_domain;
+        }
+      }
+      // Then add custom domains
+      if (isset($proxy_config[$pid]['domains_custom'] {
+        $custom_domains = $proxy_config[$pid]['domains_custom'];
+        foreach ($custom_domains as $custom_domain) {
+          $purge_url_domains[] = $custom_domain;
+        }
+      }
+      // Then add the Drupal base url if needed.
+      if ((($proxy_config[$pid]['domains_drupal']) 
+            OR (count($purge_url_domains) == 0)) 
+          AND ($proxy_config[$pid]['proxy_use_baseurl'] == FALSE)
+        ) {
+        $purge_url_domain = $base_url_parts['host'];
+        // Add port to the host if set
+        if (array_key_exists('port', $base_url_parts)) {
+          $purge_url_domain = $purge_url_domain . ":" . $base_url_parts['port'];
+        }
+        $purge_url_domains[] = $purge_url_domain;
+      }
+      // Remove double entries
+      array_unique($purge_url_domains);
+
+      // Set URL
+
+      // Set Headers
+
+      // Now add a purge request for each domain
+      foreach ($purge_url_domains as $purge_url_domain) {
+        // Add purge url, proxy config and domain to the array for later processing
+        $purge_requests[$current_purge_request]['purge_url'] = $purge_url;
+        $purge_requests[$current_purge_request]['proxy_name'] = $proxy_config[$pid]['name'];
+        $purge_requests[$current_purge_request]['domain'] = $proxy_url_domain;
 
       // Select which method to use
       $proxy_url_parts = parse_url($proxy_url);

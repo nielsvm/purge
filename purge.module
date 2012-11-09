@@ -83,6 +83,33 @@ function purge_menu() {
     'file'              => 'purge.admin.inc',
   );
 
+  // Add Import and export items to menu if ctools is enabled
+  if (module_exists('ctools')) {
+    ctools_include('export');
+    ctools_include('export-ui');
+    $items['admin/config/system/purge/proxy/import'] = array(
+      'title' => 'Import Proxy',
+      'type' => MENU_LOCAL_ACTION,
+      'page callback' => 'ctools_export_ui_switcher_page',
+      'page arguments' => array('purge_ctools_export_ui', 'import'),
+      'access arguments'  => array('administer site configuration'),
+      'tab_parent'        => 'admin/config/system/purge/proxy',
+      'file path'         => drupal_get_path('module', 'purge'),
+      'file'              => 'purge.admin.inc',
+    );
+    $items['admin/config/system/purge/proxy/export/%'] = array(
+      'title' => 'Export',
+      'type' => MENU_CALLBACK,
+      'page callback' => 'ctools_export_ui_switcher_page',
+      'page arguments' => array('purge_ctools_export_ui', 'export', 6),
+      'access arguments'  => array('administer site configuration'),
+      'file path'         => drupal_get_path('module', 'purge'),
+      'file'              => 'purge.admin.inc',
+
+    );
+  }
+
+
 
   return $items;
 }

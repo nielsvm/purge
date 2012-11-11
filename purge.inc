@@ -17,7 +17,7 @@
 function purge_urls($purge_urls) {
   // Get the Drupal base url and parse it.
   global $base_url;
-  $base_url_parts = parse_url_parts($base_url);
+  $base_url_parts = parse_url($base_url);
   // Get all enabled and active proxy configurations
   $proxy_configs = array();
   $proxy_configs = purge_proxy_get_config(0, 'FULL', 'ACTIVE');
@@ -37,7 +37,7 @@ function purge_urls($purge_urls) {
 
       // Set the base url of the proxy request (scheme + domain)
       // First check if the use base url option is set
-      if ($proxy_config[$pid]['proxy_use_baseurl'] {
+      if ($proxy_config[$pid]['proxy_use_baseurl']) {
         $purge_base_url = $base_url_parts['scheme'] . $base_url_parts['host'];
         // Add port to the host if set
         if (array_key_exists('port', $base_url_parts)) {
@@ -52,20 +52,29 @@ function purge_urls($purge_urls) {
         else {
           $purge_base_url = "http://";
         }
+        // Add hostname
         $purge_base_url = $purge_base_url . $proxy_config[$pid]['proxy_host'];
+        // Add port to the host if set
         if ($proxy_config[$pid]['proxy_port'] != '') {
-   
+          $purge_base_url = $purge_base_url . ":" . $proxy_config[$pid]['proxy_port'];
+        }
+      }
 
+      // Set the path
+      $purge_path = '';
+      if ($proxy_config[$pid]['url_prefix'] != '') {
+        $purge_path .= $proxy_config[$pid]['url_prefix'];
+      }
+      $purge_path .= $purge_url_parts['path'];
+      if (array_key_exists('query', $purge_url_parts)) {
+        $purge_path .= "?" . $purge_url_parts['query'];
+      }
 
-      // Set the request method
-
-      // Set the request options
-     
       // Determine all host headers to set.
       $purge_url_domains = array();
       // First check for a domain from the expire hook
       if ($proxy_config[$pid]['domains_expire'] == TRUE) {
-        if (array_key_exists('host'], $purge_url_parts)) {
+        if (array_key_exists('host', $purge_url_parts)) {
           $purge_url_domain = $purge_url_parts['host'];
           // Add port to the host if set
           if (array_key_exists('port', $purge_url_parts)) {
@@ -75,7 +84,7 @@ function purge_urls($purge_urls) {
         }
       }
       // Then add custom domains
-      if (isset($proxy_config[$pid]['domains_custom'] {
+      if (isset($proxy_config[$pid]['domains_custom'])) {
         $custom_domains = $proxy_config[$pid]['domains_custom'];
         foreach ($custom_domains as $custom_domain) {
           $purge_url_domains[] = $custom_domain;
@@ -96,9 +105,14 @@ function purge_urls($purge_urls) {
       // Remove double entries
       array_unique($purge_url_domains);
 
-      // Set URL
-
       // Set Headers
+      $purge_headers = array();
+      if (isset($proxy_config[$pid]['headers_custom'])) {
+        $purge_headers = $proxy_config[$pid]['headers_custom'];
+      }
+      if ($proxy_config[$pid]['headers_acquia'] == TRUE) {
+        $purge_headers[] = 'X-Acquia-Purge:' . $_SERVER['AH_SITE_NAME'];
+      }
 
       // Now add a purge request for each domain
       foreach ($purge_url_domains as $purge_url_domain) {
@@ -106,67 +120,21 @@ function purge_urls($purge_urls) {
         $purge_requests[$current_purge_request]['purge_url'] = $purge_url;
         $purge_requests[$current_purge_request]['proxy_name'] = $proxy_config[$pid]['name'];
         $purge_requests[$current_purge_request]['domain'] = $proxy_url_domain;
-
-      // Select which method to use
-      $proxy_url_parts = parse_url($proxy_url);
-      if (array_key_exists('query', $proxy_url_parts)) {
-        if (strstr($proxy_url_parts['query'], 'purge_method=get')) {
-          $method = 'get';
+        // Set the purge url
+        $purge_requests[$current_purge_request]['purge_url'] = $purge_base_url . $purge_path;
+        // Set the options
+        $purge_requests[$current_purge_request]['request_method'] = $proxy_config[$pid]['options_type'];
+        $purge_requests[$current_purge_request]['request_parallel'] = $proxy_config[$pid]['options_parallel'];
+        $purge_requests[$current_purge_request]['request_nonblocking'] = $proxy_config[$pid]['options_nonblocking'];
+        // Set the headers
+        $all_headers = array();
+        if (count($purge_headers > 0)) {
+          $all_headers = $purge_headers;
         }
-        if (strstr($proxy_url_parts['query'], 'purge_method=ah')) {
-          $method = 'ah';
-        }
-
+        $all_headers[] = "Host: " . $purge_url_domain;
+        $purge_requests[$current_purge_request]['headers'] = $all_headers;
+        $current_purge_request++;
       }
-      else {
-        $method = 'purge';
-      }
-
-      // The default PURGE method. Native to Squid and configurable in Varnish and Nginx
-      if ($method == 'purge') {
-        // Make it a PURGE request (not GET or POST)
-        $purge_requests[$current_purge_request]['request_method'] = 'PURGE';
-        // Construct a new url
-        $proxy_url_base = $proxy_url_parts['scheme'] . "://" . $proxy_url_parts['host'];
-        if (array_key_exists('port', $proxy_url_parts)) {
-          $proxy_url_base = $proxy_url_base . ":" . $proxy_url_parts['port'];
-        }
-        // Construct a new path retaining the url query string (#1299776 by djboddydrake)
-        $purge_path = array_key_exists('query', $purge_url_parts) ? $purge_url_parts['path']
-          . '?' . $purge_url_parts['query'] : $purge_url_parts['path'];
-        $purge_requests[$current_purge_request]['purge_url'] = $proxy_url_base . $purge_path;
-        // Set the host header to the sites hostname
-        $purge_requests[$current_purge_request]['headers'] = array("Host: " . $purge_url_host);
-      }
-
-      // The GET method, native suport on nginx
-      elseif ($method == 'get') {
-        $purge_requests[$current_purge_request]['request_method'] = 'GET';
-        // Construct a new url
-        $proxy_url_base = $proxy_url_parts['scheme'] . "://" . $proxy_url_parts['host'];
-        if (array_key_exists('port', $proxy_url_parts)) {
-          $proxy_url_base = $proxy_url_base . ":" . $proxy_url_parts['port'];
-        }
-        // Construct a new path retaining the url query string (#1299776 by djboddydrake)
-        $purge_path = array_key_exists('query', $purge_url_parts) ? $purge_url_parts['path']
-          . '?' . $purge_url_parts['query'] : $purge_url_parts['path'];
-        $purge_requests[$current_purge_request]['purge_url'] = $proxy_url_base . $purge_path;
-        //  Set the host header to the sites hostname
-        $purge_requests[$current_purge_request]['headers'] = array("Host: " . $purge_url_host);
-      }
-
-      // The AH (Acquia Hosting) option.
-      elseif ($method == 'ah') {
-        // Make it a PURGE request (not GET or POST)
-        $purge_requests[$current_purge_request]['request_method'] = 'PURGE';
-        // Construct a new path retaining the url query string (#1299776 by djboddydrake)
-        $purge_path = array_key_exists('query', $purge_url_parts) ? $purge_url_parts['path']
-          . '?' . $purge_url_parts['query'] : $purge_url_parts['path'];
-        $purge_requests[$current_purge_request]['purge_url'] = $proxy_url_base . $purge_path;
-        //  Set the Acquia purge header to the Acquia Hosting site name
-        $purge_requests[$current_purge_request]['headers'] = array('Accept-Encoding: gzip', 'X-Acquia-Purge:' . $_SERVER['AH_SITE_NAME']);
-      }
-      $current_purge_request++;
     }
   }
   // Issue the requests using curl (for now)

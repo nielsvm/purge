@@ -21,7 +21,6 @@ function purge_urls($purge_urls) {
   // Get all enabled and active proxy configurations
   $proxy_configs = array();
   $proxy_configs = purge_proxy_get_config(0, 'FULL', 'ACTIVE');
-
   // This array will be filled with requests.
   $purge_requests = array();
   $current_purge_request = 0;
@@ -32,12 +31,9 @@ function purge_urls($purge_urls) {
 
     // Process all urls for each proxy
     foreach ($proxy_configs as $proxy_config) {
-      // Get the pid of the current proxy config
-      $pid = $proxy_config['pid'];
-
       // Set the base url of the proxy request (scheme + domain)
       // First check if the use base url option is set
-      if ($proxy_config[$pid]['proxy_use_baseurl']) {
+      if ($proxy_config['proxy_use_baseurl']) {
         $purge_base_url = $base_url_parts['scheme'] . $base_url_parts['host'];
         // Add port to the host if set
         if (array_key_exists('port', $base_url_parts)) {
@@ -46,26 +42,26 @@ function purge_urls($purge_urls) {
       }
       else {
         // Check for ssl/https
-        if ($proxy_config[$pid]['proxy_ssl']) {
+        if ($proxy_config['proxy_ssl']) {
           $purge_base_url = "https://";
         }
         else {
           $purge_base_url = "http://";
         }
         // Add hostname
-        $purge_base_url = $purge_base_url . $proxy_config[$pid]['proxy_host'];
+        $purge_base_url = $purge_base_url . $proxy_config['proxy_host'];
         // Add port to the host if set
-        if ($proxy_config[$pid]['proxy_port'] != '') {
-          $purge_base_url = $purge_base_url . ":" . $proxy_config[$pid]['proxy_port'];
+        if ($proxy_config['proxy_port'] != '') {
+          $purge_base_url = $purge_base_url . ":" . $proxy_config['proxy_port'];
         }
       }
 
       // Set the path
       $purge_path = '';
-      if ($proxy_config[$pid]['url_prefix'] != '') {
-        $purge_path .= $proxy_config[$pid]['url_prefix'];
+      if ($proxy_config['url_prefix'] != '') {
+        $purge_path .= $proxy_config['url_prefix'];
       }
-      $purge_path .= $purge_url_parts['path'];
+      $purge_path .= "/" . $purge_url_parts['path'];
       if (array_key_exists('query', $purge_url_parts)) {
         $purge_path .= "?" . $purge_url_parts['query'];
       }
@@ -73,7 +69,7 @@ function purge_urls($purge_urls) {
       // Determine all host headers to set.
       $purge_url_domains = array();
       // First check for a domain from the expire hook
-      if ($proxy_config[$pid]['domains_expire'] == TRUE) {
+      if ($proxy_config['domains_expire'] == TRUE) {
         if (array_key_exists('host', $purge_url_parts)) {
           $purge_url_domain = $purge_url_parts['host'];
           // Add port to the host if set
@@ -84,16 +80,16 @@ function purge_urls($purge_urls) {
         }
       }
       // Then add custom domains
-      if (isset($proxy_config[$pid]['domains_custom'])) {
-        $custom_domains = $proxy_config[$pid]['domains_custom'];
+      if (isset($proxy_config['domains_custom'])) {
+        $custom_domains = $proxy_config['domains_custom'];
         foreach ($custom_domains as $custom_domain) {
           $purge_url_domains[] = $custom_domain;
         }
       }
       // Then add the Drupal base url if needed.
-      if ((($proxy_config[$pid]['domains_drupal']) 
+      if ((($proxy_config['domains_drupal']) 
             OR (count($purge_url_domains) == 0)) 
-          AND ($proxy_config[$pid]['proxy_use_baseurl'] == FALSE)
+          //AND ($proxy_config['proxy_use_baseurl'] == FALSE)
         ) {
         $purge_url_domain = $base_url_parts['host'];
         // Add port to the host if set
@@ -107,10 +103,10 @@ function purge_urls($purge_urls) {
 
       // Set Headers
       $purge_headers = array();
-      if (isset($proxy_config[$pid]['headers_custom'])) {
-        $purge_headers = $proxy_config[$pid]['headers_custom'];
+      if (isset($proxy_config['headers_custom'])) {
+        $purge_headers = $proxy_config['headers_custom'];
       }
-      if ($proxy_config[$pid]['headers_acquia'] == TRUE) {
+      if ($proxy_config['headers_acquia'] == TRUE) {
         $purge_headers[] = 'X-Acquia-Purge:' . $_SERVER['AH_SITE_NAME'];
       }
 
@@ -118,14 +114,14 @@ function purge_urls($purge_urls) {
       foreach ($purge_url_domains as $purge_url_domain) {
         // Add purge url, proxy config and domain to the array for later processing
         $purge_requests[$current_purge_request]['purge_url'] = $purge_url;
-        $purge_requests[$current_purge_request]['proxy_name'] = $proxy_config[$pid]['name'];
-        $purge_requests[$current_purge_request]['domain'] = $proxy_url_domain;
+        $purge_requests[$current_purge_request]['proxy_name'] = $proxy_config['name'];
+        $purge_requests[$current_purge_request]['domain'] = $purge_url_domain;
         // Set the purge url
         $purge_requests[$current_purge_request]['purge_url'] = $purge_base_url . $purge_path;
         // Set the options
-        $purge_requests[$current_purge_request]['request_method'] = $proxy_config[$pid]['options_type'];
-        $purge_requests[$current_purge_request]['request_parallel'] = $proxy_config[$pid]['options_parallel'];
-        $purge_requests[$current_purge_request]['request_nonblocking'] = $proxy_config[$pid]['options_nonblocking'];
+        $purge_requests[$current_purge_request]['request_method'] = $proxy_config['options_type'];
+        $purge_requests[$current_purge_request]['request_parallel'] = $proxy_config['options_parallel'];
+        $purge_requests[$current_purge_request]['request_nonblocking'] = $proxy_config['options_nonblocking'];
         // Set the headers
         $all_headers = array();
         if (count($purge_headers > 0)) {
@@ -207,23 +203,23 @@ function purge_logging($purge_request_results) {
     switch ($purge_request_result['http_code']) {
       // First check if everything went ok.
       case 200:
-        $purge_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Ok';
+        $purge_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_name'] . ' Ok';
         $purge_success++;
         break;
       // Notice if the request was not found in the proxy cache
       case 404:
-        $purge_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Not Found';
+        $purge_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_name'] . ' Not Found';
         $purge_success++;
         break;
       // Collect all proxy hosts that are blocking the url requests
       case 405:
-        $purge_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Forbidden';
+        $purge_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_name'] . ' Forbidden';
         $purge_blocking[] = parse_url($purge_request_result['url'], PHP_URL_HOST);
         break;
       // Collect all urls and their http error codes
       default:
         $purge_log[] = $purge_request_result['purge_url'] . ' on '
-          . $purge_request_result['proxy_url'] . ' ' . $purge_request_result['http_code'];
+          . $purge_request_result['proxy_name'] . ' ' . $purge_request_result['http_code'];
         break;
     }
 

@@ -171,7 +171,7 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
   // Execute query and parse results
   $result = $query->execute();
   foreach ($result as $record) {
-    // dprint_r($record);
+    dprint_r($record);
     $proxy_confs[$record->pid]['pid'] = $record->pid;
     $proxy_confs[$record->pid]['type'] = $record->type;
     $proxy_confs[$record->pid]['name'] = $record->name;

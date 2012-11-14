@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Purge install requirements and uninstall code.
+ * Purge install code. Installs and uninstalls the database table, converts from 1.x settings
  */
 
 /**
@@ -117,7 +117,206 @@ function purge_schema() {
   );
   return $schema;
 }
+
+/**
+ * Implements hook_install().
+ */
+function purge_install() {
+  // Add the system and template proxy configurations
+  purge_proxy_add_defaults();
+}
     
+/**
+ * Implements hook_update_N().
+ */
+function purge_update_7200() {
+  purge_proxy_add_defaults();
+  purge_proxy_config_convert();
+}
+
+/**
+ * Function to add system and template proxy configurations
+ */
+function purge_proxy_add_defaults() {
+  // First add the 'empty' template.
+  $new_proxy_config = db_insert('purge_proxy')
+    ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
+      'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
+    ->values(array(
+      'type' => 0, //Type 0 indicates this is a user controled configuration
+      'name' => '',  
+      'description' => '',
+      'enabled' => 1, // Configurations are enabled by default
+      'active' => 1,
+      'proxy_ssl' => 0,
+      'proxy_host' => '',
+      'proxy_port' => '',
+      'options_type' => 'PURGE',
+      'options_parallel' => 1,
+      'options_nonblocking' => 1,
+      'domains' => '_DOMAINS_EXPIRE_',
+      'url_prefix' => '',
+      'url_wildcards' => 0,
+      'headers' => '',
+    ))
+    ->execute();
+
+  // Then add the Generic Varnish template
+  $new_proxy_config = db_insert('purge_proxy')
+    ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
+      'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
+    ->values(array(
+      'type' => 2, //Type 2 indicates this is a template
+      'name' => t('Generic Proxy'),  
+      'description' => t('Used for Varnish, Squid and others'),
+      'enabled' => 1, // Configurations are enabled by default
+      'active' => 1,
+      'proxy_ssl' => 0,
+      'proxy_host' => 'localhost',
+      'proxy_port' => '80',
+      'options_type' => 'PURGE',
+      'options_parallel' => 1,
+      'options_nonblocking' => 1,
+      'domains' => '_DOMAINS_EXPIRE_',
+      'url_prefix' => '',
+      'url_wildcards' => 0,
+      'headers' => '',
+    ))
+    ->execute();
+
+  // Then add the Nginx template
+  $new_proxy_config = db_insert('purge_proxy')
+    ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
+      'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
+    ->values(array(
+      'type' => 2, //Type 2 indicates this is a template
+      'name' => t('Nginx'),
+      'description' => t('Issue Nginx compatible purge requests'),
+      'enabled' => 1, // Configurations are enabled by default
+      'active' => 1,
+      'proxy_ssl' => 0,
+      'proxy_host' => 'localhost',
+      'proxy_port' => '80',
+      'options_type' => 'GET',
+      'options_parallel' => 1,
+      'options_nonblocking' => 1,
+      'domains' => '_DOMAINS_EXPIRE_',
+      'url_prefix' => '/purge',
+      'url_wildcards' => 0,
+      'headers' => '',
+    ))
+    ->execute();
+
+  // Add the Acquia template
+
+  $new_proxy_config = db_insert('purge_proxy')
+    ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
+      'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
+    ->values(array(
+      'type' => 2, //Type 2 indicates this is a template
+      'name' => t('Acquia Hosting'),
+      'description' => t('Issue purge requests at Acquia'),
+      'enabled' => 1, // Configurations are enabled by default
+      'active' => 1,
+      'proxy_ssl' => 0,
+      'proxy_host' => '_USE_BASEURL_',
+      'proxy_port' => '',
+      'options_type' => 'PURGE',
+      'options_parallel' => 1,
+      'options_nonblocking' => 1,
+      'domains' => '_DOMAINS_EXPIRE_',
+      'url_prefix' => '',
+      'url_wildcards' => 0,
+      'headers' => '_ACQUIA_,Accept-Encoding: gzip',
+    ))
+    ->execute();
+
+
+  // Add the Fastly template
+}
+
+/**
+ * Function to convert Purge 1.x  proxy configurations
+ */
+function purge_proxy_config_convert() {
+  // Get the 1.x configuration
+  $proxy_urls = explode(' ', variable_get('purge_proxy_urls', 'http://localhost:80'));
+  $proxy_url_parts = array();
+  $proxy_ah_domains = array();
+  // parse each url
+  foreach ($proxy_urls as $proxy_url) {
+    $proxy_url_parts[] = parse_url($proxy_url);
+    // Check for Acquia method
+    if (strstr($proxy_url_parts['query'], 'purge_method=ah')) {
+      $proxy_ah_domains[] = $proxy_url_parts['host'];
+    }
+    else {
+      // Check for https
+      if ($proxy_url_parts['scheme'] == 'https') {
+        $proxy_ssl = TRUE;
+      }
+      else {
+        $proxy_ssl = FALSE;
+      }
+      // Check for the get method
+      if (strstr($proxy_url_parts['query'], 'purge_method=get')) {
+        $purge_method = 'GET';
+      }
+      else {
+        $purge_method = 'PURGE';
+      }
+
+      // Insert the proxy configuration into the database
+      $new_proxy_config = db_insert('purge_proxy')
+      ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
+        'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
+      ->values(array(
+        'type' => 4, //Type 4 indicates this is a user controled configuration
+        'name' => $proxy_url_parts['host'],
+        'description' => t('Imported from Purge 1.x configuration'),
+        'enabled' => 1, // Configurations are enabled by default
+        'active' => 1,
+        'proxy_ssl' => $proxy_ssl,
+        'proxy_host' => $proxy_url_parts['host'],
+        'proxy_port' => $proxy_url_parts['port'],
+        'options_type' => $proxy_method,
+        'options_parallel' => 1,
+        'options_nonblocking' => 1,
+        'domains' => '_DOMAINS_EXPIRE_',
+        'url_prefix' => $proxy_url_parts['path'],
+        'url_wildcards' => 0,
+        'headers' => '',
+      ))
+      ->execute();
+    }
+  }
+  // Process all Acquia domains as one configuration
+  if (count($proxy_ah_domains) > 0) {
+    // Insert the proxy configuration into the database
+    $new_proxy_config = db_insert('purge_proxy')
+      ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
+        'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
+      ->values(array(
+        'type' => 4, //Type 4 indicates this is a user controled configuration
+        'name' => 'Acquia Hosting',
+        'description' => t('Imported from Purge 1.x configuration'),
+        'enabled' => 1, // Configurations are enabled by default
+        'active' => 1,
+        'proxy_ssl' => 0,
+        'proxy_host' => '_USE_BASEURL_',
+        'proxy_port' => '',
+        'options_type' => 'PURGE',
+        'options_parallel' => 1,
+        'options_nonblocking' => 1,
+        'domains' => implode(",", $proxy_ah_domains),
+        'url_prefix' => '',
+        'url_wildcards' => 0,
+        'headers' => '_ACQUIA_,Accept-Encoding: gzip',
+      ))
+    ->execute();
+  }
+}
+
 /**
  * Implements hook_requirements().
  */
@@ -140,7 +339,8 @@ function purge_requirements($phase) {
 /**
  * Implements hook_uninstall().
  */
-function purge_uninstall() {
+//function purge_uninstall() {
   // Clean up the settings variable
-  variable_del('purge_proxy_urls');
-}
+//  variable_del('purge_proxy_urls');
+//}
+

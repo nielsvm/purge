@@ -51,19 +51,20 @@ function purge_urls($purge_urls) {
         $method = 'purge';
       }
 
+      // Construct a new url
+      $proxy_url_base = $proxy_url_parts['scheme'] . "://" . $proxy_url_parts['host'];
+      if (array_key_exists('port', $proxy_url_parts)) {
+        $proxy_url_base = $proxy_url_base . ":" . $proxy_url_parts['port'];
+      }
+      // Construct a new path retaining the url query string (#1299776 by djboddydrake)
+      $purge_path = array_key_exists('query', $purge_url_parts) ? $purge_url_parts['path']
+        . '?' . $purge_url_parts['query'] : $purge_url_parts['path'];
+      $purge_requests[$current_purge_request]['purge_url'] = $proxy_url_base . $purge_path;
+
       // The default PURGE method. Native to Squid and configurable in Varnish and Nginx
       if ($method == 'purge') {
         // Make it a PURGE request (not GET or POST)
         $purge_requests[$current_purge_request]['request_method'] = 'PURGE';
-        // Construct a new url base
-        $proxy_url_base = $proxy_url_parts['scheme'] . "://" . $proxy_url_parts['host'];
-        if (array_key_exists('port', $proxy_url_parts)) {
-          $proxy_url_base = $proxy_url_base . ":" . $proxy_url_parts['port'];
-        }
-        // Construct a new path retaining the url query string (#1299776 by djboddydrake)
-        $purge_path = array_key_exists('query', $purge_url_parts) ? $purge_url_parts['path'] 
-          . '?' . $purge_url_parts['query'] : $purge_url_parts['path'];
-        $purge_requests[$current_purge_request]['purge_url'] = $proxy_url_base . $purge_path;
         // Set the host header to the sites hostname
         $purge_requests[$current_purge_request]['headers'] = array("Host: " . $purge_url_host);
       }
@@ -71,16 +72,7 @@ function purge_urls($purge_urls) {
       // The GET method, native suport on nginx
       elseif ($method == 'get') {
         $purge_requests[$current_purge_request]['request_method'] = 'GET';
-        // Construct a new url
-        $proxy_url_base = $proxy_url_parts['scheme'] . "://" . $proxy_url_parts['host'];
-        if (array_key_exists('port', $proxy_url_parts)) {
-          $proxy_url_base = $proxy_url_base . ":" . $proxy_url_parts['port'];
-        }
-        // Construct a new path retaining the url query string (#1299776 by djboddydrake)
-        $purge_path = array_key_exists('query', $purge_url_parts) ? $purge_url_parts['path']
-          . '?' . $purge_url_parts['query'] : $purge_url_parts['path'];
-        $purge_requests[$current_purge_request]['purge_url'] = $proxy_url_base . $purge_path;
-        //  Set the host header to the sites hostname
+        // Set the host header to the sites hostname
         $purge_requests[$current_purge_request]['headers'] = array("Host: " . $purge_url_host);
       }
 
@@ -88,10 +80,6 @@ function purge_urls($purge_urls) {
       elseif ($method == 'ah') {
         // Make it a PURGE request (not GET or POST)
         $purge_requests[$current_purge_request]['request_method'] = 'PURGE';
-        // Construct a new path retaining the url query string (#1299776 by djboddydrake)
-        $purge_path = array_key_exists('query', $purge_url_parts) ? $purge_url_parts['path']
-          . '?' . $purge_url_parts['query'] : $purge_url_parts['path'];
-        $purge_requests[$current_purge_request]['purge_url'] = $proxy_url_base . $purge_path;
         //  Set the Acquia purge header to the Acquia Hosting site name
         $purge_requests[$current_purge_request]['headers'] = array('Accept-Encoding: gzip', 'X-Acquia-Purge:' . $_SERVER['AH_SITE_NAME']);
       }
@@ -180,7 +168,7 @@ function purge_logging($purge_request_results) {
       // Collect all proxy hosts that are blocking the url requests
       case 405:
         $purge_log[] = $purge_request_result['purge_url'] .' on '. $purge_request_result['proxy_url'] .' Forbidden';
-        $purge_blocking[] = parse_url($purge_request_result['url'], PHP_URL_HOST);
+        $purge_blocking[] = parse_url($purge_request_result['purge_url'], PHP_URL_HOST);
         break;
       // Collect all urls and their http error codes
       default:

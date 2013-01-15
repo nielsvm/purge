@@ -165,28 +165,37 @@ function purge_issue_requests_curl($purges) {
 function purge_logging($purge_request_results) {
   $purge_success = 0;
   $purge_blocking = array();
-  $purge_log = array();
+  $purge_success_log = array();
+  $purge_error_log = array();
   foreach ($purge_request_results as $purge_request_result) {
     switch ($purge_request_result['http_code']) {
       // First check if everything went ok.
       case 200:
-        $purge_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Ok';
+        $purge_success_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Ok';
+        $purge_success++;
+        break;
+      // Redirects are acceptable
+      case 301:
+        $purge_success_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Permanent Redirect';
+        $purge_success++;
+        break;
+      case 302:
+        $purge_success_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Temporary Redirect';
         $purge_success++;
         break;
       // Notice if the request was not found in the proxy cache
       case 404:
-        $purge_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Not Found';
+        $purge_success_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Not Found';
         $purge_success++;
         break;
       // Collect all proxy hosts that are blocking the url requests
       case 405:
-        $purge_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Forbidden';
+        $purge_error_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Forbidden';
         $purge_blocking[] = parse_url($purge_request_result['url'], PHP_URL_HOST);
         break;
       // Collect all urls and their http error codes
       default:
-        $purge_log[] = $purge_request_result['purge_url'] . ' on '
-          . $purge_request_result['proxy_url'] . ' ' . $purge_request_result['http_code'];
+        $purge_error_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' ' . $purge_request_result['http_code'];
         break;
     }
 
@@ -195,37 +204,37 @@ function purge_logging($purge_request_results) {
   // Watchdog barking
   $purge_errors = count($purge_request_results) - $purge_success;
   // Just a notice when all is ok
-  if ($purge_errors == 0) {
-    if ($purge_success == 1) {
+  if ($purge_errors === 0) {
+    if ($purge_success === 1) {
       watchdog(
         'purge',
-        '1 URL has been successfully purged from the reverse proxy caches: !purge_log',
-        array('!purge_log' => expire_print_r($purge_log))
+        '1 URL has been successfully purged from the reverse proxy caches: !$purge_success_log',
+        array('!$purge_success_log' => expire_print_r($purge_success_log))
       );
     }
     else {
       watchdog(
         'purge',
-        '!purge_success_count URLs have been successfully purged from the reverse proxy caches: !purge_log',
-        array('!purge_success_count' => $purge_success, '!purge_log' => expire_print_r($purge_log))
+        '!purge_success_count URLs have been successfully purged from the reverse proxy caches: !$purge_success_log',
+        array('!purge_success_count' => $purge_success, '!$purge_success_log' => expire_print_r($purge_success_log))
       );
     }
   }
   else {
     // Report all urls with errors
-    if ($purge_errors == 1) {
+    if ($purge_errors === 1) {
       watchdog(
         'purge',
-        '1 error has been encountered when purging URLs !purge_log',
-        array('!purge_log' => expire_print_r($purge_log)),
+        '1 error has been encountered when purging URLs !$purge_error_log',
+        array('!$purge_error_log' => expire_print_r($purge_error_log)),
         $severity = WATCHDOG_ERROR
       );
     }
     else {
       watchdog(
         'purge',
-        '!purge_errors_count errors have been encountered when purging these URLs. !purge_log',
-        array('!purge_errors_count' => count($purge_errors), '!purge_log' => expire_print_r($purge_log)),
+        '!purge_errors_count errors have been encountered when purging these URLs. !$purge_error_log',
+        array('!purge_errors_count' => $purge_errors, '!$purge_error_log' => expire_print_r($purge_error_log)),
         $severity = WATCHDOG_ERROR
       );
     }

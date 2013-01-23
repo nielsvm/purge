@@ -56,9 +56,17 @@ function purge_urls($purge_urls) {
       if (array_key_exists('port', $proxy_url_parts)) {
         $proxy_url_base = $proxy_url_base . ":" . $proxy_url_parts['port'];
       }
-      // Construct a new path retaining the url query string (#1299776 by djboddydrake)
-      $purge_path = array_key_exists('query', $purge_url_parts) ? $purge_url_parts['path']
-        . '?' . $purge_url_parts['query'] : $purge_url_parts['path'];
+      // Construct a new path retaining the proxy url path (needed for nginx/get methods)
+      if (array_key_exists('path', $proxy_url_parts)) {
+        $purge_path = '/' . trim($proxy_url_parts['path'], '/') . '/' . ltrim($purge_url_parts['path'], '/');
+      }
+      else {
+        $purge_path = $purge_url_parts['path'];
+      }
+      // Check for a query and add it
+      if (array_key_exists('query', $purge_url_parts)) {
+        $purge_path = $purge_path . '?' . $purge_url_parts['query'];
+      }
       $purge_requests[$current_purge_request]['purge_url'] = $proxy_url_base . $purge_path;
 
       // The default PURGE method. Native to Squid and configurable in Varnish and Nginx

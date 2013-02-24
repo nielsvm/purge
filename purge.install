@@ -11,19 +11,6 @@
 function purge_schema() {
   $schema['purge_proxy'] = array(
     'description' => t('Table storing proxy configurations'),
-    'export' => array(
-      'key' => 'name',
-      'key name' => 'Name',
-      'primary key' => 'pid',
-      'identifier' => 'proxy',
-      'default hook' => 'default_purge_proxy',
-      'api' => array(
-        'owner' => 'purge',
-        'api' => 'default_purge_proxies',
-        'minimum_version' => 1,
-        'current_version' => 1,
-      ),
-    ),
     'fields' => array(
       'pid' => array(
         'type' => 'serial',
@@ -232,7 +219,6 @@ function purge_proxy_add_defaults() {
     ->execute();
 
 
-  // Add the Fastly template
 }
 
 /**

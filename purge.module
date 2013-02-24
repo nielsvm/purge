@@ -12,105 +12,69 @@
  */
 function purge_menu() {
   $items = array();
-  $items['admin/config/system/purge'] = array(
+  $items['admin/config/development/performance/purge'] = array(
     'title'             => 'Purge',
-    'description'       => 'Configure proxy cache purges.',
-    'page callback'     => 'drupal_get_form',
-    //'type'              => MENU_LOCAL_TASK,
-    'type'              => MENU_NORMAL_ITEM,
-    'page arguments'    => array('purge_admin_settings_form'),
+    'type'              => MENU_LOCAL_TASK,
+    'page callback'     => 'purge_proxy_list',
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
   );
-  $items['admin/config/system/purge/settings'] = array(
-    'title' => 'Settings',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => -20,
-  );
-  $items['admin/config/system/purge/proxy'] = array(
-    'title' => 'Proxy configuration',
-    'type' => MENU_LOCAL_TASK,
-    'page callback' => 'purge_proxy_list',
-    'access arguments' => array('administer site configuration'),
-    'file path'         => drupal_get_path('module', 'purge'),
-    'file'              => 'purge.admin.inc',
-  //  'tab_parent'        => 'admin/config/system/purge/',
-
-  );
-  $items['admin/config/system/purge/proxy/add'] = array(
-    'title' => 'Add Proxy',
-    'type' => MENU_LOCAL_ACTION,
+  $items['admin/config/development/performance/purge/add'] = array(
+    'title'             => 'Add Proxy',
+    'type'              => MENU_LOCAL_ACTION,
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('purge_proxy_form'),
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
-    'tab_parent'        => 'admin/config/system/purge/proxy',
   );
-  $items['admin/config/system/purge/proxy/edit/%'] = array(
-    'title' => 'Edit Proxy',
-    'type' => MENU_CALLBACK,
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('purge_proxy_form', 6),
+  $items['admin/config/development/performance/purge/settings'] = array(
+    'title'             => 'Advanced Settings',
+    'description'       => 'Configure Advanced Purge Settings',
+    'page callback'     => 'drupal_get_form',
+    'type'              => MENU_LOCAL_ACTION,
+    'page arguments'    => array('purge_admin_settings_form'),
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
-    'tab_parent'        => 'admin/config/system/purge/proxy',
+    'tab_parent'        => 'admin/config/development/performance/purge',
   );
-  $items['admin/config/system/purge/proxy/enable/%'] = array(
-    'type' => MENU_CALLBACK,
-    'page callback' => 'purge_proxy_enable',
-    'page arguments' => array(6, '1'),
+  $items['admin/config/development/performance/purge/edit/%'] = array(
+    'title'             => 'Edit Proxy',
+    'type'              => MENU_CALLBACK,
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('purge_proxy_form', 6),
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
+    'tab_parent'        => 'admin/config/development/performance/purge',
   );
-  $items['admin/config/system/purge/proxy/disable/%'] = array(
-    'type' => MENU_CALLBACK,
-    'page callback' => 'purge_proxy_enable',
-    'page arguments' => array(6, '0'),
-    'access arguments'  => array('administer site configuration'),
-    'file path'         => drupal_get_path('module', 'purge'),
-    'file'              => 'purge.admin.inc',
-  );
-  $items['admin/config/system/purge/proxy/delete/%'] = array(
-    'type' => MENU_CALLBACK,
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('purge_proxy_delete_form', 6),
+  $items['admin/config/development/performance/purge/enable/%'] = array(
+    'type'              => MENU_CALLBACK,
+    'page callback'     => 'purge_proxy_enable',
+    'page arguments'    => array(6, '1'),
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
   );
-
-  // Add Import and export items to menu if ctools is enabled
-  if (module_exists('ctools')) {
-    ctools_include('export');
-    ctools_include('export-ui');
-    $items['admin/config/system/purge/proxy/import'] = array(
-      'title' => 'Import Proxy',
-      'type' => MENU_LOCAL_ACTION,
-      'page callback' => 'ctools_export_ui_switcher_page',
-      'page arguments' => array('purge_ctools_export_ui', 'import'),
-      'access arguments'  => array('administer site configuration'),
-      'tab_parent'        => 'admin/config/system/purge/proxy',
-      'file path'         => drupal_get_path('module', 'purge'),
-      'file'              => 'purge.admin.inc',
-    );
-    $items['admin/config/system/purge/proxy/export/%'] = array(
-      'title' => 'Export',
-      'type' => MENU_CALLBACK,
-      'page callback' => 'ctools_export_ui_switcher_page',
-      'page arguments' => array('purge_ctools_export_ui', 'export', 6),
-      'access arguments'  => array('administer site configuration'),
-      'file path'         => drupal_get_path('module', 'purge'),
-      'file'              => 'purge.admin.inc',
-
-    );
-  }
-
-
-
+  $items['admin/config/development/performance/purge/disable/%'] = array(
+    'type'              => MENU_CALLBACK,
+    'page callback'     => 'purge_proxy_enable',
+    'page arguments'    => array(6, '0'),
+    'access arguments'  => array('administer site configuration'),
+    'file path'         => drupal_get_path('module', 'purge'),
+    'file'              => 'purge.admin.inc',
+  );
+  $items['admin/config/development/performance/purge/delete/%'] = array(
+    'type'              => MENU_CALLBACK,
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('purge_proxy_delete_form', 6),
+    'access arguments'  => array('administer site configuration'),
+    'file path'         => drupal_get_path('module', 'purge'),
+    'file'              => 'purge.admin.inc',
+  );
+  //}
   return $items;
 }
 
@@ -171,7 +135,7 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
   // Execute query and parse results
   $result = $query->execute();
   foreach ($result as $record) {
-    dprint_r($record);
+    //dprint_r($record);
     $proxy_confs[$record->pid]['pid'] = $record->pid;
     $proxy_confs[$record->pid]['type'] = $record->type;
     $proxy_confs[$record->pid]['name'] = $record->name;
@@ -242,27 +206,3 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
   // dprint_r($proxy_confs);
   return $proxy_confs;
 }
-
-
-/**
- * Implementation of hook_ctools_plugin_api().
- *
- * Tell CTools that we support the purge_proxy_config API.
- */
-function purge_ctools_plugin_api($owner, $api) {
-  if ($owner == 'purge' && $api == 'purge_proxy_config') {
-    return array('version' => 1);
-  }
-}
-
-/**
- * Implementation of hook_ctools_plugin_directory().
- */
-function purge_ctools_plugin_directory($module, $type) {
-
-  // Load the export_ui plugin.
-  if ($type =='export_ui') {
-    return 'plugins/export_ui';
-  }
-}
-

@@ -420,15 +420,15 @@ function purge_proxy_list() {
     else {
       if ($proxy['enabled']) {
         $status = $status . t('Enabled');
-        $actions[] = l(t('Disable'), "admin/config/system/purge/proxy/disable/{$proxy['pid']}");
+        $actions[] = l(t('Disable'), "admin/config/development/performance/purge/disable/{$proxy['pid']}");
       }
       else {
         $status = $status . t('Disabled');
-        $actions[] = l(t('Enable'), "admin/config/system/purge/proxy/enable/{$proxy['pid']}");
+        $actions[] = l(t('Enable'), "admin/config/development/performance/purge/enable/{$proxy['pid']}");
       }
       // Add actions for edit and delete
-      $actions[] = l(t('Edit'), "admin/config/system/purge/proxy/edit/{$proxy['pid']}");
-      $actions[] = l(t('Delete'), "admin/config/system/purge/proxy/delete/{$proxy['pid']}");
+      $actions[] = l(t('Edit'), "admin/config/development/performance/purge/edit/{$proxy['pid']}");
+      $actions[] = l(t('Delete'), "admin/config/development/performance/purge/delete/{$proxy['pid']}");
     }
 
     $row[] = $status;
@@ -474,7 +474,7 @@ function purge_proxy_enable($pid, $value = 1) {
     $action = 'disabled';
   }
   drupal_set_message(t('The proxy configuration %proxy_name has been @action.', array('%proxy_name' => $proxy_name, '@action' => $action)));
-  $ouput = drupal_goto('admin/config/system/purge/proxy');
+  $ouput = drupal_goto('admin/config/development/performance/purge');
   return $output;
 }
 
@@ -490,6 +490,6 @@ function purge_proxy_delete($pid) {
     ->condition('pid', $pid)
     ->execute();
   drupal_set_message(t('The proxy configuration %proxy_name has been deleted.', array('%proxy_name' => $proxy_name)));
-  $ouput = drupal_goto('admin/config/system/purge/proxy');
+  $ouput = drupal_goto('admin/config/development/performance/purge');
   return $output;
 }

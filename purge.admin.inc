@@ -5,11 +5,6 @@
  * Provides administrative interface for the Purge module.
  */
 
-if (module_exists('ctools')) {
-  ctools_include('export');
-  ctools_include('export-ui');
-}
-
 /**
  * Menu callback for purge admin settings.
  */
@@ -37,6 +32,10 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
   $form['purge_pid'] = array(
     '#type' => 'hidden',
     '#default_value' => $proxy[$pid]['pid'],
+  );
+  $form['purge_proxy_active'] = array(
+    '#type' => 'hidden',
+    '#default_value' => '1',
   );
   $form['purge_proxy_general'] = array(
     '#type' => 'fieldset',
@@ -159,19 +158,12 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
     '#type' => 'fieldset',
     '#title' => t('Headers'),
   );
-  $form['purge_proxy_advanced']['headers']['acquia'] = array(
+  $form['purge_proxy_advanced']['headers']['gzip'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Acquia'),
-    '#description' => t('Set headers for the Acquia hosting platforms'),
-    '#default_value' => $proxy[$pid]['headers_acquia'],
+    '#title' => t('Gzip'),
+    '#description' => t('Set headers to accept gzip compression'),
+    '#default_value' => $proxy[$pid]['headers_gzip'],
   );
-  // TODO: Add Fastly support
-  //$form['purge_proxy_advanced']['headers']['fastly'] = array(
-    //'#type' => 'textfield',
-    //'#title' => t('Fastly API Key'),
-    //'#description' => t('Insert a header with your Fastly API key.'),
-    //'#default_value' => $proxy[$pid]['headers_fastly'],
-  //);
   $form['purge_proxy_advanced']['headers']['custom_headers'] = array(
     '#type' => 'textarea',
     '#title' => t('Custom headers'),
@@ -301,20 +293,21 @@ function purge_proxy_form_submit($form, &$form_state) {
       $headers[] = trim($header);
     }
   }
-  if ($form_state['values']['acquia'] == 1) {
-    $headers[] = '_ACQUIA_';
+  if ($form_state['values']['gzip'] == 1) {
+    $headers[] = 'Accept-Encoding: gzip';
   }
   // See if the current form is filled from the empty template.
   if ($form_state['values']['purge_pid'] == 1) {
     // Insert a new record into the proxy configuration database table
     $new_proxy_config = db_insert('purge_proxy')
-      ->fields(array('type', 'name', 'description', 'enabled', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
+      ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
         'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
       ->values(array(
       'type' => 4, //Type 4 indicates this is a user controled configuration
       'name' => $form_state['values']['name'],
       'description' => check_plain($form_state['values']['description']),
       'enabled' => 1, // Configurations are enabled by default
+      'active' => $form_state['values']['purge_proxy_active'],
       'proxy_ssl' => $form_state['values']['protocol'],
       'proxy_host' => $proxy_host,
       'proxy_port' => check_plain($form_state['values']['port']),

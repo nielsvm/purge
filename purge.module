@@ -95,9 +95,6 @@ function purge_expire_cache($expire_urls) {
  */
 function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
   $proxy_confs = array();
- // $active_proxies = &drupal_static(__FUNCTION__);
- // if (!isset($all_proxies)) {
- // }
   //Query the proxy configuration table
   $query = db_select('purge_proxy', 'p');
 
@@ -119,9 +116,10 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
   if ($status != 'SYSTEM') {
     $query->condition('type', 0, '>');
   }
-  // print('status: ' . $status . '<br>');
   if ($status == 'ACTIVE') {
     $query->condition('active', 1);
+    $query->condition('enabled', 1);
+    $query->condition('type', 2, '>');
   }
   if ($pid > 0) {
     $query->condition('pid', $pid);
@@ -131,11 +129,9 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
   $query->orderBy('active', 'DESC');
   $query->orderBy('enabled', 'DESC');
 
-  // print_r($query->__toString());
   // Execute query and parse results
   $result = $query->execute();
   foreach ($result as $record) {
-    //dprint_r($record);
     $proxy_confs[$record->pid]['pid'] = $record->pid;
     $proxy_confs[$record->pid]['type'] = $record->type;
     $proxy_confs[$record->pid]['name'] = $record->name;
@@ -187,14 +183,14 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
       $proxy_confs[$record->pid]['url_prefix'] = $record->url_prefix;
       $proxy_confs[$record->pid]['url_wildcards'] = $record->url_wildcards;
       // Set headers
-      $proxy_confs[$record->pid]['headers_acquia'] = False;
+      $proxy_confs[$record->pid]['headers_gzip'] = False;
       $custom_headers = array();
       $headers = array();
       $headers = explode(',', $record->headers);
       foreach ($headers as $header) {
-        // Set Acquia option
-        if ($header == '_ACQUIA_') {
-          $proxy_confs[$record->pid]['headers_acquia'] = True;
+        // Set gzip option
+        if ($header == 'Accept-Encoding: gzip') {
+          $proxy_confs[$record->pid]['headers_gzip'] = True;
         }
         else {
           $custom_headers[] = $header;
@@ -203,6 +199,5 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
       $proxy_confs[$record->pid]['headers_custom'] = $custom_headers;
     }
   }
-  // dprint_r($proxy_confs);
   return $proxy_confs;
 }

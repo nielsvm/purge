@@ -104,7 +104,7 @@ function purge_schema() {
   );
   return $schema;
 }
-
+  
 /**
  * Implements hook_install().
  */
@@ -193,32 +193,6 @@ function purge_proxy_add_defaults() {
       'headers' => '',
     ))
     ->execute();
-
-  // Add the Acquia template
-
-  $new_proxy_config = db_insert('purge_proxy')
-    ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
-      'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
-    ->values(array(
-      'type' => 2, //Type 2 indicates this is a template
-      'name' => t('Acquia Hosting'),
-      'description' => t('Issue purge requests at Acquia'),
-      'enabled' => 1, // Configurations are enabled by default
-      'active' => 1,
-      'proxy_ssl' => 0,
-      'proxy_host' => '_USE_BASEURL_',
-      'proxy_port' => '',
-      'options_type' => 'PURGE',
-      'options_parallel' => 1,
-      'options_nonblocking' => 1,
-      'domains' => '_DOMAINS_EXPIRE_',
-      'url_prefix' => '',
-      'url_wildcards' => 0,
-      'headers' => '_ACQUIA_,Accept-Encoding: gzip',
-    ))
-    ->execute();
-
-
 }
 
 /**

@@ -5,6 +5,9 @@
  * Provides administrative interface for the Purge module.
  */
 
+// Load the purge.inc file
+module_load_include('inc', 'purge');
+
 /**
  * Menu callback for purge admin settings.
  */

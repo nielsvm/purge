@@ -5,6 +5,135 @@
  * Contains the main purging functionality and error handling
  */
 
+
+
+/**
+ * Function to retrieve proxy configurations
+ * @param int $pid
+ *   The pid identifying the proxy configuration to retrieve.
+ *   The default value $pid = 0 will result in all configurations
+ *   being retrieved.
+ * @param string $view
+ *   The $view parameter deternmines the values returned.
+ *   NAME just returns the pid, type and name.
+ *   LIST returns pid, type, name, description, enabled and active.
+ *   FULL returns all available fields.
+ * @param string $status
+ *   The $status parameter limits the results of proxy configutaions.
+ *   ACTIVE just returns active proxy configurations
+ *   SYSTEM also returns configurations temples for internal use.
+ */
+function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
+  $proxy_confs = array();
+  //Query the proxy configuration table
+  $query = db_select('purge_proxy', 'p');
+
+  // Gather the fields needed
+  if ($view == 'NAME') {
+    $fields = array('pid', 'type', 'name');
+  }
+  if ($view == 'LIST') {
+    $fields = array('pid', 'type', 'name', 'description', 'enabled', 'active');
+  }
+  if ($view == 'FULL') {
+    $fields = array('pid', 'type', 'name', 'description', 'enabled', 'active',
+      'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type', 'options_parallel',
+      'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers');
+  }
+  $query->fields('p', $fields);
+
+  // Set conditions
+  if ($status != 'SYSTEM') {
+    $query->condition('type', 0, '>');
+  }
+  if ($status == 'ACTIVE') {
+    $query->condition('active', 1);
+    $query->condition('enabled', 1);
+    $query->condition('type', 2, '>');
+  }
+  if ($pid > 0) {
+    $query->condition('pid', $pid);
+  }
+
+  // Order, order, order.
+  $query->orderBy('active', 'DESC');
+  $query->orderBy('enabled', 'DESC');
+
+  // Execute query and parse results
+  $result = $query->execute();
+  foreach ($result as $record) {
+    $proxy_confs[$record->pid]['pid'] = $record->pid;
+    $proxy_confs[$record->pid]['type'] = $record->type;
+    $proxy_confs[$record->pid]['name'] = $record->name;
+    if (($view == 'LIST') or ($view == 'FULL')) {
+      $proxy_confs[$record->pid]['description'] = $record->description;
+      $proxy_confs[$record->pid]['enabled'] = $record->enabled;
+      $proxy_confs[$record->pid]['active'] = $record->active;
+    }
+    if ($view == 'FULL') {
+      // Check to use the base url or manual settings
+      if ($record->proxy_host == '_USE_BASEURL_') {
+        $proxy_confs[$record->pid]['proxy_use_baseurl'] = True;
+        $proxy_confs[$record->pid]['proxy_host'] = '';
+      }
+      else {
+        $proxy_confs[$record->pid]['proxy_use_baseurl'] = False;
+        $proxy_confs[$record->pid]['proxy_host'] = $record->proxy_host;
+      }
+      $proxy_confs[$record->pid]['proxy_ssl'] = $record->proxy_ssl;
+      $proxy_confs[$record->pid]['proxy_port'] = $record->proxy_port;
+
+      // Set options
+      $proxy_confs[$record->pid]['options_type'] = $record->options_type;
+      $proxy_confs[$record->pid]['options_parallel'] = $record->options_parallel;
+      $proxy_confs[$record->pid]['options_nonblocking'] = $record->options_nonblocking;
+
+      // Set domains
+      $proxy_confs[$record->pid]['domains_expire'] = False;
+      $proxy_confs[$record->pid]['domains_drupal'] = False;
+      $custom_domains = array();
+      $domains = array();
+      //$domains = preg_split ('/$\R?^/m', $record->domains);
+      $domains = explode(',', $record->domains);
+      foreach ($domains as $domain) {
+        // Set Expire option
+        if ($domain == '_DOMAINS_EXPIRE_') {
+          $proxy_confs[$record->pid]['domains_expire'] = True;
+        }
+        // Set Drupal option
+        elseif ($domain == '_DOMAINS_DRUPAL_') {
+          $proxy_confs[$record->pid]['domains_drupal'] = True;
+        }
+        else {
+          $custom_domains[] = $domain;
+        }
+      }
+      $proxy_confs[$record->pid]['domains_custom'] = $custom_domains;
+      // Set URL options
+      $proxy_confs[$record->pid]['url_prefix'] = $record->url_prefix;
+      $proxy_confs[$record->pid]['url_wildcards'] = $record->url_wildcards;
+      // Set headers
+      $proxy_confs[$record->pid]['headers_gzip'] = False;
+      $custom_headers = array();
+      $headers = array();
+      $headers = explode(',', $record->headers);
+      foreach ($headers as $header) {
+        // Set gzip option
+        if ($header == 'Accept-Encoding: gzip') {
+          $proxy_confs[$record->pid]['headers_gzip'] = True;
+        }
+        else {
+          $custom_headers[] = $header;
+        }
+      }
+      $proxy_confs[$record->pid]['headers_custom'] = $custom_headers;
+    }
+  }
+  return $proxy_confs;
+}
+
+
+
 /**
  * Purges urls from reverse proxy caches
  *

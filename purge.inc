@@ -190,7 +190,7 @@ function purge_urls($purge_urls) {
       if ($proxy_config['url_prefix'] != '') {
         $purge_path .= $proxy_config['url_prefix'];
       }
-      $purge_path .= "/" . $purge_url_parts['path'];
+      $purge_path .= $purge_url_parts['path'];
       if (array_key_exists('query', $purge_url_parts)) {
         $purge_path .= "?" . $purge_url_parts['query'];
       }
@@ -235,8 +235,8 @@ function purge_urls($purge_urls) {
       if (isset($proxy_config['headers_custom'])) {
         $purge_headers = $proxy_config['headers_custom'];
       }
-      if ($proxy_config['headers_acquia'] == TRUE) {
-        $purge_headers[] = 'X-Acquia-Purge:' . $_SERVER['AH_SITE_NAME'];
+      if ($proxy_config['headers_gzip'] == TRUE) {
+        $purge_headers[] = 'Accept-Encoding: gzip';
       }
 
       // Now add a purge request for each domain
@@ -263,8 +263,7 @@ function purge_urls($purge_urls) {
     }
   }
   // Issue the requests using curl (for now)
-  $purge_request_results = purge_issue_requests_curl($purge_requests);
-  return $purge_request_results;
+  return $purge_requests;
 }
 
 /**

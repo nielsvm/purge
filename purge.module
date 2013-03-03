@@ -86,6 +86,8 @@ function purge_menu() {
  */
 function purge_expire_cache($expire_urls) {
   module_load_include('inc', 'purge');
-  $results = purge_urls($expire_urls);
-  purge_logging($results);
+  $purge_requests = purge_urls($expire_urls);
+  // Issue the requests using curl (for now)
+  $purge_results =  purge_issue_requests_curl($purge_requests);
+  purge_logging($purge_results);
 }

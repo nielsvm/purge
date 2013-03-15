@@ -262,15 +262,14 @@ function purge_urls($purge_urls) {
       }
     }
   }
-  // Issue the requests using curl (for now)
   return $purge_requests;
 }
 
 /**
- * Issue purge request using curl
+ * Issue purge request using curl_multi in a way compliant with legacy PHP/Curl implementations
  *
  */
-function purge_issue_requests_curl($purges) {
+function purge_issue_requests_curl_multi_legacy($purges) {
   // Initialise a curl_multi object
   $curl_purges = curl_multi_init();
   $current_curl_purge = 0;

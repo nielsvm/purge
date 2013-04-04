@@ -271,11 +271,11 @@ function purge_urls($purge_urls) {
  *
  */
 function purge_get_request_issuers() {
-  request_issuers = array();
-  request_issuers['curl_single']['name'] = 'Curl Single';
-  request_issuers['curl_single']['type'] = 'Single';
-  request_issuers['curl_single']['wildcard'] = 1;
-  request_issuers['curl_single']['blocking'] = 1;
+  $request_issuers = array();
+  $request_issuers['curl_single']['name'] = 'Curl Single';
+  $request_issuers['curl_single']['type'] = 'Single';
+  $request_issuers['curl_single']['wildcard'] = 1;
+  $request_issuers['curl_single']['blocking'] = 1;
 }
 
 /**

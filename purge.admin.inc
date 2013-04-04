@@ -164,7 +164,7 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
   $form['purge_proxy_advanced']['headers']['gzip'] = array(
     '#type' => 'checkbox',
     '#title' => t('Gzip'),
-    '#description' => t('Set headers to accept gzip compression'),
+    '#description' => t('Set headers to accept gzip compression.'),
     '#default_value' => $proxy[$pid]['headers_gzip'],
   );
   $form['purge_proxy_advanced']['headers']['custom_headers'] = array(
@@ -173,6 +173,18 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
     '#description' => t('Provide custom headers to be added to each request. One line each'),
     '#default_value' => implode("\n", $proxy[$pid]['headers_custom']),
   );
+  // Check for modules that provide additional headers
+  $header_modules = module_implements('purge_headers');
+  // Generate a form checkbox for each
+  foreach ($header_modules as $header_module) {
+    $form['purge_proxy_advanced']['headers'][$header_module] = array(
+      '#type' => 'checkbox',
+      '#title' => t($header_module),
+      '#description' => t('Set headers prodived by the @module module.', array('@module' => $header_module)),
+      '#default_value' => $proxy[$pid][$header_module],
+    );
+  }
+
   // Action buttons
   $form['actions'] = array(
     '#type' => 'actions'

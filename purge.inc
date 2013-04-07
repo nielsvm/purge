@@ -224,7 +224,7 @@ function purge_urls($purge_urls) {
       $purge_headers = array();
       $headers = $proxy_config['headers'];
       foreach ($headers as $header) {
-        if (strpos($header, '_') != 1) {
+        if ($header[0] != '_') {
           $purge_headers[] = $header;
         }
       }

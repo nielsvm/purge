@@ -166,6 +166,7 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
   $custom_headers = array();
   $headers = array();
   $headers = $proxy[$pid]['headers'];
+  dprint_r($headers);
   $headers_set = array();
   $headers_set['gzip'] = False;
   $headers_set['current'] = False;
@@ -175,22 +176,24 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
   }
   foreach ($headers as $header) {
     if ($headers_set['current'] == False) {
-      if (strncmp($header, '_begin_set:', 11)) {
-        $header_module = substr($header, 11);
-        $header_set[$header_module] = True;
-        $header_set['current'] = True;
-      }
-      // Set gzip option
-      Elseif ($header == 'Accept-Encoding: gzip') {
+      // Check the gzip option
+      if ($header == 'Accept-Encoding: gzip') {
         $headers_set['gzip'] = True;
       }
+      // Check is this is the start of a set
+      Elseif (!strncmp($header, '_begin_set:', 11)) {
+        $header_module = substr($header, 11);
+        $headers_set[$header_module] = True;
+        $headers_set['current'] = True;
+      }
+      // Add all other headers as custom headers
       else {
         $custom_headers[] = $header;
       }
     } 
     Else {
-      if (strncmp($header, '_end_set:', 9)) {
-        $header_set['current'] = False;
+      if (!strncmp($header, '_end_set:', 9)) {
+        $headers_set['current'] = False;
       }
     }
   }
@@ -340,9 +343,23 @@ function purge_proxy_form_submit($form, &$form_state) {
       $headers[] = trim($header);
     }
   }
+  // Add the gzip header if set.
   if ($form_state['values']['gzip'] == 1) {
     $headers[] = 'Accept-Encoding: gzip';
   }
+  // Add headers provided by modules
+  $header_modules = module_implements('purge_headers');
+  foreach ($header_modules as $header_module) {
+    if ($form_state['values'][$header_module] == True) {
+      $headers[] = '_begin_set:' . $header_module;
+      $module_headers = module_invoke($header_module, 'purge_headers');
+        foreach ($module_headers as $module_header) {
+          $headers[] = $module_header;
+        }
+      $headers[] = '_end_set:' . $header_module;
+    }
+  }
+
   // See if the current form is filled from the empty template.
   if ($form_state['values']['purge_pid'] == 1) {
     // Insert a new record into the proxy configuration database table

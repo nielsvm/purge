@@ -89,26 +89,8 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
       $proxy_confs[$record->pid]['options_nonblocking'] = $record->options_nonblocking;
 
       // Set domains
-      $proxy_confs[$record->pid]['domains_expire'] = False;
-      $proxy_confs[$record->pid]['domains_drupal'] = False;
-      $custom_domains = array();
-      $domains = array();
-      //$domains = preg_split ('/$\R?^/m', $record->domains);
-      $domains = explode(',', $record->domains);
-      foreach ($domains as $domain) {
-        // Set Expire option
-        if ($domain == '_DOMAINS_EXPIRE_') {
-          $proxy_confs[$record->pid]['domains_expire'] = True;
-        }
-        // Set Drupal option
-        elseif ($domain == '_DOMAINS_DRUPAL_') {
-          $proxy_confs[$record->pid]['domains_drupal'] = True;
-        }
-        else {
-          $custom_domains[] = $domain;
-        }
-      }
-      $proxy_confs[$record->pid]['domains_custom'] = $custom_domains;
+      $proxy_confs[$record->pid]['domains'] = explode(',', $record->domains);
+
       // Set URL options
       $proxy_confs[$record->pid]['url_prefix'] = $record->url_prefix;
       $proxy_confs[$record->pid]['url_wildcards'] = $record->url_wildcards;
@@ -187,29 +169,29 @@ function purge_urls($purge_urls) {
 
       // Determine all host headers to set.
       $purge_url_domains = array();
-      // First check for a domain from the expire hook
-      if ($proxy_config['domains_expire'] == TRUE) {
-        if (array_key_exists('host', $purge_url_parts)) {
-          $purge_url_domain = $purge_url_parts['host'];
-          // Add port to the host if set
-          if (array_key_exists('port', $purge_url_parts)) {
-            $purge_url_domain = $purge_url_domain . ":" . $purge_url_parts['port'];
+      $domains = $proxy_config['domains'];
+      foreach ($domains as $domain) {
+        if ($domain[0] == '_') {
+          if ($domain == '_DOMAINS_EXPIRE_') {
+            if (array_key_exists('host', $purge_url_parts)) {
+              $purge_url_domain = $purge_url_parts['host'];
+              // Add port to the host if set
+              if (array_key_exists('port', $purge_url_parts)) {
+                $purge_url_domain = $purge_url_domain . ":" . $purge_url_parts['port'];
+              }
+              $purge_url_domains[] = $purge_url_domain;
+            }
           }
-          $purge_url_domains[] = $purge_url_domain;
+          elseif ($domain == '_DOMAINS_DRUPAL_') {
+            $domains_drupal = True;
+          }
         }
-      }
-      // Then add custom domains
-      if (isset($proxy_config['domains_custom'])) {
-        $custom_domains = $proxy_config['domains_custom'];
-        foreach ($custom_domains as $custom_domain) {
-          $purge_url_domains[] = $custom_domain;
+        else {
+          $purge_url_domains[] = $domain;
         }
       }
       // Then add the Drupal base url if needed.
-      if ((($proxy_config['domains_drupal']) 
-            OR (count($purge_url_domains) == 0)) 
-          //AND ($proxy_config['proxy_use_baseurl'] == FALSE)
-        ) {
+      if ((($domains_drupal == True) OR (count($purge_url_domains) == 0))) {
         $purge_url_domain = $base_url_parts['host'];
         // Add port to the host if set
         if (array_key_exists('port', $base_url_parts)) {
@@ -218,7 +200,7 @@ function purge_urls($purge_urls) {
         $purge_url_domains[] = $purge_url_domain;
       }
       // Remove double entries
-      array_unique($purge_url_domains);
+      $purge_url_domains = array_unique($purge_url_domains);
 
       // Set Headers
       $purge_headers = array();

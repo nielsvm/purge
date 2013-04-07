@@ -112,21 +112,11 @@ function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
       // Set URL options
       $proxy_confs[$record->pid]['url_prefix'] = $record->url_prefix;
       $proxy_confs[$record->pid]['url_wildcards'] = $record->url_wildcards;
+
       // Set headers
-      $proxy_confs[$record->pid]['headers_gzip'] = False;
-      $custom_headers = array();
       $headers = array();
       $headers = explode(',', $record->headers);
-      foreach ($headers as $header) {
-        // Set gzip option
-        if ($header == 'Accept-Encoding: gzip') {
-          $proxy_confs[$record->pid]['headers_gzip'] = True;
-        }
-        else {
-          $custom_headers[] = $header;
-        }
-      }
-      $proxy_confs[$record->pid]['headers_custom'] = $custom_headers;
+      $proxy_confs[$record->pid]['headers'] = $headers;
     }
   }
   return $proxy_confs;
@@ -232,11 +222,11 @@ function purge_urls($purge_urls) {
 
       // Set Headers
       $purge_headers = array();
-      if (isset($proxy_config['headers_custom'])) {
-        $purge_headers = $proxy_config['headers_custom'];
-      }
-      if ($proxy_config['headers_gzip'] == TRUE) {
-        $purge_headers[] = 'Accept-Encoding: gzip';
+      $headers = $proxy_config['headers'];
+      foreach ($headers as $header) {
+        if (strpos($header, '_') != 1) {
+          $purge_headers[] = $header;
+        }
       }
 
       // Now add a purge request for each domain

@@ -161,29 +161,61 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
     '#type' => 'fieldset',
     '#title' => t('Headers'),
   );
+
+  // Parse all headers
+  $custom_headers = array();
+  $headers = array();
+  $headers = $proxy[$pid]['headers'];
+  $headers_set = array();
+  $headers_set['gzip'] = False;
+  $headers_set['current'] = False;
+  $header_modules = module_implements('purge_headers');
+  foreach ($header_modules as $header_module) {
+    $headers_set[$header_module] = False;
+  }
+  foreach ($headers as $header) {
+    if ($headers_set['current'] == False) {
+      if (strncmp($header, '_begin_set:', 11)) {
+        $header_module = substr($header, 11);
+        $header_set[$header_module] = True;
+        $header_set['current'] = True;
+      }
+      // Set gzip option
+      Elseif ($header == 'Accept-Encoding: gzip') {
+        $headers_set['gzip'] = True;
+      }
+      else {
+        $custom_headers[] = $header;
+      }
+    } 
+    Else {
+      if (strncmp($header, '_end_set:', 9)) {
+        $header_set['current'] = False;
+      }
+    }
+  }
+
   $form['purge_proxy_advanced']['headers']['gzip'] = array(
     '#type' => 'checkbox',
     '#title' => t('Gzip'),
     '#description' => t('Set headers to accept gzip compression.'),
-    '#default_value' => $proxy[$pid]['headers_gzip'],
+    '#default_value' => $headers_set['gzip'],
   );
-  $form['purge_proxy_advanced']['headers']['custom_headers'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Custom headers'),
-    '#description' => t('Provide custom headers to be added to each request. One line each'),
-    '#default_value' => implode("\n", $proxy[$pid]['headers_custom']),
-  );
-  // Check for modules that provide additional headers
-  $header_modules = module_implements('purge_headers');
-  // Generate a form checkbox for each
+  // Generate a form checkbox for each module providing headers
   foreach ($header_modules as $header_module) {
     $form['purge_proxy_advanced']['headers'][$header_module] = array(
       '#type' => 'checkbox',
       '#title' => t($header_module),
       '#description' => t('Set headers prodived by the @module module.', array('@module' => $header_module)),
-      '#default_value' => $proxy[$pid][$header_module],
+      '#default_value' => $headers_set[$header_module],
     );
   }
+  $form['purge_proxy_advanced']['headers']['custom_headers'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Custom headers'),
+    '#description' => t('Provide custom headers to be added to each request. One line each'),
+    '#default_value' => implode("\n", $custom_headers),
+  );
 
   // Action buttons
   $form['actions'] = array(

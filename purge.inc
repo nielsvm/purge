@@ -199,7 +199,7 @@ function purge_logging($purge_request_results) {
       // Collect all proxy hosts that are blocking the url requests
       case 405:
         $purge_error_log[] = $purge_request_result['purge_url'] . ' on ' . $purge_request_result['proxy_url'] . ' Forbidden';
-        $purge_blocking[] = parse_url($purge_request_result['url'], PHP_URL_HOST);
+        $purge_blocking[] = parse_url($purge_request_result['proxy_url'], PHP_URL_HOST);
         break;
       // Collect all urls and their http error codes
       default:

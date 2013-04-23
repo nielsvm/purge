@@ -145,8 +145,9 @@ function purge_issue_requests_curl($purges) {
       $select_result = curl_multi_select($curl_purges);
     }
     if ($multi_result != CURLM_OK || $select_result == -1) {
-    // @TODO: error handling. Something truly awkward happened.
-    return FALSE;
+      // @TODO: error handling. Something truly awkward happened.
+      ob_end_clean();
+      return FALSE;
     }
   } while ($select_result != -1 && $active && $multi_result == CURLM_OK);
   ob_end_clean();

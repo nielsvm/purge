@@ -283,6 +283,7 @@ function purge_issue_requests_curl_multi_legacy($purges) {
     }
     if ($multi_result != CURLM_OK || $select_result == -1) {
     // @TODO: error handling. Something truly awkward happened.
+      ob_end_clean();
     return FALSE;
     }
   } while ($select_result != -1 && $active && $multi_result == CURLM_OK);

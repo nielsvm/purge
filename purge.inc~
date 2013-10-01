@@ -239,6 +239,18 @@ function purge_urls($purge_urls) {
 
 
 /**
+ * Determine which request issuer to use and split the purge requests accordingly
+ *
+ */
+function purge_get_request_issuers() {
+  $request_issuers = array();
+  $request_issuers['curl_single']['name'] = 'Curl Single';
+  $request_issuers['curl_single']['type'] = 'Single';
+  $request_issuers['curl_single']['wildcard'] = 1;
+  $request_issuers['curl_single']['blocking'] = 1;
+}
+
+/**
  * Issue purge request using curl_multi in a way compliant with legacy PHP/Curl implementations
  *
  */

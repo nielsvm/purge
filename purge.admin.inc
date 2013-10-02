@@ -12,6 +12,9 @@ module_load_include('inc', 'purge');
  * Menu callback for purge admin settings.
  */
 function purge_admin_settings_form() {
+  // Get the http request processors
+  $processors = purge_get_request_processors();
+  // drupal_set_message(print_r($processors));
   $form = array();
   $form['purge_expire'] = array(
     '#type' => 'checkbox',
@@ -20,6 +23,33 @@ function purge_admin_settings_form() {
     '#description' => t('Uncheck this box to disable integration with the Cache Expiration module.'),
   );
   return system_settings_form($form);
+}
+
+/**
+ * Function to determine available request issuing methods.
+ */
+function purge_get_request_processors() {
+  $processors = array();
+  // Start with  the builtin Drupal HTTP Requester.
+  $processors['drupal']['name'] = 'Drupal Native';
+  $processors['drupal']['options'] = '';
+  $processors['drupal']['score'] = 0;
+  // Now Check for curl
+  if (extension_loaded('curl')) {
+    // add the legacy Curl method
+    $processors['curl_multi_legacy']['name'] = 'Curl Multi (Legacy)';
+    $processors['curl_multi_legacy']['options'] = '_PARALLEL_';
+    $processors['curl_multi_legacy']['score'] = 3;
+    // Check for versions newer then 7.20.x
+    $cversion = curl_version();
+    if ($cversion['version_number'] >= 463872) {
+      // Add the normal curl multi processor
+      $processors['curl_multi']['name'] = 'Curl Multi';
+      $processors['curl_multi']['options'] = '_PARALLEL_';
+      $processors['curl_multi']['score'] = 5;
+    }
+  }
+  return $processors;
 }
 
 /**

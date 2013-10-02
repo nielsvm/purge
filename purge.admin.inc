@@ -14,7 +14,7 @@ module_load_include('inc', 'purge');
 function purge_admin_settings_form() {
   // Get the http request processors
   $processors = purge_get_request_processors();
-  // drupal_set_message(print_r($processors));
+  drupal_set_message(print_r($processors));
   $form = array();
   $form['purge_expire'] = array(
     '#type' => 'checkbox',
@@ -31,22 +31,26 @@ function purge_admin_settings_form() {
 function purge_get_request_processors() {
   $processors = array();
   // Start with  the builtin Drupal HTTP Requester.
-  $processors['drupal']['name'] = 'Drupal Native';
-  $processors['drupal']['options'] = '';
-  $processors['drupal']['score'] = 0;
+  $processors[0]['mname'] = 'drupal';
+  $processors[0]['hname'] = 'Drupal Native';
+  $processors[0]['options'] = '';
   // Now Check for curl
   if (extension_loaded('curl')) {
+    // Add the Curl Single method
+    $processors[1]['mname'] = 'curl_single';
+    $processors[1]['hname'] = 'Curl Single';
+    $processors[1]['options'] = '';
     // add the legacy Curl method
-    $processors['curl_multi_legacy']['name'] = 'Curl Multi (Legacy)';
-    $processors['curl_multi_legacy']['options'] = '_PARALLEL_';
-    $processors['curl_multi_legacy']['score'] = 3;
+    $processors[2]['mname'] = 'curl_multi_legacy';
+    $processors[2]['hname'] = 'Curl Multi (Legacy)';
+    $processors[2]['options'] = '_PARALLEL_';
     // Check for versions newer then 7.20.x
     $cversion = curl_version();
     if ($cversion['version_number'] >= 463872) {
       // Add the normal curl multi processor
-      $processors['curl_multi']['name'] = 'Curl Multi';
-      $processors['curl_multi']['options'] = '_PARALLEL_';
-      $processors['curl_multi']['score'] = 5;
+      $processors[3]['mname'] = 'curl_multi';
+      $processors[3]['hname'] = 'Curl Multi';
+      $processors[3]['options'] = '_PARALLEL_';
     }
   }
   return $processors;

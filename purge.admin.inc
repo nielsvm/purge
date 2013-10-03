@@ -12,15 +12,26 @@ module_load_include('inc', 'purge');
  * Menu callback for purge admin settings.
  */
 function purge_admin_settings_form() {
-  // Get the http request processors
-  $processors = purge_get_request_processors();
-  drupal_set_message(print_r($processors));
+  // Get the http request handlers
+  $handlers = purge_get_request_handlers();
+  $options = array();
+  foreach ($handlers as $handler) {
+    $options[($handler['mname'])] = $handler['hname'];
+  }
+
   $form = array();
-  $form['purge_expire'] = array(
+  $form['purge_handler'] = array(
+    '#type' => 'select',
+    '#title' => 'HTTP request handler',
+    '#options' => $options,
+    '#default_value' => variable_get('purge_handler', 'drupal'),
+    '#description' => t('Select the HTTP request handler to use.'),
+  );
+  $form['purge_watchdog'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Expire Integration'),
-    '#default_value' => variable_get('purge_expire', 1),
-    '#description' => t('Uncheck this box to disable integration with the Cache Expiration module.'),
+    '#title' => t('Enable logging'),
+    '#default_value' => variable_get('purge_watchdog', 0),
+    '#description' => t('Enable logging of Purge activity to the log.'),
   );
   return system_settings_form($form);
 }
@@ -28,32 +39,32 @@ function purge_admin_settings_form() {
 /**
  * Function to determine available request issuing methods.
  */
-function purge_get_request_processors() {
-  $processors = array();
+function purge_get_request_handlers() {
+  $handlers = array();
   // Start with  the builtin Drupal HTTP Requester.
-  $processors[0]['mname'] = 'drupal';
-  $processors[0]['hname'] = 'Drupal Native';
-  $processors[0]['options'] = '';
+  $handlers[0]['mname'] = 'drupal';
+  $handlers[0]['hname'] = 'Drupal Native';
+  $handlers[0]['options'] = '';
   // Now Check for curl
   if (extension_loaded('curl')) {
     // Add the Curl Single method
-    $processors[1]['mname'] = 'curl_single';
-    $processors[1]['hname'] = 'Curl Single';
-    $processors[1]['options'] = '';
+    $handlers[1]['mname'] = 'curl_single';
+    $handlers[1]['hname'] = 'Curl Single';
+    $handlers[1]['options'] = '';
     // add the legacy Curl method
-    $processors[2]['mname'] = 'curl_multi_legacy';
-    $processors[2]['hname'] = 'Curl Multi (Legacy)';
-    $processors[2]['options'] = '_PARALLEL_';
+    $handlers[2]['mname'] = 'curl_multi_legacy';
+    $handlers[2]['hname'] = 'Curl Multi (Legacy)';
+    $handlers[2]['options'] = '_PARALLEL_';
     // Check for versions newer then 7.20.x
     $cversion = curl_version();
     if ($cversion['version_number'] >= 463872) {
-      // Add the normal curl multi processor
-      $processors[3]['mname'] = 'curl_multi';
-      $processors[3]['hname'] = 'Curl Multi';
-      $processors[3]['options'] = '_PARALLEL_';
+      // Add the normal curl multi handler
+      $handlers[3]['mname'] = 'curl_multi';
+      $handlers[3]['hname'] = 'Curl Multi';
+      $handlers[3]['options'] = '_PARALLEL_';
     }
   }
-  return $processors;
+  return $handlers;
 }
 
 /**

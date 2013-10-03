@@ -86,8 +86,15 @@ function purge_menu() {
  */
 function purge_expire_cache($expire_urls) {
   module_load_include('inc', 'purge');
+  // First render an array of all requests for all proxy servers
   $purge_requests = purge_urls($expire_urls);
-  // Issue the requests using curl (for now)
-  $purge_results =  purge_issue_requests_curl_multi_legacy($purge_requests);
-  purge_logging($purge_results);
+  // Now set the handler
+  $handler = variable_get('purge_handler', 'purge_drupal');
+  // Issue the requests using the selected handler
+  $purge_results =  $handler($purge_requests);
+  // Check if logging is enabled
+  $log_enabled = variable_get('purge_watchdog', 0);
+  if ($log_enabled) {
+    purge_logging($purge_results);
+  }
 }

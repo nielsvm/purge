@@ -42,24 +42,24 @@ function purge_admin_settings_form() {
 function purge_get_request_handlers() {
   $handlers = array();
   // Start with  the builtin Drupal HTTP Requester.
-  $handlers[0]['mname'] = 'drupal';
+  $handlers[0]['mname'] = 'purge_drupal';
   $handlers[0]['hname'] = 'Drupal Native';
   $handlers[0]['options'] = '';
   // Now Check for curl
   if (extension_loaded('curl')) {
     // Add the Curl Single method
-    $handlers[1]['mname'] = 'curl_single';
+    $handlers[1]['mname'] = 'purge_curl_single';
     $handlers[1]['hname'] = 'Curl Single';
     $handlers[1]['options'] = '';
     // add the legacy Curl method
-    $handlers[2]['mname'] = 'curl_multi_legacy';
+    $handlers[2]['mname'] = 'purge_curl_multi_legacy';
     $handlers[2]['hname'] = 'Curl Multi (Legacy)';
     $handlers[2]['options'] = '_PARALLEL_';
     // Check for versions newer then 7.20.x
     $cversion = curl_version();
     if ($cversion['version_number'] >= 463872) {
       // Add the normal curl multi handler
-      $handlers[3]['mname'] = 'curl_multi';
+      $handlers[3]['mname'] = 'purge_curl_multi';
       $handlers[3]['hname'] = 'Curl Multi';
       $handlers[3]['options'] = '_PARALLEL_';
     }

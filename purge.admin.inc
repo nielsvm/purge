@@ -63,6 +63,12 @@ function purge_get_request_handlers() {
       $handlers[3]['hname'] = 'Curl Multi';
       $handlers[3]['options'] = '_PARALLEL_';
     }
+    // Check for httprl module
+    if (module_exists('httprl')) {
+      $handlers[8]['mname'] = 'purge_httprl';
+      $handlers[8]['hname'] = 'HTTPrl Module';
+      $handlers[8]['options'] = '_PARALLEL_,_NONBLOCKING_';
+    }
   }
   return $handlers;
 }

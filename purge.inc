@@ -242,10 +242,7 @@ function purge_urls($purge_urls) {
 function purge_drupal($purges) {
   // Go through each purge url one at a time
   foreach ($purges as $purge_id => $purge) {
-    foreach ($purge['headers'] as $header) {
-      $header_parts = explode(":", $header);
-      $headers[$header_parts[0]] = $header_parts[1];
-    }
+    $headers = headers2array ($purge['headers']);
     $options = array(
       'headers' => $headers,
       'method' => $purge['request_method'],
@@ -333,6 +330,28 @@ function purge_curl_multi_legacy($purges) {
   return $purges;
 }
 
+/**
+ * Issue purges using the httprl module.
+ */
+function purge_httprl($purges) {
+  foreach ($purges as $purge_id => $purge) {
+    // Get headers
+    $headers_array = headers2array($purge['headers']);
+    // Gather options
+    $options = array(
+      'method' => $purge['request_method'],
+      'blocking' => FALSE,
+      'headers' => $headers_array,
+    );
+    // Queue the request
+    httprl_request($purge['purge_url'], $options);
+    // Since we don't care about the results, let's fake 200
+    $purges[$purge_id]['http_code'] = 200;
+  }
+  // Issue all requests.
+  $request = httprl_send_request();
+  return $purges;
+}
 
 /**
  * Logs successful purges and errors to the watchdog.
@@ -419,4 +438,16 @@ function purge_logging($purge_request_results) {
       }
     }
   }
+}
+
+/**
+ * Helper function to explode headers to an array
+ */
+function headers2array($headers) {
+  $headers_array = array();
+  foreach ($headers as $header) {
+    $header_parts = explode(":", $header);
+    $headers_array[$header_parts[0]] = $header_parts[1];
+  }
+  return $headers_array;
 }

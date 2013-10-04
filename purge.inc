@@ -6,7 +6,6 @@
  */
 
 
-
 /**
  * Function to retrieve proxy configurations
  * @param int $pid

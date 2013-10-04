@@ -257,6 +257,32 @@ function purge_drupal($purges) {
 }
 
 /**
+ * Issue purge requests using single curl requests.
+ */
+function purge_curl_single($purges) {
+  // Go through all purge requests one by one.
+  foreach ($purges as $purge_id => $purge) {
+    // Create a curl request
+    $current_curl_request = curl_init();
+    curl_setopt($current_curl_request, CURLOPT_CUSTOMREQUEST, $purge['request_method']);
+    curl_setopt($current_curl_request, CURLOPT_URL, $purge['purge_url']);
+    curl_setopt($current_curl_request, CURLOPT_HEADER, 1);
+    curl_setopt($current_curl_request, CURLOPT_HTTPHEADER, $purge['headers']);
+    curl_setopt($current_curl_request, CURLOPT_RETURNTRANSFER, 0);
+    // Execute the request
+    curl_exec($current_curl_request);
+    // Get http status code.
+    $info = curl_getinfo($current_curl_request);
+    $purges[$purge_id]['http_code'] = $info['http_code'];
+    // Close the curl request.
+    curl_close($current_curl_request);
+  }
+  return $purges;
+}
+
+
+
+/**
  * Issue purge request using curl_multi in a way compliant with legacy PHP/Curl implementations
  *
  */

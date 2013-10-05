@@ -2,8 +2,57 @@
 
 /**
  * @file
- * Contains the main purging functionality and error handling
+ * Contains the main purging functionality and error handling.
  */
+
+/**
+ * Class for proxy configuration management.
+ */
+class PurgeProxy {
+  public $pid = 0;
+  public $type = 'purge_user';
+  public $description = 'This is the default template for proxy configurations';
+  public $url = 'http://localhost';
+  public $options = array(
+    'non_blocking' => 1,
+    'wildcards' => 0,
+  );
+  public $domains = array('domains_expire');
+  public $headers = array('');
+}
+
+/**
+ * Function to retrieve proxy configuration objects form the database.
+ */
+function purge_config_get_db($pids = array()) {
+  $proxy_confs = array();
+  // Query the proxy configuration table
+  $query = db_select('purge_proxy', 'p');
+  // Check if pids are specified
+  if (isset($pids)) {
+    // create an or condition
+    $or = db_or();
+    foreach ($pids as $pid) {
+      $or->condition('pid', $pid, '=');
+    }
+    $query->condition($or);
+  }
+  // Execute query and parse results
+  $results = $query->execute();
+  foreach ($results as $result) {
+    $proxy_conf = new PurgeProxy;
+    $proxy_conf->pid = $result->pid;
+    $proxy_conf->type = $result->type;
+    $proxy_conf->description = $result->description;
+    $proxy_conf->url = $result->url;
+    $proxy_conf->options = $result->options;
+    $proxy_conf->domains = explode(',', $result->domains);
+    $proxy_conf->headers = explode(',', $result->headers);
+    $proxy_confs[] = $proxy_conf;
+  }
+  return $proxy_confs;
+}
+
 
 
 /**

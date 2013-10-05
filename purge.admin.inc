@@ -63,12 +63,20 @@ function purge_get_request_handlers() {
       $handlers[3]['hname'] = 'Curl Multi';
       $handlers[3]['options'] = '_PARALLEL_';
     }
-    // Check for httprl module
-    if (module_exists('httprl')) {
-      $handlers[8]['mname'] = 'purge_httprl';
-      $handlers[8]['hname'] = 'HTTPrl Module';
-      $handlers[8]['options'] = '_PARALLEL_,_NONBLOCKING_';
-    }
+  }
+  // Check for httprl module
+  if (module_exists('httprl')) {
+    $handlers[8]['mname'] = 'purge_httprl';
+    $handlers[8]['hname'] = 'HTTPrl Module';
+    $handlers[8]['options'] = '_PARALLEL_,_NONBLOCKING_';
+  }
+  // Check for modules implementing handlers
+  $handler_modules = module_implements('purge_handlers');
+  // Invoke the hook for each module
+  foreach ($handler_modules as $handler_module) {
+    $module_handlers = module_invoke($handler_module, 'purge_handlers');
+    // Add the returned array of handlers to the list
+    $handlers = array_merge($handlers, $module_handlers);
   }
   return $handlers;
 }

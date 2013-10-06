@@ -10,6 +10,7 @@
  */
 class PurgeProxy {
   public $pid = 0;
+  public $name = '';
   public $type = 'purge_user';
   public $description = 'This is the default template for proxy configurations';
   public $url = 'http://localhost';
@@ -19,15 +20,43 @@ class PurgeProxy {
   );
   public $domains = array('domains_expire');
   public $headers = array('');
+  // Save to database
+  public function db_save() {
+    // Fill the fields
+    $fields = array(
+      'name' => $this->name,
+      'type' => $this->type,
+      'description' => $this->description,
+      'url' => $this->url,
+      'options' => implode(',', $this->options),
+      'domains' => implode(',', $this->domains),
+      'headers' => implode(',', $this->headers),
+    );
+    // Check if this is a new or an existing config
+    if ($this->pid > 0) {
+      $fields['pid'] = $this->pid;
+      // Update the existing database record
+      $query = db_update('purge_proxy')
+        ->fields($fields)
+        ->execute();
+    }
+    else {
+      $query = db_insert('purge_proxy')
+        ->fields($fields)
+        ->execute();
+    }
+  }
 }
 
 /**
  * Function to retrieve proxy configuration objects form the database.
  */
-function purge_config_get_db($pids = array()) {
+function purge_config_db_get(array $pids = array()) {
   $proxy_confs = array();
   // Query the proxy configuration table
   $query = db_select('purge_proxy', 'p');
+  $fields = array('pid', 'type', 'name', 'description','url', 'options', 'domains', 'headers');
+  $query->fields('p', $fields);
   // Check if pids are specified
   if (isset($pids)) {
     // create an or condition
@@ -35,13 +64,15 @@ function purge_config_get_db($pids = array()) {
     foreach ($pids as $pid) {
       $or->condition('pid', $pid, '=');
     }
-    $query->condition($or);
+    //$query->condition($or);
   }
+ // $query->condition('pid', '0', '>');
   // Execute query and parse results
   $results = $query->execute();
   foreach ($results as $result) {
     $proxy_conf = new PurgeProxy;
     $proxy_conf->pid = $result->pid;
+    $proxy_conf->name = $result->name;
     $proxy_conf->type = $result->type;
     $proxy_conf->description = $result->description;
     $proxy_conf->url = $result->url;

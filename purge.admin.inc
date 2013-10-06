@@ -12,6 +12,36 @@ module_load_include('inc', 'purge');
  * Menu callback for purge admin settings.
  */
 function purge_admin_settings_form() {
+  $form = array();
+  // Form and overview of al proxy configurations
+  $header = array(
+    'name' => t('Name'),
+    'type' => t('Type'),
+    'description' => t('Description'),
+    'actions' => t('Actions'),
+  );
+  $proxy_options = array();
+  $proxies = purge_config_db_get();
+  foreach ($proxies as $proxy) {
+    $proxy_options[$proxy->pid] = array(
+      'name' => $proxy->name,
+      'type' => $proxy->type,
+      'description' => $proxy->description,
+      'actions' => t('nothing'),
+    );
+  }
+
+  $form['purge_proxies'] = array(
+    '#type' => 'tableselect',
+    '#header' => $header,
+    '#options' => $proxy_options,
+  );
+
+  // Advanced Settings
+  $form['purge_advanced'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Advanced Settings'),
+  );
   // Get the http request handlers
   $handlers = purge_get_request_handlers();
   $options = array();
@@ -19,15 +49,14 @@ function purge_admin_settings_form() {
     $options[($handler['mname'])] = $handler['hname'];
   }
 
-  $form = array();
-  $form['purge_handler'] = array(
+  $form['purge_advanced']['purge_handler'] = array(
     '#type' => 'select',
     '#title' => 'HTTP request handler',
     '#options' => $options,
     '#default_value' => variable_get('purge_handler', 'drupal'),
     '#description' => t('Select the HTTP request handler to use.'),
   );
-  $form['purge_watchdog'] = array(
+  $form['purge_advanced']['purge_watchdog'] = array(
     '#type' => 'checkbox',
     '#title' => t('Enable logging'),
     '#default_value' => variable_get('purge_watchdog', 0),

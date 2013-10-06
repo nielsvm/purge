@@ -4,6 +4,8 @@
  * @file
  * Purge install code. Installs and uninstalls the database table, converts from 1.x settings
  */
+// Load the purge.inc file
+module_load_include('inc', 'purge');
 
 /**
  * Implements hook_schema().
@@ -17,15 +19,11 @@ function purge_schema() {
         'unsigned' => TRUE,
         'not null' => TRUE,
         'description' => 'Primary ID field for the table. Not used for anything except internal lookups.',
-        'no export' => TRUE, 
       ),
       'type' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
+        'type' => 'varchar',
+        'length' => '40',
         'description' => 'Type of configuration. 0 = System, 1 = Platform, 2 = Contrib, 3 = User',
-        'no export' => TRUE, 
       ),
       'name' => array(
         'type' => 'varchar',
@@ -37,60 +35,19 @@ function purge_schema() {
         'length' => '255',
         'description' => 'Describe the description field... yeah, right',
       ),
-      'enabled' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'description' => 'Is the proxy enabled?',
-        'no export' => TRUE,
-      ),
-      'active' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'description' => 'Is the proxy currenty active?',
-        'no export' => TRUE,
-      ),
-      'proxy_ssl' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'description' => 'Use the https protocol.',
-      ),
-      'proxy_host' => array(
+      'url' => array(
         'type' => 'varchar',
         'length' => '255',
-        'description' => 'The host name or ip address.',
+        'description' => 'The URL pointing to the reverse proxy server',
       ),
-      'proxy_port' => array(
+      'options' => array(
         'type' => 'varchar',
-        'length' => '5',
-      ),
-      'options_type' => array(
-        'type' => 'varchar',
-        'length' => '8',
-        'description' => 'The type of http request issued. Either PURGE or GET.',
-      ),
-      'options_parallel' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'description' => 'Purge requests are send in parallel.',
-      ),
-      'options_nonblocking' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'description' => 'Purge requests nonblocking.',
+        'length' => '255',
+        'description' => 'All options serialized',
       ),
       'domains' => array(
         'type' => 'text',
         'description' => 'Domain names to be used for purge requests',
-      ),
-      'url_prefix' => array(
-        'type' => 'varchar',
-        'length' => '255',
-        'description' => 'The string inserted before the purged url.',
-      ),
-      'url_wildcards' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'description' => 'Does this proxy accept wildcard purges?',
       ),
       'headers' => array(
         'type' => 'text',
@@ -109,7 +66,7 @@ function purge_schema() {
  * Implements hook_install().
  */
 function purge_install() {
-  // Add the system and template proxy configurations
+  //Add the system and template proxy configurations
   purge_proxy_add_defaults();
 }
     
@@ -117,7 +74,7 @@ function purge_install() {
  * Implements hook_update_N().
  */
 function purge_update_7200() {
-  purge_proxy_add_defaults();
+  //purge_proxy_add_defaults();
   purge_proxy_config_convert();
 }
 
@@ -126,73 +83,10 @@ function purge_update_7200() {
  */
 function purge_proxy_add_defaults() {
   // First add the 'empty' template.
-  $new_proxy_config = db_insert('purge_proxy')
-    ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
-      'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
-    ->values(array(
-      'type' => 0, //Type 0 indicates this is a user controled configuration
-      'name' => '',  
-      'description' => '',
-      'enabled' => 1, // Configurations are enabled by default
-      'active' => 1,
-      'proxy_ssl' => 0,
-      'proxy_host' => '',
-      'proxy_port' => '',
-      'options_type' => 'PURGE',
-      'options_parallel' => 1,
-      'options_nonblocking' => 1,
-      'domains' => '_DOMAINS_EXPIRE_',
-      'url_prefix' => '',
-      'url_wildcards' => 0,
-      'headers' => '',
-    ))
-    ->execute();
-
-  // Then add the Generic Varnish template
-  $new_proxy_config = db_insert('purge_proxy')
-    ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
-      'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
-    ->values(array(
-      'type' => 2, //Type 2 indicates this is a template
-      'name' => t('Generic Proxy'),  
-      'description' => t('Used for Varnish, Squid and others'),
-      'enabled' => 1, // Configurations are enabled by default
-      'active' => 1,
-      'proxy_ssl' => 0,
-      'proxy_host' => 'localhost',
-      'proxy_port' => '80',
-      'options_type' => 'PURGE',
-      'options_parallel' => 1,
-      'options_nonblocking' => 1,
-      'domains' => '_DOMAINS_EXPIRE_',
-      'url_prefix' => '',
-      'url_wildcards' => 0,
-      'headers' => '',
-    ))
-    ->execute();
+  $default_template = new PurgeProxy;
+  $do = $default_template->db_save();
 
   // Then add the Nginx template
-  $new_proxy_config = db_insert('purge_proxy')
-    ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
-      'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
-    ->values(array(
-      'type' => 2, //Type 2 indicates this is a template
-      'name' => t('Nginx'),
-      'description' => t('Issue Nginx compatible purge requests'),
-      'enabled' => 1, // Configurations are enabled by default
-      'active' => 1,
-      'proxy_ssl' => 0,
-      'proxy_host' => 'localhost',
-      'proxy_port' => '80',
-      'options_type' => 'GET',
-      'options_parallel' => 1,
-      'options_nonblocking' => 1,
-      'domains' => '_DOMAINS_EXPIRE_',
-      'url_prefix' => '/purge',
-      'url_wildcards' => 0,
-      'headers' => '',
-    ))
-    ->execute();
 }
 
 /**

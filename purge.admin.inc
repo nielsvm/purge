@@ -113,16 +113,16 @@ function purge_get_request_handlers() {
 /**
  * Menu callback for purge proxy configuration.
  */
-function purge_proxy_form($form, $form_state, $pid = 1) {
-  $proxy = array();
+function purge_proxy_form($form, $form_state, $pid = 0) {
   // Load the proxy configuration for editing.
-  $proxy = purge_proxy_get_config($pid, 'FULL', 'SYSTEM');
+  $proxies = purge_config_db_get(array($pid));
+  $proxy = $proxies[$pid];
   //dprint_r($proxy);
   $form = array();
   // Hidden fields for internal use
   $form['purge_pid'] = array(
     '#type' => 'hidden',
-    '#default_value' => $proxy[$pid]['pid'],
+    '#default_value' => $proxy->pid,
   );
   $form['purge_proxy_active'] = array(
     '#type' => 'hidden',
@@ -135,7 +135,7 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
   $form['purge_proxy_general']['name'] = array(
     '#type' => 'machine_name',
     '#title' => t('Name'),
-    '#default_value' => check_plain($proxy[$pid]['name']),
+    '#default_value' => check_plain($proxy->name),
     '#description' => t('The unique machine readable name of this proxy configuration.'),
     '#required' => TRUE,
     '#maxlength' => 21,
@@ -146,16 +146,45 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
   $form['purge_proxy_general']['description'] = array(
     '#type' => 'textfield',
     '#title' => t('Description'),
-    '#default_value' => check_plain($proxy[$pid]['description']),
+    '#default_value' => check_plain($proxy->description),
     '#description' => t('A human readable description of this proxy configuration.'),
   );
-  $form['purge_proxy_general']['use_base_url'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Use the base URL provided by Drupal'),
-    '#default_value' => $proxy[$pid]['proxy_use_baseurl'],
+  // Construct selection form for proxy url configuration.
+  $form['purge_proxy_url'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Proxy URL',
   );
+  $proxy_url_config_options = array(
+    0 => t('Use the base URL provided by Drupal'),
+    1 => t('Compose the URL by components'),
+    2 => t('Manual configuration (Advanced)'),
+  );
+  // Check to use the base URL or not.
+  if ($proxy->url == '_USE_BASEURL_') {
+    $proxy_url_config_default = 0;
+  }
+  else {
+    $proxy_url_config_default = 1;
+  }
+  $form['purge_proxy_url']['purge_proxy_url_options'] = array(
+    '#type' => 'radios',
+    '#default_value' => $proxy_url_config_default,
+    '#description' => 'Select how to configure the proxy URL.',
+    '#options' => $proxy_url_config_options,
+  );
+  // The compose option
+  $form['purge_proxy_url']['compose'] = array(
+    '#type' => 'fieldset',
+  );
+  // Parse the proxy url
+  $proxy_url_parts = parse_url($proxy->url);
 
-  $form['purge_proxy_general']['protocol'] = array(
+  // Protocol selection
+  $proxy_url_protocol = 'http';
+  if ($proxy_url_parts['scheme'] == 'https') {
+    $proxy_url_protocol = 'https';
+  }
+  $form['purge_proxy_url']['compose']['protocol'] = array(
     '#type' => 'select',
     '#title' => t('Protocol'),
     '#description' => t('The request protocol the proxy server accepts purge requests in.'),
@@ -163,49 +192,90 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
       '0' => 'http',
       '1' => 'https',
     ),
-    '#default_value' => $proxy[$pid]['proxy_ssl'],
+    '#default_value' => $proxy_url_protocol,
   );
-  $form['purge_proxy_general']['host'] = array(
+  $form['purge_proxy_url']['compose']['host'] = array(
     '#type' => 'textfield',
     '#title' => t('Host'),
     '#description' => t('The hostname or ip adress of the proxy server.'),
-    '#default_value' => $proxy[$pid]['proxy_host'],
+    '#default_value' => $proxy_url_parts['host'],
   );
-  $form['purge_proxy_general']['port'] = array(
+  // Optional proxy port
+  if (isset($proxy_url_parts['port'])) {
+    $proxy_url_port = strval($proxy_url_parts['port']);
+  }
+  else {
+    $proxy_url_port = '';
+  }
+  $form['purge_proxy_url']['compose']['port'] = array(
     '#type' => 'textfield',
     '#title' => t('Port'),
     '#description' => t('The tcp port where the proxy is listening.'),
-     '#default_value' => $proxy[$pid]['proxy_port'],
+    '#default_value' => $proxy_url_port,
+  );
+  // Optional url prefix
+  if (isset($proxy_url_parts['path'])) {
+    $proxy_url_prefix = $proxy_url_parts['path'];
+  }
+  else {
+    $proxy_url_prefix = '';
+  }
+  $form['purge_proxy_url']['compose']['prefix'] = array(
+    '#type' => 'textfield',
+    '#title' => t('URL Prefix'),
+    '#description' => t('This prefix will be added before the URL that will be purged.'),
+    '#default_value' => $proxy_url_prefix,
+  );
+  $form['purge_proxy_url']['manual'] = array(
+    '#type' => 'fieldset',
+  );
+  $form['purge_proxy_url']['manual']['url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Proxy URL'),
+    '#description' => t('The URL that will be used to send out purge requests.'),
+    '#default_value' => $proxy->url,
   );
   $form['purge_proxy_advanced'] = array(
     '#type' => 'vertical_tabs',
     '#title' => t('Advanced Proxy Configuration'),
   );
+  // Options, options... Sooo many options...
   $form['purge_proxy_advanced']['options'] = array(
     '#type' => 'fieldset',
     '#title' => t('Options'),
   );
+  // Get the http method
+  if (in_array('_METHOD_GET_', $proxy->options)) {
+    $proxy_method = 'GET';
+  }
+  elseif (in_array('_METHOD_BAN_', $proxy->options)) {
+    $proxy_method = 'BAN';
+  }
+  else {
+    $proxy_method = 'PURGE';
+  }
   $form['purge_proxy_advanced']['options']['type'] = array(
     '#type' => 'select',
     '#title' => t('Request type'),
-    '#description' => t('The type of http request issued. Either PURGE or GET.'),
+    '#description' => t('The type of http request issued. Either PURGE, GET or BAN.'),
     '#options' => array(
-      'PURGE' => t('Purge'),
-      'GET' => t('Get'),
+      'PURGE' => 'Purge',
+      'GET' => 'Get',
+      'BAN' => 'Ban',
     ),
-    '#default_value' => $proxy[$pid]['options_type'],
+    '#default_value' => $proxy_method,
   );
   $form['purge_proxy_advanced']['options']['parallel'] = array(
     '#type' => 'checkbox',
     '#title' => t('Parallel requests'),
     '#description' => t('Purge requests are send in parallel. Disable to send requests on at a time.'),
-    '#default_value' => $proxy[$pid]['options_parallel'],
+    '#default_value' => in_array('_PARALLEL_', $proxy->options),
   );
   $form['purge_proxy_advanced']['options']['nonblocking'] = array(
     '#type' => 'checkbox',
     '#title' => t('Non blocking'),
     '#description' => t('Send non blocking purge requests.'),
-    '#default_value' => $proxy[$pid]['options_nonblocking'],
+    '#default_value' => in_array('_NON_BLOCKING_', $proxy->options),
   );
   $form['purge_proxy_advanced']['domains'] = array(
     '#type' => 'fieldset',
@@ -215,7 +285,7 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
   // Parse the domains
   $custom_domains = array();
   $domains = array();
-  $domains = $proxy[$pid]['domains'];
+  $domains = $proxy->domains;
   $domain_set = array();
   $domain_set['expire'] = False;
   $domain_set['drupal'] = False;
@@ -278,22 +348,6 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
     '#description' => t('Provide custom domains to be purged with each request. One line each'),
     '#default_value' => implode("\n", $custom_domains),
   );
-  $form['purge_proxy_advanced']['urls'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('URLs'),
-  );
-  $form['purge_proxy_advanced']['urls']['prefix'] = array(
-    '#type' => 'textfield',
-    '#title' => t('URL prefix'),
-    '#description' => t('This prefix will be inserted before the purge URL.'),
-    '#default_value' => $proxy[$pid]['url_prefix'],
-  );
-  $form['purge_proxy_advanced']['urls']['wildcards'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Allow wildcards'),
-    '#description' => t('Setting to indicate the proxy accepts wildcards. (Experimental)'),
-    '#default_value' => $proxy[$pid]['url_wildcards'],
-  );
   $form['purge_proxy_advanced']['headers'] = array(
     '#type' => 'fieldset',
     '#title' => t('Headers'),
@@ -302,7 +356,7 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
   // Parse all headers
   $custom_headers = array();
   $headers = array();
-  $headers = $proxy[$pid]['headers'];
+  $headers = $proxy->headers;
   $headers_set = array();
   $headers_set['gzip'] = False;
   $headers_set['current'] = False;
@@ -366,7 +420,7 @@ function purge_proxy_form($form, $form_state, $pid = 1) {
     '#submit' => array('purge_proxy_form_submit'),
   );
   // Render an option to submit and enable the configuration 
-  if ($proxy[$pid]['enabled'] == False) {
+  if (TRUE) {
     $form['actions']['submit_enable'] = array(
       '#type' => 'submit',
       '#value' => t('Save and Enable'),

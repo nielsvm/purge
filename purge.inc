@@ -12,12 +12,9 @@ class PurgeProxy {
   public $pid = 0;
   public $name = '';
   public $type = 'purge_user';
-  public $description = 'This is the default template for proxy configurations';
+  public $description = '';
   public $url = 'http://localhost';
-  public $options = array(
-    'non_blocking' => 1,
-    'wildcards' => 0,
-  );
+  public $options = array('_PARALLEL_','_NONBLOCKING_');
   public $domains = array('domains_expire');
   public $headers = array('');
   // Save to database
@@ -76,7 +73,7 @@ function purge_config_db_get(array $pids = array()) {
     $proxy_conf->type = $result->type;
     $proxy_conf->description = $result->description;
     $proxy_conf->url = $result->url;
-    $proxy_conf->options = $result->options;
+    $proxy_conf->options = explode(',', $result->options);
     $proxy_conf->domains = explode(',', $result->domains);
     $proxy_conf->headers = explode(',', $result->headers);
     $proxy_confs[] = $proxy_conf;

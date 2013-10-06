@@ -84,9 +84,20 @@ function purge_update_7200() {
 function purge_proxy_add_defaults() {
   // First add the 'empty' template.
   $default_template = new PurgeProxy;
+  // Modify properties
+  $default_template->type = 'purge_template';
+  $default_template->name = t('Default Template');
+  $default_template->description = t('Generic template for use with Varnish and others.');
   $do = $default_template->db_save();
 
   // Then add the Nginx template
+  $nginx_template = new PurgeProxy;
+  $nginx_template->type = 'purge_template';
+  $nginx_template->name = t('Nginx Template');
+  $nginx_template->description = t('Template for use with Nginx');
+  $nginx_template->url = 'http://localhost/purge';
+  $nginx_template->options = array('_METHOD_GET_');
+  $do = $nginx_template->db_save();
 }
 
 /**

@@ -452,9 +452,9 @@ function purge_proxy_form($form, $form_state, $pid = 0) {
  */
 function purge_proxy_name_exists($value) {
   $exists = FALSE;
-  $proxies = purge_proxy_get_config(0, 'NAME', 'SYSTEM');
+  $proxies = purge_config_db_get();
   foreach ($proxies as $proxy) {
-    if ($proxy['name'] == $value) {
+    if ($proxy->name == $value) {
       $exists = TRUE;
     }
   }
@@ -467,22 +467,32 @@ function purge_proxy_form_validate($form, &$form_state) {
     form_set_error('', t('You must select a name for this proxy configuration.'));
   }
   // Check for use base url
-  if ($form_state['values']['use_base_url'] == False) {
+  if ($form_state['values']['purge_proxy_url_options'] != 0) {
+    // Check the hostname
+    if ($form_state['values']['purge_proxy_url_options'] == 1) {
+      $proxy_host = $form_state['values']['host'];
+      $proxy_port = $form_state['values']['port'];
+    }
+    elseif ($form_state['values']['purge_proxy_url_options'] == 2) {
+      $proxy_url_parts = parse_url($form_state['values']['url']);
+      $proxy_host = $proxy_url_parts['host'];
+      $proxy_port = strval($proxy_url_parts['port']);
+    }
     // Check if hostname is unset
-    if ($form_state['values']['host'] == '') {
+    if ($proxy_host == '') {
       form_set_error('', t('You should provide a host name or ipaddress when not using the Drupal option'));
     }
     else {
       // Check the hostname
-      if ((purge_validate_hostname($form_state['values']['host'])) == False) {
+      if ((purge_validate_hostname($proxy_host)) == False) {
         form_set_error('', t('This is not a valid hostname or ipaddress.'));
       }
     }
-  }
-  // Check the portname
-  if (!($form_state['values']['port'] == '')) {
-    if ((is_numeric($form_state['values']['port'])) == False) {
-      form_set_error('', t('This is not a valid port number.'));
+    // Check the portname
+    if (!($proxy_port == '')) {
+      if ((is_numeric($proxy_port)) == False) {
+        form_set_error('', t('This is not a valid port number.'));
+      }
     }
   }
   // Check all domains
@@ -504,12 +514,22 @@ function purge_proxy_form_validate($form, &$form_state) {
  * Submit the proxy configuration
  */
 function purge_proxy_form_submit($form, &$form_state) {
-  // Render the proxy_host field
-  if ($form_state['values']['use_base_url'] == 1) {
-    $proxy_host = '_USE_BASEURL_';
+  // Render proxy url field
+  if ($form_state['values']['purge_proxy_url_options'] == 0) {
+    $proxy_url = '_USE_BASEURL_';
   }
-  else {
-    $proxy_host = trim($form_state['values']['host']);
+  // Check for compose option and render URL
+  elseif ($form_state['values']['purge_proxy_url_options'] == 1) {
+    $proxy_url = $form_state['values']['protocol'] . '://';
+    $proxy_url .= $form_state['values']['host'];
+    // Add the port when set
+    if ($form_state['values']['port'] != '') {
+      $proxy_url .= ':' . $form_state['values']['port'];
+    }
+  }
+  // Check for manual option and get URL
+  elseif ($form_state['values']['purge_proxy_url_options'] == 2) {
+    $proxy_url = trim($form_state['values']['url']);
   }
   // Generate the storage field for the domains
   $domains = array();
@@ -521,6 +541,8 @@ function purge_proxy_form_submit($form, &$form_state) {
     $domains[] = '_DOMAINS_EXPIRE_';
   }
 
+  // Gather options
+  $proxy_options = array();
   // Add domains provided by modules
   $domain_modules = module_implements('purge_domains');
   foreach ($domain_modules as $domain_module) {
@@ -567,51 +589,22 @@ function purge_proxy_form_submit($form, &$form_state) {
     }
   }
 
-  // See if the current form is filled from the empty template.
-  if ($form_state['values']['purge_pid'] == 1) {
-    // Insert a new record into the proxy configuration database table
-    $new_proxy_config = db_insert('purge_proxy')
-      ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
-        'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
-      ->values(array(
-      'type' => 4, //Type 4 indicates this is a user controled configuration
-      'name' => $form_state['values']['name'],
-      'description' => check_plain($form_state['values']['description']),
-      'enabled' => 1, // Configurations are enabled by default
-      'active' => $form_state['values']['purge_proxy_active'],
-      'proxy_ssl' => $form_state['values']['protocol'],
-      'proxy_host' => $proxy_host,
-      'proxy_port' => check_plain($form_state['values']['port']),
-      'options_type' => $form_state['values']['type'],
-      'options_parallel' => $form_state['values']['parallel'],
-      'options_nonblocking' => $form_state['values']['nonblocking'],
-      'domains' => implode(",", $domains),
-      'url_prefix' => check_plain($form_state['values']['prefix']),
-      'url_wildcards' => $form_state['values']['wildcards'],
-      'headers' => implode(",", $headers),
-    ))
-    ->execute();
+  // Create a PurgeProxy object
+  $proxy = new PurgeProxy;
+  // Check if we need to specify pid
+  if ($form_state['values']['purge_pid'] > 0) {
+    $proxy->pid = $form_state['values']['purge_pid'];
   }
-  else {
-    // Update the existing record
-    $proxy_config = db_update('purge_proxy')
-      ->fields(array(
-        'name' => $form_state['values']['name'],
-        'description' => check_plain($form_state['values']['description']),
-        'proxy_ssl' => $form_state['values']['protocol'],
-        'proxy_host' => $proxy_host,
-        'proxy_port' => check_plain($form_state['values']['port']),
-        'options_type' => $form_state['values']['type'],
-        'options_parallel' => $form_state['values']['parallel'],
-        'options_nonblocking' => $form_state['values']['nonblocking'],
-        'domains' => implode(",", $domains),
-        'url_prefix' => check_plain($form_state['values']['prefix']),
-        'url_wildcards' => $form_state['values']['wildcards'],
-        'headers' => implode(",", $headers),
-      ))
-      ->condition('pid', $form_state['values']['purge_pid'])
-      ->execute();
-  }
+  // Set the type of configuration
+  $proxy->type = $form_state['values']['type'];
+  $proxy->name = $form_state['values']['name'];
+  $proxy->description = $form_state['values']['description'];
+  $proxy->url = $proxy_url;
+  $proxy->options = $proxy_options;
+  $proxy->domains = $domains;
+  $proxy->headers = $headers;
+  // Save the proxy object
+  $save = $proxy->db_save();
   drupal_set_message(t('The proxy configuration %proxy_name has been saved', array('%proxy_name' => $form_state['values']['name'])));
 }
 

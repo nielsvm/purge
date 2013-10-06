@@ -48,20 +48,20 @@ class PurgeProxy {
 /**
  * Function to retrieve proxy configuration objects form the database.
  */
-function purge_config_db_get(array $pids = array()) {
+function purge_config_db_get($pids) {
   $proxy_confs = array();
   // Query the proxy configuration table
   $query = db_select('purge_proxy', 'p');
   $fields = array('pid', 'type', 'name', 'description','url', 'options', 'domains', 'headers');
   $query->fields('p', $fields);
   // Check if pids are specified
-  if (isset($pids)) {
+  if ((is_array($pids)) and !empty($pids)) {
     // create an or condition
     $or = db_or();
     foreach ($pids as $pid) {
       $or->condition('pid', $pid, '=');
     }
-    //$query->condition($or);
+    $query->condition($or);
   }
  // $query->condition('pid', '0', '>');
   // Execute query and parse results

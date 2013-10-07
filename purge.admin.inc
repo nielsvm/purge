@@ -433,8 +433,10 @@ function purge_proxy_form($form, $form_state, $pid = 0) {
     '#value' => t('Save'),
     '#submit' => array('purge_proxy_form_submit'),
   );
-  // Render an option to submit and enable the configuration 
-  if (TRUE) {
+  // Render an option to submit and enable the configuration
+  $proxies = variable_get('purge_proxies');
+  $proxy = $proxies[$proxy->pid];
+  if ($proxy == 0) {
     $form['actions']['submit_enable'] = array(
       '#type' => 'submit',
       '#value' => t('Save and Enable'),
@@ -699,14 +701,19 @@ function purge_validate_hostname($hostname) {
  * Helper function to enable or disable proxy configurations
  */
 function purge_proxy_enable($pid, $value = 1) {
-  // Update the database field
-  $query = db_update('purge_proxy')
-    ->fields(array('enabled' => $value))
-    ->condition('pid', $pid)
-    ->execute();
+  // Get the current set
+  $proxies_enabled = variable_get('purge_proxies');
+  if ($value == 0) {
+    $proxies_enabled[$pid] = 0;
+  }
+  elseif ($value == 1) {
+    $proxies_enabled[$pid] = $pid;
+  }
+  $save = variable_set('purge_proxies', $proxies_enabled);
   // Get the name of the proxy configuration
-  $proxy_config = purge_proxy_get_config($pid, 'NAME', 'ALL');
-  $proxy_name = $proxy_config[$pid]['name'];
+  $proxies = purge_config_db_get(array($pid));
+  $proxy = $proxies[0];
+  $proxy_name = $proxy->name;
   // Set the action label
   if ($value == 1) {
     $action = 'enabled';

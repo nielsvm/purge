@@ -14,8 +14,11 @@ function purge_menu() {
   $items = array();
   $items['admin/config/development/performance/purge'] = array(
     'title'             => 'Purge',
+    'description'       => 'Configure the Purge module',
     'type'              => MENU_LOCAL_TASK,
-    'page callback'     => 'purge_proxy_list',
+    // 'page callback'     => 'purge_proxy_list',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('purge_admin_settings_form'),
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
@@ -28,17 +31,6 @@ function purge_menu() {
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
-  );
-  $items['admin/config/development/performance/purge/settings'] = array(
-    'title'             => 'Advanced Settings',
-    'description'       => 'Configure Advanced Purge Settings',
-    'page callback'     => 'drupal_get_form',
-    'type'              => MENU_LOCAL_ACTION,
-    'page arguments'    => array('purge_admin_settings_form'),
-    'access arguments'  => array('administer site configuration'),
-    'file path'         => drupal_get_path('module', 'purge'),
-    'file'              => 'purge.admin.inc',
-    'tab_parent'        => 'admin/config/development/performance/purge',
   );
   $items['admin/config/development/performance/purge/edit/%'] = array(
     'title'             => 'Edit Proxy',

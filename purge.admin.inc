@@ -23,19 +23,28 @@ function purge_admin_settings_form() {
   $proxy_options = array();
   $proxies = purge_config_db_get();
   foreach ($proxies as $proxy) {
-    $proxy_options[$proxy->pid] = array(
-      'name' => $proxy->name,
-      'type' => $proxy->type,
-      'description' => $proxy->description,
-      'actions' => t('nothing'),
-    );
+    // Filter out only the user managed configurations
+    if (strpos($proxy->type, '_user')) {
+      // Render the action links
+      $actions = array();
+      $actions[] = l(t('Edit'), "admin/config/development/performance/purge/edit/{$proxy->pid}");
+      $actions[] = l(t('Delete'), "admin/config/development/performance/purge/delete/{$proxy->pid}");
+      $proxy_options[$proxy->pid] = array(
+        'name' => $proxy->name,
+        'type' => $proxy->type,
+        'description' => $proxy->description,
+        'actions' => implode(' | ', $actions),
+      );
+    }
   }
 
   $form['purge_proxies'] = array(
     '#type' => 'tableselect',
     '#header' => $header,
     '#options' => $proxy_options,
+    '#default_value' => variable_get('purge_proxies'),
   );
+  dprint_r(variable_get('purge_proxies'));
 
   // Advanced Settings
   $form['purge_advanced'] = array(
@@ -115,18 +124,23 @@ function purge_get_request_handlers() {
  */
 function purge_proxy_form($form, $form_state, $pid = 0) {
   // Load the proxy configuration for editing.
-  $proxies = purge_config_db_get(array($pid));
-  $proxy = $proxies[$pid];
-  //dprint_r($proxy);
+  if ($pid == 0) {
+    $proxy = new PurgeProxy();
+  }
+  else {
+    $proxies = purge_config_db_get(array($pid));
+    $proxy = $proxies[0];
+  }
+  dprint_r($proxy->type);
   $form = array();
   // Hidden fields for internal use
   $form['purge_pid'] = array(
     '#type' => 'hidden',
     '#default_value' => $proxy->pid,
   );
-  $form['purge_proxy_active'] = array(
+  $form['purge_type'] = array(
     '#type' => 'hidden',
-    '#default_value' => '1',
+    '#value' => $proxy->type,
   );
   $form['purge_proxy_general'] = array(
     '#type' => 'fieldset',
@@ -180,9 +194,9 @@ function purge_proxy_form($form, $form_state, $pid = 0) {
   $proxy_url_parts = parse_url($proxy->url);
 
   // Protocol selection
-  $proxy_url_protocol = 'http';
+  $proxy_url_protocol = 0;
   if ($proxy_url_parts['scheme'] == 'https') {
-    $proxy_url_protocol = 'https';
+    $proxy_url_protocol = 0;
   }
   $form['purge_proxy_url']['compose']['protocol'] = array(
     '#type' => 'select',
@@ -254,10 +268,10 @@ function purge_proxy_form($form, $form_state, $pid = 0) {
   else {
     $proxy_method = 'PURGE';
   }
-  $form['purge_proxy_advanced']['options']['type'] = array(
+  $form['purge_proxy_advanced']['options']['method'] = array(
     '#type' => 'select',
-    '#title' => t('Request type'),
-    '#description' => t('The type of http request issued. Either PURGE, GET or BAN.'),
+    '#title' => t('Request method'),
+    '#description' => t('The method of http request used. Either PURGE, GET or BAN.'),
     '#options' => array(
       'PURGE' => 'Purge',
       'GET' => 'Get',
@@ -380,7 +394,7 @@ function purge_proxy_form($form, $form_state, $pid = 0) {
       else {
         $custom_headers[] = $header;
       }
-    } 
+    }
     Else {
       if (!strncmp($header, '_end_set:', 9)) {
         $headers_set['current'] = False;
@@ -511,7 +525,7 @@ function purge_proxy_form_validate($form, &$form_state) {
 }
 
 /**
- * Submit the proxy configuration
+ * Submit the proxy configuration.
  */
 function purge_proxy_form_submit($form, &$form_state) {
   // Render proxy url field
@@ -520,7 +534,13 @@ function purge_proxy_form_submit($form, &$form_state) {
   }
   // Check for compose option and render URL
   elseif ($form_state['values']['purge_proxy_url_options'] == 1) {
-    $proxy_url = $form_state['values']['protocol'] . '://';
+    if ($form_state['values']['protocol'] == 1) {
+      $proxy_protocol = 'https';
+    }
+    else {
+      $proxy_protocol = 'http';
+    }
+    $proxy_url = $proxy_protocol . '://';
     $proxy_url .= $form_state['values']['host'];
     // Add the port when set
     if ($form_state['values']['port'] != '') {
@@ -543,6 +563,12 @@ function purge_proxy_form_submit($form, &$form_state) {
 
   // Gather options
   $proxy_options = array();
+  if ($form_state['values']['method'] == 'GET') {
+    $proxy_options[] = '_METHOD_GET_';
+  }
+  elseif ($form_state['values']['method'] == 'BAN') {
+    $proxy_options[] = '_METHOD_BAN_';
+  }
   // Add domains provided by modules
   $domain_modules = module_implements('purge_domains');
   foreach ($domain_modules as $domain_module) {
@@ -596,7 +622,8 @@ function purge_proxy_form_submit($form, &$form_state) {
     $proxy->pid = $form_state['values']['purge_pid'];
   }
   // Set the type of configuration
-  $proxy->type = $form_state['values']['type'];
+  $proxy->type = $form_state['values']['purge_type'];
+  dprint_r($proxy->type);
   $proxy->name = $form_state['values']['name'];
   $proxy->description = $form_state['values']['description'];
   $proxy->url = $proxy_url;
@@ -609,14 +636,14 @@ function purge_proxy_form_submit($form, &$form_state) {
 }
 
 /**
- * Callback to enable a proxy configuration
+ * Callback to enable a proxy configuration.
  */
 function purge_proxy_enable_form($form, &$form_state) {
   purge_proxy_enable($form_state['values']['purge_pid'], 1);
 }
 
 /**
- * Callback to disable a proxy configuration
+ * Callback to disable a proxy configuration.
  */
 function purge_proxy_disable_form($form, &$form_state) {
   purge_proxy_enable($form_state['values']['purge_pid'], 0);
@@ -653,49 +680,6 @@ function purge_proxy_delete_form_confirm($form, &$form_state) {
     t('Delete'),
     t('Cancel')
   );
-}
-
-/**
- * Menu callback for purge proxy configuration list
- */
-function purge_proxy_list() {
-  $rows = array();
-  $header = array(t('Name'), t('Description'), t('Status'), t('Actions'));
-  $proxies = purge_proxy_get_config(0, 'LIST', 'ALL');
-  foreach ($proxies as $proxy) {
-    // Get the proxy configuration name and description
-    $row = array();
-    $row[] = $proxy['name'];
-    $row[] = $proxy['description'];
-    // Generate the status and action fields 
-    $status = '';
-    $actions = array();
-    // See if this is a template
-    if ($proxy['type'] == 2) {
-      $status = t('Template');
-    }
-    else {
-      if ($proxy['enabled']) {
-        $status = $status . t('Enabled');
-        $actions[] = l(t('Disable'), "admin/config/development/performance/purge/disable/{$proxy['pid']}");
-      }
-      else {
-        $status = $status . t('Disabled');
-        $actions[] = l(t('Enable'), "admin/config/development/performance/purge/enable/{$proxy['pid']}");
-      }
-      // Add actions for edit and delete
-      $actions[] = l(t('Edit'), "admin/config/development/performance/purge/edit/{$proxy['pid']}");
-      $actions[] = l(t('Delete'), "admin/config/development/performance/purge/delete/{$proxy['pid']}");
-    }
-
-    $row[] = $status;
-    $row[] = implode(' | ', $actions);
-    $rows[] = $row;
-  }
-  // Output themed table
-  $proxy_list = theme('table', array('header' => $header, 'rows' => $rows));
-  //print($output);
-  return $proxy_list;
 }
 
 /**

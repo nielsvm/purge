@@ -23,7 +23,7 @@ function purge_schema() {
       'type' => array(
         'type' => 'varchar',
         'length' => '40',
-        'description' => 'Type of configuration. 0 = System, 1 = Platform, 2 = Contrib, 3 = User',
+        'description' => 'Type of configuration.',
       ),
       'name' => array(
         'type' => 'varchar',

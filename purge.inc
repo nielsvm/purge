@@ -15,7 +15,7 @@ class PurgeProxy {
   public $description = '';
   public $url = 'http://localhost';
   public $options = array('_PARALLEL_','_NONBLOCKING_');
-  public $domains = array('domains_expire');
+  public $domains = array('_DOMAINS_EXPIRE_');
   public $headers = array('');
   // Save to database
   public function db_save() {
@@ -31,10 +31,10 @@ class PurgeProxy {
     );
     // Check if this is a new or an existing config
     if ($this->pid > 0) {
-      $fields['pid'] = $this->pid;
       // Update the existing database record
       $query = db_update('purge_proxy')
         ->fields($fields)
+        ->condition('pid', $this->pid)
         ->execute();
     }
     else {
@@ -48,7 +48,7 @@ class PurgeProxy {
 /**
  * Function to retrieve proxy configuration objects form the database.
  */
-function purge_config_db_get($pids) {
+function purge_config_db_get(array $pids = array()) {
   $proxy_confs = array();
   // Query the proxy configuration table
   $query = db_select('purge_proxy', 'p');
@@ -59,7 +59,7 @@ function purge_config_db_get($pids) {
     // create an or condition
     $or = db_or();
     foreach ($pids as $pid) {
-      $or->condition('pid', $pid, '=');
+      $or->condition('pid', $pid);
     }
     $query->condition($or);
   }
@@ -80,107 +80,6 @@ function purge_config_db_get($pids) {
   }
   return $proxy_confs;
 }
-
-
-
-/**
- * Function to retrieve proxy configurations
- * @param int $pid
- *   The pid identifying the proxy configuration to retrieve.
- *   The default value $pid = 0 will result in all configurations
- *   being retrieved.
- * @param string $view
- *   The $view parameter deternmines the values returned.
- *   NAME just returns the pid, type and name.
- *   LIST returns pid, type, name, description, enabled and active.
- *   FULL returns all available fields.
- * @param string $status
- *   The $status parameter limits the results of proxy configutaions.
- *   ACTIVE just returns active proxy configurations
- *   SYSTEM also returns configurations temples for internal use.
- */
-function purge_proxy_get_config($pid = 0, $view = 'FULL', $status = 'ACTIVE') {
-  $proxy_confs = array();
-  //Query the proxy configuration table
-  $query = db_select('purge_proxy', 'p');
-
-  // Gather the fields needed
-  if ($view == 'NAME') {
-    $fields = array('pid', 'type', 'name');
-  }
-  if ($view == 'LIST') {
-    $fields = array('pid', 'type', 'name', 'description', 'enabled', 'active');
-  }
-  if ($view == 'FULL') {
-    $fields = array('pid', 'type', 'name', 'description', 'enabled', 'active',
-      'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type', 'options_parallel',
-      'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers');
-  }
-  $query->fields('p', $fields);
-
-  // Set conditions
-  if ($status != 'SYSTEM') {
-    $query->condition('type', 0, '>');
-  }
-  if ($status == 'ACTIVE') {
-    $query->condition('active', 1);
-    $query->condition('enabled', 1);
-    $query->condition('type', 2, '>');
-  }
-  if ($pid > 0) {
-    $query->condition('pid', $pid);
-  }
-
-  // Order, order, order.
-  $query->orderBy('active', 'DESC');
-  $query->orderBy('enabled', 'DESC');
-
-  // Execute query and parse results
-  $result = $query->execute();
-  foreach ($result as $record) {
-    $proxy_confs[$record->pid]['pid'] = $record->pid;
-    $proxy_confs[$record->pid]['type'] = $record->type;
-    $proxy_confs[$record->pid]['name'] = $record->name;
-    if (($view == 'LIST') or ($view == 'FULL')) {
-      $proxy_confs[$record->pid]['description'] = $record->description;
-      $proxy_confs[$record->pid]['enabled'] = $record->enabled;
-      $proxy_confs[$record->pid]['active'] = $record->active;
-    }
-    if ($view == 'FULL') {
-      // Check to use the base url or manual settings
-      if ($record->proxy_host == '_USE_BASEURL_') {
-        $proxy_confs[$record->pid]['proxy_use_baseurl'] = True;
-        $proxy_confs[$record->pid]['proxy_host'] = '';
-      }
-      else {
-        $proxy_confs[$record->pid]['proxy_use_baseurl'] = False;
-        $proxy_confs[$record->pid]['proxy_host'] = $record->proxy_host;
-      }
-      $proxy_confs[$record->pid]['proxy_ssl'] = $record->proxy_ssl;
-      $proxy_confs[$record->pid]['proxy_port'] = $record->proxy_port;
-
-      // Set options
-      $proxy_confs[$record->pid]['options_type'] = $record->options_type;
-      $proxy_confs[$record->pid]['options_parallel'] = $record->options_parallel;
-      $proxy_confs[$record->pid]['options_nonblocking'] = $record->options_nonblocking;
-
-      // Set domains
-      $proxy_confs[$record->pid]['domains'] = explode(',', $record->domains);
-
-      // Set URL options
-      $proxy_confs[$record->pid]['url_prefix'] = $record->url_prefix;
-      $proxy_confs[$record->pid]['url_wildcards'] = $record->url_wildcards;
-
-      // Set headers
-      $headers = array();
-      $headers = explode(',', $record->headers);
-      $proxy_confs[$record->pid]['headers'] = $headers;
-    }
-  }
-  return $proxy_confs;
-}
-
-
 
 /**
  * Purges urls from reverse proxy caches

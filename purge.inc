@@ -46,6 +46,21 @@ class PurgeProxy {
 }
 
 /**
+ * Function to retrieve all active proxy configurations.
+ */
+function purge_config_get_enabled() {
+  $pids = variable_get('purge_proxies');
+  $pids_enabled = array();
+  foreach ($pids as $pid => $enabled) {
+    if ($pid == $enabled) {
+      $pids_enabled[] = $pid;
+    }
+  }
+  $proxies = purge_config_db_get($pids_enabled);
+  return $proxies;
+}
+
+/**
  * Function to retrieve proxy configuration objects form the database.
  */
 function purge_config_db_get(array $pids = array()) {
@@ -95,8 +110,8 @@ function purge_urls($purge_urls) {
   global $base_url;
   $base_url_parts = parse_url($base_url);
   // Get all enabled and active proxy configurations
-  $proxy_configs = array();
-  $proxy_configs = purge_proxy_get_config(0, 'FULL', 'ACTIVE');
+  $proxies = array();
+  $proxies = purge_config_get_enabled();
   // This array will be filled with requests.
   $purge_requests = array();
   $current_purge_request = 0;
@@ -106,10 +121,10 @@ function purge_urls($purge_urls) {
     $purge_url_parts = parse_url($purge_url);
 
     // Process all urls for each proxy
-    foreach ($proxy_configs as $proxy_config) {
+    foreach ($proxies as $proxy) {
       // Set the base url of the proxy request (scheme + domain)
       // First check if the use base url option is set
-      if ($proxy_config['proxy_use_baseurl']) {
+      if ($proxy->url == '_USE_BASEURL_') {
         $purge_base_url = $base_url_parts['scheme'] . $base_url_parts['host'];
         // Add port to the host if set
         if (array_key_exists('port', $base_url_parts)) {
@@ -117,34 +132,21 @@ function purge_urls($purge_urls) {
         }
       }
       else {
-        // Check for ssl/https
-        if ($proxy_config['proxy_ssl']) {
-          $purge_base_url = "https://";
-        }
-        else {
-          $purge_base_url = "http://";
-        }
-        // Add hostname
-        $purge_base_url = $purge_base_url . $proxy_config['proxy_host'];
-        // Add port to the host if set
-        if ($proxy_config['proxy_port'] != '') {
-          $purge_base_url = $purge_base_url . ":" . $proxy_config['proxy_port'];
-        }
+        // Just take the configured URL
+        $purge_base_url = $proxy->url;
       }
 
       // Set the path
       $purge_path = '';
-      if ($proxy_config['url_prefix'] != '') {
-        $purge_path .= $proxy_config['url_prefix'];
-      }
       $purge_path .= $purge_url_parts['path'];
       if (array_key_exists('query', $purge_url_parts)) {
         $purge_path .= "?" . $purge_url_parts['query'];
       }
 
       // Determine all host headers to set.
+      $domains_drupal = FALSE;
       $purge_url_domains = array();
-      $domains = $proxy_config['domains'];
+      $domains = $proxy->domains;
       foreach ($domains as $domain) {
         if ($domain[0] == '_') {
           if ($domain == '_DOMAINS_EXPIRE_') {
@@ -179,7 +181,7 @@ function purge_urls($purge_urls) {
 
       // Set Headers
       $purge_headers = array();
-      $headers = $proxy_config['headers'];
+      $headers = $proxy->headers;
       foreach ($headers as $header) {
         if ($header[0] != '_') {
           $purge_headers[] = $header;
@@ -190,14 +192,12 @@ function purge_urls($purge_urls) {
       foreach ($purge_url_domains as $purge_url_domain) {
         // Add purge url, proxy config and domain to the array for later processing
         $purge_requests[$current_purge_request]['purge_url'] = $purge_url;
-        $purge_requests[$current_purge_request]['proxy_name'] = $proxy_config['name'];
+        $purge_requests[$current_purge_request]['proxy_name'] = $proxy->name;
         $purge_requests[$current_purge_request]['domain'] = $purge_url_domain;
         // Set the purge url
         $purge_requests[$current_purge_request]['purge_url'] = $purge_base_url . $purge_path;
         // Set the options
-        $purge_requests[$current_purge_request]['request_method'] = $proxy_config['options_type'];
-        $purge_requests[$current_purge_request]['request_parallel'] = $proxy_config['options_parallel'];
-        $purge_requests[$current_purge_request]['request_nonblocking'] = $proxy_config['options_nonblocking'];
+        $purge_requests[$current_purge_request]['options'] = $proxy->options;
         // Set the headers
         $all_headers = array();
         if (count($purge_headers > 0)) {
@@ -213,15 +213,33 @@ function purge_urls($purge_urls) {
 }
 
 /**
+ * Get the request method from a set options.
+ */
+function purge_get_method($options) {
+  if (in_array('_METHOD_GET_', $options)) {
+    $method = 'GET';
+  }
+  elseif (in_array('_METHOD_BAN_', $options)) {
+    $method = 'BAN';
+  }
+  else {
+    $method = 'PURGE';
+  }
+  return $method;
+}
+
+/**
  * Issue purge requests using drupal_http_request.
  */
 function purge_drupal($purges) {
   // Go through each purge url one at a time
   foreach ($purges as $purge_id => $purge) {
+    // Get the method
+    $method = purge_get_method($purge['options']);
     $headers = headers2array ($purge['headers']);
     $options = array(
       'headers' => $headers,
-      'method' => $purge['request_method'],
+      'method' => $method,
     );
     $results = drupal_http_request($purge['purge_url'],$options);
     $purges[$purge_id]['http_code'] = 200; // $results['code'];
@@ -237,7 +255,7 @@ function purge_curl_single($purges) {
   foreach ($purges as $purge_id => $purge) {
     // Create a curl request
     $current_curl_request = curl_init();
-    curl_setopt($current_curl_request, CURLOPT_CUSTOMREQUEST, $purge['request_method']);
+    curl_setopt($current_curl_request, CURLOPT_CUSTOMREQUEST, purge_get_method($purge['options']));
     curl_setopt($current_curl_request, CURLOPT_URL, $purge['purge_url']);
     curl_setopt($current_curl_request, CURLOPT_HEADER, 1);
     curl_setopt($current_curl_request, CURLOPT_HTTPHEADER, $purge['headers']);
@@ -265,7 +283,7 @@ function purge_curl_multi_legacy($purges) {
   $current_curl_purge = 0;
   foreach ($purges as $purge) {
     $curl_purge[$current_curl_purge] = curl_init();
-    curl_setopt($curl_purge[$current_curl_purge], CURLOPT_CUSTOMREQUEST, $purge['request_method']);
+    curl_setopt($curl_purge[$current_curl_purge], CURLOPT_CUSTOMREQUEST, purge_get_method($purge['options']));
     curl_setopt($curl_purge[$current_curl_purge], CURLOPT_URL, $purge['purge_url']);
     curl_setopt($curl_purge[$current_curl_purge], CURLOPT_HEADER, 1);
     curl_setopt($curl_purge[$current_curl_purge], CURLOPT_HTTPHEADER, $purge['headers']);
@@ -315,7 +333,7 @@ function purge_httprl($purges) {
     $headers_array = headers2array($purge['headers']);
     // Gather options
     $options = array(
-      'method' => $purge['request_method'],
+      'method' => purge_get_method($purge['options']),
       'blocking' => FALSE,
       'headers' => $headers_array,
     );

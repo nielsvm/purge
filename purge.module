@@ -16,7 +16,6 @@ function purge_menu() {
     'title'             => 'Purge',
     'description'       => 'Configure the Purge module',
     'type'              => MENU_LOCAL_TASK,
-    // 'page callback'     => 'purge_proxy_list',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('purge_admin_settings_form'),
     'access arguments'  => array('administer site configuration'),
@@ -27,7 +26,16 @@ function purge_menu() {
     'title'             => 'Add Proxy',
     'type'              => MENU_LOCAL_ACTION,
     'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('purge_proxy_form'),
+    'page arguments'    => array('purge_template_form'),
+    'access arguments'  => array('administer site configuration'),
+    'file path'         => drupal_get_path('module', 'purge'),
+    'file'              => 'purge.admin.inc',
+  );
+  $items['admin/config/development/performance/purge/add/%'] = array(
+    'title'             => 'Add Proxy',
+    'type'              => MENU_CALLBACK,
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('purge_proxy_form', 6),
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
@@ -41,22 +49,6 @@ function purge_menu() {
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
     'tab_parent'        => 'admin/config/development/performance/purge',
-  );
-  $items['admin/config/development/performance/purge/enable/%'] = array(
-    'type'              => MENU_CALLBACK,
-    'page callback'     => 'purge_proxy_enable',
-    'page arguments'    => array(6, '1'),
-    'access arguments'  => array('administer site configuration'),
-    'file path'         => drupal_get_path('module', 'purge'),
-    'file'              => 'purge.admin.inc',
-  );
-  $items['admin/config/development/performance/purge/disable/%'] = array(
-    'type'              => MENU_CALLBACK,
-    'page callback'     => 'purge_proxy_enable',
-    'page arguments'    => array(6, '0'),
-    'access arguments'  => array('administer site configuration'),
-    'file path'         => drupal_get_path('module', 'purge'),
-    'file'              => 'purge.admin.inc',
   );
   $items['admin/config/development/performance/purge/delete/%'] = array(
     'type'              => MENU_CALLBACK,

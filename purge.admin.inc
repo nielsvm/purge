@@ -37,14 +37,12 @@ function purge_admin_settings_form() {
       );
     }
   }
-
   $form['purge_proxies'] = array(
     '#type' => 'tableselect',
     '#header' => $header,
     '#options' => $proxy_options,
     '#default_value' => variable_get('purge_proxies'),
   );
-  dprint_r(variable_get('purge_proxies'));
 
   // Advanced Settings
   $form['purge_advanced'] = array(
@@ -117,6 +115,48 @@ function purge_get_request_handlers() {
     $handlers = array_merge($handlers, $module_handlers);
   }
   return $handlers;
+}
+
+/**
+ * Meu callback for template selection form
+ */
+function purge_template_form($form, $form_state) {
+  // Start the form with a header.
+  $form = array();
+  $header = array(
+    'name' => t('Name'),
+    'type' => t('Type'),
+    'description' => t('Description'),
+  );
+  // Gather options
+  $options = array();
+  // Add an option for an blank configuration
+  $options[0] = array(
+    'name' => t('Empty Template'),
+    'type' => 'purge_template',
+    'description' => t('Start with a completely blank configuration.')
+  );
+  $proxies = purge_config_db_get();
+  foreach ($proxies as $proxy) {
+    // Filter out only the user managed configurations
+    if (strpos($proxy->type, '_template')) {
+      $options[$proxy->pid] = array(
+        'name' => $proxy->name,
+        'type' => $proxy->type,
+        'description' => $proxy->description,
+      );
+    }
+  }
+
+  $form['purge_template'] = array(
+    '#type' => 'tableselect',
+    '#title' => t('Select a template to start with.'),
+    '#header' => $header,
+    '#options' => $options,
+    '#multiple' => FALSE,
+    '#default_value' => 1,
+  );
+  return $form;
 }
 
 /**

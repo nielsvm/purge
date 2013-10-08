@@ -156,13 +156,28 @@ function purge_template_form($form, $form_state) {
     '#multiple' => FALSE,
     '#default_value' => 1,
   );
+  // Add the actions
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Select'),
+    '#submit' => array('purge_template_form_submit'),
+  );
   return $form;
+}
+
+/**
+ * Callback for the select button on the template form.
+ */
+function purge_template_form_submit($form, &$form_state) {
+  $form_state['redirect'] = 'admin/config/development/performance/purge/add/' . $form_state['values']['purge_template'];
 }
 
 /**
  * Menu callback for purge proxy configuration.
  */
-function purge_proxy_form($form, $form_state, $pid = 0) {
+function purge_proxy_form($form, $form_state, $pid = 0, $form_action = 'add') {
+  dprint_r($form_action);
   // Load the proxy configuration for editing.
   if ($pid == 0) {
     $proxy = new PurgeProxy();
@@ -171,9 +186,16 @@ function purge_proxy_form($form, $form_state, $pid = 0) {
     $proxies = purge_config_db_get(array($pid));
     $proxy = $proxies[0];
   }
-  dprint_r($proxy->type);
+  if ($form_action == 'add') {
+    $proxy->name = '';
+    $proxy->description = '';
+  }
   $form = array();
   // Hidden fields for internal use
+  $form['form_action'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $form_action,
+  );
   $form['purge_pid'] = array(
     '#type' => 'hidden',
     '#default_value' => $proxy->pid,
@@ -474,32 +496,43 @@ function purge_proxy_form($form, $form_state, $pid = 0) {
     '#submit' => array('purge_proxy_form_submit'),
   );
   // Render an option to submit and enable the configuration
-  $proxies = variable_get('purge_proxies');
-  $proxy = $proxies[$proxy->pid];
-  if ($proxy == 0) {
+  $proxy_enabled = FALSE;
+  if ($form_action == 'edit') {
+    $proxies_enabled = variable_get('purge_proxies', array(0 => 0));
+    if (in_array($proxy->pid, $proxies_enabled)) {
+      if ($proxies_enabled[$proxy->pid] == $proxy->pid) {
+        $proxy_enabled = TRUE;
+      }
+    }
+  }
+  if ($proxy_enabled == 0) {
     $form['actions']['submit_enable'] = array(
       '#type' => 'submit',
       '#value' => t('Save and Enable'),
       '#submit' => array('purge_proxy_form_submit', 'purge_proxy_form_enable'),
     );
-    $form['actions']['enable'] = array(
+  }
+  if ($form_action == 'edit') {
+    if ($proxy_enabled == 0) {
+      $form['actions']['enable'] = array(
+        '#type' => 'submit',
+        '#value' => t('Enable'),
+        '#submit' => array('purge_proxy_enable_form'),
+      );
+    }
+    else {
+      $form['actions']['disable'] = array(
+        '#type' => 'submit',
+        '#value' => t('Disable'),
+        '#submit' => array('purge_proxy_disable_form'),
+      );
+    }
+    $form['actions']['delete'] = array(
       '#type' => 'submit',
-      '#value' => t('Enable'),
-      '#submit' => array('purge_proxy_enable_form'),
+      '#value' => t('Delete'),
+      '#submit' => array('purge_proxy_delete_form'),
     );
   }
-  else {
-    $form['actions']['disable'] = array(
-      '#type' => 'submit',
-      '#value' => t('Disable'),
-      '#submit' => array('purge_proxy_disable_form'),
-    );
-  }
-  $form['actions']['delete'] = array(
-    '#type' => 'submit',
-    '#value' => t('Delete'),
-    '#submit' => array('purge_proxy_delete_form'),
-  );
   return $form;
 }
 
@@ -617,9 +650,9 @@ function purge_proxy_form_submit($form, &$form_state) {
     if ($form_state['values'][$domain_module] == True) {
       $domains[] = '_begin_set:' . $domain_module;
       $module_domains = module_invoke($domain_module, 'purge_domains');
-        foreach ($module_domains as $module_domain) {
-          $domains[] = $module_domain;
-        }
+      foreach ($module_domains as $module_domain) {
+        $domains[] = $module_domain;
+      }
       $domains[] = '_end_set:' . $domain_module;
     }
   }
@@ -660,12 +693,11 @@ function purge_proxy_form_submit($form, &$form_state) {
   // Create a PurgeProxy object
   $proxy = new PurgeProxy;
   // Check if we need to specify pid
-  if ($form_state['values']['purge_pid'] > 0) {
+  if ($form_state['values']['form_action'] == 'edit') {
     $proxy->pid = $form_state['values']['purge_pid'];
   }
   // Set the type of configuration
-  $proxy->type = $form_state['values']['purge_type'];
-  dprint_r($proxy->type);
+  $proxy->type = str_replace('_template', '_user', $form_state['values']['purge_type']);
   $proxy->name = $form_state['values']['name'];
   $proxy->description = $form_state['values']['description'];
   $proxy->url = $proxy_url;
@@ -695,33 +727,25 @@ function purge_proxy_disable_form($form, &$form_state) {
  * Callback to delete a proxy configuration
  */
 function purge_proxy_delete_form($form, &$form_state, $pid = NULL) {
-//  if (isset($form_state['values']['process'])) {
-  if (is_null($pid)) {
-    if (isset($form_state['values']['purge_pid'])) {
-      if ($form_state['values']['purge_pid'] > 1) {
-        $pid = $form_state['values']['purge_pid'];
-      }
-    }
+  if (!isset($form_state['values']['purge_pid'])) {
+    // Hidden fields for internal use
+    $form['purge_pid'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $pid,
+    );
+    $form_state['values']['purge_pid'] = $pid;
   }
-  purge_proxy_delete($pid);
- //   return drupal_goto('admin/config/system/purge/proxy');
-  //}
-  //else {
-  //  return purge_proxy_delete_form_confirm($form, &$form_state);
-  //}
+  $form['purge_proxy_delete'] = array(
+    '#title' => t('Confirm Proxy Deletion'),
+  );
+  return confirm_form($form, t('Deleting node'), t('Are you sure?'), t('Delete'));
 }
 
 /**
  * Confirm deletion of a proxy configuration
  */
-function purge_proxy_delete_form_confirm($form, &$form_state) {
-  $form['process'] = array('#type' => 'hidden', '#value' => 'true');
-  return confirm_form($form,
-    t('Are you sure you want to delete %proxy_name?'), array('%proxy_name' => $form_state['values']['name']),
-    t('admin/config/system/purge/proxy'),
-    t('Delete'),
-    t('Cancel')
-  );
+function purge_proxy_delete_form_submit($form, &$form_state) {
+  purge_proxy_delete($form_state['values']['purge_pid']);
 }
 
 /**
@@ -770,10 +794,8 @@ function purge_proxy_enable($pid, $value = 1) {
  * Helper function to delete proxy configurations
  */
 function purge_proxy_delete($pid) {
-  // Get the name of the proxy configuration
-  $proxy_config = purge_proxy_get_config($pid, 'NAME', 'ALL');
-  $proxy_name = $proxy_config[$pid]['name'];
   // Delete the configuration from the database
+  $proxy_name = ' that was a goner anyway ';
   $query = db_delete('purge_proxy')
     ->condition('pid', $pid)
     ->execute();

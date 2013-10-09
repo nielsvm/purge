@@ -251,6 +251,11 @@ function purge_proxy_form($form, $form_state, $pid = 0, $form_action = 'add') {
   // The compose option
   $form['purge_proxy_url']['compose'] = array(
     '#type' => 'fieldset',
+    '#states' => array(
+      'visible' => array(
+        ':input[name="purge_proxy_url_options"]' => array('value' => 1),
+      ),
+    ),
   );
   // Parse the proxy url
   $proxy_url_parts = parse_url($proxy->url);
@@ -304,6 +309,11 @@ function purge_proxy_form($form, $form_state, $pid = 0, $form_action = 'add') {
   );
   $form['purge_proxy_url']['manual'] = array(
     '#type' => 'fieldset',
+    '#states' => array(
+      'visible' => array(
+        ':input[name="purge_proxy_url_options"]' => array('value' => 2),
+      ),
+    ),
   );
   $form['purge_proxy_url']['manual']['url'] = array(
     '#type' => 'textfield',
@@ -509,7 +519,7 @@ function purge_proxy_form($form, $form_state, $pid = 0, $form_action = 'add') {
     $form['actions']['submit_enable'] = array(
       '#type' => 'submit',
       '#value' => t('Save and Enable'),
-      '#submit' => array('purge_proxy_form_submit', 'purge_proxy_form_enable'),
+      '#submit' => array('purge_proxy_form_submit', 'purge_proxy_enable_form'),
     );
   }
   if ($form_action == 'edit') {

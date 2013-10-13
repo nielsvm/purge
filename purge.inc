@@ -15,8 +15,18 @@ class PurgeProxy {
   public $description = '';
   public $url = 'http://localhost';
   public $options = array('_PARALLEL_','_NONBLOCKING_');
-  public $domains = array('_DOMAINS_EXPIRE_');
+  public $domain_sets = array(
+    // Only ad an empty custom domain set
+    'purge_custom' => array(
+      'domains' => '',
+    ),
+  );
+  public $domains = array('');
   public $headers = array('');
+  // Process domains
+  public function get_domains($dynamic = FALSE) {
+
+  }
   // Save to database
   public function db_save() {
     // Fill the fields
@@ -26,7 +36,7 @@ class PurgeProxy {
       'description' => $this->description,
       'url' => $this->url,
       'options' => implode(',', $this->options),
-      'domains' => implode(',', $this->domains),
+      'domain_sets' => drupal_json_encode($this->domain_sets),
       'headers' => implode(',', $this->headers),
     );
     // Check if this is a new or an existing config
@@ -67,7 +77,7 @@ function purge_config_db_get(array $pids = array()) {
   $proxy_confs = array();
   // Query the proxy configuration table
   $query = db_select('purge_proxy', 'p');
-  $fields = array('pid', 'type', 'name', 'description','url', 'options', 'domains', 'headers');
+  $fields = array('pid', 'type', 'name', 'description','url', 'options', 'domain_sets', 'headers');
   $query->fields('p', $fields);
   // Check if pids are specified
   if ((is_array($pids)) and !empty($pids)) {
@@ -89,7 +99,7 @@ function purge_config_db_get(array $pids = array()) {
     $proxy_conf->description = $result->description;
     $proxy_conf->url = $result->url;
     $proxy_conf->options = explode(',', $result->options);
-    $proxy_conf->domains = explode(',', $result->domains);
+    $proxy_conf->domain_sets = json_decode($result->domain_sets);
     $proxy_conf->headers = explode(',', $result->headers);
     $proxy_confs[] = $proxy_conf;
   }

@@ -118,7 +118,7 @@ function purge_get_request_handlers() {
 }
 
 /**
- * Meu callback for template selection form
+ * Menu callback for template selection form.
  */
 function purge_template_form($form, $form_state) {
   // Start the form with a header.
@@ -363,76 +363,56 @@ function purge_proxy_form($form, $form_state, $pid = 0, $form_action = 'add') {
     '#description' => t('Send non blocking purge requests.'),
     '#default_value' => in_array('_NON_BLOCKING_', $proxy->options),
   );
+  // The domains section
   $form['purge_proxy_advanced']['domains'] = array(
     '#type' => 'fieldset',
     '#title' => t('Domains'),
   );
 
-  // Parse the domains
-  $custom_domains = array();
-  $domains = array();
-  $domains = $proxy->domains;
-  $domain_set = array();
-  $domain_set['expire'] = False;
-  $domain_set['drupal'] = False;
-  $domain_set['current'] = False;
-  $domain_modules = module_implements('purge_domains');
-  foreach ($domain_modules as $domain_module) {
-    $domain_set[$domain_module] = False;
-  }
-  foreach ($domains as $domain) {
-    if ($domain_set['current'] == False) {
-      // Check the Expire option
-      if ($domain == '_DOMAINS_EXPIRE_') {
-        $domain_set['expire'] = True;
-      }
-      Elseif ($domain == '_DOMAINS_DRUPAL_') {
-        $domain_set['drupal'] = True;
-      }
-      // Check is this is the start of a set
-      Elseif (!strncmp($domain, '_begin_set:', 11)) {
-        $domain_module = substr($domain, 11);
-        $domain_set[$domain_module] = True;
-        $domain_set['current'] = True;
-      }
-      // Add all other headers as custom headers
-      else {
-        $custom_domains[] = $domain;
-      }
-    }
-    Else {
-      if (!strncmp($domain, '_end_set:', 9)) {
-        $domain_set['current'] = False;
-      }
-    }
-  }
   $form['purge_proxy_advanced']['domains']['drupal'] = array(
     '#type' => 'checkbox',
     '#title' => t('Domain from Drupal'),
     '#description' => t('Get domain names from Drupal. Used as default when no other hostnames are provided.'),
-    '#default_value' => $domain_set['drupal'],
+    '#default_value' => array_key_exists('drupal', $proxy->domain_sets),
   );
   $form['purge_proxy_advanced']['domains']['expire'] = array(
     '#type' => 'checkbox',
     '#title' => t('Domains from Expire'),
     '#description' => t('Get domain names from the Expire module or other modules implementing its hooks.'),
-    '#default_value' => $domain_set['expire'],
+    '#default_value' => array_key_exists('expire', $proxy->domain_sets),
   );
 
   // Generate a form checkbox for each module providing domains
+  $domain_modules = module_implements('purge_domains');
   foreach ($domain_modules as $domain_module) {
+    $domain_module_enabled = FALSE;
+    foreach ($proxy->domain_sets as $domain_set_key => $domain_set) {
+      // Check if there is a domain set that starts with the name if the module
+      if (strpos($domain_set_key, $domain_module) == 0) {
+        // set it as enabled
+        $domain_module_enabled = TRUE;
+      }
+    }
+    // Now generate a checkbox for this module
     $form['purge_proxy_advanced']['domains'][$domain_module] = array(
       '#type' => 'checkbox',
       '#title' => t($domain_module),
       '#description' => t('Set domains prodived by the @module module.', array('@module' => $domain_module)),
-      '#default_value' => $domain_set[$domain_module],
+      '#default_value' => $domain_module_enabled,
     );
+  }
+  $domains_custom = '';
+  dprint_r($proxy->domain_sets->purge_custom->domains);
+  if (array_key_exists('purge_custom', $proxy->domain_sets)) {
+    if ($proxy->domain_sets->purge_custom->domains != '') {
+      $domains_custom = implode("\n", $proxy->domain_sets->purge_custom->domains);
+    }
   }
   $form['purge_proxy_advanced']['domains']['custom_domains'] = array(
     '#type' => 'textarea',
     '#title' => t('Custom domains'),
     '#description' => t('Provide custom domains to be purged with each request. One line each'),
-    '#default_value' => implode("\n", $custom_domains),
+    '#default_value' => $domains_custom,
   );
   $form['purge_proxy_advanced']['headers'] = array(
     '#type' => 'fieldset',
@@ -636,16 +616,6 @@ function purge_proxy_form_submit($form, &$form_state) {
   elseif ($form_state['values']['purge_proxy_url_options'] == 2) {
     $proxy_url = trim($form_state['values']['url']);
   }
-  // Generate the storage field for the domains
-  $domains = array();
-  // Check for the Drupal and Expire options
-  if ($form_state['values']['drupal'] == 1) {
-    $domains[] = '_DOMAINS_DRUPAL_';
-  }
-  if ($form_state['values']['expire'] == 1) {
-    $domains[] = '_DOMAINS_EXPIRE_';
-  }
-
   // Gather options
   $proxy_options = array();
   if ($form_state['values']['method'] == 'GET') {
@@ -654,25 +624,43 @@ function purge_proxy_form_submit($form, &$form_state) {
   elseif ($form_state['values']['method'] == 'BAN') {
     $proxy_options[] = '_METHOD_BAN_';
   }
+
+  // Generate the storage field for the domains
+  $domain_sets = array();
+  // Check for the Drupal and Expire options
+  if ($form_state['values']['drupal'] == 1) {
+    $domain_sets['drupal'] = array(
+      'dynamic' => TRUE,
+      'callback' => 'purge_domains_drupal',
+    );
+  }
+  if ($form_state['values']['expire'] == 1) {
+    $domain_sets['expire'] = array(
+      'dynamic' => TRUE,
+      'callback' => 'purge_domains_expire',
+    );
+  }
+
   // Add domains provided by modules
   $domain_modules = module_implements('purge_domains');
   foreach ($domain_modules as $domain_module) {
     if ($form_state['values'][$domain_module] == True) {
-      $domains[] = '_begin_set:' . $domain_module;
-      $module_domains = module_invoke($domain_module, 'purge_domains');
-      foreach ($module_domains as $module_domain) {
-        $domains[] = $module_domain;
-      }
-      $domains[] = '_end_set:' . $domain_module;
+      $module_domain_sets = module_invoke($domain_module, 'purge_domains');
+      $domain_sets = array_merge($domain_sets, $module_domain_sets);
     }
   }
 
-  // Add the custom headers from the formfield
+  // Add the custom domains from the formfield
   $custom_domains = preg_split('/$\R?^/m', $form_state['values']['custom_domains']);
-  foreach ($custom_domains as $domain) {
-    if ((trim($domain)) != '') {
-      $domains[] = trim($domain);
+  if (count($custom_domains > 0)) {
+    foreach ($custom_domains as $domain) {
+      if ((trim($domain)) != '') {
+        $domains[] = trim($domain);
+      }
     }
+    $domain_sets['purge_custom'] = array(
+      'domains' => $domains,
+    );
   }
 
   // Generate the headers field
@@ -712,7 +700,7 @@ function purge_proxy_form_submit($form, &$form_state) {
   $proxy->description = $form_state['values']['description'];
   $proxy->url = $proxy_url;
   $proxy->options = $proxy_options;
-  $proxy->domains = $domains;
+  $proxy->domain_sets = $domain_sets;
   $proxy->headers = $headers;
   // Save the proxy object
   $save = $proxy->db_save();

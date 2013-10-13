@@ -45,7 +45,7 @@ function purge_schema() {
         'length' => '255',
         'description' => 'All options serialized',
       ),
-      'domains' => array(
+      'domain_sets' => array(
         'type' => 'text',
         'description' => 'Domain names to be used for purge requests',
       ),

@@ -24,11 +24,31 @@ class PurgeProxy {
   public $domains = array('');
   public $headers = array('');
   // Process domains
-  public function get_domains($dynamic = FALSE) {
-
+  public function get_domains($get_dynamic = FALSE) {
+    $domains = array();
+    foreach ($this->domain_sets as $domain_set_key => $domain_set) {
+      if (array_key_exists('callback', $domain_set)) {
+        if ($get_dynamic) {
+          if (array_key_exists('dynamic', $domain_set)) {
+            if ($domain_set->dynamic) {
+              $this->domain_sets[$domain_set_key]['domains'] = $domain_set->callback();
+            }
+          }
+          else {
+            $this->domain_sets[$domain_set_key]['domains'] = $domain_set->callback();
+          }
+        }
+      }
+      if (array_key_exists('domains', $this->domain_sets[$domain_set_key]['domains'])) {
+        $domains = array_merge($domains, $this->domain_sets[$domain_set_key]['domains']);
+      }
+    }
+    return $domains;
   }
   // Save to database
   public function db_save() {
+    // Get the domains
+    $domains = $this->get_domains();
     // Fill the fields
     $fields = array(
       'name' => $this->name,
@@ -88,7 +108,6 @@ function purge_config_db_get(array $pids = array()) {
     }
     $query->condition($or);
   }
- // $query->condition('pid', '0', '>');
   // Execute query and parse results
   $results = $query->execute();
   foreach ($results as $result) {
@@ -154,9 +173,8 @@ function purge_urls($purge_urls) {
       }
 
       // Determine all host headers to set.
-      $domains_drupal = FALSE;
       $purge_url_domains = array();
-      $domains = $proxy->domains;
+      $domains = $proxy->get_domains(True);
       foreach ($domains as $domain) {
         if ($domain[0] == '_') {
           if ($domain == '_DOMAINS_EXPIRE_') {
@@ -169,16 +187,13 @@ function purge_urls($purge_urls) {
               $purge_url_domains[] = $purge_url_domain;
             }
           }
-          elseif ($domain == '_DOMAINS_DRUPAL_') {
-            $domains_drupal = True;
-          }
         }
         else {
           $purge_url_domains[] = $domain;
         }
       }
       // Then add the Drupal base url if needed.
-      if ((($domains_drupal == True) OR (count($purge_url_domains) == 0))) {
+      if (((array_key_exists) OR (count($purge_url_domains) == 0))) {
         $purge_url_domain = $base_url_parts['host'];
         // Add port to the host if set
         if (array_key_exists('port', $base_url_parts)) {

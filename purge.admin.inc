@@ -384,13 +384,14 @@ function purge_proxy_form($form, $form_state, $pid = 0, $form_action = 'add') {
 
   // Generate a form checkbox for each module providing domains
   $domain_modules = module_implements('purge_domains');
+  dprint_r($domain_modules);
   foreach ($domain_modules as $domain_module) {
     $domain_module_enabled = FALSE;
     foreach ($proxy->domain_sets as $domain_set_key => $domain_set) {
       // Check if there is a domain set that starts with the name if the module
-      if (strpos($domain_set_key, $domain_module) == 0) {
+      if (strncmp($domain_set_key, $domain_module, strlen($domain_module))) {
         // set it as enabled
-        $domain_module_enabled = TRUE;
+       // $domain_module_enabled = TRUE;
       }
     }
     // Now generate a checkbox for this module

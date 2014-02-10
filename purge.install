@@ -8,80 +8,59 @@
 module_load_include('inc', 'purge');
 
 /**
- * Implements hook_schema().
- */
-function purge_schema() {
-  $schema['purge_proxy'] = array(
-    'description' => t('Table storing proxy configurations'),
-    'fields' => array(
-      'pid' => array(
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'description' => 'Primary ID field for the table. Not used for anything except internal lookups.',
-      ),
-      'type' => array(
-        'type' => 'varchar',
-        'length' => '40',
-        'description' => 'Type of configuration.',
-      ),
-      'name' => array(
-        'type' => 'varchar',
-        'length' => '40',
-        'description' => 'Machine readable name of the proxy configuration.',
-      ),
-      'description' => array(
-        'type' => 'varchar',
-        'length' => '255',
-        'description' => 'Describe the description field... yeah, right',
-      ),
-      'url' => array(
-        'type' => 'varchar',
-        'length' => '255',
-        'description' => 'The URL pointing to the reverse proxy server',
-      ),
-      'options' => array(
-        'type' => 'varchar',
-        'length' => '255',
-        'description' => 'All options serialized',
-      ),
-      'domain_sets' => array(
-        'type' => 'text',
-        'description' => 'Domain names to be used for purge requests',
-      ),
-      'headers' => array(
-        'type' => 'text',
-        'description' => 'Additional headers to be added to the request.',
-      ),
-    ),
-    'primary key' => array('pid'),
-    'unique keys' => array(
-      'name' => array('name'),
-    ),
-  );
-  return $schema;
-}
-  
-/**
  * Implements hook_install().
  */
 function purge_install() {
   //Add the system and template proxy configurations
-  purge_proxy_add_defaults();
+  purge_add_defaults();
 }
-    
+
 /**
  * Implements hook_update_N().
  */
 function purge_update_7200() {
-  //purge_proxy_add_defaults();
-  purge_proxy_config_convert();
+  // purge_proxy_add_defaults();
+  // purge_proxy_config_convert();
 }
 
 /**
- * Function to add system and template proxy configurations
+ * Function to add default configuration items.
  */
-function purge_proxy_add_defaults() {
+function purge_add_defaults() {
+  // Set the default Targets.
+  $target_sets = array();
+  $target_sets = array(
+    '0' => array(
+      'en' => '1',
+      'type' => 'purge_template:0',
+      'name' => 'Default template for new targets',
+      'desc' => '',
+      'urls' => 'http://127.0.0.1/',
+    ),
+    '1' => array(
+      'en' => '1',
+      'type' => 'purge_:1',
+      'name' => 'Drupal Base URL',
+      'desc' => 'Use the base URL provided by Drupal.',
+      'callback' => 'purge_target_drupal',
+    ),
+
+    '2' => array(
+      'en' => '1',
+      'type' => 'purge_user:0',
+      'name' => 'Example',
+      'desc' => 'You can change this target any valid URL.',
+      'urls' => array('http://127.0.0.1/'),
+    ),
+  );
+  // Write the target sets to the variabls
+  variable_set('purge_targets', drupal_json_encode($target_sets));
+}
+
+/**
+ * DEPRICATED Function to add system and template proxy configurations.
+ */
+function purge_proxy_add_defaults_db() {
   // First add the 'empty' template.
   $default_template = new PurgeProxy;
   // Modify properties

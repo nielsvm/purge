@@ -2,7 +2,8 @@
 
 /**
  * @file
- * Purge clears url's from reverse proxy caches like Varnish and Squid by issuing HTTP PURGE requests.
+ * Purge clears url's from reverse proxy caches like Varnish and Squid by
+ * issuing HTTP PURGE requests.
  */
 
 /**
@@ -58,7 +59,15 @@ function purge_menu() {
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
   );
-  //}
+  $items['admin/config/development/performance/purge/targets'] = array(
+    'title'             => 'Targets',
+    'type'              => MENU_LOCAL_ACTION,
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('purge_targets_form'),
+    'access arguments'  => array('administer site configuration'),
+    'file path'         => drupal_get_path('module', 'purge'),
+    'file'              => 'purge.admin.inc',
+  );
   return $items;
 }
 

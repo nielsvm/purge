@@ -177,7 +177,7 @@ function purge_template_form_submit($form, &$form_state) {
  * Menu callback for purge proxy configuration.
  */
 function purge_proxy_form($form, $form_state, $pid = 0, $form_action = 'add') {
-  dprint_r($form_action);
+  // dprint_r($form_action);
   // Load the proxy configuration for editing.
   if ($pid == 0) {
     $proxy = new PurgeProxy();
@@ -802,3 +802,106 @@ function purge_proxy_delete($pid) {
   $ouput = drupal_goto('admin/config/development/performance/purge');
   return $output;
 }
+
+/**
+ * Menu Callback for the Targets overview page
+ */
+function purge_targets_form($form, &$form_state) {
+  // Get all the target sets
+  $target_sets = array();
+  $target_sets = purge_targets_getall();
+  dprint_r($target_sets);
+  foreach ($target_sets as $tid => $target_set) {
+    // Don't show templates
+    if (!strpos($target_set['type'], '_template')) {
+      // Determine actions available for this target set.
+      $actions = array();
+    // Check if this is a user configurable type
+      if (strpos($target_set['type'],  '_user:0')) {
+        $actions[] = l(t('Edit'), "admin/config/development/performance/purge/target/edit/{$tid}");
+        $actions[] = l(t('Clone'), "admin/config/development/performance/purge/target/clone/{$tid}");
+        $actions[] = l(t('Delete'), "admin/config/development/performance/purge/target/delete/{$tid}");
+      }
+      // Check if this is a static set of another type.
+      elseif (strpos($target_set['type'], ':0')) {
+        $actions[] = l(t('Reset'), "admin/config/development/performance/purge/target/reset/{$tid}");
+      }
+      $form_rows[$tid] = array(
+        'name' => $target_set['name'],
+        'desc' => $target_set['desc'],
+        'actions' => implode(' | ', $actions),
+      );
+    }
+  }
+  // Get state
+  $state = purge_targets_state($target_sets);
+  dprint_r($state);
+  // Get the form table up there.
+  $form['purge_targets'] = array(
+    '#type' => 'tableselect',
+    '#title' => t('Purge Targets'),
+    '#header' => array(
+      'name' => t('Name'),
+      'desc' => t('Description'),
+      'actions' => t('Actions'),
+    ),
+    '#options' => $form_rows,
+    '#default_value' => purge_targets_state($target_sets),
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save Changes'),
+  );
+  return $form;
+}
+
+/**
+ * Form submission for the target sets form.
+ */
+function purge_targets_form_submit($form, $form_state) {
+  // First get the current configuration
+  $target_sets = purge_targets_getall();
+  $current_values = purge_targets_state($target_sets);
+  $form_values = $form_state['values']['purge_targets'];
+  // Check each submitted value for changes
+  foreach ($form_values as $form_tid => $form_value) {
+    if ($current_values[$form_tid] != $form_value) {
+      // Disable
+      if ($form_value == 0) {
+        $target_sets[$form_tid]['en'] = '0';
+      }
+      elseif ($form_value == $form_tid) {
+        $target_sets[$form_tid]['en'] = '1';
+      }
+    }
+  }
+  variable_set('purge_targets', drupal_json_encode($target_sets));
+  // drupal_set_message(print_r($form_values, 1));
+}
+
+/**
+ * Helper function to get all target sets.
+ */
+function purge_targets_getall() {
+  $target_sets = array();
+  $target_sets = drupal_json_decode(variable_get('purge_targets'));
+  return $target_sets;
+}
+
+/**
+ * Helper function to get an array of all enabled target sets.
+ */
+function purge_targets_state($target_sets) {
+  $values = array();
+  foreach ($target_sets as $tid => $target_set) {
+    if ($target_set['en'] == '1') {
+      $values[$tid] = $tid;
+    }
+    else {
+      $values[$tid] = 0;
+    }
+  }
+  return $values;
+}
+
+

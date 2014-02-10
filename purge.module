@@ -68,6 +68,17 @@ function purge_menu() {
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
   );
+  $items['admin/config/development/performance/purge/target/%/%'] = array(
+    'title'             => t('Target'),
+    'type'              => MENU_LOCAL_ACTION,
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('purge_target_form', 7, 6),
+    'access arguments'  => array('administer site configuration'),
+    'file path'         => drupal_get_path('module', 'purge'),
+    'file'              => 'purge.admin.inc',
+  );
+
+
   return $items;
 }
 

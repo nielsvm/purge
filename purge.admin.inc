@@ -856,6 +856,57 @@ function purge_targets_form($form, &$form_state) {
 }
 
 /**
+ * Menu callback for the form to view, edit or clone a target.
+ */
+function purge_target_form($form, $form_state, $tid, $form_action = 'view') {
+  // Get the current target configuration.
+  $targets = purge_targets_getall();
+  $target = $targets[$tid];
+  dprint_r($target);
+  // Display the form.
+  $form = array();
+  $form['target_action'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $form_action,
+  );
+  $form['target_id'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $tid,
+  );
+  $form['target_en'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $target['en'],
+  );
+  $form['target_type'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $target['type'],
+  );
+  $form['target_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#default_value' => $target['name'],
+  );
+  $form['target_desc'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Description'),
+    '#default_value' => $target['desc'],
+  );
+  // Render the URLs array as a list.
+  $target_urls = implode("\n", $target['urls']);
+  $form['target_urls'] = array(
+    '#type' => 'textarea',
+    '#title' => t('URLs'),
+    '#description' => t('The URLs where the Purge requests will be sent to. One URL per line.'),
+    '#default_value' => $target_urls,
+  );
+
+
+
+  return $form;
+}
+
+
+/**
  * Form submission for the target sets form.
  */
 function purge_targets_form_submit($form, $form_state) {

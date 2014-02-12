@@ -873,10 +873,6 @@ function purge_target_form($form, $form_state, $tid, $form_action = 'view') {
     '#type' => 'hidden',
     '#default_value' => $tid,
   );
-  $form['target_en'] = array(
-    '#type' => 'hidden',
-    '#default_value' => $target['en'],
-  );
   $form['target_type'] = array(
     '#type' => 'hidden',
     '#default_value' => $target['type'],
@@ -884,6 +880,7 @@ function purge_target_form($form, $form_state, $tid, $form_action = 'view') {
   $form['target_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
+    '#required' => TRUE,
     '#default_value' => $target['name'],
   );
   $form['target_desc'] = array(
@@ -897,10 +894,21 @@ function purge_target_form($form, $form_state, $tid, $form_action = 'view') {
     '#type' => 'textarea',
     '#title' => t('URLs'),
     '#description' => t('The URLs where the Purge requests will be sent to. One URL per line.'),
+    '#required' => TRUE,
     '#default_value' => $target_urls,
   );
-
-
+  $form['target_en'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enabled'),
+    '#default_value' => $target['en'],
+  );
+  // Render submit buttons
+  if ($form_action != 'view') {
+    $form['save_enabled'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+    );
+  }
 
   return $form;
 }

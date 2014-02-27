@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Purge install code. Installs and uninstalls the database table, converts from 1.x settings
+ * Purge install code. Installs and uninstalls the configuration variables, converts from 1.x settings
  */
 // Load the purge.inc file
 module_load_include('inc', 'purge');

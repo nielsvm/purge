@@ -2,128 +2,152 @@
 
 /**
  * @file
+ *
  * Contains the main purging functionality and error handling.
  */
 
 /**
- * Class for proxy configuration management.
+ * Constant definitions.
  */
-class PurgeProxy {
-  public $pid = 0;
+
+// Config permissions.
+define('PURGE_CONTROL_SYSTEM', 0);
+define('PURGE_CONTROL_VIEW', 1);
+define('PURGE_CONTROL_ENABLE', 2);
+define('PURGE_CONTROL_ClONE', 3);
+define('PURGE_CONTROL_FULL', 4);
+
+// Config types
+define('PURGE_TYPE_STATIC', 0);
+define('PURGE_TYPE_CACHED', 1);
+define('PURGE_TYPE_DYNAMIC', 2);
+
+// Config set query types
+define('PURGE_QUERY_ALL', 0);
+define('PURGE_QUERY_ENABLED', 1);
+define('PURGE_QUERY_SINGLE', 2);
+
+/**
+ * Class for purge configuration management.
+ *
+ * Defines an abstract configuration object.
+ */
+abstract class PurgeConfBasic {
+  public $id = 0;
+  public $enabled = true;
+  public $type = 'purge:0,0';
   public $name = '';
-  public $type = 'purge_user';
   public $description = '';
-  public $url = 'http://localhost';
-  public $options = array('_PARALLEL_','_NONBLOCKING_');
-  public $domain_sets = array(
-    // Only ad an empty custom domain set
-    'purge_custom' => array(
-      'domains' => '',
-    ),
-  );
-  public $domains = array('');
-  public $headers = array('');
-  // Process domains
-  public function get_domains($get_dynamic = FALSE) {
-    $domains = array();
-    foreach ($this->domain_sets as $domain_set_key => $domain_set) {
-      if (array_key_exists('callback', $domain_set)) {
-        if ($get_dynamic) {
-          if (array_key_exists('dynamic', $domain_set)) {
-            if ($domain_set->dynamic) {
-              $this->domain_sets[$domain_set_key]['domains'] = $domain_set->callback();
-            }
-          }
-          else {
-            $this->domain_sets[$domain_set_key]['domains'] = $domain_set->callback();
-          }
-        }
-      }
-      if (array_key_exists('domains', $this->domain_sets[$domain_set_key]['domains'])) {
-        $domains = array_merge($domains, $this->domain_sets[$domain_set_key]['domains']);
-      }
-    }
-    return $domains;
+  public $callback = '';
+
+  /**
+   * Object constructor.
+   *
+   * @param int $id
+   *   The purge configuration id.
+   * @param array $properties
+   *   An array with properties
+   */
+  public function __construct($id = 0, $properties) {
+    // Set the properties
+    $this->id = $id;
+    $this->enabled = $properties['en'];
+    $this->type = $properties['type'];
+    $this->name = $properties['name'];
+    $this->description = $properties['desc'];
+    $this->callback = $properties['callback'];
   }
-  // Save to database
-  public function db_save() {
-    // Get the domains
-    $domains = $this->get_domains();
-    // Fill the fields
-    $fields = array(
-      'name' => $this->name,
-      'type' => $this->type,
-      'description' => $this->description,
-      'url' => $this->url,
-      'options' => implode(',', $this->options),
-      'domain_sets' => drupal_json_encode($this->domain_sets),
-      'headers' => implode(',', $this->headers),
-    );
-    // Check if this is a new or an existing config
-    if ($this->pid > 0) {
-      // Update the existing database record
-      $query = db_update('purge_proxy')
-        ->fields($fields)
-        ->condition('pid', $this->pid)
-        ->execute();
-    }
-    else {
-      $query = db_insert('purge_proxy')
-        ->fields($fields)
-        ->execute();
-    }
+  /**
+   * Validate
+   *   Validate the current configuration.
+   *
+   * @return array $errors
+   */
+  public function validate() {
+    // Validate the name is unique
+    return $errors;
   }
 }
 
 /**
- * Function to retrieve all active proxy configurations.
+ * Class definition for Purge Targets.
  */
-function purge_config_get_enabled() {
-  $pids = variable_get('purge_proxies');
-  $pids_enabled = array();
-  foreach ($pids as $pid => $enabled) {
-    if ($pid == $enabled) {
-      $pids_enabled[] = $pid;
-    }
+class PurgeConfTarget extends PurgeConfBasic {
+  public $urls = array();
+
+  /**
+   * Constructor for targets.
+   */
+  public function __construct($id = 0, $properties) {
+    // First let the parent set id, name, etc.
+    parent::__construct($id, $properties);
+    // Then get the URLs
+    $this->urls = $properties['urls'];
   }
-  $proxies = purge_config_db_get($pids_enabled);
-  return $proxies;
+
+  /**
+   * Validate
+   *
+   * @return $errors
+   */
+  public function validate() {
+    // Call the parent for name validation
+    $errors = array();
+    $errors = parent::validate();
+    // Validate the URLs
+
+    return $errors;
+  }
 }
 
 /**
- * Function to retrieve proxy configuration objects form the database.
+ * Class definition for Purge Headers.
  */
-function purge_config_db_get(array $pids = array()) {
-  $proxy_confs = array();
-  // Query the proxy configuration table
-  $query = db_select('purge_proxy', 'p');
-  $fields = array('pid', 'type', 'name', 'description','url', 'options', 'domain_sets', 'headers');
-  $query->fields('p', $fields);
-  // Check if pids are specified
-  if ((is_array($pids)) and !empty($pids)) {
-    // create an or condition
-    $or = db_or();
-    foreach ($pids as $pid) {
-      $or->condition('pid', $pid);
-    }
-    $query->condition($or);
-  }
-  // Execute query and parse results
-  $results = $query->execute();
-  foreach ($results as $result) {
-    $proxy_conf = new PurgeProxy;
-    $proxy_conf->pid = $result->pid;
-    $proxy_conf->name = $result->name;
-    $proxy_conf->type = $result->type;
-    $proxy_conf->description = $result->description;
-    $proxy_conf->url = $result->url;
-    $proxy_conf->options = explode(',', $result->options);
-    $proxy_conf->domain_sets = json_decode($result->domain_sets);
-    $proxy_conf->headers = explode(',', $result->headers);
-    $proxy_confs[] = $proxy_conf;
-  }
-  return $proxy_confs;
+class PurgeConfHeader extends PurgeConfBasic {
+  public $headers = array();
 }
+
+/**
+ * Class definition for Purge Options.
+ */
+class PurgeConfOption extends PurgeConfBasic {
+  public $options = array();
+}
+
+
+/**
+ * Class definition for full Purge Configurations.
+ */
+class PurgeConfFull extends PurgeConfBasic {
+  public $target_ids = array();
+  public $targets = array();
+  public $header_ids = array();
+  public $headers = array();
+  public $option_ids = array();
+  public $options = array();
+}
+
+/**
+ * Class definition for the Configuration sets.
+ */
+class PurgeConfSet extends PurgeConfBasic {
+  public $configurations = array();
+
+  /**
+   * Constructor for the Configuration set.
+   *
+   * @param int $query
+   *   Can be PURGE_ALL, PURGE_ENABLED, PURGE_SINGLE.
+   * @param int $id
+   *   Conf ID For use with PURGE_SINGLE.
+   */
+  public function __construct($query = PURGE_ALL, $id = NULL) {
+
+
+
+}
+
+
 
 /**
  * Purges urls from reverse proxy caches

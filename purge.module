@@ -23,62 +23,24 @@ function purge_menu() {
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
   );
-  $items['admin/config/system/purge/add'] = array(
-    'title'             => 'Add Proxy',
-    'type'              => MENU_LOCAL_TASK,
+  $items['admin/config/system/purge/%'] = array(
+    'title'             => 'Configuration items of type',
+    'type'              => MENU_NORMAL_ITEM,
     'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('purge_template_form'),
+    'page arguments'    => array('purge_configuration_form', 4),
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
   );
-  $items['admin/config/system/purge/add/%'] = array(
-    'title'             => 'Add Proxy',
+  $items['admin/config/system/purge/%/%'] = array(
+    'title'             => 'Purge Configuration Item',
     'type'              => MENU_CALLBACK,
     'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('purge_proxy_form', 6, 5),
+    'page arguments'    => array('purge_item_form', 4, 5),
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',
   );
-  $items['admin/config/system/purge/edit/%'] = array(
-    'title'             => 'Edit Proxy',
-    'type'              => MENU_CALLBACK,
-    'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('purge_proxy_form', 6, 5),
-    'access arguments'  => array('administer site configuration'),
-    'file path'         => drupal_get_path('module', 'purge'),
-    'file'              => 'purge.admin.inc',
-    'tab_parent'        => 'admin/config/development/performance/purge',
-  );
-  $items['admin/config/system/purge/delete/%'] = array(
-    'type'              => MENU_CALLBACK,
-    'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('purge_proxy_delete_form', 6),
-    'access arguments'  => array('administer site configuration'),
-    'file path'         => drupal_get_path('module', 'purge'),
-    'file'              => 'purge.admin.inc',
-  );
-  $items['admin/config/system/purge/targets'] = array(
-    'title'             => 'Targets',
-    'type'              => MENU_LOCAL_ACTION,
-    'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('purge_targets_form'),
-    'access arguments'  => array('administer site configuration'),
-    'file path'         => drupal_get_path('module', 'purge'),
-    'file'              => 'purge.admin.inc',
-  );
-  $items['admin/config/system/purge/target/edit/%'] = array(
-    'title'             => t('Target'),
-    'type'              => MENU_LOCAL_ACTION,
-    'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('purge_target_form', 6, 5),
-    'access arguments'  => array('administer site configuration'),
-    'file path'         => drupal_get_path('module', 'purge'),
-    'file'              => 'purge.admin.inc',
-  );
-
-
   return $items;
 }
 

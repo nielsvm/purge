@@ -22,12 +22,6 @@ define('PURGE_TYPE_STATIC', 0);
 define('PURGE_TYPE_CACHED', 1);
 define('PURGE_TYPE_DYNAMIC', 2);
 
-// Config set query types
-define('PURGE_BUNDLE_ACTIVE', 0);
-define('PURGE_BUNDLE_ALL_BASIC', 1);
-define('PURGE_BUNDLE_ALL_FULL', 2);
-define('PURGE_BUNDLE_SINGLE', 3);
-
 /**
  * Class for purge configuration management.
  *   Defines a basic configuration object.
@@ -40,23 +34,6 @@ abstract class PurgeConfBasic {
   public $description = '';
   public $callback = '';
 
-  /**
-   * Object constructor.
-   *
-   * @param int $id
-   *   The purge configuration id.
-   * @param array $properties
-   *   An array with properties
-   */
-  public function __construct($id, $properties) {
-    // Set the properties
-    $this->id = $id;
-    $this->enabled = $properties['en'];
-    $this->type = $properties['type'];
-    $this->name = $properties['name'];
-    $this->description = $properties['desc'];
-    $this->callback = $properties['callback'];
-  }
   /**
    * Validate
    *   Validate the current configuration.
@@ -74,16 +51,6 @@ abstract class PurgeConfBasic {
  */
 class PurgeConfTarget extends PurgeConfBasic {
   public $urls = array();
-
-  /**
-   * Constructor for targets.
-   */
-  public function __construct($id, $properties) {
-    // First let the parent set id, name, etc.
-    parent::__construct($id, $properties);
-    // Then get the URLs
-    $this->urls = $properties['urls'];
-  }
 
   /**
    * Validate
@@ -105,34 +72,13 @@ class PurgeConfTarget extends PurgeConfBasic {
  */
 class PurgeConfDomain extends PurgeConfBasic {
   public $domains = array();
-
-  /**
-   * Constructor for domains.
-   */
-  public function __construct($id, $properties) {
-    // Call the parent constructor.
-    parent::__construct($id, $properties);
-    // Get the domains
-    $this->domains = $properties['domains'];
-  }
 }
-
 
 /**
  * Class definition for Purge Headers.
  */
 class PurgeConfHeader extends PurgeConfBasic {
   public $headers = array();
-
-  /**
-   * Constructor for headers.
-   */
-  public function __construct($id, $properties) {
-    // First call the parent constructor.
-    parent::_construct($id, $properties);
-    // Then get the headers.
-    $this->headers = $properties['headers'];
-  }
 }
 
 /**
@@ -140,16 +86,6 @@ class PurgeConfHeader extends PurgeConfBasic {
  */
 class PurgeConfOption extends PurgeConfBasic {
   public $options = array();
-
-  /**
-   * Constructor for options.
-   */
-  public function __construct($id, $properties) {
-    // Call the parent constructor
-    parent::__construct($id, $properties);
-    // Get the options
-    $this->options = $properties['options'];
-  }
 }
 
 
@@ -182,7 +118,7 @@ class PurgeConfSet extends PurgeConfBasic {
  * Class definition for basic bundles.
  */
 Class PurgeBundleBasic {
-  public $data = array();
+  public $types = array('set','target','domain','header','option');
   public $set = array();
   public $target = array();
   public $domain = array();
@@ -191,15 +127,43 @@ Class PurgeBundleBasic {
 
   /**
    * Constructor for the basic bundle.
-   *
-   * @param string type
-   *
-   * @param int $id
    */
-  public function __construct($type, $id = NULL) {
+  public function __construct() {
     // Get the data from the given dataset.
-    $all_data = array();
-    $all_data = $this->get_data($type, $id);
+    $select_data = $this->select_data();
+    // And create the object from it's data
+    foreach ($types as $type) {
+      foreach ($select_data[$type] as $id => $data) {
+        $this->$type[$id] = unserialize($data);
+      }
+    }
+  }
+
+  /**
+   * Function to select data from the dataset.
+   *
+   * @return array $data
+   */
+  public function select_data() {
+    // Get the data from the given dataset.
+    $data = array();
+    $data = variable_get('purge_config');
+
+    return $data;
+  }
+
+  /**
+   * Save the bundle to the variable.
+   */
+  public function save() {
+    $data = array();
+    foreach ($types as $type) {
+      foreach ($this->$type as $id => $object) {
+        $data[$type][$id] = serialize($object);
+      }
+    }
+    // Store the data in the variable
+    variable_set('purge_config', $data);
   }
 }
 
@@ -218,9 +182,6 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
    */
   public function __construct($bundle = PURGE_BUNDLE_ACTIVE, $id = NULL) {
     $types = array('target', 'domain', 'header', 'option');
-    // First get all the data from the variable.
-    $all_data = array();
-    $all_data = variable_get('purge_config');
     // First get all enabled sets.
     $this->get_data($all_data, 'set');
     foreach ($this->data['set'] as $set_id => $set_data) {

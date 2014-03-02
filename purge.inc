@@ -23,14 +23,14 @@ define('PURGE_TYPE_CACHED', 1);
 define('PURGE_TYPE_DYNAMIC', 2);
 
 // Config set query types
-define('PURGE_QUERY_ALL', 0);
-define('PURGE_QUERY_ENABLED', 1);
-define('PURGE_QUERY_SINGLE', 2);
+define('PURGE_BUNDLE_ACTIVE', 0);
+define('PURGE_BUNDLE_ALL_BASIC', 1);
+define('PURGE_BUNDLE_ALL_FULL', 2);
+define('PURGE_BUNDLE_SINGLE', 3);
 
 /**
  * Class for purge configuration management.
- *
- * Defines an abstract configuration object.
+ *   Defines a basic configuration object.
  */
 abstract class PurgeConfBasic {
   public $id = 0;
@@ -48,7 +48,7 @@ abstract class PurgeConfBasic {
    * @param array $properties
    *   An array with properties
    */
-  public function __construct($id = 0, $properties) {
+  public function __construct($id, $properties) {
     // Set the properties
     $this->id = $id;
     $this->enabled = $properties['en'];
@@ -78,7 +78,7 @@ class PurgeConfTarget extends PurgeConfBasic {
   /**
    * Constructor for targets.
    */
-  public function __construct($id = 0, $properties) {
+  public function __construct($id, $properties) {
     // First let the parent set id, name, etc.
     parent::__construct($id, $properties);
     // Then get the URLs
@@ -101,10 +101,38 @@ class PurgeConfTarget extends PurgeConfBasic {
 }
 
 /**
+ * Class definition for domains.
+ */
+class PurgeConfDomain extends PurgeConfBasic {
+  public $domains = array();
+
+  /**
+   * Constructor for domains.
+   */
+  public function __construct($id, $properties) {
+    // Call the parent constructor.
+    parent::__construct($id, $properties);
+    // Get the domains
+    $this->domains = $properties['domains'];
+  }
+}
+
+
+/**
  * Class definition for Purge Headers.
  */
 class PurgeConfHeader extends PurgeConfBasic {
   public $headers = array();
+
+  /**
+   * Constructor for headers.
+   */
+  public function __construct($id, $properties) {
+    // First call the parent constructor.
+    parent::_construct($id, $properties);
+    // Then get the headers.
+    $this->headers = $properties['headers'];
+  }
 }
 
 /**
@@ -112,39 +140,143 @@ class PurgeConfHeader extends PurgeConfBasic {
  */
 class PurgeConfOption extends PurgeConfBasic {
   public $options = array();
+
+  /**
+   * Constructor for options.
+   */
+  public function __construct($id, $properties) {
+    // Call the parent constructor
+    parent::__construct($id, $properties);
+    // Get the options
+    $this->options = $properties['options'];
+  }
 }
 
 
 /**
  * Class definition for full Purge Configurations.
  */
-class PurgeConfFull extends PurgeConfBasic {
-  public $target_ids = array();
-  public $targets = array();
-  public $header_ids = array();
-  public $headers = array();
-  public $option_ids = array();
-  public $options = array();
+class PurgeConfSet extends PurgeConfBasic {
+  public $target = array();
+  public $domain = array();
+  public $header = array();
+  public $option = array();
+
+  /**
+   * Constructor for sets.
+   */
+  public function __construct($id, $data, $objects) {
+    // Call the parent constructor
+    parent::__construct($id, $data);
+    // Now point point all variables to the object in the bundle
+    $types = array('targets', 'domains', 'headers', 'options');
+    foreach ($types as $type) {
+      foreach($objects[$type] as $obj_id => $object ) {
+        $target[$obj_id] = $object;
+      }
+    }
+  }
 }
 
 /**
- * Class definition for the Configuration sets.
+ * Class definition for basic bundles.
  */
-class PurgeConfSet extends PurgeConfBasic {
-  public $configurations = array();
+Class PurgeBundleBasic {
+  public $data = array();
+  public $set = array();
+  public $target = array();
+  public $domain = array();
+  public $header = array();
+  public $option = array();
 
   /**
-   * Constructor for the Configuration set.
+   * Constructor for the basic bundle.
+   *
+   * @param string type
+   *
+   * @param int $id
+   */
+  public function __construct($type, $id = NULL) {
+    // Get the data from the given dataset.
+    $all_data = array();
+    $all_data = $this->get_data($type, $id);
+  }
+}
+
+/**
+ * Class definition for the runtime bundle.
+ */
+class PurgeBundleRuntime extends PurgeBundleBasic {
+
+  /**
+   * Constructor for the Configuration bundle.
    *
    * @param int $query
    *   Can be PURGE_ALL, PURGE_ENABLED, PURGE_SINGLE.
    * @param int $id
    *   Conf ID For use with PURGE_SINGLE.
    */
-  public function __construct($query = PURGE_ALL, $id = NULL) {
+  public function __construct($bundle = PURGE_BUNDLE_ACTIVE, $id = NULL) {
+    $types = array('target', 'domain', 'header', 'option');
+    // First get all the data from the variable.
+    $all_data = array();
+    $all_data = variable_get('purge_config');
+    // First get all enabled sets.
+    $this->get_data($all_data, 'set');
+    foreach ($this->data['set'] as $set_id => $set_data) {
+      // Now get all the items types.
+      foreach ($types as $type) {
+        $type_data = array();
+        // Inspect each of the ids the set refers too.
+        foreach ($set_data[$type] as $ref_id) {
+          $type_data[$ref_id] = $all_data[$type][$ref_id];
+        }
+        // Keep the data from this item
+        $this->get_data($type_data, $type);
+      }
+    }
+    // Now lets contruct all objects
+    foreach ($types as $type) {
+      foreach ($this->data[$type] as $id => $data) {
+        switch ($type) {
+          case 'target':
+            $this->target[$id] = new PurgeConfTarget($id, $data);
+            break;
+          case 'domain':
+            $this->domain[$id] = new PurgeConfDomain($id, $data);
+            break;
+          case 'header':
+            $this->header[$id] = new PurgeConfHeader($id, $data);
+            break;
+          case 'option':
+            $this->option[$id] = new PurgeConfOption($id, $data);
+            break;
+        }
+      }
+    }
+    // Now construct the sets.
+    foreach ($this->data['set'] as $id => $data) {
+      $this->set[$id] = new PurgeConfSet($id, $data);
+    }
+  }
 
-
-
+  /**
+   * Private function to get configuration item from a single item.
+   *
+   * @param array $data
+   *   Item data as an array.
+   * @param string type
+   *   Can be set, target, domain, header, option.
+   */
+  private function get_data($all_data, $type) {
+    // Inspect all data.
+    foreach ($all_data[$type] as $id => $data) {
+      // Get the enabled ones.
+      if ($data['en'] == 0) {
+        $this->data[$type][$id] = $data;
+      }
+    }
+  }
 }
 
 

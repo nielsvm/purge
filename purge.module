@@ -18,7 +18,7 @@ function purge_menu() {
     'description'       => 'Configure the Purge module',
     'type'              => MENU_NORMAL_ITEM,
     'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('purge_admin_settings_form'),
+    'page arguments'    => array('purge_configuration_form'),
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'purge.admin.inc',

@@ -10,27 +10,47 @@ module_load_include('inc', 'purge');
 
 // Then provide some extensions to bundles.
 /**
- * Object definition for the All Basic Bundle.
- *   This bundle will contain just the basic conf objects used for
- *   administration.
+ * Object definition for the Single Bundle.
+ *   This bundle will contain just a single item.
  */
-class PurgeBundleAll extends PurgeBundleBasic {
+class PurgeBundleSingle extends PurgeBundleBasic {
+  public $single;
 
   /**
-   * Constructor for for the All Bundle.
+   * Constructor for for the Single Bundle.
    */
-  public function __construct() {
-    // Get the data.
-    $this->data = variable_get('purge_config');
-    // Now construct Basic configuration objects.
-    $types = array('set', 'target', 'domain', 'header', 'option');
-    foreach($types as $type) {
-      foreach ($this->data[$type] as $id => $data) {
-        $this->$type[$id] = new PurgeConfBasic($id, $data);
+  public function __construct($item, $item_type) {
+    // Call the parent constructor
+    parent::__construct();
+    // Set the $item variable to the new object for easy reference.
+    $this->single = $this->$item_type[$item];
+  }
+
+  /**
+   * Function to select a single item from the dataset.
+   *
+   * @return array $data
+   */
+  public function select_data() {
+    // Get the data from the drupal variable
+    $item_data = array();
+    $all_data = array();
+    $all_data = variable_get('purge_config');
+    // Check what type the item is.
+    if (is_int($item)) {
+      $item_id = $item;
+      foreach ($this->$types as $type) {
+        $item_data[$type] = array();
+        if (is_set($all_data[$type][$item_id])) {
+          $item_data[$type][$item_id] = $all_data[$type][$item_id];
+        }
       }
     }
+    return $item_data;
   }
 }
+
+
 
 /**
  * Class definition for the Defaults Bundle.
@@ -41,12 +61,12 @@ class PurgeBundleDefault extends PurgeBundleBasic {
    * Construct the default bundle.
    */
   public function __construct() {
-    // First construct the data array
-    $this->data = array(
-      'target' => array(
-        '1' => 'testdata'
-      )
-    );
+    $this->target['localhost'] = new PurgeConfTarget();
+    $this->target['localhost']->id = 1;
+    $this->target['localhost']->enabled = 1;
+    $this->target['localhost']->name = 'localhost';
+    $this->target['localhost']->description = '';
+    $this->target['localhost']->urls = array('127.0.0.1');
   }
 }
 
@@ -85,26 +105,26 @@ function purge_configuration_form($form, &$form_state, $type = NULL) {
       '#type' => 'fieldset',
       '#title' => $type,
     );
-    foreach ($bundle->$type as $id => $object) {
+    foreach ($bundle->$type as $id => $item) {
       // See what actions are available in the UI
       $actions = array();
-      if ($object->access != PURGE_ACCESS_SYSTEM) {
-        $actions[] = l(t('View'), "admin/config/system/purge/{$type}/{$object->name}");
+      if ($item->access != PURGE_ACCESS_SYSTEM) {
+        $actions[] = l(t('View'), "admin/config/system/purge/{$type}/{$item->name}");
       }
-      elseif ($object->access != PURGE_ACCESS_VIEW) {
-        if ($object->enabled == 1) {
-          $actions[] = l(t('Disable'), "admin/config/system/purge/{$type}/{$object->name}/disable");
+      elseif ($item->access != PURGE_ACCESS_VIEW) {
+        if ($item->enabled == 1) {
+          $actions[] = l(t('Disable'), "admin/config/system/purge/{$type}/{$item->name}/disable");
         }
         else {
-          $actions[] = l(t('Enable'), "admin/config/system/purge/{$type}/{$object->name}/enable");
+          $actions[] = l(t('Enable'), "admin/config/system/purge/{$type}/{$item->name}/enable");
         }
       }
-      elseif ($object->access != PURGE_ACCESS_CLONE) {
-        $actions[] = l(t('Clone'), "admin/config/system/purge/{$type}/{$object->name}/clone");
+      elseif ($item->access != PURGE_ACCESS_CLONE) {
+        $actions[] = l(t('Clone'), "admin/config/system/purge/{$type}/{$item->name}/clone");
       }
       else {
-        $actions[] = l(t('Edit'), "admin/config/system/purge/{$type}/{$object->name}/edit");
-        $actions[] = l(t('Delete'), "admin/config/system/purge/{$type}/{$object->name}/delete");
+        $actions[] = l(t('Edit'), "admin/config/system/purge/{$type}/{$item->name}/edit");
+        $actions[] = l(t('Delete'), "admin/config/system/purge/{$type}/{$item->name}/delete");
       }
 
       // Get thte item basic properties.
@@ -127,6 +147,40 @@ function purge_configuration_form($form, &$form_state, $type = NULL) {
 /**
  * Menu callback for purge item settins.
  */
-function purge_item_form($form, &$form_state, $type = NULL, $name, $action = 'view') {
+function purge_item_form($form, &$form_state, $item_type, $item_key = 0, $action = 'view') {
+  // First lets load a bundle.
+  $bundle = new PurgeBundleSingle($item_key, $item_type);
+  $bundle->save;
+  echo (serialize($bundle->target['localhost']));
+  // Select the object we need from the bundle
+  $item = $bundle->single;
+  // echo (serialize($item));
+  // $item = $bundle->target['1'];
 
+  // The Basic Form elements.
+  $form = array();
+  // First some hidden fields for internal use.
+  $form['item_action'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $action,
+  );
+  $form['target_id'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $item->id,
+  );
+  $form['target_type'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $item['type'],
+  );
+  $form['target_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#required' => TRUE,
+    '#default_value' => $item['name'],
+  );
+  $form['target_desc'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Description'),
+    '#default_value' => $item['desc'],
+  );
 }

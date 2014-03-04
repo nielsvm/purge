@@ -11,16 +11,11 @@
  */
 
 // Config permissions.
-define('PURGE_CONTROL_SYSTEM', 0);
-define('PURGE_CONTROL_VIEW', 1);
-define('PURGE_CONTROL_ENABLE', 2);
-define('PURGE_CONTROL_ClONE', 3);
-define('PURGE_CONTROL_FULL', 4);
-
-// Config types
-define('PURGE_TYPE_STATIC', 0);
-define('PURGE_TYPE_CACHED', 1);
-define('PURGE_TYPE_DYNAMIC', 2);
+define('PURGE_ACCESS_SYSTEM', 0);
+define('PURGE_ACCESS_VIEW', 1);
+define('PURGE_ACCESS_ENABLE', 2);
+define('PURGE_ACCESS_ClONE', 3);
+define('PURGE_ACCESS_FULL', 4);
 
 /**
  * Class for purge configuration management.
@@ -29,7 +24,7 @@ define('PURGE_TYPE_DYNAMIC', 2);
 abstract class PurgeConfBasic {
   public $id = 0;
   public $enabled = true;
-  public $type = 'purge:0,0';
+  public $access = PURGE_ACCESS_SYSTEM;
   public $name = '';
   public $description = '';
   public $callback = '';
@@ -132,7 +127,7 @@ Class PurgeBundleBasic {
     // Get the data from the given dataset.
     $select_data = $this->select_data();
     // And create the object from it's data
-    foreach ($types as $type) {
+    foreach ($this->types as $type) {
       foreach ($select_data[$type] as $id => $data) {
         $this->$type[$id] = unserialize($data);
       }
@@ -158,8 +153,9 @@ Class PurgeBundleBasic {
   public function save() {
     $data = array();
     foreach ($types as $type) {
-      foreach ($this->$type as $id => $object) {
-        $data[$type][$id] = serialize($object);
+      $data[$type] = array();
+      foreach ($this->$type as $item_name => $item) {
+        $data[$type][$item_name] = serialize($item);
       }
     }
     // Store the data in the variable

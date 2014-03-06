@@ -14,8 +14,13 @@
 define('PURGE_ACCESS_SYSTEM', 0);
 define('PURGE_ACCESS_VIEW', 1);
 define('PURGE_ACCESS_ENABLE', 2);
-define('PURGE_ACCESS_ClONE', 3);
+define('PURGE_ACCESS_CLONE', 3);
 define('PURGE_ACCESS_FULL', 4);
+
+// Item Storage options.
+define('PURGE_CONF_STATIC', 0);
+define('PURGE_CONF_CACHED', 1);
+define('PURGE_CONF_RUNTIME', 2);
 
 /**
  * Class for purge configuration management.
@@ -27,7 +32,7 @@ abstract class PurgeConfBasic {
   public $access = PURGE_ACCESS_SYSTEM;
   public $name = '';
   public $description = '';
-  public $callback = '';
+  public $api = array();
 
   /**
    * Validate
@@ -128,8 +133,8 @@ Class PurgeBundleBasic {
     $select_data = $this->select_data();
     // And create the object from it's data
     foreach ($this->types as $type) {
-      foreach ($select_data[$type] as $id => $data) {
-        $this->$type[$id] = unserialize($data);
+      foreach ($select_data[$type] as $item_name => $item_data) {
+        $this->{$type}[$item_name] = unserialize($item_data);
       }
     }
   }
@@ -152,7 +157,7 @@ Class PurgeBundleBasic {
    */
   public function save() {
     $data = array();
-    foreach ($types as $type) {
+    foreach ($this->types as $type) {
       $data[$type] = array();
       foreach ($this->$type as $item_name => $item) {
         $data[$type][$item_name] = serialize($item);

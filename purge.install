@@ -4,83 +4,33 @@
  * @file
  * Purge install code. Installs and uninstalls the configuration variables, converts from 1.x settings
  */
-// Load the purge.inc file
-module_load_include('inc', 'purge');
+// Load the purge_admin.inc file
+module_load_include('admin.inc', 'purge');
 
 /**
  * Implements hook_install().
  */
 function purge_install() {
   //Add the system and template proxy configurations
-  purge_add_defaults();
+  $bundle = new PurgeBundleDefault();
+  // Save the bundle.
+  $bundle->save();
 }
 
 /**
  * Implements hook_update_N().
  */
 function purge_update_7200() {
-  // purge_proxy_add_defaults();
+  //Add the system and template proxy configurations
+  $bundle = new PurgeBundleDefault;
   // purge_proxy_config_convert();
+  // Save the bundle.
+  $bundle->save();
 }
 
-/**
- * Function to add default configuration items.
- */
-function purge_add_defaults() {
-  // Set the default Targets.
-  $target_sets = array();
-  $target_sets = array(
-    '0' => array(
-      'en' => '1',
-      'type' => 'purge_template:0',
-      'name' => 'Default template for new targets',
-      'desc' => '',
-      'urls' => 'http://127.0.0.1/',
-    ),
-    '1' => array(
-      'en' => '1',
-      'type' => 'purge_:1',
-      'name' => 'Drupal Base URL',
-      'desc' => 'Use the base URL provided by Drupal.',
-      'callback' => 'purge_target_drupal',
-    ),
-
-    '2' => array(
-      'en' => '1',
-      'type' => 'purge_user:0',
-      'name' => 'Example',
-      'desc' => 'You can change this target any valid URL.',
-      'urls' => array('http://127.0.0.1/'),
-    ),
-  );
-  // Write the target sets to the variabls
-  variable_set('purge_targets', drupal_json_encode($target_sets));
-}
 
 /**
- * DEPRICATED Function to add system and template proxy configurations.
- */
-function purge_proxy_add_defaults_db() {
-  // First add the 'empty' template.
-  $default_template = new PurgeProxy;
-  // Modify properties
-  $default_template->type = 'purge_template';
-  $default_template->name = t('Default Template');
-  $default_template->description = t('Generic template for use with Varnish and others.');
-  $do = $default_template->db_save();
-
-  // Then add the Nginx template
-  $nginx_template = new PurgeProxy;
-  $nginx_template->type = 'purge_template';
-  $nginx_template->name = t('Nginx Template');
-  $nginx_template->description = t('Template for use with Nginx');
-  $nginx_template->url = 'http://localhost/purge';
-  $nginx_template->options = array('_METHOD_GET_');
-  $do = $nginx_template->db_save();
-}
-
-/**
- * Function to convert Purge 1.x  proxy configurations
+ * Function to convert Purge 1.x  proxy configurations.
  */
 function purge_proxy_config_convert() {
   // Get the 1.x configuration
@@ -111,53 +61,11 @@ function purge_proxy_config_convert() {
       }
 
       // Insert the proxy configuration into the database
-      $new_proxy_config = db_insert('purge_proxy')
-      ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
-        'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
-      ->values(array(
-        'type' => 4, //Type 4 indicates this is a user controled configuration
-        'name' => $proxy_url_parts['host'],
-        'description' => t('Imported from Purge 1.x configuration'),
-        'enabled' => 1, // Configurations are enabled by default
-        'active' => 1,
-        'proxy_ssl' => $proxy_ssl,
-        'proxy_host' => $proxy_url_parts['host'],
-        'proxy_port' => $proxy_url_parts['port'],
-        'options_type' => $proxy_method,
-        'options_parallel' => 1,
-        'options_nonblocking' => 1,
-        'domains' => '_DOMAINS_EXPIRE_',
-        'url_prefix' => $proxy_url_parts['path'],
-        'url_wildcards' => 0,
-        'headers' => '',
-      ))
-      ->execute();
     }
   }
   // Process all Acquia domains as one configuration
   if (count($proxy_ah_domains) > 0) {
     // Insert the proxy configuration into the database
-    $new_proxy_config = db_insert('purge_proxy')
-      ->fields(array('type', 'name', 'description', 'enabled', 'active', 'proxy_ssl', 'proxy_host', 'proxy_port', 'options_type',
-        'options_parallel', 'options_nonblocking', 'domains', 'url_prefix', 'url_wildcards', 'headers'))
-      ->values(array(
-        'type' => 4, //Type 4 indicates this is a user controled configuration
-        'name' => 'Acquia Hosting',
-        'description' => t('Imported from Purge 1.x configuration'),
-        'enabled' => 1, // Configurations are enabled by default
-        'active' => 1,
-        'proxy_ssl' => 0,
-        'proxy_host' => '_USE_BASEURL_',
-        'proxy_port' => '',
-        'options_type' => 'PURGE',
-        'options_parallel' => 1,
-        'options_nonblocking' => 1,
-        'domains' => implode(",", $proxy_ah_domains),
-        'url_prefix' => '',
-        'url_wildcards' => 0,
-        'headers' => '_ACQUIA_,Accept-Encoding: gzip',
-      ))
-    ->execute();
   }
 }
 
@@ -183,8 +91,8 @@ function purge_requirements($phase) {
 /**
  * Implements hook_uninstall().
  */
-//function purge_uninstall() {
+function purge_uninstall() {
   // Clean up the settings variable
-//  variable_del('purge_proxy_urls');
-//}
+  variable_del('purge_config');
+}
 

@@ -4,6 +4,4 @@ package = Performance and scalability
 core = 7.x
 
 files [] = purge.module
-files [] = purge.inc
-files [] = purge.admin.inc
-configure = admin/config/system/purge
+files [] = includes/purge.inc

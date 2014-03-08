@@ -17,21 +17,26 @@ define('PURGE_ACCESS_ENABLE', 2);
 define('PURGE_ACCESS_CLONE', 3);
 define('PURGE_ACCESS_FULL', 4);
 
-// Item Storage options.
-define('PURGE_CONF_STATIC', 0);
-define('PURGE_CONF_CACHED', 1);
-define('PURGE_CONF_RUNTIME', 2);
+// API options.
+define('PURGE_API_STATIC', 0);
+define('PURGE_API_CACHED', 1);
+define('PURGE_API_RUNTIME', 2);
+
+// Handler features
+define('PURGE_HANDLER_STATIC_DOMAIN', 0);
+define('PURGE_HANDLER_SINGLE', 1);
+define('PURGE_HANDLER_MULTI', 2);
+define('PURGE_HANDLER_NON_BLOCKING', 3);
 
 /**
  * Class for purge configuration management.
  *   Defines a basic configuration object.
  */
 abstract class PurgeConfBasic {
-  public $id = 0;
-  public $enabled = true;
-  public $access = PURGE_ACCESS_SYSTEM;
   public $name = '';
   public $description = '';
+  public $enabled = 1;
+  public $access = PURGE_ACCESS_FULL;
   public $api = array();
 
   /**
@@ -45,6 +50,15 @@ abstract class PurgeConfBasic {
     return $errors;
   }
 }
+
+/**
+ * Class definition for the Types object class.
+ */
+class PurgeConfType extends PurgeConfBasic {
+  // Just the basic properties are fine for now.
+
+}
+
 
 /**
  * Class definition for Purge Targets.
@@ -82,6 +96,13 @@ class PurgeConfHeader extends PurgeConfBasic {
 }
 
 /**
+ * Class definition for Purge Handler.
+ */
+class PurgeConfHandler extends PurgeConfBasic {
+  public $features = array();
+}
+
+/**
  * Class definition for Purge Options.
  */
 class PurgeConfOption extends PurgeConfBasic {
@@ -96,21 +117,21 @@ class PurgeConfSet extends PurgeConfBasic {
   public $target = array();
   public $domain = array();
   public $header = array();
+  public $handler = array();
   public $option = array();
 
   /**
-   * Constructor for sets.
+   * Serialize the Set data and replace pointers with a string.
    */
-  public function __construct($id, $data, $objects) {
-    // Call the parent constructor
-    parent::__construct($id, $data);
-    // Now point point all variables to the object in the bundle
-    $types = array('targets', 'domains', 'headers', 'options');
-    foreach ($types as $type) {
-      foreach($objects[$type] as $obj_id => $object ) {
-        $target[$obj_id] = $object;
-      }
-    }
+  public function __sleep() {
+    // Iterate through all pointers objects and replace with names
+    $this->target = array_keys($this->target);
+    $this->domain = array_keys($this->domain);
+    $this->header = array_keys($this->header);
+    $this->handler = array_keys($this->handler);
+    $this->option = array_keys($this->option);
+
+    return array_keys(get_object_vars($this));
   }
 }
 
@@ -118,11 +139,12 @@ class PurgeConfSet extends PurgeConfBasic {
  * Class definition for basic bundles.
  */
 Class PurgeBundleBasic {
-  public $types = array('set','target','domain','header','option');
+  public $type = array();
   public $set = array();
   public $target = array();
   public $domain = array();
   public $header = array();
+  public $handler = array();
   public $option = array();
 
   /**
@@ -131,10 +153,27 @@ Class PurgeBundleBasic {
   public function __construct() {
     // Get the data from the given dataset.
     $select_data = $this->select_data();
-    // And create the object from it's data
-    foreach ($this->types as $type) {
-      foreach ($select_data[$type] as $item_name => $item_data) {
-        $this->{$type}[$item_name] = unserialize($item_data);
+    // Then get the datastructure of the types up.
+    foreach ($select_data['type'] as $type_name => $type_data) {
+      $this->type[$type_name] = unserialize($type_data);
+      // And create an object for each item
+      foreach ($select_data[$type_name] as $item_name => $item_data) {
+        $this->{$type_name}[$item_name] = unserialize($item_data);
+      }
+    }
+    // Sets need special handling
+    $pointer_types = array('target', 'domain', 'header', 'handler', 'option');
+    // Each Set
+    foreach ($this->set as $set_name => $set) {
+      // Each type name that is a pointer.
+      foreach ($pointer_types as $type_name) {
+        foreach ($set->{$type_name} as $item_name) {
+          // Each item name now only referenced by name
+          // foreach ($item_names as $item_name) {
+            // Link back to the object in the bundle
+            $this->{$set_name}[$type_name][$item_name] = $this->{$type_name}[$item_name];
+          // }
+        }
       }
     }
   }
@@ -157,10 +196,15 @@ Class PurgeBundleBasic {
    */
   public function save() {
     $data = array();
-    foreach ($this->types as $type) {
-      $data[$type] = array();
-      foreach ($this->$type as $item_name => $item) {
-        $data[$type][$item_name] = serialize($item);
+    // First let get the item types up
+    $data['type'] = array();
+    foreach ($this->type as $type_name => $type) {
+      $data['type'][$type_name] = serialize($type);
+      $data[$type_name] = array();
+
+      // Now create each item object
+      foreach ($this->{$type_name} as $item_name => $item) {
+        $data[$type_name][$item_name] = serialize($item);
       }
     }
     // Store the data in the variable

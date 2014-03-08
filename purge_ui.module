@@ -1,0 +1,47 @@
+<?php
+
+/**
+ * @file
+ * Purge clears url's from reverse proxy caches like Varnish and Squid by
+ * issuing HTTP PURGE requests.
+ */
+
+module_load_include('inc', 'purge', 'includes/purge_ui');
+
+/**
+ * Implements hook_menu().
+ *
+ * Set up admin settings callbacks, etc.
+ */
+function purge_menu() {
+  $items = array();
+  $items['admin/config/system/purge'] = array(
+    'title'             => 'Purge',
+    'description'       => 'Configure the Purge module',
+    'type'              => MENU_NORMAL_ITEM,
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('purge_configuration_form'),
+    'access arguments'  => array('administer site configuration'),
+    'file path'         => drupal_get_path('module', 'purge'),
+    'file'              => 'includes/purge_ui.inc',
+  );
+  $items['admin/config/system/purge/%'] = array(
+    'title'             => 'Configuration items of type',
+    'type'              => MENU_NORMAL_ITEM,
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('purge_configuration_form', 4),
+    'access arguments'  => array('administer site configuration'),
+    'file path'         => drupal_get_path('module', 'purge'),
+    'file'              => 'includes/purge_ui.inc',
+  );
+  $items['admin/config/system/purge/%/%'] = array(
+    'title'             => 'Purge Configuration Item',
+    'type'              => MENU_CALLBACK,
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('purge_item_form', 4, 5),
+    'access arguments'  => array('administer site configuration'),
+    'file path'         => drupal_get_path('module', 'purge'),
+    'file'              => 'includes/purge_ui.inc',
+  );
+  return $items;
+}

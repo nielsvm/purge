@@ -1,0 +1,10 @@
+name = Purge UI
+description = Provides a user-friendly user interface for the Purge module.
+package = Performance and scalability
+core = 7.x
+
+dependencies[] = purge 
+files [] = purge_ui.module
+files [] = includes/purge_ui.inc
+files [] = includes/defaults.inc
+configure = admin/config/system/purge

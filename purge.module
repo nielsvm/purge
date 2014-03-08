@@ -7,55 +7,16 @@
  */
 
 /**
- * Implements hook_menu().
- *
- * Set up admin settings callbacks, etc.
- */
-function purge_menu() {
-  $items = array();
-  $items['admin/config/system/purge'] = array(
-    'title'             => 'Purge',
-    'description'       => 'Configure the Purge module',
-    'type'              => MENU_NORMAL_ITEM,
-    'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('purge_configuration_form'),
-    'access arguments'  => array('administer site configuration'),
-    'file path'         => drupal_get_path('module', 'purge'),
-    'file'              => 'purge.admin.inc',
-  );
-  $items['admin/config/system/purge/%'] = array(
-    'title'             => 'Configuration items of type',
-    'type'              => MENU_NORMAL_ITEM,
-    'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('purge_configuration_form', 4),
-    'access arguments'  => array('administer site configuration'),
-    'file path'         => drupal_get_path('module', 'purge'),
-    'file'              => 'purge.admin.inc',
-  );
-  $items['admin/config/system/purge/%/%'] = array(
-    'title'             => 'Purge Configuration Item',
-    'type'              => MENU_CALLBACK,
-    'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('purge_item_form', 4, 5),
-    'access arguments'  => array('administer site configuration'),
-    'file path'         => drupal_get_path('module', 'purge'),
-    'file'              => 'purge.admin.inc',
-  );
-  return $items;
-}
-
-
-/**
  * Implements hook_expire_cache().
  *
  * Takes an array from expire.module and issues purges.
  */
 function purge_expire_cache($expire_urls) {
-  module_load_include('inc', 'purge');
+  module_load_include('inc', 'purge', 'includes/purge');
   // First render an array of all requests for all proxy servers
   $purge_requests = purge_urls($expire_urls);
   // Now set the handler
-  $handler = variable_get('purge_handler', 'purge_drupal');
+//  $handler = variable_get('purge_handler', 'purge_drupal');
   // Issue the requests using the selected handler
   $purge_results =  $handler($purge_requests);
   // Check if logging is enabled

@@ -2,10 +2,14 @@
 
 /**
  * @file
- * Purge install code. Installs and uninstalls the configuration variables, converts from 1.x settings
+ * Purge install code.
+ *   Installs and uninstalls the configuration variables
+ *   and converts from 1.x settings
  */
 // Load the purge_admin.inc file
-module_load_include('admin.inc', 'purge');
+module_load_include('inc', 'purge', 'includes/purge');
+module_load_include('inc', 'purge', 'includes/defaults');
+
 
 /**
  * Implements hook_install().

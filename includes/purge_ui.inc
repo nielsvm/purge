@@ -6,7 +6,8 @@
  */
 
 // Load the purge.inc file
-module_load_include('inc', 'purge');
+module_load_include('inc', 'purge', 'includes/purge');
+module_load_include('inc', 'purge', 'includes/defaults');
 
 // Then provide some extensions to bundles.
 /**
@@ -36,69 +37,6 @@ class PurgeBundleSingle extends PurgeBundleBasic {
 }
 
 /**
- * Class definition for the Defaults Bundle.
- */
-class PurgeBundleDefault extends PurgeBundleBasic {
-
-  /**
-   * Construct the default bundle.
-   */
-  public function __construct() {
-    // The Drupal base url as target
-    $this->target['drupal_url'] = new PurgeConfTarget();
-    $this->target['drupal_url']->name = t('Drupal URL');
-    $this->target['drupal_url']->description = t('Use the Drupal Base URL as a target.');
-    $this->target['drupal_url']->enabled = 1;
-    $this->target['drupal_url']->access = PURGE_ACCESS_ENABLE;
-    $this->target['drupal_url']->api = array(
-      'callback' => 'purge_target_drupal_url',
-      'arguments' => PURGE_CONF_RUNTIME,
-    );
-    $this->target['drupal_url']->urls = array();
-
-    // The localhost target
-    $this->target['localhost'] = new PurgeConfTarget();
-    $this->target['localhost']->name = t('Localhost');
-    $this->target['localhost']->description = t('The default localhost ip address.');
-    $this->target['localhost']->enabled = 1;
-    $this->target['localhost']->access = PURGE_ACCESS_FULL;
-    $this->target['localhost']->urls = array('http://127.0.0.1/');
-
-    // The domain from the Drupal Basd URL.
-    $this->domain['drupal_domain'] = new PurgeConfDomain();
-    $this->domain['drupal_domain']->name = t('Drupal Domain');
-    $this->domain['drupal_domain']->description = t('Use the domain in the Drupal Base URL.');
-    $this->domain['drupal_domain']->enabled = 1;
-    $this->domain['drupal_domain']->access = PURGE_ACCESS_ENABLE;
-    $this->domain['drupal_domain']->api = array(
-      'callback' => 'purge_domain_drupal_domain',
-      'arguments' => PURGE_CONF_RUNTIME,
-    );
-    $this->domain['drupal_domain']->domains = array();
-
-    // The Gzip header
-    $this->header['gzip'] = new PurgeConfHeader();
-    $this->header['gzip']->name = t('Gzip');
-    $this->header['gzip']->description = t(
-      'The Gzip header enables compression and is enabled by default on most http clients.'
-    );
-    $this->header['gzip']->enabled = 1;
-    $this->header['gzip']->access = PURGE_ACCESS_ENABLE;
-    $this->header['gzip']->headers = array('Accept-Encoding' => 'gzip');
-  }
-
-  /**
-   * Save the Defaults.
-   *   Will overwrite all existing configurations!
-   *   Use reconfigure to restore the defaults but keep the other items.
-   */
-  public function save() {
-    parent::save();
-  }
-}
-
-
-/**
  * Menu callback for purge admin settings.
  */
 function purge_configuration_form($form, &$form_state, $item_type = NULL) {
@@ -116,15 +54,18 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
   );
   $options = array();
   // Get all basic configuration.
-  $bundle = new PurgeBundleBasic();
+  // $bundle = new PurgeBundleBasic();
+  $bundle = new PurgeBundleDefault();
+  // echo serialize($bundle->type);
   // See if the type was passed as an agruement.
   if ($item_type) {
     $types = array($item_type);
   }
   // Else set to all available types
   else {
-    $types = $bundle->types;
+    $types = array_keys($bundle->type);
   }
+  dprint_r($types);
   // Loop through all types.
   foreach ($types as $type) {
     // fieldset for each type
@@ -185,26 +126,23 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
  */
 function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_', $action = 'view') {
   // First lets load a bundle.
-  $bundle = new PurgeBundleSingle($item_name, $item_type);
+  // $bundle = new PurgeBundleSingle($item_name, $item_type);
+  $bundle = new PurgeBundleDefault();
   // echo (serialize($bundle->target['localhost']));
-  echo (serialize($bundle->$item_type));
   // Select the object we need from the bundle
-  $item = $bundle->single;
+  $item = $bundle->{$item_type}[$item_name];
+  echo serialize($item);
 
   // The Basic Form elements.
   $form = array();
   $form['purge_item'] = array(
     '#type' => 'fieldset',
-    '#title' => t('General Item Settings'),
+    '#title' => t('Basic Item Configuration'),
   );
   // First some hidden fields for internal use.
   $form['purge_item']['item_action'] = array(
     '#type' => 'hidden',
     '#default_value' => $action,
-  );
-  $form['purge_item']['item_id'] = array(
-    '#type' => 'hidden',
-    '#default_value' => $item->id,
   );
   $form['purge_tem']['item_type'] = array(
     '#type' => 'hidden',
@@ -244,16 +182,105 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_'
     case 'target':
       $form['target'] = array(
         '#type' => 'fieldset',
-        '#title' => 'Target Settings',
+        '#title' => 'Target Configuration',
       );
       $form['target']['urls'] = array(
         '#type' => 'textarea',
         '#title' => t('URLs'),
         '#description' => t('The URLs where the Purge requests will be sent to. One URL per line.'),
-        '#required' => TRUE,
+        '#required' => true,
         '#default_value' => implode("\n", $item->urls),
       );
     break;
+    case 'domain':
+      $form['domain'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'Domain Configuration',
+      );
+      $form['domain']['domain_conf'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Domains'),
+        '#description' => t('For each domain name Purge sends out a request. One domain per line.'),
+        '#required' => true,
+        '#default_value' => implode("\n", $item->domains),
+      );
+    break;
+    case 'header':
+      $form['header'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'Header Configuration',
+      );
+      $headers = array();
+      foreach ($item->headers as $key => $value) {
+        $headers[] = implode(": ", array($key, $value));
+      }
+      $form['header']['header_conf'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Header'),
+        '#description' => t('Headers are added to each request. One header per line. Format: Header: value'),
+        '#required' => true,
+        '#default_value' => implode("\n", $headers),
+      );
+    break;
+    case 'option':
+      $form['option'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'option Configuration',
+      );
+    break;
+    case 'set':
+      $form['set'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'Set configuration',
+      );
+      // Generate the set
+      $table_header = array(
+        'name' => t('Name'),
+        'description' => t('Description'),
+      );
+      $set_pointers = array('target', 'domain', 'header', 'handler', 'option');
+      foreach ($set_pointers as $pointer_type) {
+        $rows = array();
+        $default_value = array();
+        $multiple = true;
+        if ($pointer_type == 'handler' || $pointer_type == 'option') {
+          $multiple = false;
+        }
+
+        // foreach ($item->{$pointer_type} as $pointer_name) {
+        foreach ($bundle->{$pointer_type} as $pointer_name => $pointer) {
+          // echo serialize($item_object);
+          $rows[$pointer_name] = array(
+            // 'name' => $bundle->{$pointer_type}->{$pointer_name}->name,
+            'name' => $bundle->{$pointer_type}[$pointer_name]->name,
+            'description' => $bundle->{$pointer_type}[$pointer_name]->description,
+          );
+          if ($item->{$pointer_type}[0] == $pointer_name) {
+          // if ($pointer_name == array_keys($item->{$pointer_type}, $pointer_name)) {
+            if ($multiple) {
+              $default_value[$pointer_name] = $pointer_name;
+            }
+            else {
+              $default_value = $pointer_name;
+            }
+          }
+        }
+        $form['set'][$pointer_type] = array(
+          '#type' => 'fieldset',
+          '#title' => $bundle->type[$pointer_type]->name,
+          '#description' => $bundle->type[$pointer_type]->description,
+        );
+        $form['set'][$pointer_type][$pointer_type . 'options'] = array(
+          '#type' => 'tableselect',
+          '#title' => 'test', // $bundle->type[$pointer_type]->name,
+          '#header' => $table_header,
+          '#options' => $rows,
+          '#default_value' => $default_value,
+          '#multiple' => $multiple,
+
+        );
+        // dprint_r($default_value);
+    }
   }
 
   $form['submit']  = array(

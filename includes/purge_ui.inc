@@ -54,8 +54,9 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
   );
   $options = array();
   // Get all basic configuration.
+  $bundle = new PurgeBundleRuntime();
+  //  $bundle = new PurgeBundleDefault();
   // $bundle = new PurgeBundleBasic();
-  $bundle = new PurgeBundleDefault();
   // echo serialize($bundle->type);
   // See if the type was passed as an agruement.
   if ($item_type) {
@@ -65,7 +66,7 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
   else {
     $types = array_keys($bundle->type);
   }
-  dprint_r($types);
+  // dprint_r($bundle);
   // Loop through all types.
   foreach ($types as $type) {
     // fieldset for each type
@@ -127,7 +128,7 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
 function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_', $action = 'view') {
   // First lets load a bundle.
   // $bundle = new PurgeBundleSingle($item_name, $item_type);
-  $bundle = new PurgeBundleDefault();
+  $bundle = new PurgeBundleBasic();
   // echo (serialize($bundle->target['localhost']));
   // Select the object we need from the bundle
   $item = $bundle->{$item_type}[$item_name];
@@ -238,8 +239,10 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_'
         'name' => t('Name'),
         'description' => t('Description'),
       );
-      $set_pointers = array('target', 'domain', 'header', 'handler', 'option');
-      foreach ($set_pointers as $pointer_type) {
+      // dprint_r($bundle->set);
+      // foreach ($item->pointers
+      // $set_pointers = array('target', 'domain', 'header', 'handler', 'option');
+      foreach ($item->pointers as $pointer_type => $pointer_names) {
         $rows = array();
         $default_value = array();
         $multiple = true;
@@ -249,13 +252,17 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_'
 
         // foreach ($item->{$pointer_type} as $pointer_name) {
         foreach ($bundle->{$pointer_type} as $pointer_name => $pointer) {
+        // foreach ($pointer_names as $pointer_name) {
           // echo serialize($item_object);
           $rows[$pointer_name] = array(
             // 'name' => $bundle->{$pointer_type}->{$pointer_name}->name,
             'name' => $bundle->{$pointer_type}[$pointer_name]->name,
             'description' => $bundle->{$pointer_type}[$pointer_name]->description,
           );
-          if ($item->{$pointer_type}[0] == $pointer_name) {
+
+          // if ($item->{$pointer_type} == $pointer_name) {
+          // dprint_r($item->pointers[$pointer_type]);
+          if (in_array($pointer_name, $item->pointers[$pointer_type])) {
           // if ($pointer_name == array_keys($item->{$pointer_type}, $pointer_name)) {
             if ($multiple) {
               $default_value[$pointer_name] = $pointer_name;
@@ -265,6 +272,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_'
             }
           }
         }
+        // dprint_r($default_value);
         $form['set'][$pointer_type] = array(
           '#type' => 'fieldset',
           '#title' => $bundle->type[$pointer_type]->name,

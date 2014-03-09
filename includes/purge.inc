@@ -114,6 +114,13 @@ class PurgeConfOption extends PurgeConfBasic {
  * Class definition for full Purge Configurations.
  */
 class PurgeConfSet extends PurgeConfBasic {
+  public $pointers = array(
+    'target' => array(),
+    'domain' => array(),
+    'header' => array(),
+    'handler' => array(),
+    'option' => array(),
+  );
   public $target = array();
   public $domain = array();
   public $header = array();
@@ -125,13 +132,33 @@ class PurgeConfSet extends PurgeConfBasic {
    */
   public function __sleep() {
     // Iterate through all pointers objects and replace with names
-    $this->target = array_keys($this->target);
-    $this->domain = array_keys($this->domain);
-    $this->header = array_keys($this->header);
-    $this->handler = array_keys($this->handler);
-    $this->option = array_keys($this->option);
+    $this->get_pointers();
+    // $this->target = array_keys($this->target);
+    // $this->domain = array_keys($this->domain);
+    // $this->header = array_keys($this->header);
+    // 'target' => array('drupal_url'),
+    // 'domain' => array('drupal_domain'),
+    // 'header' => array('gzip'),
+    // 'handler' => array('drupal_http_request'),
+    // 'option' => array('default_options'),
+    // );
+    // $this->option = array_keys($this->option);
 
-    return array_keys(get_object_vars($this));
+    // return array_keys(get_object_vars($this));
+    //
+    return array('name', 'description', 'enabled', 'access', 'api', 'pointers');
+  }
+
+  /**
+   * Populate the flat pointers variable with names of the object pointers.
+   */
+  public function get_pointers() {
+    foreach ($this->pointers as $pointer_type => $pointer_names) {
+        $this->pointers{$pointer_type} = array();
+      foreach ($pointer_names as $pointer_name) {
+        $this->pointers{$pointer_type}[] = $pointer_name;
+      }
+    }
   }
 }
 
@@ -152,7 +179,7 @@ Class PurgeBundleBasic {
    */
   public function __construct() {
     // Get the data from the given dataset.
-    $select_data = $this->select_data();
+    $select_data = $this->get_data();
     // Then get the datastructure of the types up.
     foreach ($select_data['type'] as $type_name => $type_data) {
       $this->type[$type_name] = unserialize($type_data);
@@ -162,16 +189,18 @@ Class PurgeBundleBasic {
       }
     }
     // Sets need special handling
-    $pointer_types = array('target', 'domain', 'header', 'handler', 'option');
+    // $pointer_types = array('target', 'domain', 'header', 'handler', 'option');
     // Each Set
     foreach ($this->set as $set_name => $set) {
       // Each type name that is a pointer.
-      foreach ($pointer_types as $type_name) {
-        foreach ($set->{$type_name} as $item_name) {
+      foreach ($set->pointers as $pointer_type => $item_names ) {
+        $this->set[$set_name]->{$pointer_type} = array();
+        foreach ($item_names as $item_name) {
           // Each item name now only referenced by name
           // foreach ($item_names as $item_name) {
             // Link back to the object in the bundle
-            $this->{$set_name}[$type_name][$item_name] = $this->{$type_name}[$item_name];
+         //  dprint_r($this->{$pointer_type}[$item_name]);
+         //  $this->set[$set_name]->{$pointer_type}[$item_name] = $this->{$type_name}[$item_name];
           // }
         }
       }
@@ -183,13 +212,25 @@ Class PurgeBundleBasic {
    *
    * @return array $data
    */
-  public function select_data() {
+  public function get_data() {
     // Get the data from the given dataset.
     $data = array();
     $data = variable_get('purge_config');
 
     return $data;
   }
+
+  /**
+   * Function to set the type objects.
+   */
+  public function set_types($data) {
+    // Get the datastructure of the types up.
+    foreach ($data['type'] as $type_name => $type_data) {
+      // And create an object for each type
+      $this->type[$type_name] = unserialize($type_data);
+    }
+  }
+
 
   /**
    * Save the bundle to the variable.
@@ -219,69 +260,53 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
 
   /**
    * Constructor for the Configuration bundle.
-   *
-   * @param int $query
-   *   Can be PURGE_ALL, PURGE_ENABLED, PURGE_SINGLE.
-   * @param int $id
-   *   Conf ID For use with PURGE_SINGLE.
    */
-  public function __construct($bundle = PURGE_BUNDLE_ACTIVE, $id = NULL) {
-    $types = array('target', 'domain', 'header', 'option');
-    // First get all enabled sets.
-    $this->get_data($all_data, 'set');
-    foreach ($this->data['set'] as $set_id => $set_data) {
-      // Now get all the items types.
-      foreach ($types as $type) {
-        $type_data = array();
-        // Inspect each of the ids the set refers too.
-        foreach ($set_data[$type] as $ref_id) {
-          $type_data[$ref_id] = $all_data[$type][$ref_id];
-        }
-        // Keep the data from this item
-        $this->get_data($type_data, $type);
-      }
-    }
-    // Now lets contruct all objects
-    foreach ($types as $type) {
-      foreach ($this->data[$type] as $id => $data) {
-        switch ($type) {
-          case 'target':
-            $this->target[$id] = new PurgeConfTarget($id, $data);
-            break;
-          case 'domain':
-            $this->domain[$id] = new PurgeConfDomain($id, $data);
-            break;
-          case 'header':
-            $this->header[$id] = new PurgeConfHeader($id, $data);
-            break;
-          case 'option':
-            $this->option[$id] = new PurgeConfOption($id, $data);
-            break;
-        }
-      }
-    }
-    // Now construct the sets.
-    foreach ($this->data['set'] as $id => $data) {
-      $this->set[$id] = new PurgeConfSet($id, $data);
-    }
-  }
+  public function __construct() {
+    $runtime_data = array();
+    // First check if the data is in cache.
 
-  /**
-   * Private function to get configuration item from a single item.
-   *
-   * @param array $data
-   *   Item data as an array.
-   * @param string type
-   *   Can be set, target, domain, header, option.
-   */
-  private function get_data($all_data, $type) {
-    // Inspect all data.
-    foreach ($all_data[$type] as $id => $data) {
-      // Get the enabled ones.
-      if ($data['en'] == 0) {
-        $this->data[$type][$id] = $data;
+    // If not, get from parent.
+    $all_data = $this->get_data();
+
+    // Create the types and keep the data for caching.
+    $this->set_types($all_data);
+    $runtime_data['type'] = $all_data['type'];
+
+    // For loop through the set_data and collect active items.
+    $data['set'] = array();
+    foreach ($all_data['set'] as $set_name => $set_data) {
+      // check if the set is enabled.
+      if (strpos($set_data, "s:7:\"enabled\";i:1")) {
+        $data['set'][$set_name] = $set_data;
+        // Create the set object.
+        $this->set[$set_name] = unserialize($set_data);
+        // Now loop through the pointers
+        foreach ($this->set[$set_name]->pointers as $pointer_type => $item_names) {
+          foreach ($item_names as $item_name) {
+            $item_data = $all_data[$pointer_type][$item_name];
+            // Check in the data if the item is enabled.
+            if (strpos($item_data, "s:7:\"enabled\";i:1")) {
+              // Check if the item object isn't allready there.
+              if (isset($this->{$pointer_type}[$item_name])) {
+                // If so just link the pointer to it.
+                $this->set[$set_name]->{$pointer_type}[$item_name] = $this->{$pointer_type}[$item_name];
+              }
+              else {
+                // Create the object from data
+                $this->{$pointer_type}[$item_name] = unserialize($item_data);
+                // And keep the item data
+                $data[$pointer_type][$item_name] = $item_data;
+
+                //  dprint_r($item_names);
+               //   dprint_r($item_data);
+              }
+            }
+          }
+        }
       }
     }
+    // dprint_r($this);
+    dprint_r($data);
   }
 }
 

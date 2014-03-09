@@ -213,20 +213,53 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     );
 
     // Now create the set objects
-    $this->set['minimal'] = new PurgeConfSet();
-    $this->set['minimal']->name = t('Minimal');
-    $this->set['minimal']->description = t('Uses Drupal native methods to issue the requests.');
-    $this->set['minimal']->enabled = 1;
-    $this->set['minimal']->access = PURGE_ACCESS_CLONE;
-    $this->set['minimal']->api = array(
+    $this->set['minimal_set'] = new PurgeConfSet();
+    $this->set['minimal_set']->name = t('Minimal Set');
+    $this->set['minimal_set']->description = t('Uses Drupal native methods to issue the requests.');
+    $this->set['minimal_set']->enabled = 1;
+    $this->set['minimal_set']->access = PURGE_ACCESS_CLONE;
+    $this->set['minimal_set']->api = array(
       'callback' => 'purge_defaults',
       'arguments' => array(PURGE_API_RUNTIME),
     );
-    $this->set['minimal']->target = array('drupal_url' => $this->target['drupal_url']);
-    $this->set['minimal']->domain = array('drupal_domain' => $this->domain['drupal_domain']);
-    $this->set['minimal']->header = array('gzip' => $this->header['gzip']);
-    $this->set['minimal']->handler = array('drupal_http_request' => $this->handler['drupal_http_request']);
-    $this->set['minimal']->option = array('default_options' => $this->option['default_options']);
+    $this->set['minimal_set']->pointers = array(
+      'target' => array('drupal_url'),
+      'domain' => array('drupal_domain'),
+      'header' => array('gzip'),
+      'handler' => array('drupal_http_request'),
+      'option' => array('default_options'),
+    );
+    $this->set['minimal_set']->target = array('drupal_url' => $this->target['drupal_url']);
+    $this->set['minimal_set']->domain = array('drupal_domain' => $this->domain['drupal_domain']);
+    $this->set['minimal_set']->header = array('gzip' => $this->header['gzip']);
+    $this->set['minimal_set']->handler = array('drupal_http_request' => $this->handler['drupal_http_request']);
+    $this->set['minimal_set']->option = array('default_options' => $this->option['default_options']);
+
+    // Now create the set objects
+    $this->set['default_set'] = new PurgeConfSet();
+    $this->set['default_set']->name = t('Default Set');
+    $this->set['default_set']->description = t('Uses Drupal native methods to issue the requests.');
+    $this->set['default_set']->enabled = 1;
+    $this->set['default_set']->access = PURGE_ACCESS_CLONE;
+    $this->set['default_set']->api = array(
+      'callback' => 'purge_defaults',
+      'arguments' => array(PURGE_API_RUNTIME),
+    );
+    $this->set['default_set']->pointers = array(
+      'target' => array('drupal_url', 'localhost'),
+      'domain' => array('drupal_domain'),
+      'header' => array('gzip'),
+      'handler' => array('drupal_http_request'),
+      'option' => array('default_options'),
+    );
+    $this->set['default_set']->target = array(
+      'drupal_url' => $this->target['drupal_url'],
+      'localhost' => $this->target['localhost'],
+    );
+    $this->set['default_set']->domain = array('drupal_domain' => $this->domain['drupal_domain']);
+    $this->set['default_set']->header = array('gzip' => $this->header['gzip']);
+    $this->set['default_set']->handler = array('drupal_http_request' => $this->handler['drupal_http_request']);
+    $this->set['default_set']->option = array('default_options' => $this->option['default_options']);
 
   }
 

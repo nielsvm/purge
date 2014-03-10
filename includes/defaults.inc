@@ -76,7 +76,8 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->target['drupal_url']->access = PURGE_ACCESS_ENABLE;
     $this->target['drupal_url']->api = array(
       'callback' => 'purge_target_drupal_url',
-      'arguments' => PURGE_API_RUNTIME,
+      'context' => PURGE_API_RUNTIME,
+      'arguments' => array(),
     );
     $this->target['drupal_url']->urls = array();
 
@@ -98,7 +99,8 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->domain['drupal_domain']->access = PURGE_ACCESS_ENABLE;
     $this->domain['drupal_domain']->api = array(
       'callback' => 'purge_domain_drupal_domain',
-      'arguments' => PURGE_API_RUNTIME,
+      'context' => PURGE_API_RUNTIME,
+      'arguments' => array(PURGE_API_RUNTIME),
     );
     $this->domain['drupal_domain']->domains = array();
 

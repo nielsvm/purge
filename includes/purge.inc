@@ -49,6 +49,25 @@ abstract class PurgeConfBasic {
     // Validate the name is unique
     return $errors;
   }
+
+  /**
+   * Stage
+   *   Execute the API callback.
+   */
+  public function stage() {
+    // Check if the api is configured.
+    if (isset($this->api['callback'])) {
+      // Check if this is set to run at runtime
+      if (isset($this->api['context'])) {
+        if ($this->api['context'] == PURGE_API_RUNTIME) {
+          // Callback execution
+          $api_data = $this->callback();
+          // Now store the data in this object.
+          $this->api_set($data);
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -79,6 +98,24 @@ class PurgeConfTarget extends PurgeConfBasic {
 
     return $errors;
   }
+
+  /**
+   * Set api data to url.
+   */
+  public function api_set($data) {
+    // First check if the suplied data is different then the current
+    if ($this->urls != $data) {
+      $current_data = $this->urls;
+      $this->urls = $data;
+      // Validate the object in the changed state
+      $errors = $this->validate();
+      // Revert if any eerrors.
+      if (count($errors) > 0) {
+        $this->urls = $current_urls;
+      }
+    }
+  }
+
 }
 
 /**
@@ -133,19 +170,7 @@ class PurgeConfSet extends PurgeConfBasic {
   public function __sleep() {
     // Iterate through all pointers objects and replace with names
     $this->get_pointers();
-    // $this->target = array_keys($this->target);
-    // $this->domain = array_keys($this->domain);
-    // $this->header = array_keys($this->header);
-    // 'target' => array('drupal_url'),
-    // 'domain' => array('drupal_domain'),
-    // 'header' => array('gzip'),
-    // 'handler' => array('drupal_http_request'),
-    // 'option' => array('default_options'),
-    // );
-    // $this->option = array_keys($this->option);
 
-    // return array_keys(get_object_vars($this));
-    //
     return array('name', 'description', 'enabled', 'access', 'api', 'pointers');
   }
 
@@ -255,8 +280,11 @@ Class PurgeBundleBasic {
 
 /**
  * Class definition for the runtime bundle.
+ *   This class is used for processing the purge requests during runtine.
  */
 class PurgeBundleRuntime extends PurgeBundleBasic {
+  public $requests;
+  public $batches;
 
   /**
    * Constructor for the Configuration bundle.
@@ -297,18 +325,41 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
                 // And keep the item data
                 $data[$pointer_type][$item_name] = $item_data;
 
-                //  dprint_r($item_names);
-               //   dprint_r($item_data);
               }
             }
           }
         }
       }
     }
-    // dprint_r($this);
-    dprint_r($data);
   }
+
+  /**
+   * Receive requests as flat array of requests.
+   *
+   * @param array $new_requests
+   *   Flat array, just urls.
+   */
+  public function add_requests($new_requests) {
+    // Add to the bundle array
+  }
+
+  /**
+   * Prepare the bundle for processing.
+   */
+  public function stage() {
+    // Call all items api callbacks.
+  }
+
+  /**
+   * Process all requests.
+   */
+  public function process() {
+
+  }
+
+
 }
+
 
 
 

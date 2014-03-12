@@ -32,7 +32,7 @@ define('PURGE_HANDLER_NON_BLOCKING', 3);
  * Class for purge configuration management.
  *   Defines a basic configuration object.
  */
-abstract class PurgeConfBasic {
+abstract class PurgeItemBasic {
   public $name = '';
   public $description = '';
   public $enabled = 1;
@@ -61,7 +61,7 @@ abstract class PurgeConfBasic {
       if (isset($this->api['context'])) {
         if ($this->api['context'] == PURGE_API_RUNTIME) {
           // Callback execution
-          $api_data = $this->callback();
+          $api_data = $this->api['callback']();
           // Now store the data in this object.
           $this->api_set($data);
         }
@@ -73,7 +73,7 @@ abstract class PurgeConfBasic {
 /**
  * Class definition for the Types object class.
  */
-class PurgeConfType extends PurgeConfBasic {
+class PurgeItemType extends PurgeItemBasic {
   // Just the basic properties are fine for now.
 
 }
@@ -82,7 +82,7 @@ class PurgeConfType extends PurgeConfBasic {
 /**
  * Class definition for Purge Targets.
  */
-class PurgeConfTarget extends PurgeConfBasic {
+class PurgeItemTarget extends PurgeItemBasic {
   public $urls = array();
 
   /**
@@ -95,54 +95,92 @@ class PurgeConfTarget extends PurgeConfBasic {
     $errors = array();
     $errors = parent::validate();
     // Validate the URLs
-
+    foreach ($urls as $url) {
+      if (!valid_url($url)) {
+        $errors[] = array(
+          'provider' => 'purge_target',
+          'message' => t('Invalid URL')
+        );
+      }
+    }
     return $errors;
   }
 
   /**
    * Set api data to url.
    */
-  public function api_set($data) {
+  public function api_set($api_data) {
     // First check if the suplied data is different then the current
-    if ($this->urls != $data) {
+    if ($this->urls != $api_data) {
       $current_data = $this->urls;
-      $this->urls = $data;
+      $this->urls = $api_data;
       // Validate the object in the changed state
       $errors = $this->validate();
       // Revert if any eerrors.
       if (count($errors) > 0) {
-        $this->urls = $current_urls;
+        $this->urls = $current_data;
       }
     }
   }
-
 }
 
 /**
  * Class definition for domains.
  */
-class PurgeConfDomain extends PurgeConfBasic {
+class PurgeItemDomain extends PurgeItemBasic {
   public $domains = array();
+
+  /**
+   * Validate the domains.
+   */
+  public function validate() {
+    foreach ($this->domains as $domain) {
+      $pieces = explode(".",$domain);
+      foreach($pieces as $piece) {
+        if (!preg_match('/^[a-z\d][a-z\d-]{0,62}$/i', $piece) || preg_match('/-$/', $piece) ) {
+          $errors[] = array(
+            'provider' => 'purge_domain',
+            'message' => t('Invalid domain'),
+          );
+        }
+        return errors;
+      }
+    }
+  }
+
+  /**
+   * Set api data to domains.
+   */
+  public function api_set($data) {
+    if ($this->domains != $data) {
+      $current_data = $this->domains;
+      $this->domains = $data;
+      $errors = $this->validate();
+      if (counter($errors) > 0) {
+        $this->domains = $current_data;
+      }
+    }
+  }
 }
 
 /**
  * Class definition for Purge Headers.
  */
-class PurgeConfHeader extends PurgeConfBasic {
+class PurgeItemHeader extends PurgeItemBasic {
   public $headers = array();
 }
 
 /**
  * Class definition for Purge Handler.
  */
-class PurgeConfHandler extends PurgeConfBasic {
+class PurgeItemHandler extends PurgeItemBasic {
   public $features = array();
 }
 
 /**
  * Class definition for Purge Options.
  */
-class PurgeConfOption extends PurgeConfBasic {
+class PurgeItemOption extends PurgeItemBasic {
   public $options = array();
 }
 
@@ -150,7 +188,7 @@ class PurgeConfOption extends PurgeConfBasic {
 /**
  * Class definition for full Purge Configurations.
  */
-class PurgeConfSet extends PurgeConfBasic {
+class PurgeItemSet extends PurgeItemBasic {
   public $pointers = array(
     'target' => array(),
     'domain' => array(),

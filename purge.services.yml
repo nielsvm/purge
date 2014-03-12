@@ -1,0 +1,4 @@
+services:
+  purge.purgeable_factory:
+    class: Drupal\purge\Purgeable\PurgeableFactory
+    arguments: ['@container.namespaces']

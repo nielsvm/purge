@@ -241,12 +241,12 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_'
       );
       // dprint_r($bundle->set);
       // foreach ($item->pointers
-      // $set_pointers = array('target', 'domain', 'header', 'handler', 'option');
+      // $set_pointers = array('target', 'domain', 'header', 'purger', 'option');
       foreach ($item->pointers as $pointer_type => $pointer_names) {
         $rows = array();
         $default_value = array();
         $multiple = true;
-        if ($pointer_type == 'handler' || $pointer_type == 'option') {
+        if ($pointer_type == 'purger' || $pointer_type == 'option') {
           $multiple = false;
         }
 

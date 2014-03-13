@@ -10,6 +10,7 @@
  * Constant definitions.
  */
 
+
 // Config permissions.
 define('PURGE_ACCESS_SYSTEM', 0);
 define('PURGE_ACCESS_VIEW', 1);
@@ -20,9 +21,11 @@ define('PURGE_ACCESS_FULL', 4);
 // API options.
 define('PURGE_API_STATIC', 0);
 define('PURGE_API_CACHED', 1);
-define('PURGE_API_RUNTIME', 2);
+define('PURGE_API_BATCH', 2);
+define('PURGE_API_RUNTIME', 3);
+define('PURGE_API_CONFIG', 4);
 
-// Handler features
+// Purger features
 define('PURGE_HANDLER_STATIC_DOMAIN', 0);
 define('PURGE_HANDLER_SINGLE', 1);
 define('PURGE_HANDLER_MULTI', 2);
@@ -171,9 +174,9 @@ class PurgeItemHeader extends PurgeItemBasic {
 }
 
 /**
- * Class definition for Purge Handler.
+ * Class definition for Purge Purger.
  */
-class PurgeItemHandler extends PurgeItemBasic {
+class PurgeItemPurger extends PurgeItemBasic {
   public $features = array();
 }
 
@@ -193,13 +196,13 @@ class PurgeItemSet extends PurgeItemBasic {
     'target' => array(),
     'domain' => array(),
     'header' => array(),
-    'handler' => array(),
+    'purger' => array(),
     'option' => array(),
   );
   public $target = array();
   public $domain = array();
   public $header = array();
-  public $handler = array();
+  public $purger = array();
   public $option = array();
 
   /**
@@ -234,7 +237,7 @@ Class PurgeBundleBasic {
   public $target = array();
   public $domain = array();
   public $header = array();
-  public $handler = array();
+  public $purger = array();
   public $option = array();
 
   /**
@@ -252,7 +255,7 @@ Class PurgeBundleBasic {
       }
     }
     // Sets need special handling
-    // $pointer_types = array('target', 'domain', 'header', 'handler', 'option');
+    // $pointer_types = array('target', 'domain', 'header', 'purger', 'option');
     // Each Set
     foreach ($this->set as $set_name => $set) {
       // Each type name that is a pointer.
@@ -321,8 +324,8 @@ Class PurgeBundleBasic {
  *   This class is used for processing the purge requests during runtine.
  */
 class PurgeBundleRuntime extends PurgeBundleBasic {
-  public $requests;
-  public $batches;
+  public $purgeable;
+  public $queue;
 
   /**
    * Constructor for the Configuration bundle.
@@ -377,7 +380,7 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
    * @param array $new_requests
    *   Flat array, just urls.
    */
-  public function add_requests($new_requests) {
+  public function purge_url($urls) {
     // Add to the bundle array
   }
 
@@ -600,7 +603,7 @@ function purge_curl_multi_legacy($purges) {
     do {
       $multi_result = curl_multi_exec($curl_purges, $active);
     } while ($multi_result == CURLM_CALL_MULTI_PERFORM);
-    // Block until there is activity on any of the handlers. Avoids
+    // Block until there is activity on any of the purgers. Avoids
     // busywaiting.
     if ($multi_result == CURLM_OK) {
       $select_result = curl_multi_select($curl_purges);

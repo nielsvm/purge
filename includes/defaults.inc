@@ -2,7 +2,7 @@
 
 /**
  *  @file
- *   Provides default configuration and handlers or the Purge module.
+ *   Provides default configuration and purgers or the Purge module.
  */
 
 // Load the purge.inc file
@@ -39,17 +39,17 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['header']->enabled = 1;
     $this->type['header']->access = PURGE_ACCESS_SYSTEM;
 
-    // Handler type definition.
-    $this->type['handler'] = new PurgeItemType();
-    $this->type['handler']->name = t('Handler');
-    $this->type['handler']->description = t('The different http request handlers supported.');
-    $this->type['handler']->enabled = 0;
-    $this->type['handler']->access = PURGE_ACCESS_SYSTEM;
+    // Purger type definition.
+    $this->type['purger'] = new PurgeItemType();
+    $this->type['purger']->name = t('Purger');
+    $this->type['purger']->description = t('The different http request purgers supported.');
+    $this->type['purger']->enabled = 0;
+    $this->type['purger']->access = PURGE_ACCESS_SYSTEM;
 
     // Batch type definition.
 //    $this->type['batch'] = new PurgeItemType();
 //    $this->type['batch']->name = t('Batch');
-//    $this->type['batch']->description = t('Batch processing handlers to process Purge requests in bulk.');
+//    $this->type['batch']->description = t('Batch processing purgers to process Purge requests in bulk.');
 //    $this->type['batch']->enabled = 0;
 //    $this->type['batch']->access = PURGE_ACCESS_SYSTEM;
 
@@ -135,77 +135,77 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->header['gzip']->headers = array('Accept-Encoding' => 'gzip');
 
 
-    // Handler definitions.
+    // Purger definitions.
     // Drupal http request.
-    $this->handler['drupal_http_request'] = new PurgeItemHandler();
-    $this->handler['drupal_http_request']->name = t('Drupal HTTP Request');
-    $this->handler['drupal_http_request']->description = t('The reuest handler builtin to Drupal.');
-    $this->handler['drupal_http_request']->enabled = 1;
-    $this->handler['drupal_http_request']->access = PURGE_ACCESS_ENABLE;
-    $this->handler['drupal_http_request']->api = array(
+    $this->purger['drupal_http_request'] = new PurgeItemPurger();
+    $this->purger['drupal_http_request']->name = t('Drupal HTTP Request');
+    $this->purger['drupal_http_request']->description = t('The reuest purger builtin to Drupal.');
+    $this->purger['drupal_http_request']->enabled = 1;
+    $this->purger['drupal_http_request']->access = PURGE_ACCESS_ENABLE;
+    $this->purger['drupal_http_request']->api = array(
       'callback' => 'purge_hanler_drupal_http_request',
       'provider' => 'purge',
       'context' => PURGE_API_RUNTIME,
     );
-    $this->handler['drupal_http_request']->features = array(PURGE_HANDLER_SINGLE);
+    $this->purger['drupal_http_request']->features = array(PURGE_HANDLER_SINGLE);
 
-    // Curl Single Handler
-    $this->handler['curl_single'] = new PurgeItemHandler();
-    $this->handler['curl_single']->name = t('Curl Single');
-    $this->handler['curl_single']->description = t('Use the Curl library to send out requests one at a time.');
-    $this->handler['curl_single']->enabled = 1;
-    $this->handler['curl_single']->access = PURGE_ACCESS_ENABLE;
-    $this->handler['curl_single']->api = array(
-      'callback' => 'purge_handler_curl_single',
+    // Curl Single Purger
+    $this->purger['curl_single'] = new PurgeItemPurger();
+    $this->purger['curl_single']->name = t('Curl Single');
+    $this->purger['curl_single']->description = t('Use the Curl library to send out requests one at a time.');
+    $this->purger['curl_single']->enabled = 1;
+    $this->purger['curl_single']->access = PURGE_ACCESS_ENABLE;
+    $this->purger['curl_single']->api = array(
+      'callback' => 'purge_purger_curl_single',
       'provider' => 'purge',
       'context' => PURGE_API_RUNTIME,
     );
-    $this->handler['curl_single']->features = array(PURGE_HANDLER_SINGLE);
+    $this->purger['curl_single']->features = array(PURGE_HANDLER_SINGLE);
 
-    // Curl Multi Legacy Handler
-    $this->handler['curl_multi_legacy'] = new PurgeItemHandler();
-    $this->handler['curl_multi_legacy']->name = t('Curl Multi (Legacy)');
-    $this->handler['curl_multi_legacy']->description = t(
+    // Curl Multi Legacy Purger
+    $this->purger['curl_multi_legacy'] = new PurgeItemPurger();
+    $this->purger['curl_multi_legacy']->name = t('Curl Multi (Legacy)');
+    $this->purger['curl_multi_legacy']->description = t(
       'Providers legacy support for older versions of PHP and Curl.'
     );
-    $this->handler['curl_multi_legacy']->enabled = 1;
-    $this->handler['curl_multi_legacy']->access = PURGE_ACCESS_ENABLE;
-    $this->handler['curl_multi_legacy']->api = array(
-      'callback' => 'purge_handler_curl_multi_legacy',
+    $this->purger['curl_multi_legacy']->enabled = 1;
+    $this->purger['curl_multi_legacy']->access = PURGE_ACCESS_ENABLE;
+    $this->purger['curl_multi_legacy']->api = array(
+      'callback' => 'purge_purger_curl_multi_legacy',
       'provider' => 'purge',
       'context' => PURGE_API_RUNTIME,
     );
-    $this->handler['curl_multi_legacy']->features = array(PURGE_HANDLER_MULTI);
+    $this->purger['curl_multi_legacy']->features = array(PURGE_HANDLER_MULTI);
 
-    // Curl Multi Handler.
-    $this->handler['curl_multi'] = new PurgeItemHandler();
-    $this->handler['curl_multi']->name = t('Curl Multi');
-    $this->handler['curl_multi']->description = t(
+    // Curl Multi Purger.
+    $this->purger['curl_multi'] = new PurgeItemPurger();
+    $this->purger['curl_multi']->name = t('Curl Multi');
+    $this->purger['curl_multi']->description = t(
       'Curl is an advanced HTTP request library and available on most hosting environments.'
     );
-    $this->handler['curl_multi']->enabled = 1;
-    $this->handler['curl_multi']->access = PURGE_ACCESS_ENABLE;
-    $this->handler['curl_multi']->api = array(
-      'callback' => 'purge_handler_curl_multi',
+    $this->purger['curl_multi']->enabled = 1;
+    $this->purger['curl_multi']->access = PURGE_ACCESS_ENABLE;
+    $this->purger['curl_multi']->api = array(
+      'callback' => 'purge_purger_curl_multi',
       'provider' => 'purge',
       'context' => PURGE_API_RUNTIME,
     );
-    $this->handler['curl_multi']->features = array(PURGE_HANDLER_MULTI);
+    $this->purger['curl_multi']->features = array(PURGE_HANDLER_MULTI);
 
-    // HTTPrl Handler.
-    $this->handler['httprl'] = new PurgeItemHandler();
-    $this->handler['httprl']->name = t('HTTPrl');
-    $this->handler['httprl']->description = t(
+    // HTTPrl Purger.
+    $this->purger['httprl'] = new PurgeItemPurger();
+    $this->purger['httprl']->name = t('HTTPrl');
+    $this->purger['httprl']->description = t(
       'The HTTP Request Library module provides an advanced library that allows non-blocking requests.'
     );
-    $this->handler['httprl']->enabled = 1;
-    $this->handler['httprl']->access = PURGE_ACCESS_ENABLE;
-    $this->handler['httprl']->api = array(
-      'callback' => 'purge_handler_curl_multi',
+    $this->purger['httprl']->enabled = 1;
+    $this->purger['httprl']->access = PURGE_ACCESS_ENABLE;
+    $this->purger['httprl']->api = array(
+      'callback' => 'purge_purger_curl_multi',
       'provider' => 'purge',
       'context' => array(PURGE_API_RUNTIME),
     );
-    $this->handler['httprl']->features = array(PURGE_HANDLER_MULTI, PURGE_HANDLER_NON_BLOCKING);
+    $this->purger['httprl']->features = array(PURGE_HANDLER_MULTI, PURGE_HANDLER_NON_BLOCKING);
 
 
     // Batch definition.
@@ -241,13 +241,13 @@ class PurgeBundleDefault extends PurgeBundleBasic {
       'target' => array('drupal_url'),
       'domain' => array('drupal_domain'),
       'header' => array('gzip'),
-      'handler' => array('drupal_http_request'),
+      'purger' => array('drupal_http_request'),
       'option' => array('default_options'),
     );
     $this->set['minimal_set']->target = array('drupal_url' => $this->target['drupal_url']);
     $this->set['minimal_set']->domain = array('drupal_domain' => $this->domain['drupal_domain']);
     $this->set['minimal_set']->header = array('gzip' => $this->header['gzip']);
-    $this->set['minimal_set']->handler = array('drupal_http_request' => $this->handler['drupal_http_request']);
+    $this->set['minimal_set']->purger = array('drupal_http_request' => $this->purger['drupal_http_request']);
     $this->set['minimal_set']->option = array('default_options' => $this->option['default_options']);
 
     // Now create the set objects
@@ -265,7 +265,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
       'target' => array('drupal_url', 'localhost'),
       'domain' => array('drupal_domain'),
       'header' => array('gzip'),
-      'handler' => array('drupal_http_request'),
+      'purger' => array('drupal_http_request'),
       'option' => array('default_options'),
     );
     $this->set['default_set']->target = array(
@@ -274,7 +274,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     );
     $this->set['default_set']->domain = array('drupal_domain' => $this->domain['drupal_domain']);
     $this->set['default_set']->header = array('gzip' => $this->header['gzip']);
-    $this->set['default_set']->handler = array('drupal_http_request' => $this->handler['drupal_http_request']);
+    $this->set['default_set']->purger = array('drupal_http_request' => $this->purger['drupal_http_request']);
     $this->set['default_set']->option = array('default_options' => $this->option['default_options']);
 
   }

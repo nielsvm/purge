@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains Drupal\purge\Purgeable\InvalidStringRepresentationException.
+ * Contains \Drupal\purge\Purgeable\InvalidStringRepresentationException.
  */
 
 namespace Drupal\purge\Purgeable;

@@ -18,8 +18,13 @@ interface PurgeableInterface {
    * @param string $representation
    *   A string representing this type of purgeable, e.g. "node/1" for a
    *   path purgeable and "*" for a full domain purgeable.
+   * @warning
+   *   Will throw a InvalidStringRepresentationException when the given string
+   *   does not match the format for this type of purgeable. For instance when
+   *   a path with wildcard ('news/*') is given to the PathPurgeable, it will
+   *   not instantiate.
    */
-  public function __construct($representation);
+  function __construct($representation);
 
   /**
    * Return the serialized string representation of the purgeable.

@@ -31,6 +31,13 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['domain']->description = t('Domains to generate Purge requests with.');
     $this->type['domain']->enabled = 1;
     $this->type['domain']->access = PURGE_ACCESS_SYSTEM;
+    $this->type['domain']->options = array(
+      'purgeable_url_domain' => array(
+        'name' => t('Purgeable URL Domain'),
+        'description' => t('This wil use the domain supplies in by the purgeable url.'),
+        'default_value' => 1,
+      ),
+    );
 
     // Header type definition.
     $this->type['header'] = new PurgeItemType();
@@ -45,20 +52,18 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['purger']->description = t('The different http request purgers supported.');
     $this->type['purger']->enabled = 0;
     $this->type['purger']->access = PURGE_ACCESS_SYSTEM;
-
-    // Batch type definition.
-//    $this->type['batch'] = new PurgeItemType();
-//    $this->type['batch']->name = t('Batch');
-//    $this->type['batch']->description = t('Batch processing purgers to process Purge requests in bulk.');
-//    $this->type['batch']->enabled = 0;
-//    $this->type['batch']->access = PURGE_ACCESS_SYSTEM;
-
-    // Option type definition.
-    $this->type['option'] = new PurgeItemType();
-    $this->type['option']->name = t('Option');
-    $this->type['option']->description = t('Additional configuration options.');
-    $this->type['option']->enabled = 1;
-    $this->type['option']->access = PURGE_ACCESS_SYSTEM;
+    $this->type['purger']->options = array(
+      'method' => array(
+        'name' => t('Purge Method'),
+        'description' => t('The method used to perform the purge.'),
+        'values' => array(
+          'http_purge' => 'HTTP request method PURGE',
+          'http_ban' => 'HTTP request method BAN.',
+          'http_get' => 'HTTP request method GET.',
+        ),
+        'default_value' => 'http_purge',
+      ),
+    );
 
     // Set type definition
     $this->type['set'] = new PurgeItemType();
@@ -66,6 +71,15 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['set']->description = t('Sets are combination of all item types.');
     $this->type['set']->enabled = 1;
     $this->type['set']->access = PURGE_ACCESS_SYSTEM;
+    $this->type['set']->options = array(
+      'set' => array(
+        'watchdog' => array(
+          'name' => t('Enable Logging'),
+          'description' => t('Log activities to the Drupal watchdog log.'),
+          'default_value' => 1,
+        ),
+      ),
+    );
 
     // Target definitions.
     // The Drupal base url as target
@@ -104,18 +118,6 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     );
     $this->domain['drupal_domain']->domains = array();
 
-    // The domains provided by expire.
-    $this->domain['expire_domain'] = new PurgeItemSet();
-    $this->domain['expire_domain']->name = t('Expire Domain');
-    $this->domain['expire_domain']->description = t('Use the domain provided by the Expire integration hook.');
-    $this->domain['expire_domain']->enabled = 1;
-    $this->domain['expire_domain']->access = PURGE_ACCESS_ENABLE;
-    $this->domain['expire_domain']->api = array(
-      'callback' => 'purge_domain_expire_domain',
-      'provider' => 'purge',
-      'context' => PURGE_API_RUNTIME,
-    );
-    $this->domain['drupal_domain']->domains = array();
 
 
     // Header definitions.
@@ -139,7 +141,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     // Drupal http request.
     $this->purger['drupal_http_request'] = new PurgeItemPurger();
     $this->purger['drupal_http_request']->name = t('Drupal HTTP Request');
-    $this->purger['drupal_http_request']->description = t('The reuest purger builtin to Drupal.');
+    $this->purger['drupal_http_request']->description = t('The native http request function of Drupal.');
     $this->purger['drupal_http_request']->enabled = 1;
     $this->purger['drupal_http_request']->access = PURGE_ACCESS_ENABLE;
     $this->purger['drupal_http_request']->api = array(
@@ -147,7 +149,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
       'provider' => 'purge',
       'context' => PURGE_API_RUNTIME,
     );
-    $this->purger['drupal_http_request']->features = array(PURGE_HANDLER_SINGLE);
+    $this->purger['drupal_http_request']->features = array(PURGE_HTTP_SINGLE);
 
     // Curl Single Purger
     $this->purger['curl_single'] = new PurgeItemPurger();
@@ -210,22 +212,6 @@ class PurgeBundleDefault extends PurgeBundleBasic {
 
     // Batch definition.
 
-    // Options.
-    $this->option['default_options'] = new PurgeItemOption();
-    $this->option['default_options']->name = t('Default Options');
-    $this->option['default_options']->description = t('Defaults for all options.');
-    $this->option['default_options']->enabled = 1;
-    $this->option['default_options']->access = PURGE_ACCESS_CLONE;
-    $this->option['default_options']->api = array(
-      'callback' => 'purge_option_defaults',
-      'provider' => 'purge',
-      'context' => array(PURGE_API_STATIC),
-    );
-    $this->option['default_options']->options = array(
-      'request_method' => 'PURGE',
-      'watchdog' => 1,
-    );
-
     // Now create the set objects
     $this->set['minimal_set'] = new PurgeItemSet();
     $this->set['minimal_set']->name = t('Minimal Set');
@@ -242,13 +228,11 @@ class PurgeBundleDefault extends PurgeBundleBasic {
       'domain' => array('drupal_domain'),
       'header' => array('gzip'),
       'purger' => array('drupal_http_request'),
-      'option' => array('default_options'),
     );
     $this->set['minimal_set']->target = array('drupal_url' => $this->target['drupal_url']);
     $this->set['minimal_set']->domain = array('drupal_domain' => $this->domain['drupal_domain']);
     $this->set['minimal_set']->header = array('gzip' => $this->header['gzip']);
     $this->set['minimal_set']->purger = array('drupal_http_request' => $this->purger['drupal_http_request']);
-    $this->set['minimal_set']->option = array('default_options' => $this->option['default_options']);
 
     // Now create the set objects
     $this->set['default_set'] = new PurgeItemSet();
@@ -266,7 +250,6 @@ class PurgeBundleDefault extends PurgeBundleBasic {
       'domain' => array('drupal_domain'),
       'header' => array('gzip'),
       'purger' => array('drupal_http_request'),
-      'option' => array('default_options'),
     );
     $this->set['default_set']->target = array(
       'drupal_url' => $this->target['drupal_url'],
@@ -275,7 +258,6 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->set['default_set']->domain = array('drupal_domain' => $this->domain['drupal_domain']);
     $this->set['default_set']->header = array('gzip' => $this->header['gzip']);
     $this->set['default_set']->purger = array('drupal_http_request' => $this->purger['drupal_http_request']);
-    $this->set['default_set']->option = array('default_options' => $this->option['default_options']);
 
   }
 

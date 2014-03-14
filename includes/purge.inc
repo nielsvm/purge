@@ -40,7 +40,8 @@ abstract class PurgeItemBasic {
   public $description = '';
   public $enabled = 1;
   public $access = PURGE_ACCESS_FULL;
-  public $api = array();
+  public $options;
+  public $api;
 
   /**
    * Validate
@@ -180,13 +181,6 @@ class PurgeItemPurger extends PurgeItemBasic {
   public $features = array();
 }
 
-/**
- * Class definition for Purge Options.
- */
-class PurgeItemOption extends PurgeItemBasic {
-  public $options = array();
-}
-
 
 /**
  * Class definition for full Purge Configurations.
@@ -197,13 +191,11 @@ class PurgeItemSet extends PurgeItemBasic {
     'domain' => array(),
     'header' => array(),
     'purger' => array(),
-    'option' => array(),
   );
   public $target = array();
   public $domain = array();
   public $header = array();
   public $purger = array();
-  public $option = array();
 
   /**
    * Serialize the Set data and replace pointers with a string.
@@ -212,7 +204,7 @@ class PurgeItemSet extends PurgeItemBasic {
     // Iterate through all pointers objects and replace with names
     $this->get_pointers();
 
-    return array('name', 'description', 'enabled', 'access', 'api', 'pointers');
+    return array('name', 'description', 'enabled', 'access', 'options', 'api', 'pointers');
   }
 
   /**
@@ -238,7 +230,6 @@ Class PurgeBundleBasic {
   public $domain = array();
   public $header = array();
   public $purger = array();
-  public $option = array();
 
   /**
    * Constructor for the basic bundle.

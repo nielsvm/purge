@@ -223,12 +223,6 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_'
         '#default_value' => implode("\n", $headers),
       );
     break;
-    case 'option':
-      $form['option'] = array(
-        '#type' => 'fieldset',
-        '#title' => 'option Configuration',
-      );
-    break;
     case 'set':
       $form['set'] = array(
         '#type' => 'fieldset',
@@ -278,7 +272,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_'
           '#title' => $bundle->type[$pointer_type]->name,
           '#description' => $bundle->type[$pointer_type]->description,
         );
-        $form['set'][$pointer_type][$pointer_type . 'options'] = array(
+        $form['set'][$pointer_type][$pointer_type . 'settings'] = array(
           '#type' => 'tableselect',
           '#title' => 'test', // $bundle->type[$pointer_type]->name,
           '#header' => $table_header,
@@ -287,8 +281,13 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_'
           '#multiple' => $multiple,
 
         );
-        // dprint_r($default_value);
-    }
+        // Now get the form items for the options.
+      $form['set'][$pointer_type][$pointer_type . 'options'] = array(
+        '#type' => 'fieldset',
+        '#title' => $bundle->type[$pointer_type]->name . ' ' . t('Options'),
+        'default_value' => '',
+      );
+      }
   }
 
   $form['submit']  = array(

@@ -7,8 +7,6 @@
 
 namespace Drupal\purge\Purgeable;
 
-use Drupal\purge\Purgeable\PurgeableInterface;
-
 /**
  * Provides an interface defining a purgeables factory.
  */
@@ -19,6 +17,8 @@ interface PurgeableFactoryInterface {
    *
    * @param string $data
    *   The serialized string representing the purgeable to be instantiated.
+   *
+   * @see \Drupal\purge\Purgeable\PurgeableBase::toQueueItemData()
    *
    * @return \Drupal\purge\Purgeable\PurgeableInterface
    */
@@ -34,5 +34,5 @@ interface PurgeableFactoryInterface {
    *
    * @return \Drupal\purge\Purgeable\PurgeableInterface
    */
-  public function matchFromUserInputLine($representation);
+  public function matchFromStringRepresentation($representation);
 }

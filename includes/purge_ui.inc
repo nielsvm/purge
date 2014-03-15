@@ -132,7 +132,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_'
   // echo (serialize($bundle->target['localhost']));
   // Select the object we need from the bundle
   $item = $bundle->{$item_type}[$item_name];
-  echo serialize($item);
+  // echo serialize($item);
 
   // The Basic Form elements.
   $form = array();
@@ -272,7 +272,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_'
           '#title' => $bundle->type[$pointer_type]->name,
           '#description' => $bundle->type[$pointer_type]->description,
         );
-        $form['set'][$pointer_type][$pointer_type . 'settings'] = array(
+        $form['set'][$pointer_type][$pointer_type . '_settings'] = array(
           '#type' => 'tableselect',
           '#title' => 'test', // $bundle->type[$pointer_type]->name,
           '#header' => $table_header,
@@ -281,20 +281,96 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_'
           '#multiple' => $multiple,
 
         );
-        // Now get the form items for the options.
-      $form['set'][$pointer_type][$pointer_type . 'options'] = array(
-        '#type' => 'fieldset',
-        '#title' => $bundle->type[$pointer_type]->name . ' ' . t('Options'),
-        'default_value' => '',
-      );
+        // Check if this type has options.
+        $options = array();
+        if (isset($bundle->type[$pointer_type]->options) || isset($bundle->{$pointer_type}[$pointer_name]->options)) {
+          // Now get the form items for the options.
+          $form['set'][$pointer_type][$pointer_type . '_options'] = array(
+            '#type' => 'fieldset',
+            '#title' => $bundle->type[$pointer_type]->name . ' ' . t('Options'),
+          );
+          // Display the type options
+          if (isset($bundle->type[$pointer_type]->options)) {
+            $options = $bundle->type[$pointer_type]->options;
+            foreach ($options as $option_name => $option) {
+            // If the set has a value for this option
+              if (isset($item->options[$pointer_type])) {
+                $options[$option_name]['set_value'] = $item->options[$pointer_type][$option_name];
+              }
+              // Now generate a form for these options.
+              $form['set'][$pointer_type][$pointer_type . '_options'][$option_name] = purge_option_form($options);
+
+            }
+          }
+          // dprint_r($options);
+
+
+        }
+        // $form['set'][$pointer_type][$pointer_type] . '_options'][
       }
+      // Now disply the options for this set.
+//      $form['set']['set']['set
+
+
+    break;
   }
+  // Now the items type options.
+  // dprint_r($bundle->type[$item_type]->options);
+  $options = array();
+
+  $options = $bundle->type[$item_type]->options;
+  if ($item_type == 'set') {
+    $form[$item_type]['options'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Set Options'),
+      '#description' => t('These settings apply to this set only.'),
+    );
+  }
+  else {
+    $form[$item_type]['options'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Default Options'),
+      '#description' => t('These defaults can be overruled per set.'),
+    );
+  }
+
+  foreach ($options as $option_name => $option) {
+    $form[$item_type]['options'][$option_name] =  purge_option_form($options);
+  }
+
 
   $form['submit']  = array(
     '#type' => 'submit',
     '#value' => t('Save'),
   );
 
+  return $form;
+}
+
+/**
+ * Form generator for option form.
+ */
+function purge_option_form($options) {
+  $form = array();
+  foreach ($options as $option_name => $option) {
+    $form[$option_name] = array(
+      '#title' => $option['name'],
+      '#description' => $option['description'],
+    );
+    if (isset($option['values'])) {
+      $form[$option_name]['#type'] = 'select';
+      $form[$option_name]['#options'] = $option['values'];
+    }
+    else {
+      $form[$option_name]['#type'] = 'checkbox';
+    }
+    if (isset($option['set_value'])) {
+      $form[$option_name]['#default_value'] = $option['set_value'];
+    }
+    else {
+      $form[$option_name]['#default_value'] = $option['default_value'];
+    }
+  }
   return $form;
 }
 

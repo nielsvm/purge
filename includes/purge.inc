@@ -254,11 +254,13 @@ Class PurgeBundleBasic {
         $this->set[$set_name]->{$pointer_type} = array();
         foreach ($item_names as $item_name) {
           // Each item name now only referenced by name
-          // foreach ($item_names as $item_name) {
+          foreach ($item_names as $item_name) {
             // Link back to the object in the bundle
          //  dprint_r($this->{$pointer_type}[$item_name]);
          //  $this->set[$set_name]->{$pointer_type}[$item_name] = $this->{$type_name}[$item_name];
-          // }
+            // Populate the set options with the type and item options.
+          //  $this->set[$set_name]->options[$pointer_type] = $this->type[$pointer_type]->options;
+          }
         }
       }
     }

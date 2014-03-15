@@ -72,12 +72,10 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['set']->enabled = 1;
     $this->type['set']->access = PURGE_ACCESS_SYSTEM;
     $this->type['set']->options = array(
-      'set' => array(
-        'watchdog' => array(
-          'name' => t('Enable Logging'),
-          'description' => t('Log activities to the Drupal watchdog log.'),
-          'default_value' => 1,
-        ),
+      'watchdog' => array(
+        'name' => t('Enable Logging'),
+        'description' => t('Log activities to the Drupal watchdog log.'),
+        'default_value' => 1,
       ),
     );
 
@@ -240,6 +238,11 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->set['default_set']->description = t('Uses Drupal native methods to issue the requests.');
     $this->set['default_set']->enabled = 1;
     $this->set['default_set']->access = PURGE_ACCESS_CLONE;
+    $this->set['default_set']->options = array(
+      'domain' => array(
+        'purgeable_url_domain' => 0,
+      ),
+    );
     $this->set['default_set']->api = array(
       'callback' => 'purge_defaults',
       'provider' => 'purge',

@@ -54,10 +54,11 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
   );
   $options = array();
   // Get all basic configuration.
-  // $bundle = new PurgeBundleRuntime();
+  $bundle = new PurgeBundleRuntime();
+  $bundle->fetch(PURGE_CONTEXT_RUNTIME);
   //  $bundle = new PurgeBundleDefault();
-  $bundle = new PurgeBundleBasic();
-  // echo serialize($bundle->type);
+//  $bundle = new PurgeBundleBasic();
+  dprint_r($bundle->type);
   // See if the type was passed as an agruement.
   if ($item_type) {
     $types = array($item_type);
@@ -92,7 +93,7 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
       if ($item->access >= PURGE_ACCESS_CLONE) {
         $actions[] = l(t('Clone'), "admin/config/system/purge/{$type}/{$item_name}/clone");
       }
-      else {
+      if ($item->access > PURGE_ACCESS_CLONE) {
         $actions[] = l(t('Edit'), "admin/config/system/purge/{$type}/{$item_name}/edit");
         $actions[] = l(t('Delete'), "admin/config/system/purge/{$type}/{$item_name}/delete");
       }
@@ -125,13 +126,35 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
 /**
  * Menu callback for purge item settins.
  */
-function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_', $action = 'view') {
+function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $action = 'view') {
   // First lets load a bundle.
   // $bundle = new PurgeBundleSingle($item_name, $item_type);
   $bundle = new PurgeBundleBasic();
   // echo (serialize($bundle->target['localhost']));
-  // Select the object we need from the bundle
-  $item = $bundle->{$item_type}[$item_name];
+  // Select the object we need for this form.
+  if ($action == 'add') {
+    switch ($item_type) {
+      case 'target':
+        $item = new PurgeItemTarget();
+        break;
+      case 'domain':
+        $item = new PurgeItemDomain();
+        break;
+      case 'header':
+        $item = new PurgeItemHeader();
+        break;
+      case 'set':
+        $item = new PurgeItemSet();
+        break;
+    }
+    $item_name = '';
+  }
+  elseif ($action == 'clone') {
+    $item = clone $bundle->{$item_type}[$item_name];
+  }
+  else {
+    $item = $bundle->{$item_type}[$item_name];
+  }
   // echo serialize($item);
 
   // The Basic Form elements.
@@ -178,7 +201,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_'
     '#default_value' => $item->enabled,
   );
   // Now switch between the item_types to generate their respecitve forms.
-  switch($item_type){
+  switch($item_type) {
     // The target form.
     case 'target':
       $form['target'] = array(
@@ -319,23 +342,24 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = '_empty_'
   $options = array();
 
   $options = $bundle->type[$item_type]->options;
-  if ($item_type == 'set') {
-    $form[$item_type]['options'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Set Options'),
-      '#description' => t('These settings apply to this set only.'),
-    );
-  }
-  else {
-    $form[$item_type]['options'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Default Options'),
-      '#description' => t('These defaults can be overruled per set.'),
-    );
-  }
-
-  foreach ($options as $option_name => $option) {
-    $form[$item_type]['options'][$option_name] =  purge_option_form($options);
+  if (count($options) > 0) {
+    if ($item_type == 'set') {
+      $form[$item_type]['options'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Set Options'),
+        '#description' => t('These settings apply to this set only.'),
+      );
+    }
+    else {
+      $form[$item_type]['options'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Default Options'),
+        '#description' => t('These defaults can be overruled per set.'),
+      );
+    }
+    foreach ($options as $option_name => $option) {
+      $form[$item_type]['options'][$option_name] =  purge_option_form($options);
+    }
   }
 
 

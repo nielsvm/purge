@@ -31,6 +31,14 @@ define('PURGE_HANDLER_SINGLE', 1);
 define('PURGE_HANDLER_MULTI', 2);
 define('PURGE_HANDLER_NON_BLOCKING', 3);
 
+
+/**
+ * Interface definitions.
+ */
+interface PurgeItemable {
+
+}
+
 /**
  * Class for purge configuration management.
  *   Defines a basic configuration object.
@@ -58,16 +66,16 @@ abstract class PurgeItemBasic {
    * Stage
    *   Execute the API callback.
    */
-  public function stage() {
+  public function fetch($context, $purgeable_type = NULL, $purgeable = NULL) {
     // Check if the api is configured.
     if (isset($this->api['callback'])) {
       // Check if this is set to run at runtime
       if (isset($this->api['context'])) {
-        if ($this->api['context'] == PURGE_API_RUNTIME) {
+        if ($this->api['context'] == $context) {
           // Callback execution
           $api_data = $this->api['callback']();
           // Now store the data in this object.
-          $this->api_set($data);
+          $this->api_set($api_data);
         }
       }
     }
@@ -216,6 +224,20 @@ class PurgeItemSet extends PurgeItemBasic {
       foreach ($pointer_names as $pointer_name) {
         $this->pointers{$pointer_type}[] = $pointer_name;
       }
+    }
+  }
+
+  /**
+   * Process purgeables.
+   *
+   * @param string $purgeable_type
+   * @param array $purgeable
+   *
+   * @return array $purges
+   */
+  public function process($purgeable_type, $purgeable) {
+    if ($purgeable_type == 'url') {
+
     }
   }
 }
@@ -373,28 +395,38 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
    * @param array $new_requests
    *   Flat array, just urls.
    */
-  public function purge_url($urls) {
+  public function add_purgeable($purge) {
     // Add to the bundle array
   }
 
   /**
    * Prepare the bundle for processing.
    */
-  public function stage() {
-    // Call all items api callbacks.
+  public function fetch($context) {
+    // Call api callbacks for these item types
+    $type_names = array('target', 'domain', 'header');
+    foreach ($type_names as $type_name) {
+      foreach ($this->{$type_name} as $item_name => $item) {
+        $this->{$type_name}[$item_name]->fetch($context);
+      }
+    }
   }
 
   /**
    * Process all requests.
    */
   public function process() {
-
+    // Walk the purgeables.
+    foreach ($this->purgeable as $purgeable_type => $purgeables) {
+      foreach ($purgeables as $purgeable_key => $purgeable) {
+        // Pass all sets.
+        foreach ($this-set as $set_name => $set) {
+          $set_purges = $this->set[$set_name]->process($purgeable_type, $purgeable);
+        }
+      }
+    }
   }
-
-
 }
-
-
 
 
 /**
@@ -402,128 +434,14 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
  *
  * @param $purge_urls
  *   Array of urls to remove from the proxy cache using the http purge method.
- *
- * @return
- *   Array of urls and their http status codes after purging.
  */
-function purge_urls($purge_urls) {
-  // Get the Drupal base url and parse it.
-  global $base_url;
-  $base_url_parts = parse_url($base_url);
-  // Get all enabled and active proxy configurations
-  $proxies = array();
-  $proxies = purge_config_get_enabled();
-  // This array will be filled with requests.
-  $purge_requests = array();
-  $current_purge_request = 0;
-
-  // Find out the url parts we need from the urls to be purged
-  foreach ($purge_urls as $purge_url) {
-    $purge_url_parts = parse_url($purge_url);
-
-    // Process all urls for each proxy
-    foreach ($proxies as $proxy) {
-      // Set the base url of the proxy request (scheme + domain)
-      // First check if the use base url option is set
-      if ($proxy->url == '_USE_BASEURL_') {
-        $purge_base_url = $base_url_parts['scheme'] . $base_url_parts['host'];
-        // Add port to the host if set
-        if (array_key_exists('port', $base_url_parts)) {
-          $purge_base_url = $purge_base_url . ":" . $base_url_parts['port'];
-        }
-      }
-      else {
-        // Just take the configured URL
-        $purge_base_url = $proxy->url;
-      }
-
-      // Set the path
-      $purge_path = '';
-      $purge_path .= $purge_url_parts['path'];
-      if (array_key_exists('query', $purge_url_parts)) {
-        $purge_path .= "?" . $purge_url_parts['query'];
-      }
-
-      // Determine all host headers to set.
-      $purge_url_domains = array();
-      $domains = $proxy->get_domains(True);
-      foreach ($domains as $domain) {
-        if ($domain[0] == '_') {
-          if ($domain == '_DOMAINS_EXPIRE_') {
-            if (array_key_exists('host', $purge_url_parts)) {
-              $purge_url_domain = $purge_url_parts['host'];
-              // Add port to the host if set
-              if (array_key_exists('port', $purge_url_parts)) {
-                $purge_url_domain = $purge_url_domain . ":" . $purge_url_parts['port'];
-              }
-              $purge_url_domains[] = $purge_url_domain;
-            }
-          }
-        }
-        else {
-          $purge_url_domains[] = $domain;
-        }
-      }
-      // Then add the Drupal base url if needed.
-      if (((array_key_exists) OR (count($purge_url_domains) == 0))) {
-        $purge_url_domain = $base_url_parts['host'];
-        // Add port to the host if set
-        if (array_key_exists('port', $base_url_parts)) {
-          $purge_url_domain = $purge_url_domain . ":" . $base_url_parts['port'];
-        }
-        $purge_url_domains[] = $purge_url_domain;
-      }
-      // Remove double entries
-      $purge_url_domains = array_unique($purge_url_domains);
-
-      // Set Headers
-      $purge_headers = array();
-      $headers = $proxy->headers;
-      foreach ($headers as $header) {
-        if ($header[0] != '_') {
-          $purge_headers[] = $header;
-        }
-      }
-
-      // Now add a purge request for each domain
-      foreach ($purge_url_domains as $purge_url_domain) {
-        // Add purge url, proxy config and domain to the array for later processing
-        $purge_requests[$current_purge_request]['purge_url'] = $purge_url;
-        $purge_requests[$current_purge_request]['proxy_name'] = $proxy->name;
-        $purge_requests[$current_purge_request]['domain'] = $purge_url_domain;
-        // Set the purge url
-        $purge_requests[$current_purge_request]['purge_url'] = $purge_base_url . $purge_path;
-        // Set the options
-        $purge_requests[$current_purge_request]['options'] = $proxy->options;
-        // Set the headers
-        $all_headers = array();
-        if (count($purge_headers > 0)) {
-          $all_headers = $purge_headers;
-        }
-        $all_headers[] = "Host: " . $purge_url_domain;
-        $purge_requests[$current_purge_request]['headers'] = $all_headers;
-        $current_purge_request++;
-      }
-    }
-  }
-  return $purge_requests;
+function purge_urls($urls) {
+  $bundle = new PurgeBundleRuntime();
+  $bundle->purgeables['urls'] =  $urls;
+  $bundle->fetch(PURGE_CONTEXT_RUNTIME);
+  $bundle->process();
 }
 
-/**
- * Get the request method from a set options.
- */
-function purge_get_method($options) {
-  if (in_array('_METHOD_GET_', $options)) {
-    $method = 'GET';
-  }
-  elseif (in_array('_METHOD_BAN_', $options)) {
-    $method = 'BAN';
-  }
-  else {
-    $method = 'PURGE';
-  }
-  return $method;
-}
 
 /**
  * Issue purge requests using drupal_http_request.

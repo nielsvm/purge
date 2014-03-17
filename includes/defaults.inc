@@ -24,6 +24,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['target']->description = t('Targets are the URLs where the Purge requests will be sent to.');
     $this->type['target']->enabled = 1;
     $this->type['target']->access = PURGE_ACCESS_SYSTEM;
+    $this->type['target']->parent_class = 'PurgeItemTarget';
 
     // Domain type definition.
     $this->type['domain'] = new PurgeItemType();
@@ -31,6 +32,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['domain']->description = t('Domains to generate Purge requests with.');
     $this->type['domain']->enabled = 1;
     $this->type['domain']->access = PURGE_ACCESS_SYSTEM;
+    $this->type['domain']->parent_class = 'PurgeItemDomain';
     $this->type['domain']->options = array(
       'purgeable_url_domain' => array(
         'name' => t('Purgeable URL Domain'),
@@ -45,6 +47,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['header']->description = t('HTTP Headers added to the requests.');
     $this->type['header']->enabled = 1;
     $this->type['header']->access = PURGE_ACCESS_SYSTEM;
+    $this->type['header']->parent_class = 'PurgeItemHeader';
 
     // Purger type definition.
     $this->type['purger'] = new PurgeItemType();
@@ -52,6 +55,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['purger']->description = t('The different http request purgers supported.');
     $this->type['purger']->enabled = 0;
     $this->type['purger']->access = PURGE_ACCESS_SYSTEM;
+    $this->type['purger']->parent_class = 'PurgeItemPurger';
     $this->type['purger']->options = array(
       'method' => array(
         'name' => t('Purge Method'),
@@ -71,6 +75,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['set']->description = t('Sets are combination of all item types.');
     $this->type['set']->enabled = 1;
     $this->type['set']->access = PURGE_ACCESS_SYSTEM;
+    $this->type['set']->parent_class = 'PurgeItemSet';
     $this->type['set']->options = array(
       'watchdog' => array(
         'name' => t('Enable Logging'),
@@ -81,20 +86,15 @@ class PurgeBundleDefault extends PurgeBundleBasic {
 
     // Target definitions.
     // The Drupal base url as target
-    $this->target['drupal_url'] = new PurgeItemTarget();
+    $this->target['drupal_url'] = new PurgeItemTargetDrupal();
     $this->target['drupal_url']->name = t('Drupal URL');
     $this->target['drupal_url']->description = t('Use the Drupal Base URL as a target.');
     $this->target['drupal_url']->enabled = 1;
     $this->target['drupal_url']->access = PURGE_ACCESS_ENABLE;
-    $this->target['drupal_url']->api = array(
-      'callback' => 'purge_target_drupal_url',
-      'provider' => 'purge',
-      'context' => PURGE_API_RUNTIME,
-    );
     $this->target['drupal_url']->urls = array();
 
     // The localhost target
-    $this->target['localhost'] = new PurgeItemTarget();
+    $this->target['localhost'] = new PurgeItemTargetStatic();
     $this->target['localhost']->name = t('Localhost');
     $this->target['localhost']->description = t('The default localhost ip address.');
     $this->target['localhost']->enabled = 1;

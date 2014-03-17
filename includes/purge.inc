@@ -33,11 +33,48 @@ define('PURGE_HANDLER_NON_BLOCKING', 3);
 
 
 /**
- * Interface definitions.
+ * Interface definitions for Setable items.
+ *   These items can be include in a set.
  */
-interface PurgeItemable {
+interface PurgeSetable {
 
 }
+
+/**
+ * Interface definition for Optionable items.
+ */
+interface PurgeOptionable {
+
+}
+
+/**
+ * Interface definition for static items.
+ *   Items imlementing this contain just static data.
+ */
+interface PurgeStaticable {
+
+}
+
+/**
+ * Interface definition for Cacheable.
+ *   The data will be fetched once and cached for reuse.
+ */
+interface PurgeCacheable {
+  function get_data_cached();
+}
+
+/**
+ * Interface definition for processable items.
+ *   These items will have their data fetched for each purgeable.
+ */
+interface PurgeProcessable {
+  function get_data_purgeable();
+}
+
+/**
+ * Interface definition for 
+
+
 
 /**
  * Class for purge configuration management.
@@ -85,16 +122,15 @@ abstract class PurgeItemBasic {
 /**
  * Class definition for the Types object class.
  */
-class PurgeItemType extends PurgeItemBasic {
-  // Just the basic properties are fine for now.
-
+class PurgeItemType extends PurgeItemBasic implements PurgeOptionable {
+  public parentclass;
 }
 
 
 /**
- * Class definition for Purge Targets.
+ * Abstract Class definition for Purge Targets.
  */
-class PurgeItemTarget extends PurgeItemBasic {
+abstract class PurgeItemTarget extends PurgeItemBasic {
   public $urls = array();
 
   /**
@@ -117,29 +153,32 @@ class PurgeItemTarget extends PurgeItemBasic {
     }
     return $errors;
   }
+}
+
+/**
+ * Class definition for static targets.
+ */
+class PurgeItemTargetStatic extends PurgeItemTarget implements PurgeValidateable {
+
+}
+
+/**
+ * Class definition for the Drupal Target.
+ */
+class PurgeItemTargetDrupal extends PurgeItemTarget implements PurgeCacheable {
 
   /**
    * Set api data to url.
    */
-  public function api_set($api_data) {
-    // First check if the suplied data is different then the current
-    if ($this->urls != $api_data) {
-      $current_data = $this->urls;
-      $this->urls = $api_data;
-      // Validate the object in the changed state
-      $errors = $this->validate();
-      // Revert if any eerrors.
-      if (count($errors) > 0) {
-        $this->urls = $current_data;
-      }
-    }
+  public function get_data_cached() {
+    $this->urls = array($base_url);
   }
 }
 
 /**
  * Class definition for domains.
  */
-class PurgeItemDomain extends PurgeItemBasic {
+abstract class PurgeItemDomain extends PurgeItemBasic {
   public $domains = array();
 
   /**
@@ -159,33 +198,46 @@ class PurgeItemDomain extends PurgeItemBasic {
       }
     }
   }
+}
+
+/**
+ * Class definition for static domain items.
+ */
+class PurgeItemDomainStatic extends PurgeItemDomain {
+
+}
+
+/**
+ * Class definition for the Drupal domain item.
+ */
+class PurgeItemDomainDrupal extends PurgeItemDomain implements PurgeCacheable {
 
   /**
-   * Set api data to domains.
+   * Set the domain to the base urls domain.
    */
-  public function api_set($data) {
-    if ($this->domains != $data) {
-      $current_data = $this->domains;
-      $this->domains = $data;
-      $errors = $this->validate();
-      if (counter($errors) > 0) {
-        $this->domains = $current_data;
-      }
-    }
+  public function get_data_cached() {
+    $this->domain = array(parse_url($base_url, PHP_URL_HOST));
   }
 }
 
 /**
- * Class definition for Purge Headers.
+ * Abstract class definition for Purge Headers.
  */
-class PurgeItemHeader extends PurgeItemBasic {
+abstract class PurgeItemHeader extends PurgeItemBasic {
   public $headers = array();
+}
+
+/**
+ * Class definition for static header items.
+ */
+class PurgeItemHeaderStatic extends PurgeItemHeader {
+
 }
 
 /**
  * Class definition for Purge Purger.
  */
-class PurgeItemPurger extends PurgeItemBasic {
+abstract class PurgeItemPurger extends PurgeItemBasic implements PurgeOptionable {
   public $features = array();
 }
 

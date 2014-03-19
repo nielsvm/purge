@@ -2,3 +2,8 @@ services:
   purge.purgeable_factory:
     class: Drupal\purge\Purgeable\PurgeableFactory
     arguments: ['@container.namespaces']
+  purge.queue:
+    class: Drupal\purge\Queue\QueueServiceInterface
+    factory_class: Drupal\purge\Queue\QueueServiceFactory
+    factory_method: getServiceInstance
+    arguments: ['@service_container']

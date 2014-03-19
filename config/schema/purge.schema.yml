@@ -1,0 +1,13 @@
+ # Schema for the configuration files of the Purge module.
+
+purge.plugin_detection:
+  type: mapping
+  label: 'Defines how purge detects its plugins and allows pin-pointing plugins.'
+  mapping:
+
+    # Defines the queue plugin that the 'purge.queue' service provides. The
+    # default value is 'automatic' and takes the first detected plugin. To
+    # set a specific plugin; use the plugin ID, e.g. 'FakeQueuePlugin'.
+    queue:
+      type: text
+      label: 'Queue plugin'

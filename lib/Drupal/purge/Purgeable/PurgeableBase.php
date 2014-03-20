@@ -139,12 +139,9 @@ abstract class PurgeableBase implements PurgeableInterface {
   }
 
   /**
-   * Get the current state of the purgeable as named constant.
-   *
-   * @return
-   *   String describing the state, matching to a STATE_* constant, e.g.: NEW.
+   * {@inheritdoc}
    */
-  public function getStateConstant() {
+  public function getStateString() {
     $mapping = array(
       SELF::STATE_NEW           => 'NEW',
       SELF::STATE_ADDING        => 'ADDING',

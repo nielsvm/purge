@@ -145,4 +145,28 @@ interface PurgeableInterface {
    *   The timestamp when the queue item was put into the queue.
    */
   public function setQueueItemCreated($created);
+
+  /**
+   * Set the state of the purgeable.
+   *
+   * @param $state
+   *   Integer matching to any of the PurgeableInterface::STATE_* constants.
+   */
+  public function setState($state);
+
+  /**
+   * Get the current state of the purgeable.
+   *
+   * @return
+   *   Integer matching to one of the PurgeableInterface::STATE_* constants.
+   */
+  public function getState();
+
+  /**
+   * Get the current state of the purgeable as named constant.
+   *
+   * @return
+   *   String describing the state, matching to a constant, e.g.: STATE_NEW.
+   */
+  public function getStateConstant();
 }

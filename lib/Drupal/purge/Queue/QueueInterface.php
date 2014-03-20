@@ -74,7 +74,7 @@ interface QueueInterface extends ReliableQueueInterface {
    *
    * @param array $items
    *   Non-associative array with item objects as returned by
-   *   claimItemMultiple() or Drupal\Core\Queue\QueueInterface::claimItem().
+   *   claimItemMultiple() or \Drupal\Core\Queue\QueueInterface::claimItem().
    */
   public function deleteItemMultiple(array $items);
 
@@ -85,7 +85,7 @@ interface QueueInterface extends ReliableQueueInterface {
    *
    * @param array $items
    *   Non-associative array with item objects as returned by
-   *   claimItemMultiple() or Drupal\Core\Queue\QueueInterface::claimItem().
+   *   claimItemMultiple() or \Drupal\Core\Queue\QueueInterface::claimItem().
    *
    * @return array
    *   Empty array upon full success, else the remaining items that failed.

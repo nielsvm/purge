@@ -113,7 +113,11 @@ class DatabaseQueue extends QueueBase implements QueueInterface {
    * Implements Drupal\Core\Queue\QueueInterface::claimItem().
    */
   public function claimItem($lease_time = 30) {
-    return $this->dbqueue->claimItem($lease_time);
+    if ($item = $this->dbqueue->claimItem($lease_time)) {
+      $item->item_id = (int)$item->item_id;
+      return $item;
+    }
+    return FALSE;
   }
 
   /**
@@ -129,6 +133,7 @@ class DatabaseQueue extends QueueBase implements QueueInterface {
     foreach ($items as $item) {
       if (!$item) continue;
       $item_ids[] = $item->item_id;
+      $item->item_id = (int)$item->item_id;
       $item->data = unserialize($item->data);
       $returned_items[] = $item;
     }

@@ -28,49 +28,44 @@ interface PurgeableInterface {
   const STATE_ADDED = 2;
 
   /**
-   * Purgeable state: the purgeable object is being claimed.
-   */
-  const STATE_CLAIMING = 3;
-
-  /**
    * Purgeable state: the purgeable object is claimed.
    */
-  const STATE_CLAIMED = 4;
+  const STATE_CLAIMED = 3;
 
   /**
    * Purgeable state: the purgeable object is being purged by the purger.
    */
-  const STATE_PURGING = 5;
+  const STATE_PURGING = 4;
 
   /**
    * Purgeable state: the purgeable object has been purged successfully.
    */
-  const STATE_PURGED = 6;
+  const STATE_PURGED = 5;
 
   /**
    * Purgeable state: the purgeable object failed purging, needs to be released.
    */
-  const STATE_PURGEFAILED = 7;
+  const STATE_PURGEFAILED = 6;
 
   /**
    * Purgeable state: the purgeable object is releasing back to the queue.
    */
-  const STATE_RELEASING = 8;
+  const STATE_RELEASING = 7;
 
   /**
    * Purgeable state: the purgeable object is released back to the queue.
    */
-  const STATE_RELEASED = 9;
+  const STATE_RELEASED = 8;
 
   /**
    * Purgeable state: the purgeable object is being deleted from the queue.
    */
-  const STATE_DELETING = 10;
+  const STATE_DELETING = 9;
 
   /**
    * Purgeable state: the purgeable object is deleted and should be unset.
    */
-  const STATE_DELETED = 11;
+  const STATE_DELETED = 10;
 
   /**
    * Instantiate a new purgeable.
@@ -109,11 +104,11 @@ interface PurgeableInterface {
   public function __set($name, $value);
 
   /**
-   * Provide the virtual Queue API properties: item_id, data, created.
+   * Provide the virtual Queue API properties: dedupeid, item_id, data, created.
    *
    * @param string $name
    *   The property name that PHP was not able to find on this object. Only the
-   *   properties $p->item_id, $p->data and $p->created are recognized.
+   *   properties $p->dedupeid, $p->item_id, $p->data, $p->created are recognized.
    * @return
    *   The requested value. When a item is being requested that does not exist
    *   it will throw \Drupal\purge\Purgeable\InvalidPurgeablePropertyException.

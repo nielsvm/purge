@@ -48,7 +48,7 @@ abstract class PurgeableBase implements PurgeableInterface {
    * {@inheritdoc}
    */
   public function __toString() {
-    return sprintf('{%s:%s}', get_class($this), $this->representation);
+    return $this->representation;
   }
 
   /**
@@ -66,7 +66,7 @@ abstract class PurgeableBase implements PurgeableInterface {
     if (is_null($this->queueItemInfo)) {
       $this->initiatlizeQueueItemArray();
     }
-    if (!in_array($name, array('data', 'item_id', 'created'))) {
+    if (!in_array($name, $this->queueItemInfo['keys'])) {
       throw new InvalidPurgeablePropertyException(
         "The property '$name' does not exist.");
     }
@@ -79,15 +79,17 @@ abstract class PurgeableBase implements PurgeableInterface {
    * Initialize $this->queueItemInfo with its standard data.
    */
   private function initiatlizeQueueItemArray() {
+    $plugin_class = basename(str_replace('\\', '/', get_class($this)));
     $this->queueItemInfo = array(
-      '_keys' => array('data', 'item_id', 'created'),
       'data' => array(
-        basename(str_replace('\\', '/', get_class($this))),
+        $plugin_class,
         $this->representation,
       ),
+      'dedupeid' => $plugin_class . ':' . $this->representation,
       'item_id' => NULL,
       'created' => NULL,
     );
+    $this->queueItemInfo['keys'] = array_keys($this->queueItemInfo);
   }
 
   /**
@@ -146,7 +148,6 @@ abstract class PurgeableBase implements PurgeableInterface {
       SELF::STATE_NEW           => 'NEW',
       SELF::STATE_ADDING        => 'ADDING',
       SELF::STATE_ADDED         => 'ADDED',
-      SELF::STATE_CLAIMING      => 'CLAIMING',
       SELF::STATE_CLAIMED       => 'CLAIMED',
       SELF::STATE_PURGING       => 'PURGING',
       SELF::STATE_PURGED        => 'PURGED',

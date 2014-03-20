@@ -10,6 +10,7 @@ namespace Drupal\purge\Queue;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
 use Drupal\purge\Purgeable\PurgeableFactoryInterface;
 use Drupal\purge\Purgeable\PurgeableInterface;
+use Drupal\purge\Queue\UnexpectedServiceConditionException;
 use Drupal\purge\Queue\QueueInterface;
 
 /**
@@ -42,6 +43,7 @@ class QueueService extends ServiceProviderBase implements QueueServiceInterface 
   function __construct(QueueInterface $queue, PurgeableFactoryInterface $purgeable_factory) {
     $this->purgeable_factory = $purgeable_factory;
     $this->queue = $queue;
+    $this->buffer = array();
 
     // The queue service attempts to collect all actions done for purgeables
     // in $this->buffer, and commits them as infrequent as possible during
@@ -53,130 +55,207 @@ class QueueService extends ServiceProviderBase implements QueueServiceInterface 
   }
 
   /**
-   * Add a purgeable to the queue, schedule it for later purging.
-   *
-   * @param \Drupal\purge\Purgeable\PurgeableInterface $purgeable
-   *   A purgeable describes a single item to be purged and can be created using
-   *   the 'purge.purgeable_factory'. The object instance added to the queue can
-   *   be claimed and executed by the 'purge.purger' service later.
+   * {@inheritdoc}
    */
   public function add(PurgeableInterface $purgeable) {
-
+    $duplicate = FALSE;
+    foreach ($this->buffer as $bufferedPurgeable) {
+      if ($purgeable->dedupeid === $bufferedPurgeable->dedupeid) {
+        $duplicate = TRUE;
+        break;
+      }
+    }
+    if (!$duplicate) {
+      $purgeable->setState(PurgeableInterface::STATE_ADDING);
+      $this->buffer[] = $purgeable;
+    }
   }
 
   /**
-   * Add multiple purgeables to the queue, schedule them for later purging.
-   *
-   * @param array $purgeables
-   *   A non-associative array with \Drupal\purge\Purgeable\PurgeableInterface
-   *   objects to be added to the queue. The purgeables can later be claimed
-   *   from the queue and fed to the 'purge.purger' executor.
+   * {@inheritdoc}
    */
   public function addMultiple(array $purgeables) {
-
+    foreach ($purgeables as $purgeable) {
+      $duplicate = FALSE;
+      foreach ($this->buffer as $bufferedPurgeable) {
+        if ($purgeable->dedupeid === $bufferedPurgeable->dedupeid) {
+          $duplicate = TRUE;
+          break;
+        }
+      }
+      if (!$duplicate) {
+        $purgeable->setState(PurgeableInterface::STATE_ADDING);
+        $this->buffer[] = $purgeable;
+      }
+    }
   }
 
   /**
-   * Claims a purgeable from the queue for immediate purging.
-   *
-   * @param $lease_time
-   *   The lease time determines how long the processing is expected to take
-   *   place in seconds, defaults to an hour. After this lease expires, the item
-   *   will be reset and another consumer can claim the purgeable. Very short
-   *   lease times can result in purgeables being purged twice by parallel
-   *   processes, due this inefficiency the one-hour default is recommended for
-   *   most purgers.
-   *
-   * @return \Drupal\purge\Purgeable\PurgeableInterface
-   *   Returned will be a fully instantiated purgeable object or FALSE when the
-   *   queue is empty. Be aware that its expected that the claimed item needs
-   *   to be fed to the purger within the specified $lease_time, else they will
-   *   become available again.
+   * {@inheritdoc}
    */
   public function claim($lease_time = 3600) {
+    $this->commitAdding();
+    $this->commitReleasing();
 
+    // Claim the raw item from the queue.
+    $item = $this->queue->claimItem($lease_time);
+
+    // Lookup if this item is accidentally in our local buffer.
+    $match = NULL;
+    foreach ($this->buffer as $purgeable) {
+      if ($purgeable->item_id === $item->item_id) {
+        $match = $purgeable;
+        break;
+      }
+    }
+
+    // If a locally buffered purgeable object was found, update and return it.
+    if ($match) {
+      $match->setState(PurgeableInterface::STATE_CLAIMED);
+      $match->setQueueItemInfo($item->item_id, $item->created);
+      return $match;
+    }
+
+    // If the item was not locally buffered (usually), instantiate one.
+    else {
+      $purgeable = $this->purgeable_factory->fromQueueItemData($item->data);
+      $purgeable->setState(PurgeableInterface::STATE_CLAIMED);
+      $purgeable->setQueueItemInfo($item->item_id, $item->created);
+      $this->buffer[] = $purgeable;
+      return $purgeable;
+    }
   }
 
   /**
-   * Claim multiple purgeables for immediate purging from the queue at once.
-   *
-   * @param $claims
-   *   Determines how many claims at once should be claimed from the queue. When
-   *   the queue is unable to return as many items as requested it will return
-   *   as much items as it can.
-   * @param $lease_time
-   *   The lease time determines how long the processing is expected to take
-   *   place in seconds, defaults to an hour. After this lease expires, the item
-   *   will be reset and another consumer can claim the purgeable. Very short
-   *   lease times can result in purgeables being purged twice by parallel
-   *   processes, due this inefficiency the one-hour default is recommended for
-   *   most purgers.
-   *
-   * @return array
-   *   Returned will be a non-associative array with the given amount of
-   *   \Drupal\purge\Purgeable\PurgeableInterface objects as claimed. Be aware
-   *   that its expected that the claimed purgeables will need to be processed
-   *   by the purger within the given $lease_time, else they will become
-   *   available again. The returned array might be empty when the queue is.
+   * {@inheritdoc}
    */
   public function claimMultiple($claims = 10, $lease_time = 3600) {
+    $this->commitAdding();
+    $this->commitReleasing();
 
+    // Claim multiple (raw) items from the queue, return if its empty.
+    if (!($items = $this->queue->claimItemMultiple($claims, $lease_time))) {
+      return array();
+    }
+
+    // Iterate the $items array and replace each with full instances.
+    foreach ($items as $i => $item) {
+
+      // See if this claimed item is locally available as purgeable object.
+      $match = NULL;
+      foreach ($this->buffer as $purgeable) {
+        if ($purgeable->item_id === $item->item_id) {
+          $match = $purgeable;
+          break;
+        }
+      }
+
+      // If a match was found, update and overwrite the object in $items.
+      if ($match) {
+        $match->setState(PurgeableInterface::STATE_CLAIMED);
+        $match->setQueueItemInfo($item->item_id, $item->created);
+        $items[$i] = $match;
+      }
+
+      // If the item was not locally buffered (usually), instantiate one.
+      else {
+        $purgeable = $this->purgeable_factory->fromQueueItemData($item->data);
+        $purgeable->setState(PurgeableInterface::STATE_CLAIMED);
+        $purgeable->setQueueItemInfo($item->item_id, $item->created);
+        $this->buffer[] = $purgeable;
+        $items[$i] = $purgeable;
+      }
+    }
+
+    return $items;
   }
 
   /**
-   * Release a purgeable that couldn't be purged, back to the queue.
-   *
-   * @param \Drupal\purge\Purgeable\PurgeableInterface $purgeable
-   *   The purgeable that couldn't be held for longer or that failed processing,
-   *   to be marked as free for processing in the queue. Once released, other
-   *   consumers can claim and attempt purging it again.
+   * {@inheritdoc}
    */
   public function release(PurgeableInterface $purgeable) {
-
+    $this->bufferSetState(PurgeableInterface::STATE_RELEASING, array($purgeable));
   }
 
   /**
-   * Release purgeables that couldn't be purged, back to the queue.
-   *
-   * @param array $purgeables
-   *   A non-associative array with \Drupal\purge\Purgeable\PurgeableInterface
-   *   objects to released and marked as available in the queue. Once released,
-   *   other consumers can claim them again and attempt purging them.
+   * {@inheritdoc}
    */
   public function releaseMultiple(array $purgeables) {
-
+    $this->bufferSetState(PurgeableInterface::STATE_RELEASING, $purgeables);
   }
 
   /**
-   * Delete a purged purgeable from the queue.
-   *
-   * @param \Drupal\purge\Purgeable\PurgeableInterface $purgeable
-   *   The purgeable that was successfully purged and that should be removed
-   *   from the queue. The object instance might remain to exist but should not
-   *   be accessed anymore, cleanup might occur later during runtime.
+   * {@inheritdoc}
    */
   public function delete(PurgeableInterface $purgeable) {
-
+    $this->bufferSetState(PurgeableInterface::STATE_DELETING, array($purgeable));
   }
 
   /**
-   * Delete multiple purgeables from the queue at once.
-   *
-   * @param array $purgeables
-   *   A non-associative array with \Drupal\purge\Purgeable\PurgeableInterface
-   *   objects to be removed from the queue. Once called, the instance might
-   *   still exists but should not be accessed anymore, cleanup might occur
-   *   later during runtime.
+   * {@inheritdoc}
    */
   public function deleteMultiple(array $purgeables) {
-
+    $this->bufferSetState(PurgeableInterface::STATE_DELETING, $purgeables);
   }
 
   /**
-   * Empty the entire queue and reset all statistics.
+   * {@inheritdoc}
    */
   function emptyQueue() {
+    $this->bufferSetState(PurgeableInterface::STATE_DELETED, $this->buffer);
     $this->queue->deleteQueue();
+    $this->buffer = array();
+  }
+
+  /**
+   * Only retrieve items from the buffer in a particular given state.
+   *
+   * @param array $states
+   *   A non-associative array containing one or more state constants as
+   *   found under PurgeableInterface::STATE_*.
+   *
+   * @return
+   *   Returns a non-associative array with purgeable objects, but only those
+   *   that matched the given states requested.
+   */
+  private function bufferGetFiltered(array $states) {
+    $results = array();
+    foreach ($this->buffer as $purgeable) {
+      if (in_array($purgeable->getState(), $states)) {
+        $results[] = $purgeable;
+      }
+    }
+    return $results;
+  }
+
+  /**
+   * Set a certain state on each purgeable in the given array.
+   *
+   * @param $state
+   *   Integer matching to any of the PurgeableInterface::STATE_* constants.
+   * @param array $purgeables
+   *   A non-associative array with \Drupal\purge\Purgeable\PurgeableInterface
+   *   objects that need the given state applied.
+   * @param bool $checkid
+   *   If TRUE, only change the state on objects that have a non-NULL item_id.
+   */
+  private function bufferSetState($state, array $purgeables, $checkid = TRUE) {
+    foreach ($purgeables as $purgeable) {
+      if ($checkid && is_null($purgeable->item_id)) {
+        continue;
+      }
+      $buffered = FALSE;
+      foreach ($this->buffer as $bufferedPurgeable) {
+        if ($purgeable->item_id === $bufferedPurgeable->item_id) {
+          $buffered = TRUE;
+          break;
+        }
+      }
+      if (!$buffered) {
+        $this->buffer[] = $purgeable;
+      }
+      $purgeable->setState($state);
+    }
   }
 
   /**
@@ -186,34 +265,121 @@ class QueueService extends ServiceProviderBase implements QueueServiceInterface 
     if (empty($this->buffer)) {
       return;
     }
-    die(__METHOD__);
+    $this->commitAdding();
+    $this->commitReleasing();
+    $this->commitDeleting();
   }
 
   /**
    * Commit all adding purgeables in the buffer to the queue.
    */
-  private function commitCreating() {
-    die(__METHOD__);
-  }
+  private function commitAdding() {
+    $items = $this->bufferGetFiltered(array(PurgeableInterface::STATE_ADDING));
+    if (empty($items)) {
+      return;
+    }
+    else {
 
-  /**
-   * ????.
-   */
-  private function commitClaiming() {
-    die(__METHOD__);
+      // Add just one item to the queue using createItem() on the queue.
+      if (count($items) === 1) {
+        $purgeable = current($items);
+        if (!($id = $this->queue->createItem($purgeable->data))) {
+          throw new UnexpectedServiceConditionException(
+            "The queue returned FALSE on createItem().");
+        }
+        else {
+          $purgeable->setQueueItemId($id);
+          $purgeable->setQueueItemCreated(time());
+          $purgeable->setState(PurgeableInterface::STATE_ADDED);
+        }
+      }
+
+      // Add multiple at once to the queue using createItemMultiple() on the queue.
+      else {
+        $data_items = array();
+        foreach ($items as $purgeable) {
+          $data_items[] = $purgeable->data;
+        }
+        if (!($ids = $this->queue->createItemMultiple($data_items))) {
+          throw new UnexpectedServiceConditionException(
+            "The queue returned FALSE on createItemMultiple().");
+        }
+        foreach ($items as $purgeable) {
+          if (!isset($i)) {
+            $i = 0;
+          }
+          else {
+            $i++;
+          }
+          $purgeable->setQueueItemId($ids[$i]);
+          $purgeable->setQueueItemCreated(time());
+          $purgeable->setState(PurgeableInterface::STATE_ADDED);
+        }
+      }
+    }
   }
 
   /**
    * Commit all releasing purgeables in the buffer to the queue.
    */
   private function commitReleasing() {
-    die(__METHOD__);
+    $items = $this->bufferGetFiltered(array(PurgeableInterface::STATE_RELEASING));
+    if (empty($items)) {
+      return;
+    }
+    else {
+
+      // Release just one item back to the queue.
+      if (count($items) === 1) {
+        $purgeable = current($items);
+        $this->queue->releaseItem($purgeable);
+        $purgeable->setState(PurgeableInterface::STATE_RELEASED);
+      }
+
+      // Release multiple items at once back to the queue.
+      else {
+        $this->queue->releaseItemMultiple($items);
+        foreach ($items as $purgeable) {
+          $purgeable->setState(PurgeableInterface::STATE_RELEASED);
+        }
+      }
+    }
   }
 
   /**
    * Commit all deleting purgeables in the buffer to the queue.
    */
   private function commitDeleting() {
-    die(__METHOD__);
+    $items = $this->bufferGetFiltered(array(PurgeableInterface::STATE_DELETING));
+    if (empty($items)) {
+      return;
+    }
+    else {
+
+      // Delete only one item from the queue.
+      if (count($items) === 1) {
+        $purgeable = current($items);
+        $this->queue->deleteItem($purgeable);
+        $purgeable->setState(PurgeableInterface::STATE_DELETED);
+        foreach ($this->buffer as $i => $bufferedPurgeable) {
+          if ($purgeable->item_id === $bufferedPurgeable->item_id) {
+            unset($this->buffer[$i]);
+          }
+        }
+      }
+
+      // Delete multiple items at once from the queue.
+      else {
+        $this->queue->deleteItemMultiple($items);
+        foreach ($items as $purgeable) {
+          $purgeable->setState(PurgeableInterface::STATE_DELETED);
+          foreach ($this->buffer as $i => $bufferedPurgeable) {
+            if ($purgeable->item_id === $bufferedPurgeable->item_id) {
+              unset($this->buffer[$i]);
+            }
+          }
+        }
+      }
+    }
   }
 }

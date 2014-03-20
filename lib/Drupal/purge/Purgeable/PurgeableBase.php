@@ -26,7 +26,7 @@ abstract class PurgeableBase implements PurgeableInterface {
   /**
    * A enumerator that describes the current state of this purgeable.
    */
-  private $state = self::STATE_NEW;
+  private $state = NULL;
 
   /**
    * Holds the virtual Queue API properties 'item_id', 'data', 'created'.
@@ -91,12 +91,7 @@ abstract class PurgeableBase implements PurgeableInterface {
   }
 
   /**
-   * Set all Queue API properties on the purgeable, in one call.
-   *
-   * @param $item_id
-   *   The unique ID returned from \Drupal\Core\Queue\QueueInterface::createItem().
-   * @param $created
-   *   The timestamp when the queue item was put into the queue.
+   * {@inheritdoc}
    */
   public function setQueueItemInfo($item_id, $created) {
     if (is_null($this->queueItemInfo)) {
@@ -107,10 +102,7 @@ abstract class PurgeableBase implements PurgeableInterface {
   }
 
   /**
-   * Set the unique ID of the associated queue item on this purgeable object.
-   *
-   * @param $item_id
-   *   The unique ID returned from \Drupal\Core\Queue\QueueInterface::createItem().
+   * {@inheritdoc}
    */
   public function setQueueItemId($item_id) {
     if (is_null($this->queueItemInfo)) {
@@ -120,15 +112,53 @@ abstract class PurgeableBase implements PurgeableInterface {
   }
 
   /**
-   * Set the created timestamp of the associated queue item on this purgeable.
-   *
-   * @param $created
-   *   The timestamp when the queue item was put into the queue.
+   * {@inheritdoc}
    */
   public function setQueueItemCreated($created) {
     if (is_null($this->queueItemInfo)) {
       $this->initiatlizeQueueItemArray();
     }
     $this->queueItemInfo['created'] = $created;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setState($state) {
+    $this->state = $state;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getState() {
+    if (is_null($this->state)) {
+      $this->state = SELF::STATE_NEW;
+    }
+    return $this->state;
+  }
+
+  /**
+   * Get the current state of the purgeable as named constant.
+   *
+   * @return
+   *   String describing the state, matching to a STATE_* constant, e.g.: NEW.
+   */
+  public function getStateConstant() {
+    $mapping = array(
+      SELF::STATE_NEW           => 'NEW',
+      SELF::STATE_ADDING        => 'ADDING',
+      SELF::STATE_ADDED         => 'ADDED',
+      SELF::STATE_CLAIMING      => 'CLAIMING',
+      SELF::STATE_CLAIMED       => 'CLAIMED',
+      SELF::STATE_PURGING       => 'PURGING',
+      SELF::STATE_PURGED        => 'PURGED',
+      SELF::STATE_PURGEFAILED   => 'PURGEFAILED',
+      SELF::STATE_RELEASING     => 'RELEASING',
+      SELF::STATE_RELEASED      => 'RELEASED',
+      SELF::STATE_DELETING      => 'DELETING',
+      SELF::STATE_DELETED       => 'DELETED',
+    );
+    return $mapping[$this->getState()];
   }
 }

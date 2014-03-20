@@ -163,10 +163,10 @@ interface PurgeableInterface {
   public function getState();
 
   /**
-   * Get the current state of the purgeable as named constant.
+   * Get the current state as string.
    *
    * @return
-   *   String describing the state, matching to a constant, e.g.: STATE_NEW.
+   *   The string can be prefixed with 'STATE_' to let it match a constant.
    */
-  public function getStateConstant();
+  public function getStateString();
 }

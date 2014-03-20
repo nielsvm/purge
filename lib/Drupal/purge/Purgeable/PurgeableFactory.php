@@ -37,7 +37,7 @@ class PurgeableFactory extends PluginManagerBase implements PurgeableFactoryInte
    * {@inheritdoc}
    */
   public function fromQueueItemData($data) {
-    return new $data[0]($data[1]);
+    return $this->createInstance($data[0], array($data[1]));
   }
 
   /**

@@ -71,7 +71,7 @@ class FileQueue extends QueueBase implements QueueInterface {
    * Initialize the file buffer, ensure the queue is loaded.
    */
   private function bufferInitialize() {
-    if (!$this->bufferInitialized) {printf(" - " . __METHOD__ . "\n");
+    if (!$this->bufferInitialized) {
       $this->bufferInitialized = TRUE;
 
       // Open and parse the queue file, if it wasn't there during initialization
@@ -91,7 +91,7 @@ class FileQueue extends QueueBase implements QueueInterface {
   /**
    * Commit the buffer to disk.
    */
-  public function bufferCommit() {printf(" - " . __METHOD__ . "\n");
+  public function bufferCommit() {
     $ob = '';
     $fh = fopen($this->file, 'w');
     foreach($this->buffer as $item_id => $line) {

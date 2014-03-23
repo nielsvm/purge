@@ -104,7 +104,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
 
     // Domain definition.
     // The domain from the Drupal Basd URL.
-    $this->domain['drupal_domain'] = new PurgeItemDomain();
+    $this->domain['drupal_domain'] = new PurgeItemDomainStatic();
     $this->domain['drupal_domain']->name = t('Drupal Domain');
     $this->domain['drupal_domain']->description = t('Use the domain in the Drupal Base URL.');
     $this->domain['drupal_domain']->enabled = 1;
@@ -120,7 +120,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
 
     // Header definitions.
     // The Gzip header.
-    $this->header['gzip'] = new PurgeItemHeader();
+    $this->header['gzip'] = new PurgeItemHeaderStatic();
     $this->header['gzip']->name = t('Gzip');
     $this->header['gzip']->description = t(
       'The Gzip header enables compression and is enabled by default on most http clients.'
@@ -137,7 +137,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
 
     // Purger definitions.
     // Drupal http request.
-    $this->purger['drupal_http_request'] = new PurgeItemPurger();
+    $this->purger['drupal_http_request'] = new PurgeItemPurgerDrupal();
     $this->purger['drupal_http_request']->name = t('Drupal HTTP Request');
     $this->purger['drupal_http_request']->description = t('The native http request function of Drupal.');
     $this->purger['drupal_http_request']->enabled = 1;
@@ -150,63 +150,49 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->purger['drupal_http_request']->features = array(PURGE_HTTP_SINGLE);
 
     // Curl Single Purger
-    $this->purger['curl_single'] = new PurgeItemPurger();
-    $this->purger['curl_single']->name = t('Curl Single');
-    $this->purger['curl_single']->description = t('Use the Curl library to send out requests one at a time.');
-    $this->purger['curl_single']->enabled = 1;
-    $this->purger['curl_single']->access = PURGE_ACCESS_ENABLE;
-    $this->purger['curl_single']->api = array(
+    $this->purger['curl'] = new PurgeItemPurgerCurl();
+    $this->purger['curl']->name = t('Curl');
+    $this->purger['curl']->description = t('Use the Curl library to send out requests http requests.');
+    $this->purger['curl']->enabled = 1;
+    $this->purger['curl']->access = PURGE_ACCESS_ENABLE;
+    $this->purger['curl']->options = array(
+      'multi' => array(
+        'name' => t('Parallel'),
+        'description' => t('Execute the purge requests one at a time or in parallel?'),
+        'default_value' => 1,
+      ),
+    );
+    $this->purger['curl']->api = array(
       'callback' => 'purge_purger_curl_single',
       'provider' => 'purge',
       'context' => PURGE_API_RUNTIME,
     );
-    $this->purger['curl_single']->features = array(PURGE_HANDLER_SINGLE);
-
-    // Curl Multi Legacy Purger
-    $this->purger['curl_multi_legacy'] = new PurgeItemPurger();
-    $this->purger['curl_multi_legacy']->name = t('Curl Multi (Legacy)');
-    $this->purger['curl_multi_legacy']->description = t(
-      'Providers legacy support for older versions of PHP and Curl.'
-    );
-    $this->purger['curl_multi_legacy']->enabled = 1;
-    $this->purger['curl_multi_legacy']->access = PURGE_ACCESS_ENABLE;
-    $this->purger['curl_multi_legacy']->api = array(
-      'callback' => 'purge_purger_curl_multi_legacy',
-      'provider' => 'purge',
-      'context' => PURGE_API_RUNTIME,
-    );
-    $this->purger['curl_multi_legacy']->features = array(PURGE_HANDLER_MULTI);
-
-    // Curl Multi Purger.
-    $this->purger['curl_multi'] = new PurgeItemPurger();
-    $this->purger['curl_multi']->name = t('Curl Multi');
-    $this->purger['curl_multi']->description = t(
-      'Curl is an advanced HTTP request library and available on most hosting environments.'
-    );
-    $this->purger['curl_multi']->enabled = 1;
-    $this->purger['curl_multi']->access = PURGE_ACCESS_ENABLE;
-    $this->purger['curl_multi']->api = array(
-      'callback' => 'purge_purger_curl_multi',
-      'provider' => 'purge',
-      'context' => PURGE_API_RUNTIME,
-    );
-    $this->purger['curl_multi']->features = array(PURGE_HANDLER_MULTI);
 
     // HTTPrl Purger.
-    $this->purger['httprl'] = new PurgeItemPurger();
+    $this->purger['httprl'] = new PurgeItemPurgerHttprl();
     $this->purger['httprl']->name = t('HTTPrl');
     $this->purger['httprl']->description = t(
       'The HTTP Request Library module provides an advanced library that allows non-blocking requests.'
     );
     $this->purger['httprl']->enabled = 1;
     $this->purger['httprl']->access = PURGE_ACCESS_ENABLE;
+    $this->purger['httprl']->options = array(
+      'multi' => array(
+        'name' => t('Parallel'),
+        'description' => t('Execute the purge requests one at a time or in parallel?'),
+        'default_value' => 1,
+      ),
+      'non_blocking' => array(
+        'name' => t('Non Blocking'),
+        'description' => t('Send the requests in a non-blocking way.'),
+        'default_value' => 1,
+      ),
+    );
     $this->purger['httprl']->api = array(
       'callback' => 'purge_purger_curl_multi',
       'provider' => 'purge',
       'context' => array(PURGE_API_RUNTIME),
     );
-    $this->purger['httprl']->features = array(PURGE_HANDLER_MULTI, PURGE_HANDLER_NON_BLOCKING);
-
 
     // Batch definition.
 
@@ -252,7 +238,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
       'target' => array('drupal_url', 'localhost'),
       'domain' => array('drupal_domain'),
       'header' => array('gzip'),
-      'purger' => array('drupal_http_request'),
+      'purger' => array('curl'),
     );
     $this->set['default_set']->target = array(
       'drupal_url' => $this->target['drupal_url'],
@@ -260,7 +246,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     );
     $this->set['default_set']->domain = array('drupal_domain' => $this->domain['drupal_domain']);
     $this->set['default_set']->header = array('gzip' => $this->header['gzip']);
-    $this->set['default_set']->purger = array('drupal_http_request' => $this->purger['drupal_http_request']);
+    $this->set['default_set']->purger = array('curl' => $this->purger['curl']);
 
   }
 

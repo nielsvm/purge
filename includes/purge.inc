@@ -48,6 +48,13 @@ interface PurgeOptionable {
 }
 
 /**
+ * Interface definition for Validateable items.
+ */
+interface PurgeValidateable {
+  function validate();
+}
+
+/**
  * Interface definition for static items.
  *   Items imlementing this contain just static data.
  */
@@ -68,13 +75,29 @@ interface PurgeCacheable {
  *   These items will have their data fetched for each purgeable.
  */
 interface PurgeProcessable {
-  function get_data_purgeable();
+  function process();
 }
 
 /**
- * Interface definition for 
+ * Interface definition for item that can process Purgeable urls.
+ */
+interface PurgeProcessableUrl extends PurgeProcessable {
+  function process_url();
+}
 
+/**
+ * Interface definition for item that can process Purgeable domains.
+ */
+interface PurgeProcessableDomain extends PurgeProcessable {
+  function process_domain();
+}
 
+/**
+ * Interface definition for item that can process Purgeable Tags.
+ */
+interface PurgeProcessableTag extends PurgeProcessable {
+  function process_tag();
+}
 
 /**
  * Class for purge configuration management.
@@ -123,7 +146,7 @@ abstract class PurgeItemBasic {
  * Class definition for the Types object class.
  */
 class PurgeItemType extends PurgeItemBasic implements PurgeOptionable {
-  public parentclass;
+  public $parentclass;
 }
 
 
@@ -238,12 +261,163 @@ class PurgeItemHeaderStatic extends PurgeItemHeader {
  * Class definition for Purge Purger.
  */
 abstract class PurgeItemPurger extends PurgeItemBasic implements PurgeOptionable {
-  public $features = array();
+
+}
+
+/**
+ * Class definition for the Drupal HTTP request Purger.
+ */
+class PurgeItemPurgerDrupal extends PurgeItemPurger {
+
+  /**
+   * Function to execute items from a queue.
+   *
+   * @param array $purges
+   *
+   * @param array $purger_options
+   *
+   * @return array $purges
+   */
+  public function execute($purges, $purger_options) {
+    foreach ($purges as $purge_id => $purge) {
+      $options = array(
+        'headers' => $purge['headers'],
+        'method' => $purger_options['method'],
+      );
+      $results = drupal_http_request($purge['purge_url'],$options);
+      $purges[$purge_id]['http_code'] = 200; // $results['code'];
+    }
+    return $purges;
+  }
+}
+
+/**
+ * Class definition for the Curl HTTP request library.
+ */
+class PurgeItemPurgerCurl extends PurgeItemPurger {
+
+  /**
+   * Funtion will determin what options are set and call the right execute
+   * function.
+   */
+  public function execute($purges, $purger_options) {
+    if ($purger_options['multi']) {
+      //if ($purger_options['legacy']) {
+      //  $purges = $this->execute_legacy($purges, $purger_options);
+      //}
+      //else {
+        $purges = $this->execute_multi($purges, $purger_options);
+      // }
+    }
+    else {
+      $purges = $this->execute_single($purges, $purger_options);
+    }
+    return $purges;
+  }
+
+  /**
+   * Function to procerss a single purge with curl.
+   */
+  private function execute_single($purges, $purger_options) {
+    foreach ($purges as $purge_id => $purge) {
+      $curl_request = $this->get_curl_request($purge, $purger_options);
+      // Execute the request
+      curl_exec($curl_request);
+      // Get http status code.
+      $info = curl_getinfo($curl_request);
+      $purges[$purge_id]['http_code'] = $info['http_code'];
+    }
+    return $purges;
+  }
+
+  /**
+   * Function to process multiple purges with curl.
+   */
+  private function execute_multi($purges, $purges_options) {
+    $curl_purges = curl_multi_init();
+    foreach ($purges as $purge_id => $purge) {
+      $curl_requests[$purge_id] = $this->get_curl_request($purge, $purger_options);
+      curl_multi_add_handle($curl_purges, $curl_requests[$purge_id]);
+    }
+    // Execute the purge requests
+    ob_start();
+    $active = 0;
+    $multi_result = $this->multi_exec($curl_purges, $active);
+    while ($active && $multi_result == CURLM_OK) {
+      if (curl_multi_select($curl_purges) == -1) {
+        usleep(100000);
+      }
+      $multi_result = $this->multi_exec($curl_purges, $active);
+    }
+    ob_end_clean();
+
+    // Result collection. Collects the http code returned for each url purged
+    foreach ($purges as $purge_id => $purge) {
+      $info = curl_getinfo($curl_purges[$purge_id]);
+      $purges[$purge_id]['http_code'] = $info['http_code'];
+      curl_multi_remove_handle($curl_purges, $curl_requests[$purge_id]);
+    }
+    curl_multi_close($curl_purges);
+    return $purges;
+  }
+
+  /**
+    * Wrapper for curl_multi_exec().
+    */
+  private function multi_exec($curl_purges, &$active) {
+    do {
+      $multi_result = curl_multi_exec($curl_purges, $active);
+    } while ($multi_result == CURLM_CALL_MULTI_PERFORM);
+    return $multi_result;
+  }
+
+
+
+  /**
+   * Function to construct a curl request object.
+   */
+  private function get_curl_request($purge, $purger_options) {
+    $curl_request = curl_init();
+    curl_setopt($curl_request, CURLOPT_CUSTOMREQUEST, $purger_options['method']);
+    curl_setopt($curl_request, CURLOPT_URL, $purge['purge_url']);
+    curl_setopt($curl_request, CURLOPT_HEADER, 1);
+    curl_setopt($curl_request, CURLOPT_HTTPHEADER, $purge['headers']);
+    curl_setopt($curl_request, CURLOPT_RETURNTRANSFER, 0);
+
+    return $curl_request;
+  }
+
+}
+
+/**
+ * Class definition for HTTPrl purger.
+ */
+class PurgeItemPurgerHttprl extends PurgeItemPurger {
+
+  public function execute($purges, $purger_options) {
+    foreach ($purges as $purge_id => $purge) {
+      $headers_array = headers2array($purge['headers']);
+      // Gather options
+      $options = array(
+        'method' => $purger_options['method'],
+        'blocking' => FALSE,
+        'headers' => $purge['headers'],
+      );
+      // Queue the request
+      httprl_request($purge['purge_url'], $options);
+      // Since we don't care about the results, let's fake 200
+      $purges[$purge_id]['http_code'] = 200;
+    }
+    // Issue all  requests.
+    $request = httprl_send_request();
+    return $purges;
+  }
 }
 
 
+
 /**
- * Class definition for full Purge Configurations.
+ * Class definition for Purge Configuration Sets.
  */
 class PurgeItemSet extends PurgeItemBasic {
   public $pointers = array(
@@ -494,125 +668,6 @@ function purge_urls($urls) {
   $bundle->process();
 }
 
-
-/**
- * Issue purge requests using drupal_http_request.
- */
-function purge_drupal($purges) {
-  // Go through each purge url one at a time
-  foreach ($purges as $purge_id => $purge) {
-    // Get the method
-    $method = purge_get_method($purge['options']);
-    $headers = headers2array ($purge['headers']);
-    $options = array(
-      'headers' => $headers,
-      'method' => $method,
-    );
-    $results = drupal_http_request($purge['purge_url'],$options);
-    $purges[$purge_id]['http_code'] = 200; // $results['code'];
-  }
-  return $purges;
-}
-
-/**
- * Issue purge requests using single curl requests.
- */
-function purge_curl_single($purges) {
-  // Go through all purge requests one by one.
-  foreach ($purges as $purge_id => $purge) {
-    // Create a curl request
-    $current_curl_request = curl_init();
-    curl_setopt($current_curl_request, CURLOPT_CUSTOMREQUEST, purge_get_method($purge['options']));
-    curl_setopt($current_curl_request, CURLOPT_URL, $purge['purge_url']);
-    curl_setopt($current_curl_request, CURLOPT_HEADER, 1);
-    curl_setopt($current_curl_request, CURLOPT_HTTPHEADER, $purge['headers']);
-    curl_setopt($current_curl_request, CURLOPT_RETURNTRANSFER, 0);
-    // Execute the request
-    curl_exec($current_curl_request);
-    // Get http status code.
-    $info = curl_getinfo($current_curl_request);
-    $purges[$purge_id]['http_code'] = $info['http_code'];
-    // Close the curl request.
-    curl_close($current_curl_request);
-  }
-  return $purges;
-}
-
-
-
-/**
- * Issue purge request using curl_multi in a way compliant with legacy PHP/Curl implementations
- *
- */
-function purge_curl_multi_legacy($purges) {
-  // Initialise a curl_multi object
-  $curl_purges = curl_multi_init();
-  $current_curl_purge = 0;
-  foreach ($purges as $purge) {
-    $curl_purge[$current_curl_purge] = curl_init();
-    curl_setopt($curl_purge[$current_curl_purge], CURLOPT_CUSTOMREQUEST, purge_get_method($purge['options']));
-    curl_setopt($curl_purge[$current_curl_purge], CURLOPT_URL, $purge['purge_url']);
-    curl_setopt($curl_purge[$current_curl_purge], CURLOPT_HEADER, 1);
-    curl_setopt($curl_purge[$current_curl_purge], CURLOPT_HTTPHEADER, $purge['headers']);
-    curl_setopt($curl_purge[$current_curl_purge], CURLOPT_RETURNTRANSFER, 0);
-    curl_multi_add_handle($curl_purges, $curl_purge[$current_curl_purge]);
-    $current_curl_purge++;
-  }
-  // Execute the purge requests
-  ob_start();
-  do {
-    // This loop is only necessary for libcurl earlier than 7.20.0, however
-    // RHEL 5 has just that. Otherwise a simple call would do.
-    do {
-      $multi_result = curl_multi_exec($curl_purges, $active);
-    } while ($multi_result == CURLM_CALL_MULTI_PERFORM);
-    // Block until there is activity on any of the purgers. Avoids
-    // busywaiting.
-    if ($multi_result == CURLM_OK) {
-      $select_result = curl_multi_select($curl_purges);
-    }
-    if ($multi_result != CURLM_OK || $select_result == -1) {
-    // @TODO: error handling. Something truly awkward happened.
-      ob_end_clean();
-    return FALSE;
-    }
-  } while ($select_result != -1 && $active && $multi_result == CURLM_OK);
-  ob_end_clean();
-
-  // Result collection. Collects the http code returned for each url purged
-  $current_curl_purge = 0;
-  foreach ($purges as $purge) {
-    $info = curl_getinfo($curl_purge[$current_curl_purge]);
-    $purges[$current_curl_purge]['http_code'] = $info['http_code'];
-    curl_multi_remove_handle($curl_purges, $curl_purge[$current_curl_purge]);
-    $current_curl_purge++;
-  }
-  curl_multi_close($curl_purges);
-  return $purges;
-}
-
-/**
- * Issue purges using the httprl module.
- */
-function purge_httprl($purges) {
-  foreach ($purges as $purge_id => $purge) {
-    // Get headers
-    $headers_array = headers2array($purge['headers']);
-    // Gather options
-    $options = array(
-      'method' => purge_get_method($purge['options']),
-      'blocking' => FALSE,
-      'headers' => $headers_array,
-    );
-    // Queue the request
-    httprl_request($purge['purge_url'], $options);
-    // Since we don't care about the results, let's fake 200
-    $purges[$purge_id]['http_code'] = 200;
-  }
-  // Issue all requests.
-  $request = httprl_send_request();
-  return $purges;
-}
 
 /**
  * Logs successful purges and errors to the watchdog.

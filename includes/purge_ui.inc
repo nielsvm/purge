@@ -54,11 +54,11 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
   );
   $options = array();
   // Get all basic configuration.
-  $bundle = new PurgeBundleRuntime();
-  $bundle->fetch(PURGE_CONTEXT_RUNTIME);
+//   $bundle = new PurgeBundleRuntime();
+  // $bundle->fetch(PURGE_CONTEXT_RUNTIME);
   //  $bundle = new PurgeBundleDefault();
-//  $bundle = new PurgeBundleBasic();
-  dprint_r($bundle->type);
+  $bundle = new PurgeBundleBasic();
+  // dprint_r($bundle->type);
   // See if the type was passed as an agruement.
   if ($item_type) {
     $types = array($item_type);

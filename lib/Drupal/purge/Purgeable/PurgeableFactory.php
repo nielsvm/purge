@@ -28,7 +28,7 @@ class PurgeableFactory extends PluginManagerBase implements PurgeableFactoryInte
    *   keyed by the corresponding namespace to look for plugin implementations.
    */
   public function __construct(\Traversable $namespaces) {
-    $this->discovery = new AnnotatedClassDiscovery('Plugin/Purgeable', $namespaces);
+    $this->discovery = new AnnotatedClassDiscovery('Plugin/Purge/Purgeable', $namespaces);
     $this->discovery = new CacheDecorator($this->discovery, 'purge_purgeable_types');
     $this->factory = new DefaultFactory($this->discovery);
   }

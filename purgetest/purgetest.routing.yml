@@ -1,0 +1,92 @@
+#purgetest.:
+  #path: '/purgetests/'
+  #defaults:
+    #_content: 'Drupal\purgetest\Controller\PurgetestController::'
+    #_title: ''
+  #requirements:
+    #_permission: 'administer site configuration'
+
+# GENERIC API TEST CALLBACKS
+purgetest.home:
+  path: '/purgetests'
+  defaults:
+    _content: 'Drupal\purgetest\Controller\PurgetestController::home'
+    _title: 'Purge Tests'
+  requirements:
+    _permission: 'administer site configuration'
+purgetest.pluginlist:
+  path: '/purgetests/pluginlist'
+  defaults:
+    _content: 'Drupal\purgetest\Controller\PurgetestController::pluginList'
+    _title: 'Plugins'
+  requirements:
+    _permission: 'administer site configuration'
+
+# API TEST CALLBACKS: PURGEABLES
+purgetest.purgeables.home:
+  path: '/purgetests/purgeables'
+  defaults:
+    _content: 'Drupal\purgetest\Controller\PurgetestPurgeablesController::home'
+    _title: 'Purgeables'
+  requirements:
+    _permission: 'administer site configuration'
+
+# API TEST CALLBACKS: QUEUE
+purgetest.queue.home:
+  path: '/purgetests/queue'
+  defaults:
+    _content: 'Drupal\purgetest\Controller\PurgetestQueueController::home'
+    _title: 'Queue'
+  requirements:
+    _permission: 'administer site configuration'
+purgetest.queue.empty:
+  path: '/purgetests/queue/empty'
+  defaults:
+    _content: 'Drupal\purgetest\Controller\PurgetestQueueController::queueEmpty'
+    _title: 'Empty queue'
+  requirements:
+    _permission: 'administer site configuration'
+purgetest.queue.addsingle:
+  path: '/purgetests/queue/addsingle'
+  defaults:
+    _content: 'Drupal\purgetest\Controller\PurgetestQueueController::queueAddSingle'
+    _title: 'Add one'
+  requirements:
+    _permission: 'administer site configuration'
+purgetest.queue.add1000:
+  path: '/purgetests/queue/add1000'
+  defaults:
+    _content: 'Drupal\purgetest\Controller\PurgetestQueueController::queueAddThousand'
+    _title: 'Add 1000 purgeables'
+  requirements:
+    _permission: 'administer site configuration'
+purgetest.queue.claimmultiple:
+  path: '/purgetests/queue/claimmultiple'
+  defaults:
+    _content: 'Drupal\purgetest\Controller\PurgetestQueueController::claimMultiple'
+    _title: 'Claim multiple'
+  requirements:
+    _permission: 'administer site configuration'
+purgetest.queue.claimsingle:
+  path: '/purgetests/queue/claimsingle'
+  defaults:
+    _content: 'Drupal\purgetest\Controller\PurgetestQueueController::claimSingle'
+    _title: 'Claim one'
+  requirements:
+    _permission: 'administer site configuration'
+
+# API TEST CALLBACKS: PURGER
+purgetest.purger.home:
+  path: '/purgetests/purger'
+  defaults:
+    _content: 'Drupal\purgetest\Controller\PurgetestPurgerController::home'
+    _title: 'Purger'
+  requirements:
+    _permission: 'administer site configuration'
+purgetest.purger.testbatch:
+  path: '/purgetests/purger/testbatch'
+  defaults:
+    _content: 'Drupal\purgetest\Controller\PurgetestPurgerController::testBatch'
+    _title: 'Test batch'
+  requirements:
+    _permission: 'administer site configuration'

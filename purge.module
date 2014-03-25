@@ -3,44 +3,22 @@
 #
 # EXAMPLE API USAGE
 #
-/**
 
 // Retrieve the 'purge.queue' and 'purge.purgeable_factory' services using the
 // legacy global \Drupal::service() accessors. Real world examples will need to
-// get these services injected into their code contexts.
-$queue = \Drupal::service('purge.queue');
-$purgeables = \Drupal::service('purge.purgeables');
+// // get these services injected into their code contexts.
+// $queue = \Drupal::service('purge.queue');
+// $purgeables = \Drupal::service('purge.purgeables');
 
-// As a matter of example, show how to clean the queue.
-$queue->emptyQueue();
-
-// We would like to purge 'news/*', create a purgeable and add it to the queue.
-$purgeable = pfactory->matchFromStringRepresentation('news/*');
-$queue->add($purgeable);
-
-// Create a 1000 random purgeables and add them to the queue.
-for ($i = 1; $i <= 333; $i++) {
-
-  // Wipe cache tags that are known at the external cache.
-  $queue->add($pfactory->matchFromStringRepresentation("sometag:$i"));
-
-  // These will result in old-school PathPurgeables.
-  $queue->add($pfactory->matchFromStringRepresentation('random/' . $i));
-
-  // These will result in WildcardPathPurgeables, not necessarily supported by
-  // every purger of course. The asterisk causes a different purgeable to respond.
-  $queue->add($pfactory->matchFromStringRepresentation('random/' . $i . '/*'));
-}
-
+/**
 // But do we always need the queue? No, simple short purges - for instance
 // originating from a Drush command - can be fed directly to the purger.
-$frontpage = $pfactory->matchFromStringRepresentation('<front>');
+$frontpage = $purgeables->matchFromStringRepresentation('<front>');
 \Drupal::service('purge.purger')->purge($frontpage);
 
 // Now we added a 1000 purgeables, let's claim about 10 of them for 15 minutes.
 // Then iterate through them and lets let the purger execute the purges ("purging").
-$purger = \Drupal::service('purge.purger');
-$claims = $queue->claimMultiple(10, 15);
+
 foreach ($claims as $purgeable) {
 
   // Command the purger to execute the given purgeable (which instructs the
@@ -56,15 +34,4 @@ foreach ($claims as $purgeable) {
     $queue->release($purgeable);
   }
 }
-
-// Now a more real-world example, do same as above but more efficiently.
-$purger = \Drupal::service('purge.purger');
-$claims = $queue->claimMultiple(50, 15);
-if ($purger->purgeMultiple($purgeables)) {
-  $queue->deleteMultiple($purgeables);
-}
-else {
-  $queue->releaseMultiple($purgeables);
-}
-
 */

@@ -1,1 +1,32 @@
-<?PHP
+<?php
+
+/**
+ * Implements hook_menu_link_defaults().
+ */
+function purgetest_menu_link_defaults() {
+  $links = array();
+  $links['purgetest.home'] = array(
+    'link_title' => 'Purge Tests',
+    'route_name' => 'purgetest.home',
+    'menu_name' => 'tools',
+  );
+  $links['purgetest.purgeables.home'] = array(
+    'link_title' => 'Purgeables',
+    'route_name' => 'purgetest.purgeables.home',
+    'parent'    => 'purgetest.home',
+    'menu_name' => 'tools',
+  );
+  $links['purgetest.queue.home'] = array(
+    'link_title' => 'Queue',
+    'route_name' => 'purgetest.queue.home',
+    'parent'    => 'purgetest.home',
+    'menu_name' => 'tools',
+  );
+  $links['purgetest.purger.home'] = array(
+    'link_title' => 'Purger',
+    'route_name' => 'purgetest.purger.home',
+    'parent'    => 'purgetest.home',
+    'menu_name' => 'tools',
+  );
+  return $links;
+}

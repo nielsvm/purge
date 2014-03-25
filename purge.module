@@ -9,7 +9,7 @@
 // legacy global \Drupal::service() accessors. Real world examples will need to
 // get these services injected into their code contexts.
 $queue = \Drupal::service('purge.queue');
-$pfactory = \Drupal::service('purge.purgeable_factory');
+$purgeables = \Drupal::service('purge.purgeables');
 
 // As a matter of example, show how to clean the queue.
 $queue->emptyQueue();

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purgeable\PurgeableFactory.
+ * Contains \Drupal\purge\Purgeable\PurgeablesService.
  */
 
 namespace Drupal\purge\Purgeable;
@@ -11,14 +11,14 @@ use Drupal\Component\Plugin\PluginManagerBase;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\Core\Plugin\Discovery\AnnotatedClassDiscovery;
 use Drupal\Core\Plugin\Discovery\CacheDecorator;
-use Drupal\purge\Purgeable\PurgeableFactoryInterface;
+use Drupal\purge\Purgeable\PurgeablesServiceInterface;
 use Drupal\purge\Purgeable\InvalidPurgeableConstruction;
 use Drupal\purge\Purgeable\InvalidStringRepresentationException;
 
 /**
- * Factory responsible for generating purgeable objects.
+ * Provides a service that instantiate purgeable objects on-demand.
  */
-class PurgeableFactory extends PluginManagerBase implements PurgeableFactoryInterface {
+class PurgeablesService extends PluginManagerBase implements PurgeablesServiceInterface {
 
   /**
    * Constructs the PurgeableFactory.

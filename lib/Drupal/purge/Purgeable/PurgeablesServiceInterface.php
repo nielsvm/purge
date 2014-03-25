@@ -2,15 +2,15 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purgeable\PurgeableFactoryInterface.
+ * Contains \Drupal\purge\Purgeable\PurgeablesServiceInterface.
  */
 
 namespace Drupal\purge\Purgeable;
 
 /**
- * Provides an interface defining a purgeables factory.
+ * Describes a service that instantiate purgeable objects on-demand.
  */
-interface PurgeableFactoryInterface {
+interface PurgeablesServiceInterface {
 
   /**
    * Instantiate a purgeable based upon a serialized queue item.

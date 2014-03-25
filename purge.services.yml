@@ -1,6 +1,6 @@
 services:
-  purge.purgeable_factory:
-    class: Drupal\purge\Purgeable\PurgeableFactory
+  purge.purgeables:
+    class: Drupal\purge\Purgeable\PurgeablesService
     arguments: ['@container.namespaces']
   purge.queue:
     class: Drupal\purge\Queue\QueueServiceInterface

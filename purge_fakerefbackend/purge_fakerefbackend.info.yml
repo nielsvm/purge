@@ -1,8 +1,0 @@
-name: Purge Fake Reference Backend
-type: module
-description: 'A fake external cache back-end used to test APIs with.'
-package: Purge
-version: VERSION
-core: 8.x
-dependencies:
-  - purge

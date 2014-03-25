@@ -8,7 +8,7 @@
 namespace Drupal\purge\Purgeable;
 
 /**
- * Describes a service that instantiate purgeable objects on-demand.
+ * Describes a service that instantiates purgeable objects on-demand.
  */
 interface PurgeablesServiceInterface {
 

@@ -7,9 +7,7 @@
 
 namespace Drupal\purge\Queue;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\DependencyInjection\ServiceProviderInterface;
-use Drupal\Core\DependencyInjection\ServiceModifierInterface;
+use Drupal\purge\ServiceInterface;
 use Drupal\purge\Purgeable\PurgeablesServiceInterface;
 use Drupal\purge\Purgeable\PurgeableInterface;
 use Drupal\purge\Queue\QueueInterface;
@@ -17,7 +15,7 @@ use Drupal\purge\Queue\QueueInterface;
 /**
  * Describes the service that holds the underlying QueueInterface plugin.
  */
-interface QueueServiceInterface extends ServiceProviderInterface, ServiceModifierInterface {
+interface QueueServiceInterface extends ServiceInterface {
 
   /**
    * Instantiate the queue service.

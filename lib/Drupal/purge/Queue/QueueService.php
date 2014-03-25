@@ -7,7 +7,7 @@
 
 namespace Drupal\purge\Queue;
 
-use Drupal\Core\DependencyInjection\ServiceProviderBase;
+use Drupal\purge\ServiceBase;
 use Drupal\purge\Purgeable\PurgeablesServiceInterface;
 use Drupal\purge\Purgeable\PurgeableInterface;
 use Drupal\purge\Queue\UnexpectedServiceConditionException;
@@ -16,7 +16,7 @@ use Drupal\purge\Queue\QueueInterface;
 /**
  * Provides the service that holds the underlying QueueInterface plugin.
  */
-class QueueService extends ServiceProviderBase implements QueueServiceInterface {
+class QueueService extends ServiceBase implements QueueServiceInterface {
 
   /**
    * The Queue (plugin) instance that holds the underlying items.

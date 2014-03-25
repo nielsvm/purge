@@ -54,9 +54,14 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
   );
   $options = array();
   // Get all basic configuration.
-//   $bundle = new PurgeBundleRuntime();
+  // $bundle = new PurgeBundleRuntime();
+  // $bundle->purgeables['url'] =  array('http://mijncake/node/1');
+  // $bundle->process();
+  // $bundle->execute();
+  // dprint_r($bundle->queues);
+
   // $bundle->fetch(PURGE_CONTEXT_RUNTIME);
-  //  $bundle = new PurgeBundleDefault();
+  // $bundle = new PurgeBundleDefault();
   $bundle = new PurgeBundleBasic();
   // dprint_r($bundle->type);
   // See if the type was passed as an agruement.
@@ -128,20 +133,18 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
  */
 function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $action = 'view') {
   // First lets load a bundle.
-  // $bundle = new PurgeBundleSingle($item_name, $item_type);
   $bundle = new PurgeBundleBasic();
-  // echo (serialize($bundle->target['localhost']));
   // Select the object we need for this form.
   if ($action == 'add') {
     switch ($item_type) {
       case 'target':
-        $item = new PurgeItemTarget();
+        $item = new PurgeItemTargetStatic();
         break;
       case 'domain':
-        $item = new PurgeItemDomain();
+        $item = new PurgeItemDomainStatic();
         break;
       case 'header':
-        $item = new PurgeItemHeader();
+        $item = new PurgeItemHeaderStatic();
         break;
       case 'set':
         $item = new PurgeItemSet();
@@ -151,11 +154,12 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
   }
   elseif ($action == 'clone') {
     $item = clone $bundle->{$item_type}[$item_name];
+    $item->name = '';
+    $item->description = '';
   }
   else {
     $item = $bundle->{$item_type}[$item_name];
   }
-  // echo serialize($item);
 
   // The Basic Form elements.
   $form = array();
@@ -179,15 +183,23 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
     '#description' => t('The user-friendy name for the item.'),
     '#default_value' => $item->name,
   );
-  $form['purge_item']['machine_name'] = array(
-    '#type' => 'machine_name',
-    '#maxlength' => 21,
-    '#default_value' => '',
-    '#machine_name' => array(
-      'exists' => 'purge_item_name_exists',
-      'source' => array('purge_item', 'name'),
-    ),
-  );
+  if ($action == 'add' || $action == 'clone') {
+    $form['purge_item']['machine_name'] = array(
+      '#type' => 'machine_name',
+      '#maxlength' => 21,
+      '#default_value' => '',
+      '#machine_name' => array(
+        'exists' => 'purge_item_name_exists',
+        'source' => array('purge_item', 'name'),
+      ),
+    );
+  }
+  else {
+    $form['purge_item']['machine_name'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $item_name,
+    );
+  }
 
   $form['purge_item']['description'] = array(
     '#type' => 'textfield',
@@ -256,9 +268,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
         'name' => t('Name'),
         'description' => t('Description'),
       );
-      // dprint_r($bundle->set);
       // foreach ($item->pointers
-      // $set_pointers = array('target', 'domain', 'header', 'purger', 'option');
       foreach ($item->pointers as $pointer_type => $pointer_names) {
         $rows = array();
         $default_value = array();
@@ -266,21 +276,12 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
         if ($pointer_type == 'purger' || $pointer_type == 'option') {
           $multiple = false;
         }
-
-        // foreach ($item->{$pointer_type} as $pointer_name) {
         foreach ($bundle->{$pointer_type} as $pointer_name => $pointer) {
-        // foreach ($pointer_names as $pointer_name) {
-          // echo serialize($item_object);
           $rows[$pointer_name] = array(
-            // 'name' => $bundle->{$pointer_type}->{$pointer_name}->name,
             'name' => $bundle->{$pointer_type}[$pointer_name]->name,
             'description' => $bundle->{$pointer_type}[$pointer_name]->description,
           );
-
-          // if ($item->{$pointer_type} == $pointer_name) {
-          // dprint_r($item->pointers[$pointer_type]);
           if (in_array($pointer_name, $item->pointers[$pointer_type])) {
-          // if ($pointer_name == array_keys($item->{$pointer_type}, $pointer_name)) {
             if ($multiple) {
               $default_value[$pointer_name] = $pointer_name;
             }
@@ -289,7 +290,6 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
             }
           }
         }
-        // dprint_r($default_value);
         $form['set'][$pointer_type] = array(
           '#type' => 'fieldset',
           '#title' => $bundle->type[$pointer_type]->name,
@@ -325,22 +325,12 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
 
             }
           }
-          // dprint_r($options);
-
-
         }
-        // $form['set'][$pointer_type][$pointer_type] . '_options'][
       }
-      // Now disply the options for this set.
-//      $form['set']['set']['set
-
-
     break;
   }
   // Now the items type options.
-  // dprint_r($bundle->type[$item_type]->options);
   $options = array();
-
   $options = $bundle->type[$item_type]->options;
   if (count($options) > 0) {
     if ($item_type == 'set') {
@@ -362,13 +352,60 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
     }
   }
 
-
-  $form['submit']  = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-  );
-
+  // Now display submit buttons.
+  if ($action != 'view' && $item->access >= PURGE_ACCESS_CLONE) {
+    $form['submit']  = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+    );
+    if ($item instanceof PurgeValidateble) {
+      $form['validate'] = array(
+        '#type' => 'submit',
+        '#value' => t('Preview'),
+        '#submit' => array('purge_item_form_validate'),
+      );
+    }
+  }
+  if ($item->access >= PURGE_ACCESS_ENABLE) {
+    if ($item->enabled) {
+      $form['disable'] = array(
+        '#type' => 'submit',
+        '#value' => t('Disable'),
+        '#submit' => array('purge_item_form_disable'),
+      );
+    }
+    else {
+      $form['enable'] = array(
+        '#type' => 'submit',
+        '#value' => t('Enable'),
+        '#submit' => array('purge_item_form_enable'),
+      );
+    }
+  }
   return $form;
+}
+
+/**
+ * Form validation for the item form.
+ */
+function purge_item_form_validate($form, &$form_state) {
+  // First get the bundle with the form state
+  $bundle = purge_item_form_load($form, $form_state);
+  $errors = $bundle->validate();
+  if (count($errors) > 0) {
+    foreach ($errors as $error_name => $error_message) {
+      // Display the errors
+      form_set_error($error_name, $error_message);
+    }
+  }
+}
+
+/**
+ * Form submit for the item form.
+ */
+function purge_item_form_submit($form, &$form_state) {
+  $bundle = purge_item_form_load($form, $form_state);
+  $bundle->save();
 }
 
 /**
@@ -399,17 +436,79 @@ function purge_option_form($options) {
 }
 
 /**
+ * Function to load an item from current form values.
+ *
+ * @param array $form
+ * @param array $form_state
+ *
+ * @return object $bundle
+ */
+function purge_item_form_load($form, &$form_state) {
+  $bundle = new PurgeBundleBasic;
+  $item_action = $form_state['values']['item_action'];
+  // See what action is to be taken.
+  $item_name = $form_state['values']['machine_name'];
+  $item_type = $form_state['values']['item_type'];
+  if ($item_action == 'add' || $item_action == 'clone') {
+    switch ($item_type) {
+      case 'target':
+        $bundle->target[$item_name] = new PurgeItemTargetStatic();
+        $item = $bundle->target[$item_name];
+        break;
+      case 'domain':
+        $bundle->domain[$item_name] = new PurgeItemDomainStatic();
+        $item = $bundle->domain[$item_name];
+        break;
+      case 'header':
+        $bundle->header[$item_name] = new PurgeItemHeaderStatic();
+        $item = $bundle->header[$item_name];
+        break;
+      case 'set':
+        $bundle->set[$item_name] = new PurgeItemSet();
+        $item = $bundle->set[$item_name];
+        break;
+    }
+  }
+  elseif ($item_action == 'edit') {
+    $item = $bundle->{$item_type}[$item_name];
+  }
+  // First process the basic item properties
+  $item->name = check_plain($form_state['values']['name']);
+  $item->description = check_plain($form_state['values']['description']);
+  $item->enabled = $form_state['values']['enabled'];
+
+  // Now for each item specific property
+  switch ($item_type) {
+    case 'target':
+      $item->urls = preg_split('/$\R?^/m', $form_state['values']['urls']);
+      break;
+    case 'domain':
+      $item->domains = preg_split('/$\R?^/m', $form_state['values']['domains']);
+      break;
+    case 'header':
+      $headers = preg_split('/$\R?^/m', $form_state['values']['headers']);
+      foreach ($headers as $header) {
+        $header_key = trim(strstr($header, ":", true));
+        $header_value = trim(strstr(header, ":"), " :\t");
+        $this->headers[$header_key] = $header_value;
+      }
+      break;
+  }
+  return $bundle;
+}
+
+/**
  * Helper function to check if a name exists in the current configuration.
  */
 function purge_item_name_exists($item_name) {
   $error = 0;
   // Get a basic bundle.
   $bundle = new PurgeBundleBasic();
-  foreach($bundle->types as $type) {
-    if ($type == $item_nam) {
+  foreach($bundle->type as $type_name => $type) {
+    if ($type_name == $item_name) {
       $error = 1;
     }
-    foreach($bundle->{$type} as $name => $item) {
+    foreach($bundle->{$type_name} as $name => $item) {
       if ($item_name == $name) {
         $error = 1;
       }

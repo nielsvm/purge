@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purgeable\FullDomainPurgeable.
+ * Contains \Drupal\purge\Plugin\Purge\Purgeable\FullDomain.
  */
 
-namespace Drupal\purge\Plugin\Purgeable;
+namespace Drupal\purge\Plugin\Purge\Purgeable;
 
 use Drupal\purge\Purgeable\PurgeableBase;
 use Drupal\purge\Purgeable\InvalidStringRepresentationException;
@@ -16,11 +16,11 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
  * @ingroup purge_purgeable_types
  *
  * @Plugin(
- *   id = "FullDomainPurgeable",
+ *   id = "FullDomain",
  *   label = @Translation("Full Domain Purgeable")
  * )
  */
-class FullDomainPurgeable extends PurgeableBase {
+class FullDomain extends PurgeableBase {
 
   /**
    * {@inheritdoc}

@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purgeable\TagPurgeable.
+ * Contains \Drupal\purge\Plugin\Purge\Purgeable\Tag.
  */
 
-namespace Drupal\purge\Plugin\Purgeable;
+namespace Drupal\purge\Plugin\Purge\Purgeable;
 
 use Drupal\purge\Purgeable\PurgeableBase;
 use Drupal\purge\Purgeable\InvalidStringRepresentationException;
@@ -18,11 +18,11 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
  * @see \Drupal\Core\Cache\DatabaseBackend::flattenTags()
  *
  * @Plugin(
- *   id = "TagPurgeable",
+ *   id = "Tag",
  *   label = @Translation("Tag Purgeable")
  * )
  */
-class TagPurgeable extends PurgeableBase {
+class Tag extends PurgeableBase {
 
   /**
    * {@inheritdoc}

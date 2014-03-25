@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purgetest\Plugin\Purgeable\NodePurgeable.
+ * Contains \Drupal\purgetest\Plugin\Purge\Purgeable\Node.
  */
 
-namespace Drupal\purgetest\Plugin\Purgeable;
+namespace Drupal\purgetest\Plugin\Purge\Purgeable;
 
 use Drupal\purge\Purgeable\PurgeableBase;
 use Drupal\purge\Purgeable\InvalidStringRepresentationException;
@@ -16,11 +16,11 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
  * @ingroup purge_purgeable_types
  *
  * @Plugin(
- *   id = "NodePurgeable",
+ *   id = "Node",
  *   label = @Translation("Node Purgeable")
  * )
  */
-class NodePurgeable extends PurgeableBase {
+class Node extends PurgeableBase {
 
   /**
    * {@inheritdoc}

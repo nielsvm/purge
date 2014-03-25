@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgeQueue\DatabaseQueue.
+ * Contains \Drupal\purge\Plugin\Purge\Queue\Database.
  */
 
-namespace Drupal\purge\Plugin\PurgeQueue;
+namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Database\Connection;
@@ -18,11 +18,11 @@ use Drupal\purge\Queue\QueueBase;
  * @ingroup purge_queue_types
  *
  * @Plugin(
- *   id = "DatabaseQueue",
+ *   id = "Database",
  *   label = @Translation("Database backed purge queue.")
  * )
  */
-class DatabaseQueue extends QueueBase implements QueueInterface {
+class Database extends QueueBase implements QueueInterface {
 
   /**
    * Holds the 'queue.database' queue retrieved from Drupal.

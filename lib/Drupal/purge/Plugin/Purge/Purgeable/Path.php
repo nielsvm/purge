@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purgeable\PathPurgeable.
+ * Contains \Drupal\purge\Plugin\Purge\Purgeable\Path.
  */
 
-namespace Drupal\purge\Plugin\Purgeable;
+namespace Drupal\purge\Plugin\Purge\Purgeable;
 
 use Drupal\purge\Purgeable\PurgeableBase;
 use Drupal\purge\Purgeable\InvalidStringRepresentationException;
@@ -16,11 +16,11 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
  * @ingroup purge_purgeable_types
  *
  * @Plugin(
- *   id = "PathPurgeable",
+ *   id = "Path",
  *   label = @Translation("Path Purgeable")
  * )
  */
-class PathPurgeable extends PurgeableBase {
+class Path extends PurgeableBase {
 
   /**
    * {@inheritdoc}

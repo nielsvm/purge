@@ -2,13 +2,13 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purgeable\WildcardPathPurgeable.
+ * Contains \Drupal\purge\Plugin\Purge\Purgeable\WildcardPath.
  */
 
-namespace Drupal\purge\Plugin\Purgeable;
+namespace Drupal\purge\Plugin\Purge\Purgeable;
 
 use Drupal\purge\Purgeable\PurgeableBase;
-use Drupal\purge\Plugin\Purgeable\PathPurgeable;
+use Drupal\purge\Plugin\Purge\Purgeable\Path;
 use Drupal\purge\Purgeable\InvalidStringRepresentationException;
 
 /**
@@ -17,11 +17,11 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
  * @ingroup purge_purgeable_types
  *
  * @Plugin(
- *   id = "WildcardPathPurgeable",
+ *   id = "WildcardPath",
  *   label = @Translation("Wildcard Path Purgeable")
  * )
  */
-class WildcardPathPurgeable extends PathPurgeable {
+class WildcardPath extends Path {
 
   /**
    * {@inheritdoc}

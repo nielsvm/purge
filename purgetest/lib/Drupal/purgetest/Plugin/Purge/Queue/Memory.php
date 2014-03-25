@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purgetest\Plugin\PurgeQueue\MemoryQueue.
+ * Contains \Drupal\purgetest\Plugin\Purge\Queue\Memory.
  */
 
-namespace Drupal\purgetest\Plugin\PurgeQueue;
+namespace Drupal\purgetest\Plugin\Purge\Queue;
 
 use Drupal\purge\Queue\QueueInterface;
 use Drupal\purge\Queue\QueueBase;
@@ -16,10 +16,10 @@ use Drupal\purge\Queue\QueueBase;
  * @ingroup purge_queue_types
  *
  * @Plugin(
- *   id = "MemoryQueue",
+ *   id = "Memory",
  *   label = @Translation("A volatile memory-based queue.")
  * )
  */
-class MemoryQueue extends QueueBase implements QueueInterface {
+class Memory extends QueueBase implements QueueInterface {
 
 }

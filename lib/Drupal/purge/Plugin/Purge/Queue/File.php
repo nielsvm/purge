@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgeQueue\FileQueue.
+ * Contains \Drupal\purge\Plugin\Purge\Queue\File.
  */
 
-namespace Drupal\purge\Plugin\PurgeQueue;
+namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\StreamWrapper\PublicStream;
@@ -18,11 +18,11 @@ use Drupal\purge\Queue\QueueBase;
  * @ingroup purge_queue_types
  *
  * @Plugin(
- *   id = "FileQueue",
+ *   id = "File",
  *   label = @Translation("A file based purge queue.")
  * )
  */
-class FileQueue extends QueueBase implements QueueInterface {
+class File extends QueueBase implements QueueInterface {
 
   /**
    * The filename where the queue is stored in.

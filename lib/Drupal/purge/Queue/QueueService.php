@@ -8,7 +8,7 @@
 namespace Drupal\purge\Queue;
 
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
-use Drupal\purge\Purgeable\PurgeableFactoryInterface;
+use Drupal\purge\Purgeable\PurgeablesServiceInterface;
 use Drupal\purge\Purgeable\PurgeableInterface;
 use Drupal\purge\Queue\UnexpectedServiceConditionException;
 use Drupal\purge\Queue\QueueInterface;
@@ -26,11 +26,11 @@ class QueueService extends ServiceProviderBase implements QueueServiceInterface 
   private $queue;
 
   /**
-   * The factory that generates purgeable objects on the fly.
+   * The service that generates purgeable objects on-demand.
    *
-   * @var \Drupal\purge\Purgeable\PurgeableFactoryInterface
+   * @var \Drupal\purge\Purgeable\PurgeablesServiceInterface
    */
-  private $purgeable_factory;
+  private $purgePurgeables;
 
   /**
    * The transaction buffer used to park purgeable objects.
@@ -40,8 +40,8 @@ class QueueService extends ServiceProviderBase implements QueueServiceInterface 
   /**
    * {@inheritdoc}
    */
-  function __construct(QueueInterface $queue, PurgeableFactoryInterface $purgeable_factory) {
-    $this->purgeable_factory = $purgeable_factory;
+  function __construct(QueueInterface $queue, PurgeablesServiceInterface $purge_purgeables) {
+    $this->purgePurgeables = $purge_purgeables;
     $this->queue = $queue;
     $this->buffer = array();
 
@@ -118,7 +118,7 @@ class QueueService extends ServiceProviderBase implements QueueServiceInterface 
 
     // If the item was not locally buffered (usually), instantiate one.
     else {
-      $purgeable = $this->purgeable_factory->fromQueueItemData($item->data);
+      $purgeable = $this->purgePurgeables->fromQueueItemData($item->data);
       $purgeable->setState(PurgeableInterface::STATE_CLAIMED);
       $purgeable->setQueueItemInfo($item->item_id, $item->created);
       $this->buffer[] = $purgeable;
@@ -159,7 +159,7 @@ class QueueService extends ServiceProviderBase implements QueueServiceInterface 
 
       // If the item was not locally buffered (usually), instantiate one.
       else {
-        $purgeable = $this->purgeable_factory->fromQueueItemData($item->data);
+        $purgeable = $this->purgePurgeables->fromQueueItemData($item->data);
         $purgeable->setState(PurgeableInterface::STATE_CLAIMED);
         $purgeable->setQueueItemInfo($item->item_id, $item->created);
         $this->buffer[] = $purgeable;

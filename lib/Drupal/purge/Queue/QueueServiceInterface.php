@@ -10,7 +10,7 @@ namespace Drupal\purge\Queue;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\DependencyInjection\ServiceProviderInterface;
 use Drupal\Core\DependencyInjection\ServiceModifierInterface;
-use Drupal\purge\Purgeable\PurgeableFactoryInterface;
+use Drupal\purge\Purgeable\PurgeablesServiceInterface;
 use Drupal\purge\Purgeable\PurgeableInterface;
 use Drupal\purge\Queue\QueueInterface;
 
@@ -24,10 +24,10 @@ interface QueueServiceInterface extends ServiceProviderInterface, ServiceModifie
    *
    * @param \Drupal\purge\Queue\QueueInterface $queue
    *   The queue plugin which the service interacts with.
-   * @param \Drupal\purge\Purgeable\PurgeableFactoryInterface $purgeable_factory
-   *   The factory service to generate purgeable objects with.
+   * @param \Drupal\purge\Purgeable\PurgeablesServiceInterface $purge_purgeables
+   *   The service that generates purgeable objects on-demand.
    */
-  function __construct(QueueInterface $queue, PurgeableFactoryInterface $purgeable_factory);
+  function __construct(QueueInterface $queue, PurgeablesServiceInterface $purge_purgeables);
 
   /**
    * Add a purgeable to the queue, schedule it for later purging.

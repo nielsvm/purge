@@ -71,8 +71,8 @@ class QueueServiceFactory extends PluginManagerBase implements QueueServiceFacto
     $plugin_definition = $this->discovery->getDefinition($plugin_id);
     $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
     $queue = new $plugin_class($this->container);
-    $purgeable_factory = $this->container->get('purge.purgeable_factory');
-    return new QueueService($queue, $purgeable_factory);
+    $purge_purgeables = $this->container->get('purge.purgeables');
+    return new QueueService($queue, $purge_purgeables);
   }
 
   /**

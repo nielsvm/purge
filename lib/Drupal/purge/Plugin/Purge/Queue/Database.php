@@ -139,20 +139,18 @@ class Database extends QueueBase implements QueueInterface {
     }
 
     // Update the items (marking them claimed) in one query.
-    $update = $this->connection->update('queue')
-      ->fields(array(
-        'expire' => time() + $lease_time,
-      ))
-      ->condition('item_id', $item_ids, 'IN')
-      ->condition('expire', 0);
+    if (count($returned_items)) {
+      $update = $this->connection->update('queue')
+        ->fields(array(
+          'expire' => time() + $lease_time,
+        ))
+        ->condition('item_id', $item_ids, 'IN')
+        ->condition('expire', 0)
+        ->execute();
+    }
 
-    // Commit the update and return the items (or not).
-    if ($update->execute()) {
-      return $returned_items;
-    }
-    else {
-      return array();
-    }
+    // Return the generated items, whether its empty or not.
+    return $returned_items;
   }
 
   /**

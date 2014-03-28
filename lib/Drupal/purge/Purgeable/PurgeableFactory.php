@@ -50,21 +50,5 @@ class PurgeableFactory extends PluginManagerBase {
 
     return $instance;
   }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getInstance(array $options) {
-    if (count($options) !== 1) {
-      throw new InvalidPurgeableConstruction("Only one string representation is allowed.");
-    }
-    if (!is_string($options[0])) {
-      throw new InvalidPurgeableConstruction("First array value should be a string.");
-    }
-    /**
-     * @TODO: This is not going to work.
-     */
-    return $this->matchFromStringRepresentation($options[0]);
-  }
 }
 

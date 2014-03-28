@@ -32,6 +32,17 @@ class PurgeableFactory extends PluginManagerBase {
   }
 
   /**
+   * Gets the definition of all plugins for this type.
+   *
+   * @return mixed
+   *   An array of plugin definitions (empty array if no definitions were
+   *   found).
+   */
+  public function getDefinitions() {
+    return $this->discovery->getDefinitions();
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function createInstance($plugin_id, array $configuration = array()) {

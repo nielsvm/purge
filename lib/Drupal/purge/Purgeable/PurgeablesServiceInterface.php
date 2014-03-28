@@ -7,10 +7,12 @@
 
 namespace Drupal\purge\Purgeable;
 
+use Drupal\purge\ServiceInterface;
+
 /**
  * Describes a service that instantiates purgeable objects on-demand.
  */
-interface PurgeablesServiceInterface {
+interface PurgeablesServiceInterface extends ServiceInterface {
 
   /**
    * Instantiate a purgeable based upon a serialized queue item.

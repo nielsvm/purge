@@ -7,6 +7,7 @@
 
 namespace Drupal\purge\Queue;
 
+use Drupal\Core\Plugin\Discovery\CacheDecorator;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Purgeable\PurgeablesServiceInterface;
 use Drupal\purge\Purgeable\PurgeableInterface;
@@ -26,6 +27,13 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
   private $queue;
 
   /**
+   * The discovery decorator that tells us more about available plugins.
+   *
+   * @var \Drupal\Core\Plugin\Discovery\CacheDecorator
+   */
+  private $discovery;
+
+  /**
    * The service that generates purgeable objects on-demand.
    *
    * @var \Drupal\purge\Purgeable\PurgeablesServiceInterface
@@ -40,9 +48,10 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
   /**
    * {@inheritdoc}
    */
-  function __construct(QueueInterface $queue, PurgeablesServiceInterface $purge_purgeables) {
+  function __construct(QueueInterface $queue, CacheDecorator $discovery, PurgeablesServiceInterface $purge_purgeables) {
     $this->purgePurgeables = $purge_purgeables;
     $this->queue = $queue;
+    $this->discovery = $discovery;
     $this->buffer = array();
 
     // The queue service attempts to collect all actions done for purgeables
@@ -52,6 +61,20 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
     // work the queue has to do (e.g., queries, disk writes, mallocs). This
     // helps purge to scale better and should cause no noticeable side-effects.
     register_shutdown_function(array($this, 'commit'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPlugins($simple = FALSE) {
+    if (!$simple) {
+      return $this->discovery->getDefinitions();
+    }
+    $plugins = array();
+    foreach ($this->discovery->getDefinitions() as $plugin) {
+      $plugins[$plugin['id']] = sprintf('<b>%s</b>: %s', $plugin['id'], $plugin['label']);
+    }
+    return $plugins;
   }
 
   /**

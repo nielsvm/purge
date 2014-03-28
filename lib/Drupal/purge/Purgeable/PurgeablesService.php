@@ -38,6 +38,20 @@ class PurgeablesService extends ServiceBase implements PurgeablesServiceInterfac
   /**
    * {@inheritdoc}
    */
+  public function getPlugins($simple = FALSE) {
+    if (!$simple) {
+      return $this->discovery->getDefinitions();
+    }
+    $plugins = array();
+    foreach ($this->discovery->getDefinitions() as $plugin) {
+      $plugins[$plugin['id']] = $plugin['label'];
+    }
+    return $plugins;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function fromQueueItemData($data) {
     $data = explode('>', $data);
     return $this->factory->createInstance($data[0], array($data[1]));

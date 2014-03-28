@@ -7,6 +7,7 @@
 
 namespace Drupal\purge\Queue;
 
+use Drupal\Core\Plugin\Discovery\CacheDecorator;
 use Drupal\purge\ServiceInterface;
 use Drupal\purge\Purgeable\PurgeablesServiceInterface;
 use Drupal\purge\Purgeable\PurgeableInterface;
@@ -22,10 +23,12 @@ interface QueueServiceInterface extends ServiceInterface {
    *
    * @param \Drupal\purge\Queue\QueueInterface $queue
    *   The queue plugin which the service interacts with.
+   * @param \Drupal\Core\Plugin\Discovery\CacheDecorator $discovery
+   *   The discovery decorator that tells us more about available plugins.
    * @param \Drupal\purge\Purgeable\PurgeablesServiceInterface $purge_purgeables
    *   The service that generates purgeable objects on-demand.
    */
-  function __construct(QueueInterface $queue, PurgeablesServiceInterface $purge_purgeables);
+  function __construct(QueueInterface $queue, CacheDecorator $discovery, PurgeablesServiceInterface $purge_purgeables);
 
   /**
    * Add a purgeable to the queue, schedule it for later purging.

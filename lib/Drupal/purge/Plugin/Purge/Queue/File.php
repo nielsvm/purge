@@ -18,7 +18,7 @@ use Drupal\purge\Queue\QueueBase;
  * @ingroup purge_queue_types
  *
  * @Plugin(
- *   id = "File",
+ *   id = "file",
  *   label = @Translation("A file based purge queue.")
  * )
  */

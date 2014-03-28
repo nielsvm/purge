@@ -43,11 +43,11 @@ class QueueServiceFactory extends PluginManagerBase implements QueueServiceFacto
   protected $service;
 
   /**
-   * The plugin_detection setting for the default queue service.
+   * The 'plugin' setting from 'purge.queue.yml' determining the queue to use.
    *
    * @var String
    */
-  protected $plugin_detection;
+  protected $plugin;
 
   /**
    * {@inheritdoc}
@@ -58,10 +58,10 @@ class QueueServiceFactory extends PluginManagerBase implements QueueServiceFacto
     $this->discovery = new AnnotatedClassDiscovery('Plugin/Purge/Queue', $this->namespaces);
     $this->discovery = new CacheDecorator($this->discovery, 'purge_queue_types');
     $this->factory = new DefaultFactory($this->discovery);
-    $this->plugin_detection = $this->container
+    $this->plugin = $this->container
       ->get('config.factory')
-      ->get('purge.plugin_detection')
-      ->get('queue');
+      ->get('purge.queue')
+      ->get('plugin');
   }
 
   /**
@@ -83,18 +83,12 @@ class QueueServiceFactory extends PluginManagerBase implements QueueServiceFacto
     // The first time this function is called we initialize the queue object.
     if (is_null($this->service)) {
 
-      // By default Purge is set to automatic detection and will pick the first.
-      if ($this->plugin_detection === 'automatic') {
-        $first_plugin = current($this->getDefinitions());
-        $this->service = $this->createInstance($first_plugin['id']);
-      }
-      else {
-        $plugin_name = $this->plugin_detection;
-        try {
-          $this->service = $this->createInstance($plugin_name);
-        } catch (PluginException $e) {
-          throw new InvalidQueueConfiguredException("The plugin \"$plugin_name\" does not exist.");
-        }
+      // Load the queue plugin as configured in purge.queue.yml.
+      try {
+        $this->service = $this->createInstance($this->plugin);
+      } catch (PluginException $e) {
+        throw new InvalidQueueConfiguredException(
+          "The queue plugin '" . $this->plugin . "' does not exist.");
       }
     }
 

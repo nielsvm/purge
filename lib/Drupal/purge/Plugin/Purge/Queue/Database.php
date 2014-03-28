@@ -18,7 +18,7 @@ use Drupal\purge\Queue\QueueBase;
  * @ingroup purge_queue_types
  *
  * @Plugin(
- *   id = "Database",
+ *   id = "database",
  *   label = @Translation("Database backed purge queue.")
  * )
  */

@@ -87,11 +87,7 @@ abstract class PurgeableBase implements PurgeableInterface {
    */
   private function initiatlizeQueueItemArray() {
     $this->queueItemInfo = array(
-      'data' => array(
-        $this->pluginId,
-        $this->representation,
-      ),
-      'dedupeid' => $this->pluginId . ':' . $this->representation,
+      'data' => sprintf('%s>%s', $this->pluginId, $this->representation),
       'item_id' => NULL,
       'created' => NULL,
     );

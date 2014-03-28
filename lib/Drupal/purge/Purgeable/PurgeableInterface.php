@@ -104,11 +104,11 @@ interface PurgeableInterface {
   public function __set($name, $value);
 
   /**
-   * Provide the virtual Queue API properties: dedupeid, item_id, data, created.
+   * Provide the virtual Queue API properties: item_id, data, created.
    *
    * @param string $name
    *   The property name that PHP was not able to find on this object. Only the
-   *   properties $p->dedupeid, $p->item_id, $p->data, $p->created are recognized.
+   *   properties $p->item_id, $p->data, $p->created are recognized.
    * @return
    *   The requested value. When a item is being requested that does not exist
    *   it will throw \Drupal\purge\Purgeable\InvalidPurgeablePropertyException.

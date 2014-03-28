@@ -39,6 +39,7 @@ class PurgeablesService extends ServiceBase implements PurgeablesServiceInterfac
    * {@inheritdoc}
    */
   public function fromQueueItemData($data) {
+    $data = explode('>', $data);
     return $this->factory->createInstance($data[0], array($data[1]));
   }
 

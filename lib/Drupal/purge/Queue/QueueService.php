@@ -60,7 +60,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
   public function add(PurgeableInterface $purgeable) {
     $duplicate = FALSE;
     foreach ($this->buffer as $bufferedPurgeable) {
-      if ($purgeable->dedupeid === $bufferedPurgeable->dedupeid) {
+      if ($purgeable->data === $bufferedPurgeable->data) {
         $duplicate = TRUE;
         break;
       }
@@ -78,7 +78,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
     foreach ($purgeables as $purgeable) {
       $duplicate = FALSE;
       foreach ($this->buffer as $bufferedPurgeable) {
-        if ($purgeable->dedupeid === $bufferedPurgeable->dedupeid) {
+        if ($purgeable->data === $bufferedPurgeable->data) {
           $duplicate = TRUE;
           break;
         }

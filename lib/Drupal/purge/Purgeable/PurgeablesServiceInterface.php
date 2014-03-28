@@ -16,7 +16,7 @@ interface PurgeablesServiceInterface {
    * Instantiate a purgeable based upon a serialized queue item.
    *
    * @param string $data
-   *   The serialized string representing the purgeable to be instantiated.
+   *   Arbitrary PHP data structured that was stored into the queue.
    *
    * @see \Drupal\purge\Purgeable\PurgeableBase::toQueueItemData()
    *

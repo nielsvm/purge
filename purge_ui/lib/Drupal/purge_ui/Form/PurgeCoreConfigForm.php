@@ -63,6 +63,26 @@ class PurgeCoreConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, array &$form_state) {
+    $form['intro'] = array(
+      '#type' => 'item',
+      '#description' => $this->t('Purge provides external cache invalidation
+        services in a generic and technology agnostic manner, where service
+        plugins do all the hard work. This form allows you to configure which
+        plugins provide which services.')
+    );
+
+    // Settings related to the purge.purger service.
+    $form['purger'] = array(
+      '#type' => 'details',
+      '#title' => t('Purger'),
+      '#open' => TRUE,
+    );
+    $form['purger']['purger_plugins'] = array(
+      '#default_value' => array(),
+      '#options' => array('not', 'yet', 'implemented'),
+      '#type' => 'checkboxes',
+      '#description' => $this->t('Purgers execute all purgeable instructions.')
+    );
 
     // Settings related to the purge.queue service.
     $form['queue'] = array(
@@ -70,7 +90,7 @@ class PurgeCoreConfigForm extends ConfigFormBase {
       '#title' => t('Queue'),
       '#open' => TRUE,
     );
-    $form['queue']['plugin'] = array(
+    $form['queue']['queue_plugin'] = array(
       '#default_value' => $this->configFactory->get('purge.queue')->get('plugin'),
       '#options' => $this->purgeQueue->getPlugins(TRUE),
       '#type' => 'radios',
@@ -89,7 +109,7 @@ class PurgeCoreConfigForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, array &$form_state) {
     $this->configFactory->get('purge.queue')
-      ->set('plugin', $form_state['values']['plugin'])
+      ->set('plugin', $form_state['values']['queue_plugin'])
       ->save();
 
     parent::submitForm($form, $form_state);

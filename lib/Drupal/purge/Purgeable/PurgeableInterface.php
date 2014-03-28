@@ -116,6 +116,14 @@ interface PurgeableInterface {
   public function __get($name);
 
   /**
+   * Set the plugin ID of this purgeable object, done by the Purgeable Factory.
+   *
+   * @param $plugin_id
+   *   The unique ID of this purgeable as found in the plugin's main class doc.
+   */
+  public function setPluginId($plugin_id);
+
+  /**
    * Set all Queue API properties on the purgeable, in one call.
    *
    * @param $item_id

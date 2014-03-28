@@ -43,7 +43,12 @@ class PurgeableFactory extends PluginManagerBase {
     if (!is_string($configuration[0])) {
       throw new InvalidPurgeableConstruction("First array value should be a string.");
     }
-    return new $plugin_class($configuration[0]);
+
+    // Instantiate the purgeable and immediately set its plugin ID.
+    $instance = new $plugin_class($configuration[0]);
+    $instance->setPluginId($plugin_id);
+
+    return $instance;
   }
 
   /**
@@ -56,6 +61,9 @@ class PurgeableFactory extends PluginManagerBase {
     if (!is_string($options[0])) {
       throw new InvalidPurgeableConstruction("First array value should be a string.");
     }
+    /**
+     * @TODO: This is not going to work.
+     */
     return $this->matchFromStringRepresentation($options[0]);
   }
 }

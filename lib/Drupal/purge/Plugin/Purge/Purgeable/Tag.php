@@ -18,7 +18,7 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
  * @see \Drupal\Core\Cache\DatabaseBackend::flattenTags()
  *
  * @Plugin(
- *   id = "Tag",
+ *   id = "tag",
  *   label = @Translation("Tag Purgeable")
  * )
  */

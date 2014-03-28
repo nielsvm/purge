@@ -17,7 +17,7 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
  * @ingroup purge_purgeable_types
  *
  * @Plugin(
- *   id = "WildcardPath",
+ *   id = "wildcardpath",
  *   label = @Translation("Wildcard Path Purgeable")
  * )
  */

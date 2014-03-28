@@ -16,7 +16,7 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
  * @ingroup purge_purgeable_types
  *
  * @Plugin(
- *   id = "FullDomain",
+ *   id = "fulldomain",
  *   label = @Translation("Full Domain Purgeable")
  * )
  */

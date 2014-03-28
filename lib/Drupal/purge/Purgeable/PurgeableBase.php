@@ -24,6 +24,13 @@ abstract class PurgeableBase implements PurgeableInterface {
   protected $representation;
 
   /**
+   * The plugin @id found by the annotation scanner.
+   *
+   * @var \Drupal\purge\Purgeable\PurgeableBase
+   */
+  protected $pluginId;
+
+  /**
    * A enumerator that describes the current state of this purgeable.
    */
   private $state = NULL;
@@ -79,17 +86,23 @@ abstract class PurgeableBase implements PurgeableInterface {
    * Initialize $this->queueItemInfo with its standard data.
    */
   private function initiatlizeQueueItemArray() {
-    $plugin_class = basename(str_replace('\\', '/', get_class($this)));
     $this->queueItemInfo = array(
       'data' => array(
-        $plugin_class,
+        $this->pluginId,
         $this->representation,
       ),
-      'dedupeid' => $plugin_class . ':' . $this->representation,
+      'dedupeid' => $this->pluginId . ':' . $this->representation,
       'item_id' => NULL,
       'created' => NULL,
     );
     $this->queueItemInfo['keys'] = array_keys($this->queueItemInfo);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setPluginId($plugin_id) {
+    $this->pluginId = $plugin_id;
   }
 
   /**

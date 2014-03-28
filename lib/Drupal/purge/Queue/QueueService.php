@@ -97,8 +97,10 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
     $this->commitAdding();
     $this->commitReleasing();
 
-    // Claim the raw item from the queue.
-    $item = $this->queue->claimItem($lease_time);
+    // Claim the raw item from the queue, or cancel the call.
+    if (!($item = $this->queue->claimItem($lease_time))) {
+      return FALSE;
+    }
 
     // Lookup if this item is accidentally in our local buffer.
     $match = NULL;

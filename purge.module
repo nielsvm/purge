@@ -4,7 +4,7 @@
 # EXAMPLE API USAGE
 #
 
-// Retrieve the 'purge.queue' and 'purge.purgeable_factory' services using the
+// Retrieve the 'purge.queue' and 'purge.purgeables' services using the
 // legacy global \Drupal::service() accessors. Real world examples will need to
 // // get these services injected into their code contexts.
 // $queue = \Drupal::service('purge.queue');

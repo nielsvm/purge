@@ -35,8 +35,8 @@ interface QueueServiceInterface extends ServiceInterface {
    *
    * @param \Drupal\purge\Purgeable\PurgeableInterface $purgeable
    *   A purgeable describes a single item to be purged and can be created using
-   *   the 'purge.purgeable_factory'. The object instance added to the queue can
-   *   be claimed and executed by the 'purge.purger' service later.
+   *   the 'purge.purgeables' service. The object instance added to the queue
+   *   can be claimed and executed by the 'purge.purger' service later.
    */
   public function add(PurgeableInterface $purgeable);
 

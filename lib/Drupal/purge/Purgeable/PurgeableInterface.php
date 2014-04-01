@@ -8,7 +8,7 @@
 namespace Drupal\purge\Purgeable;
 
 /**
- * Provides an interface defining a purgeable.
+ * Describes the purgeable: which instructs the purger what to wipe.
  */
 interface PurgeableInterface {
 

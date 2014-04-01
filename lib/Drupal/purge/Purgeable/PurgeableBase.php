@@ -12,7 +12,7 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
 use Drupal\purge\Purgeable\InvalidPurgeablePropertyException;
 
 /**
- * Provides an interface defining a purgeable.
+ * Base purgeable: which instructs the purger what to wipe.
  */
 abstract class PurgeableBase implements PurgeableInterface {
 

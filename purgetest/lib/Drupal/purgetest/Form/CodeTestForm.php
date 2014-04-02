@@ -7,6 +7,7 @@
 
 namespace Drupal\purgetest\Form;
 
+use Drupal\Core\Url;
 use Drupal\Core\Form\FormBase;
 
 /**
@@ -106,13 +107,7 @@ class CodeTestForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, array &$form_state) {
-    $form_state['redirect'] = array(
-      $this->getRequest()->get('q'),
-      array(
-        'query' => array(
-          'run' => 'yes',
-        ),
-      ),
-    );
+    $form_state['redirect_route'] = Url::createFromRequest(\Drupal::request());
+    $form_state['redirect_route']->setRouteParameter('run', 'yes');
   }
 }

@@ -1,0 +1,19 @@
+purgetest.home:
+  title: 'Purge Tests'
+  route_name: purgetest.home
+  menu_name: tools
+purgetest.purgeables.home:
+  title: 'Purgeables'
+  route_name: purgetest.purgeables.home
+  parent: purgetest.home
+  menu_name: tools
+purgetest.queue.home:
+  title: 'Queue'
+  route_name: purgetest.queue.home
+  parent: purgetest.home
+  menu_name: tools
+purgetest.purger.home:
+  title: 'Purger'
+  route_name: purgetest.purger.home
+  parent: purgetest.home
+  menu_name: tools

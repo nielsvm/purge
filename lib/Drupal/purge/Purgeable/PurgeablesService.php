@@ -40,10 +40,10 @@ class PurgeablesService extends ServiceBase implements PurgeablesServiceInterfac
    */
   public function getPlugins($simple = FALSE) {
     if (!$simple) {
-      return $this->discovery->getDefinitions();
+      return $this->factory->getDefinitions();
     }
     $plugins = array();
-    foreach ($this->discovery->getDefinitions() as $plugin) {
+    foreach ($this->factory->getDefinitions() as $plugin) {
       $plugins[$plugin['id']] = $plugin['label'];
     }
     return $plugins;

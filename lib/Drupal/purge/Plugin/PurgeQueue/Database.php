@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Queue\Database.
+ * Contains \Drupal\purge\Plugin\PurgeQueue\Database.
  */
 
-namespace Drupal\purge\Plugin\Purge\Queue;
+namespace Drupal\purge\Plugin\PurgeQueue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Database\Connection;

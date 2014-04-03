@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purgetest\Plugin\Purge\Queue\Memory.
+ * Contains \Drupal\purgetest\Plugin\PurgeQueue\Memory.
  */
 
-namespace Drupal\purgetest\Plugin\Purge\Queue;
+namespace Drupal\purgetest\Plugin\PurgeQueue;
 
 use Drupal\purge\Queue\QueueInterface;
 use Drupal\purge\Queue\QueueBase;

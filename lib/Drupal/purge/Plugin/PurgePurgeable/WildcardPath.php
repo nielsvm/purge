@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purgeable\WildcardPath.
+ * Contains \Drupal\purge\Plugin\PurgePurgeable\WildcardPath.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purgeable;
+namespace Drupal\purge\Plugin\PurgePurgeable;
 
 use Drupal\purge\Purgeable\PurgeableBase;
 use Drupal\purge\Plugin\Purge\Purgeable\Path;

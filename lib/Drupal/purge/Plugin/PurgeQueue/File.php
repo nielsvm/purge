@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Queue\File.
+ * Contains \Drupal\purge\Plugin\PurgeQueue\File.
  */
 
-namespace Drupal\purge\Plugin\Purge\Queue;
+namespace Drupal\purge\Plugin\PurgeQueue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\StreamWrapper\PublicStream;

@@ -55,7 +55,7 @@ class QueueServiceFactory extends PluginManagerBase implements QueueServiceFacto
   public function __construct(ContainerInterface $service_container) {
     $this->container = $service_container;
     $this->namespaces = $this->container->get('container.namespaces');
-    $this->discovery = new AnnotatedClassDiscovery('Plugin/Purge/Queue', $this->namespaces, 'Drupal\purge\Annotation\PurgeQueue');
+    $this->discovery = new AnnotatedClassDiscovery('Plugin/PurgeQueue', $this->namespaces, 'Drupal\purge\Annotation\PurgeQueue');
     $this->discovery = new CacheDecorator($this->discovery, 'purge_queue_types');
     $this->factory = new DefaultFactory($this->discovery);
     $this->plugin = $this->container

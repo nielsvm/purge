@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purgeable\Tag.
+ * Contains \Drupal\purge\Plugin\PurgePurgeable\Tag.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purgeable;
+namespace Drupal\purge\Plugin\PurgePurgeable;
 
 use Drupal\purge\Purgeable\PurgeableBase;
 use Drupal\purge\Purgeable\InvalidStringRepresentationException;

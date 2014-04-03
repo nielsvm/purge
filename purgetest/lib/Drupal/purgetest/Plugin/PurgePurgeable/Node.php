@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purgetest\Plugin\Purge\Purgeable\Node.
+ * Contains \Drupal\purgetest\Plugin\PurgePurgeable\Node.
  */
 
-namespace Drupal\purgetest\Plugin\Purge\Purgeable;
+namespace Drupal\purgetest\Plugin\PurgePurgeable;
 
 use Drupal\purge\Purgeable\PurgeableBase;
 use Drupal\purge\Purgeable\InvalidStringRepresentationException;

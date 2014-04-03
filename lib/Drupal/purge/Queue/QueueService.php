@@ -27,13 +27,6 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
   private $queue;
 
   /**
-   * The discovery decorator that tells us more about available plugins.
-   *
-   * @var \Drupal\Core\Plugin\Discovery\CacheDecorator
-   */
-  private $discovery;
-
-  /**
    * The service that generates purgeable objects on-demand.
    *
    * @var \Drupal\purge\Purgeable\PurgeablesServiceInterface

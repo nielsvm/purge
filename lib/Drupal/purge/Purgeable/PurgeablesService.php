@@ -18,13 +18,6 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
 class PurgeablesService extends ServiceBase implements PurgeablesServiceInterface {
 
   /**
-   * The PurgeableFactory object that generates the purgeable objects.
-   *
-   * @var \Drupal\Component\Plugin\PluginManagerInterface
-   */
-  private $factory;
-
-  /**
    * Instantiates a PurgeablesService.
    *
    * @param \Traversable $namespaces

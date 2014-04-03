@@ -9,6 +9,7 @@ namespace Drupal\purge_ui\Form;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\purge\Purger\PurgerServiceInterface;
 use Drupal\purge\Queue\QueueServiceInterface;
 
 /**
@@ -24,8 +25,11 @@ class PurgeCoreConfigForm extends ConfigFormBase {
   protected $configFactory;
 
   /**
-   * Stores the configuration factory.
-   *
+   * @var \Drupal\purge\Purger\PurgerServiceInterface
+   */
+  protected $purgePurger;
+
+  /**
    * @var \Drupal\purge\Queue\QueueServiceInterface
    */
   protected $purgeQueue;
@@ -35,9 +39,14 @@ class PurgeCoreConfigForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
+   * @param \Drupal\purge\Purger\PurgerServiceInterface $purge_purger
+   *   The purger service.
+   * @param \Drupal\purge\Queue\QueueServiceInterface $purge_queue
+   *   The purge queue service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, QueueServiceInterface $purge_queue) {
+  public function __construct(ConfigFactoryInterface $config_factory, PurgerServiceInterface $purge_purger, QueueServiceInterface $purge_queue) {
     $this->configFactory = $config_factory;
+    $this->purgePurger = $purge_purger;
     $this->purgeQueue = $purge_queue;
     parent::__construct($config_factory);
   }
@@ -48,6 +57,7 @@ class PurgeCoreConfigForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
+      $container->get('purge.purger'),
       $container->get('purge.queue')
     );
   }
@@ -72,17 +82,42 @@ class PurgeCoreConfigForm extends ConfigFormBase {
     );
 
     // Settings related to the purge.purger service.
+    $plugins = $this->configFactory->get('purge.purger')->get('plugins');
+    $purgers = $this->purgePurger->getPlugins(TRUE);
     $form['purger'] = array(
       '#type' => 'details',
       '#title' => t('Purger'),
       '#open' => TRUE,
     );
-    $form['purger']['purger_plugins'] = array(
-      '#default_value' => array(),
-      '#options' => array('not', 'yet', 'implemented'),
-      '#type' => 'checkboxes',
-      '#description' => $this->t('Purgers execute all purgeable instructions.')
-    );
+    if (empty($purgers)) {
+      $form['purger']['purger_nothing_available'] = array(
+        '#type' => 'item',
+        '#description' => $this->t("You don't have any third-party modules
+          installed that provide purgers. Please install the appropriate module
+          that provides a purger for your external cache system.")
+      );
+    }
+    else {
+      $form['purger']['purger_detection'] = array(
+        '#default_value' => ($plugins == 'automatic_detection') ? $plugins : 'manual',
+        '#type' => 'radios',
+        '#options' => array(
+          'automatic_detection' => $this->t('Automatically load all purgers'),
+          'manual' => $this->t('Manual selection'),
+        ),
+      );
+      $form['purger']['purger_plugins'] = array(
+        '#default_value' => $this->purgePurger->getPluginsLoaded(),
+        '#options' => $purgers,
+        '#type' => 'checkboxes',
+        '#description' => $this->t('Purgers execute all purgeable instructions.'),
+        '#states' => array(
+          'disabled' => array(
+            ':input[name="purger_detection"]' => array('value' => 'automatic_detection'),
+          ),
+        ),
+      );
+    }
 
     // Settings related to the purge.queue service.
     $form['queue'] = array(
@@ -108,10 +143,29 @@ class PurgeCoreConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, array &$form_state) {
-    $this->configFactory->get('purge.queue')
-      ->set('plugin', $form_state['values']['queue_plugin'])
-      ->save();
-
+    if (isset($form_state['values']['purger_plugins'])) {
+      if ($form_state['values']['purger_detection'] == 'automatic_detection') {
+        $this->configFactory->get('purge.purger')
+          ->set('plugins', 'automatic_detection')
+          ->save();
+      }
+      else {
+        $purgers = array();
+        foreach ($form_state['values']['purger_plugins'] as $option) {
+          if (is_string($option)) {
+            $purgers[] = $option;
+          }
+        }
+        $this->configFactory->get('purge.purger')
+          ->set('plugins', implode(',', $purgers))
+          ->save();
+      }
+    }
+    if (isset($form_state['values']['queue_plugin'])) {
+      $this->configFactory->get('purge.queue')
+        ->set('plugin', $form_state['values']['queue_plugin'])
+        ->save();
+    }
     parent::submitForm($form, $form_state);
   }
 }

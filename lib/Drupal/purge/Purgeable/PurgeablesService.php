@@ -29,20 +29,6 @@ class PurgeablesService extends ServiceBase implements PurgeablesServiceInterfac
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getPlugins($simple = FALSE) {
-    if (!$simple) {
-      return $this->discovery->getDefinitions();
-    }
-    $plugins = array();
-    foreach ($this->discovery->getDefinitions() as $plugin) {
-      $plugins[$plugin['id']] = $plugin['label'];
-    }
-    return $plugins;
-  }
-
-  /**
    * Returns a preconfigured instance of a purgeable.
    *
    * @see \Drupal\Component\Plugin\Factory\FactoryInterface::createInstance.

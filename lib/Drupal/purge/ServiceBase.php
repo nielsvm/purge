@@ -72,4 +72,17 @@ abstract class ServiceBase extends ServiceProviderBase implements ServiceInterfa
     $this->factory = new DefaultFactory($this->discovery);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getPlugins($simple = FALSE) {
+    if (!$simple) {
+      return $this->discovery->getDefinitions();
+    }
+    $plugins = array();
+    foreach ($this->discovery->getDefinitions() as $plugin) {
+      $plugins[$plugin['id']] = $plugin['label'];
+    }
+    return $plugins;
+  }
 }

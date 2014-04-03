@@ -14,7 +14,7 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
  * Wipe a node by its path from the cache, e.g 'node/5'.
  *
  * @PurgePurgeable(
- *   id = "Node",
+ *   id = "node",
  *   label = @Translation("Node Purgeable")
  * )
  */

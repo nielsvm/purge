@@ -20,12 +20,12 @@ class PurgeablesService extends ServiceBase implements PurgeablesServiceInterfac
   /**
    * Instantiates a PurgeablesService.
    *
-   * @param \Traversable $namespaces
+   * @param \Traversable $container_namespaces
    *   An object that implements \Traversable which contains the root paths
    *   keyed by the corresponding namespace to look for plugin implementations.
    */
-  public function __construct(\Traversable $namespaces) {
-    $this->initializePluginDiscovery($namespaces, 'PurgePurgeable');
+  public function __construct(\Traversable $container_namespaces) {
+    $this->initializePluginDiscovery($container_namespaces, 'PurgePurgeable');
   }
 
   /**

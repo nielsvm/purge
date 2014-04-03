@@ -49,12 +49,8 @@ class File extends QueueBase implements QueueInterface {
 
   /**
    * Setup a single file based queue.
-   *
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $service_container
-   *   The service container, allowing plugins to inject dependencies.
    */
-  function __construct(ContainerInterface $service_container) {
-    parent::__construct($service_container);
+  function __construct() {
     $this->file = str_replace('public:/', PublicStream::basePath(), $this->file);
   }
 

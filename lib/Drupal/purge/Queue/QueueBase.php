@@ -16,18 +16,6 @@ use Drupal\purge\Queue\QueueInterface;
 abstract class QueueBase implements QueueInterface {
 
   /**
-   * var \Symfony\Component\DependencyInjection\ContainerInterface
-   */
-  protected $container;
-
-  /**
-   * {@inheritdoc}
-   */
-  function __construct(ContainerInterface $service_container) {
-    $this->container = $service_container;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function getPluginName() {

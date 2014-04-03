@@ -26,4 +26,12 @@ interface ServiceInterface extends ServiceProviderInterface, ServiceModifierInte
    *   metadata as another associative array in the value.
    */
   public function getPlugins($simple = FALSE);
+
+  /**
+   * Retrieve all the plugin ID's of the plugins the service actually uses.
+   *
+   * @return array
+   *   Non-associative array with the plugin ID's of the loaded/used plugins.
+   */
+  public function getPluginsLoaded();
 }

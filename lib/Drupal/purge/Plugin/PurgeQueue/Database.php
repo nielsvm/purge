@@ -9,6 +9,7 @@ namespace Drupal\purge\Plugin\PurgeQueue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Queue\QueueDatabaseFactory;
 use Drupal\purge\Queue\QueueInterface;
 use Drupal\purge\Queue\QueueBase;
 
@@ -25,6 +26,16 @@ use Drupal\purge\Queue\QueueBase;
 class Database extends QueueBase implements QueueInterface {
 
   /**
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
+   * @var \Drupal\Core\Queue\QueueDatabaseFactory
+   */
+  protected $queueDatabase;
+
+  /**
    * Holds the 'queue.database' queue retrieved from Drupal.
    */
   protected $dbqueue;
@@ -37,23 +48,21 @@ class Database extends QueueBase implements QueueInterface {
   protected $name;
 
   /**
-   * The database connection.
-   *
-   * @var \Drupal\Core\Database\Connection $connection
-   */
-  protected $connection;
-
-  /**
    * Setup a database backed queue.
-   *
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $service_container
-   *   The service container, allowing plugins to inject dependencies.
+   * @param \Drupal\Core\Database\Connection $database
+   *   The active database connection.
+   * @param \Drupal\Core\Queue\QueueDatabaseFactory $queue_database
+   *   The 'queue.database' service creating database queue objects.
    */
-  function __construct(ContainerInterface $service_container) {
-    parent::__construct($service_container);
+  function __construct(Connection $database, QueueDatabaseFactory $queue_database) {
+    $this->database = $database;
+    $this->queueDatabase = $queue_database;
+
+    // The name of the database queue we are storing items in.
     $this->name = 'purge';
-    $this->connection = $this->container->get('database');
-    $this->dbqueue = $this->container->get('queue.database')->get($this->name);
+
+    // Instantiate the database queue using the factory.
+    $this->dbqueue = $this->queueDatabase->get($this->name);
   }
 
   /**
@@ -127,7 +136,7 @@ class Database extends QueueBase implements QueueInterface {
     $returned_items = $item_ids = array();
 
     // Retrieve all items in one query.
-    $items = $this->connection->queryRange('SELECT data, created, item_id FROM {queue} q WHERE expire = 0 AND name = :name ORDER BY created ASC', 0, $claims, array(':name' => $this->name));
+    $items = $this->database->queryRange('SELECT data, created, item_id FROM {queue} q WHERE expire = 0 AND name = :name ORDER BY created ASC', 0, $claims, array(':name' => $this->name));
 
     // Iterate all returned items and unpack them.
     foreach ($items as $item) {
@@ -140,7 +149,7 @@ class Database extends QueueBase implements QueueInterface {
 
     // Update the items (marking them claimed) in one query.
     if (count($returned_items)) {
-      $update = $this->connection->update('queue')
+      $update = $this->database->update('queue')
         ->fields(array(
           'expire' => time() + $lease_time,
         ))
@@ -168,7 +177,7 @@ class Database extends QueueBase implements QueueInterface {
     foreach ($items as $item) {
       $item_ids[] = $item->item_id;
     }
-    $update = $this->connection->update('queue')
+    $update = $this->database->update('queue')
       ->fields(array(
         'expire' => 0,
       ))
@@ -197,7 +206,7 @@ class Database extends QueueBase implements QueueInterface {
     foreach ($items as $item) {
       $item_ids[] = $item->item_id;
     }
-    $update = $this->connection
+    $update = $this->database
       ->delete('queue')
       ->condition('item_id', $item_ids, 'IN')
       ->execute();

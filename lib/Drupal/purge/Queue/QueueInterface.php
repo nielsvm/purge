@@ -16,14 +16,6 @@ use Drupal\Core\Queue\ReliableQueueInterface;
 interface QueueInterface extends ReliableQueueInterface {
 
   /**
-   * Instantiate the queue plugin.
-   *
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $service_container
-   *   The service container, allowing plugins to inject dependencies.
-   */
-  function __construct(ContainerInterface $service_container);
-
-  /**
    * Add multiple items to the queue and store them efficiently.
    *
    * @param array $items

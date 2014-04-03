@@ -7,44 +7,75 @@
 
 namespace Drupal\purge\Queue;
 
-use Drupal\Core\Plugin\Discovery\CacheDecorator;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Purgeable\PurgeablesServiceInterface;
 use Drupal\purge\Purgeable\PurgeableInterface;
 use Drupal\purge\Queue\UnexpectedServiceConditionException;
+use Drupal\purge\Queue\InvalidQueueConfiguredException;
 use Drupal\purge\Queue\QueueInterface;
 
 /**
- * Provides the service that holds the underlying QueueInterface plugin.
+ * Provides the service that lets purgeables interact with the underlying queue.
  */
 class QueueService extends ServiceBase implements QueueServiceInterface {
 
   /**
-   * The Queue (plugin) instance that holds the underlying items.
-   *
-   * @var \Drupal\purge\Queue\QueueInterface
+   * @var \Symfony\Component\DependencyInjection\ContainerInterface
    */
-  private $queue;
+  protected $serviceContainer;
+
+  /**
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
 
   /**
    * The service that generates purgeable objects on-demand.
    *
    * @var \Drupal\purge\Purgeable\PurgeablesServiceInterface
    */
-  private $purgePurgeables;
+  protected $purgePurgeables;
 
   /**
-   * The transaction buffer used to park purgeable objects.
+   * The Queue (plugin) object in which all items are stored.
+   *
+   * @var \Drupal\purge\Queue\QueueInterface
    */
-  private $buffer;
+  protected $queue;
 
   /**
-   * {@inheritdoc}
+   * The transaction buffer used to temporarily park purgeable objects.
    */
-  function __construct(QueueInterface $queue, CacheDecorator $discovery, PurgeablesServiceInterface $purge_purgeables) {
+  protected $buffer;
+
+  /**
+   * Instantiate the queue service.
+   *
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $service_container
+   *   The service container.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
+   * @param \Traversable $container_namespaces
+   *   An object that implements \Traversable which contains the root paths
+   *   keyed by the corresponding namespace to look for plugin implementations.
+   * @param \Drupal\purge\Purgeable\PurgeablesServiceInterface $purge_purgeables
+   *   The service that instantiates purgeable objects for claimed queue items.
+   */
+  function __construct(ContainerInterface $service_container, ConfigFactoryInterface $config_factory, \Traversable $container_namespaces, PurgeablesServiceInterface $purge_purgeables) {
+    $this->serviceContainer = $service_container;
+    $this->configFactory = $config_factory;
     $this->purgePurgeables = $purge_purgeables;
-    $this->queue = $queue;
-    $this->discovery = $discovery;
+
+    // Initialize the plugin discovery, factory and set container_namespaces.
+    $this->initializePluginDiscovery($container_namespaces, 'PurgeQueue');
+
+    // Initialize the queue plugin as configured in purge.queue.yml.
+    $this->initializeQueue();
+
+    // Initialize the transaction buffer as empty.
     $this->buffer = array();
 
     // The queue service attempts to collect all actions done for purgeables
@@ -68,6 +99,51 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
       $plugins[$plugin['id']] = sprintf('%s: %s', $plugin['label'], $plugin['description']);
     }
     return $plugins;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPluginsLoaded() {
+    static $plugin_id;
+    if (is_null($plugin_id)) {
+
+      // The queue service always interacts with just one underlying queue,
+      // which is hardcoded in configuration. Configuring a queue plugin that
+      // does not exist, will cause an exception to be thrown.
+      $plugin_id = $this->configFactory->get('purge.queue')->get('plugin');
+
+      // Test if the configured queue is a valid and existing queue plugin.
+      if (is_null($this->discovery->getDefinition($plugin_id))) {
+        throw new InvalidQueueConfiguredException(
+          "The queue plugin '$plugin_id' does not exist.");
+      }
+    }
+    return array($plugin_id);
+  }
+
+  /**
+   * Load the queue plugin and make $this->queue available.
+   */
+  protected function initializeQueue() {
+    if (!is_null($this->queue)) {
+      return;
+    }
+
+    // Lookup the plugin ID, definition and class from the discoverer.
+    $plugin_id = current($this->getPluginsLoaded());
+    $plugin_definition = $this->discovery->getDefinition($plugin_id);
+    $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
+
+    // Retrieve all the requested service arguments.
+    $arguments = array();
+    foreach ($plugin_definition['service_dependencies'] as $service) {
+      $arguments[] = $this->serviceContainer->get($service);
+    }
+
+    // Use the Reflection API to instantiate our plugin.
+    $reflector = new \ReflectionClass($plugin_class);
+    $this->queue = $reflector->newInstanceArgs($arguments);
   }
 
   /**

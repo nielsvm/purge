@@ -23,7 +23,7 @@ abstract class ServiceBase extends ServiceProviderBase implements ServiceInterfa
    *
    * @var \Traversable
    */
-  protected $namespaces;
+  protected $containerNamespaces;
 
   /**
    * The discovery object that tells us which plugins are available.
@@ -55,12 +55,12 @@ abstract class ServiceBase extends ServiceProviderBase implements ServiceInterfa
    *    and $this->factory available.
    */
   protected function initializePluginDiscovery(\Traversable $container_namespaces, $plugin_type) {
-    $this->namespaces = $container_namespaces;
+    $this->containerNamespaces = $container_namespaces;
 
     // Setup annotated plugin discovery with its dedicated annotation type.
     $this->discovery = new AnnotatedClassDiscovery(
       'Plugin/' . $plugin_type,
-      $this->namespaces,
+      $this->containerNamespaces,
       'Drupal\purge\Annotation\\' . $plugin_type
     );
 

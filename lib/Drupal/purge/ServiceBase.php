@@ -42,7 +42,7 @@ abstract class ServiceBase extends ServiceProviderBase implements ServiceInterfa
   /**
    * Initialize plugin discovery and a factory.
    *
-   * @param \Traversable $ns
+   * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
    *   keyed by the corresponding namespace to look for plugin implementations.
    * @param string $plugin_type
@@ -54,8 +54,8 @@ abstract class ServiceBase extends ServiceProviderBase implements ServiceInterfa
    *    This method does not return anything but it does make $this->discovery
    *    and $this->factory available.
    */
-  protected function initializePluginDiscovery(\Traversable $ns, $plugin_type) {
-    $this->namespaces = $ns;
+  protected function initializePluginDiscovery(\Traversable $namespaces, $plugin_type) {
+    $this->namespaces = $namespaces;
 
     // Setup annotated plugin discovery with its dedicated annotation type.
     $this->discovery = new AnnotatedClassDiscovery(

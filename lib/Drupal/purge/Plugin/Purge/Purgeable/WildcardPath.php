@@ -14,9 +14,7 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
 /**
  * Describes a path based cache wipe with wildcard, e.g. "news/*".
  *
- * @ingroup purge_purgeable_types
- *
- * @Plugin(
+ * @PurgePurgeable(
  *   id = "wildcardpath",
  *   label = @Translation("Wildcard Path Purgeable")
  * )

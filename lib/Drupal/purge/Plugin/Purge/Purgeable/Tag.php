@@ -13,11 +13,9 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
 /**
  * Describes a cache wipe by Drupal cache tag, e.g.: 'user:1', 'menu:footer'.
  *
- * @ingroup purge_purgeable_types
- *
  * @see \Drupal\Core\Cache\DatabaseBackend::flattenTags()
  *
- * @Plugin(
+ * @PurgePurgeable(
  *   id = "tag",
  *   label = @Translation("Tag Purgeable")
  * )

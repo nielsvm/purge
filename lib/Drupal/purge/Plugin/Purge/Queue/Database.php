@@ -15,11 +15,11 @@ use Drupal\purge\Queue\QueueBase;
 /**
  * A \Drupal\purge\Queue\QueueInterface compliant database backed queue.
  *
- * @ingroup purge_queue_types
- *
- * @Plugin(
+ * @PurgeQueue(
  *   id = "database",
- *   label = @Translation("Database backed purge queue.")
+ *   label = @Translation("Database"),
+ *   description = @Translation("A scalable database backed queue."),
+ *   service_dependencies = {"database", "queue.database"}
  * )
  */
 class Database extends QueueBase implements QueueInterface {

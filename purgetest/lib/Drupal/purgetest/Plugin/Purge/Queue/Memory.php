@@ -13,11 +13,11 @@ use Drupal\purge\Queue\QueueBase;
 /**
  * A \Drupal\purge\Queue\QueueInterface compliant file backed queue.
  *
- * @ingroup purge_queue_types
- *
- * @Plugin(
- *   id = "Memory",
- *   label = @Translation("A volatile memory-based queue.")
+ * @PurgeQueue(
+ *   id = "memory",
+ *   label = @Translation("Memory"),
+ *   description = @Translation("A volatile and non-persistent memory queue"),
+ *   service_dependencies = {}
  * )
  */
 class Memory extends QueueBase implements QueueInterface {

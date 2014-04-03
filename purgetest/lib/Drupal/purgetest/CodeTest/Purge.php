@@ -27,7 +27,7 @@ class Purge extends CodeTestBase {
   public function pluginList($purger, $queue, $purgeables, $diagnostics) {
     $plugins = array(
       'purger' => array(),
-      'queue' => $queue->getPlugins(TRUE),
+      'queue' => $queue->getPlugins(),
       'purgeables' => $purgeables->getPlugins(TRUE),
       'diagnostics' => array()
     );

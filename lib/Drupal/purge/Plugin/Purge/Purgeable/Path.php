@@ -13,9 +13,7 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
 /**
  * Describes a path based cache wipe, e.g. "news/article-1".
  *
- * @ingroup purge_purgeable_types
- *
- * @Plugin(
+ * @PurgePurgeable(
  *   id = "path",
  *   label = @Translation("Path Purgeable")
  * )

@@ -15,11 +15,11 @@ use Drupal\purge\Queue\QueueBase;
 /**
  * A \Drupal\purge\Queue\QueueInterface compliant file backed queue.
  *
- * @ingroup purge_queue_types
- *
- * @Plugin(
+ * @PurgeQueue(
  *   id = "file",
- *   label = @Translation("A file based purge queue.")
+ *   label = @Translation("File"),
+ *   description = @Translation("A file-based queue for small systems."),
+ *   service_dependencies = {}
  * )
  */
 class File extends QueueBase implements QueueInterface {

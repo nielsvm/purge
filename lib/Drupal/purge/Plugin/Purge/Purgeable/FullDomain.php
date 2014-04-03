@@ -13,9 +13,7 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
 /**
  * Instructs a full domain or full cache clear, string representation: "*".
  *
- * @ingroup purge_purgeable_types
- *
- * @Plugin(
+ * @PurgePurgeable(
  *   id = "fulldomain",
  *   label = @Translation("Full Domain Purgeable")
  * )

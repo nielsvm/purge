@@ -27,7 +27,7 @@ class CodeTestForm extends FormBase {
     // Reference common purge services.
     $this->purgeQueue = \Drupal::getContainer()->get('purge.queue');
     $this->purgePurgeables = \Drupal::getContainer()->get('purge.purgeables');
-    //$this->purgePurger = \Drupal::getContainer()->get('purge.purger');
+    $this->purgePurger = \Drupal::getContainer()->get('purge.purger');
     //$this->purgeDiagnostics = \Drupal::getContainer()->get('purge.diagnostics');
   }
 
@@ -75,7 +75,7 @@ class CodeTestForm extends FormBase {
     $method = $this->testMethod;
     $object = new $this->testClass();
     $args = array(
-      NULL,
+      $this->purgePurger,
       $this->purgeQueue,
       $this->purgePurgeables,
       NULL

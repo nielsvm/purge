@@ -18,7 +18,7 @@ class Purge extends CodeTestBase {
 
   /**
    * $plugins = array(
-   *   'purger' => array(),
+   *   'purger' => $purger->getPlugins(TRUE),
    *   'queue' => $queue->getPlugins(TRUE),
    *   'purgeables' => $purgeables->getPlugins(TRUE),
    *   'diagnostics' => array()
@@ -26,7 +26,7 @@ class Purge extends CodeTestBase {
    */
   public function pluginList($purger, $queue, $purgeables, $diagnostics) {
     $plugins = array(
-      'purger' => array(),
+      'purger' => $purger->getPlugins(TRUE),
       'queue' => $queue->getPlugins(TRUE),
       'purgeables' => $purgeables->getPlugins(TRUE),
       'diagnostics' => array()
@@ -36,7 +36,7 @@ class Purge extends CodeTestBase {
 
   /**
    * $plugins = array(
-   *   'purger' => array(),
+   *   'purger' => $purger->getPluginsLoaded(),
    *   'queue' => $queue->getPluginsLoaded(),
    *   'purgeables' => $purgeables->getPluginsLoaded(),
    *   'diagnostics' => array()
@@ -44,9 +44,9 @@ class Purge extends CodeTestBase {
    */
   public function pluginListLoaded($purger, $queue, $purgeables, $diagnostics) {
     $plugins = array(
-      'purger' => array(),
+      'purger' => $purger->getPluginsLoaded(),
       'queue' => $queue->getPluginsLoaded(),
-      'purgeables' => $purgeables->getPluginsLoaded(TRUE),
+      'purgeables' => $purgeables->getPluginsLoaded(),
       'diagnostics' => array()
     );
     return $plugins;

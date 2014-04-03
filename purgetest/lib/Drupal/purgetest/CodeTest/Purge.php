@@ -33,4 +33,22 @@ class Purge extends CodeTestBase {
     );
     return $plugins;
   }
+
+  /**
+   * $plugins = array(
+   *   'purger' => array(),
+   *   'queue' => $queue->getPluginsLoaded(),
+   *   'purgeables' => $purgeables->getPluginsLoaded(),
+   *   'diagnostics' => array()
+   * );
+   */
+  public function pluginListLoaded($purger, $queue, $purgeables, $diagnostics) {
+    $plugins = array(
+      'purger' => array(),
+      'queue' => $queue->getPluginsLoaded(),
+      'purgeables' => $purgeables->getPluginsLoaded(TRUE),
+      'diagnostics' => array()
+    );
+    return $plugins;
+  }
 }

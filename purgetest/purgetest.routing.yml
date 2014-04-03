@@ -26,6 +26,15 @@ purgetest.pluginlist:
     testMethod: 'pluginList'
   requirements:
     _permission: 'administer site configuration'
+purgetest.pluginlistloaded:
+  path: '/purgetests/pluginlistloaded'
+  defaults:
+    _form: 'Drupal\purgetest\Form\CodeTestForm'
+    _title: 'Plugins loaded'
+    testClass: 'Drupal\purgetest\CodeTest\Purge'
+    testMethod: 'pluginListLoaded'
+  requirements:
+    _permission: 'administer site configuration'
 
 # API TEST CALLBACKS: PURGEABLES
 purgetest.purgeables.home:

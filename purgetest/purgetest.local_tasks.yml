@@ -7,6 +7,10 @@ purgetest.pluginlist:
   title: 'Plugins'
   route_name: purgetest.pluginlist
   base_route: purgetest.home
+purgetest.pluginlistloaded:
+  title: 'Plugins loaded'
+  route_name: purgetest.pluginlistloaded
+  base_route: purgetest.home
 
 # API TEST CALLBACKS: PURGEABLES
 purgetests.purgeables.home:

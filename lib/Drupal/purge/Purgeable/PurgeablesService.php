@@ -7,9 +7,9 @@
 
 namespace Drupal\purge\Purgeable;
 
+use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Purgeable\PurgeablesServiceInterface;
-use Drupal\purge\Purgeable\PurgeableFactory;
 use Drupal\purge\Purgeable\InvalidStringRepresentationException;
 
 /**
@@ -25,7 +25,7 @@ class PurgeablesService extends ServiceBase implements PurgeablesServiceInterfac
    *   keyed by the corresponding namespace to look for plugin implementations.
    */
   public function __construct(\Traversable $namespaces) {
-    $this->factory = new PurgeableFactory($namespaces);
+    $this->initializePluginDiscovery($namespaces, 'PurgePurgeable');
   }
 
   /**
@@ -33,13 +33,37 @@ class PurgeablesService extends ServiceBase implements PurgeablesServiceInterfac
    */
   public function getPlugins($simple = FALSE) {
     if (!$simple) {
-      return $this->factory->getDefinitions();
+      return $this->discovery->getDefinitions();
     }
     $plugins = array();
-    foreach ($this->factory->getDefinitions() as $plugin) {
+    foreach ($this->discovery->getDefinitions() as $plugin) {
       $plugins[$plugin['id']] = $plugin['label'];
     }
     return $plugins;
+  }
+
+  /**
+   * Returns a preconfigured instance of a purgeable.
+   *
+   * @see \Drupal\Component\Plugin\Factory\FactoryInterface::createInstance.
+   *
+   * @param string $plugin_id
+   *   The id of the plugin being instantiated.
+   * @param string $representation
+   *   A string representing this type of purgeable, e.g. "node/1" for a
+   *   path purgeable and "*" for a full domain purgeable.
+   *
+   * @return \Drupal\purge\Purgeable\PurgeableInterface
+   */
+  private function createInstance($plugin_id, $representation) {
+    $plugin_definition = $this->discovery->getDefinition($plugin_id);
+    $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
+
+    // Instantiate the purgeable and immediately set its plugin ID.
+    $instance = new $plugin_class($representation);
+    $instance->setPluginId($plugin_id);
+
+    return $instance;
   }
 
   /**
@@ -47,7 +71,7 @@ class PurgeablesService extends ServiceBase implements PurgeablesServiceInterfac
    */
   public function fromQueueItemData($data) {
     $data = explode('>', $data);
-    return $this->factory->createInstance($data[0], array($data[1]));
+    return $this->createInstance($data[0], $data[1]);
   }
 
   /**
@@ -55,9 +79,9 @@ class PurgeablesService extends ServiceBase implements PurgeablesServiceInterfac
    */
   public function matchFromStringRepresentation($representation) {
     $match = NULL;
-    foreach ($this->factory->getDefinitions() as $type) {
+    foreach ($this->discovery->getDefinitions() as $type) {
       try {
-        $match = $this->factory->createInstance($type['id'], array($representation));
+        $match = $this->createInstance($type['id'], $representation);
       }
       catch (InvalidStringRepresentationException $e) {
         $match = NULL;

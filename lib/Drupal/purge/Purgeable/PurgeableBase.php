@@ -19,14 +19,14 @@ abstract class PurgeableBase implements PurgeableInterface {
   /**
    * Arbitrary string representing the thing that needs to be purged.
    *
-   * @var \Drupal\purge\Purgeable\PurgeableBase
+   * @var string
    */
   protected $representation;
 
   /**
    * The plugin @id found by the annotation scanner.
    *
-   * @var \Drupal\purge\Purgeable\PurgeableBase
+   * @var string
    */
   protected $pluginId;
 

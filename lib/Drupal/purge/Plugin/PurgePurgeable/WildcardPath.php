@@ -8,7 +8,7 @@
 namespace Drupal\purge\Plugin\PurgePurgeable;
 
 use Drupal\purge\Purgeable\PurgeableBase;
-use Drupal\purge\Plugin\Purge\Purgeable\Path;
+use Drupal\purge\Plugin\PurgePurgeable\Path;
 use Drupal\purge\Purgeable\InvalidStringRepresentationException;
 
 /**

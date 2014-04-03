@@ -72,7 +72,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
     }
     $plugins = array();
     foreach ($this->discovery->getDefinitions() as $plugin) {
-      $plugins[$plugin['id']] = sprintf('<b>%s</b>: %s', $plugin['id'], $plugin['label']);
+      $plugins[$plugin['id']] = sprintf('%s: %s', $plugin['label'], $plugin['description']);
     }
     return $plugins;
   }

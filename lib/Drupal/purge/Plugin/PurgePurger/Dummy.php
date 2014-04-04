@@ -18,10 +18,16 @@ use Drupal\purge\Purgeable\PurgeableInterface;
  *   id = "dummy",
  *   label = @Translation("Dummy"),
  *   description = @Translation("A purger that does exactly nothing."),
- *   service_dependencies = {'database','config.factory','queue'}
+ *   service_dependencies = {}
  * )
  */
 class Dummy extends PurgerBase {
+
+  /**
+   * Instantiate the dummy purger.
+   */
+  function __construct() {
+  }
 
   /**
    * {@inheritdoc}

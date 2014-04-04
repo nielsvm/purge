@@ -17,15 +17,6 @@ use Drupal\purge\Purgeable\PurgeableInterface;
 interface PurgerInterface {
 
   /**
-   * Instantiate the purger and prepare operation.
-   *
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $service_container
-   *   The service container, directly allowing purger plugins to load any
-   *   arbitrary services that they might need, e.g: 'http_client'.
-   */
-  function __construct(ContainerInterface $service_container);
-
-  /**
    * Wipe the given purgeable from the external cache system.
    *
    * @param \Drupal\purge\Purgeable\PurgeableInterface $purgeable
@@ -118,18 +109,4 @@ interface PurgerInterface {
    *   Integer, the current number of purgeables being processed.
    */
   public function getNumberPurging();
-
-  /**
-   * Is the purger ready and willing to process new purgeables?
-   *
-   * Certain error conditions might exist that will cause a purger to entirely
-   * refuse operation, for instance when its capacity limit was reached. Another
-   * example could apply for purgers that require manual configuration to be
-   * set that are running on blank defaults.
-   *
-   * @return bool
-   *   Whenever this is returning FALSE it is likely that purge() and
-   *   purgeMultiple throw exceptions, yet not when this gives TRUE.
-   */
-  public function isReady();
 }

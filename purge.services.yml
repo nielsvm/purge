@@ -1,4 +1,7 @@
 services:
+  purge.purger:
+    class: Drupal\purge\Purger\PurgerService
+    arguments: ['@service_container', '@config.factory', '@container.namespaces']
   purge.purgeables:
     class: Drupal\purge\Purgeable\PurgeablesService
     arguments: ['@container.namespaces']

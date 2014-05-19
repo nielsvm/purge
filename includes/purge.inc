@@ -440,7 +440,8 @@ class PurgeItemSet extends PurgeItemBasic implements PurgeOptionable, PurgeProce
   public function process($purgeable_type, $purgeable) {
     $purges = array();
     // First set all processable items with the purgeable data.
-    if ($purgeable_type == 'url') {
+    // echo $purgeable_type;
+    if ($purgeable_type == 'urls') {
       foreach ($this->pointers as $pointer_type => $pointers) {
         foreach ($pointers as $pointer_name) {
           if ($pointer_type != 'purger') {
@@ -490,7 +491,6 @@ class PurgeItemSet extends PurgeItemBasic implements PurgeOptionable, PurgeProce
       }
 
     }
-    // dprint_r($this->options);
     $purger = $this->pointers['purger'][0];
     $purger_options = array();
     $purger_options = $this->options['purger'];
@@ -610,7 +610,7 @@ Class PurgeBundleBasic {
       }
 
     }
-    dprint_r($errors);
+    // dprint_r($errors);
     return $errors;
   }
 
@@ -640,7 +640,7 @@ Class PurgeBundleBasic {
  *   This class is used for processing the purge requests during runtine.
  */
 class PurgeBundleRuntime extends PurgeBundleBasic {
-  public $purgeable;
+  public $purgeables;
   public $queues;
 
   /**
@@ -716,11 +716,13 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
    */
   public function process() {
     // Walk the purgeables.
-    foreach ($this->purgeables as $purgeable_type => $purgeables) {
-      foreach ($purgeables as $purgeable_key => $purgeable) {
+    // print_r($this->purgeables);
+    foreach ($this->purgeables as $purgeable_type_name => $purgeables) {
+      foreach ($purgeables as $purgeable) {
         // Pass all sets.
         foreach ($this->set as $set_name => $set) {
-          $this->queues[] = $this->set[$set_name]->process($purgeable_type, $purgeable);
+          // print_r($purgeable_type_name);
+          $this->queues[] = $this->set[$set_name]->process($purgeable_type_name, $purgeable);
         }
       }
     }
@@ -751,6 +753,8 @@ function purge_urls($urls) {
   $bundle = new PurgeBundleRuntime();
   $bundle->purgeables['urls'] =  $urls;
   $bundle->process();
+  // dprint_r($bundle->queues);
+  $bundle->execute();
 }
 
 

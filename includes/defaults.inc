@@ -99,7 +99,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->target['localhost']->description = t('The default localhost ip address.');
     $this->target['localhost']->enabled = 1;
     $this->target['localhost']->access = PURGE_ACCESS_FULL;
-    $this->target['localhost']->urls = array('http://127.0.0.1/');
+    $this->target['localhost']->urls = array('http://127.0.0.1');
 
 
     // Domain definition.
@@ -121,11 +121,6 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     );
     $this->header['gzip']->enabled = 1;
     $this->header['gzip']->access = PURGE_ACCESS_ENABLE;
-    $this->header['gzip']->api = array(
-      'callback' => 'purge_domain_expire_domain',
-      'provider' => 'purge',
-      'context' => PURGE_API_STATIC,
-    );
     $this->header['gzip']->headers = array('Accept-Encoding' => 'gzip');
 
 
@@ -150,11 +145,6 @@ class PurgeBundleDefault extends PurgeBundleBasic {
         'default_value' => 1,
       ),
     );
-    $this->purger['curl']->api = array(
-      'callback' => 'purge_purger_curl_single',
-      'provider' => 'purge',
-      'context' => PURGE_API_RUNTIME,
-    );
 
     // HTTPrl Purger.
     $this->purger['httprl'] = new PurgeItemPurgerHttprl();
@@ -176,13 +166,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
         'default_value' => 1,
       ),
     );
-    $this->purger['httprl']->api = array(
-      'callback' => 'purge_purger_curl_multi',
-      'provider' => 'purge',
-      'context' => array(PURGE_API_RUNTIME),
-    );
 
-    // Batch definition.
 
     // Now create the set objects
     $this->set['minimal_set'] = new PurgeItemSet();
@@ -229,11 +213,6 @@ class PurgeBundleDefault extends PurgeBundleBasic {
       'set' => array(
         'watchdog' => 1
       ),
-    );
-    $this->set['default_set']->api = array(
-      'callback' => 'purge_defaults',
-      'provider' => 'purge',
-      'context' => array(PURGE_API_RUNTIME),
     );
     $this->set['default_set']->pointers = array(
       'target' => array('drupal_url', 'localhost'),

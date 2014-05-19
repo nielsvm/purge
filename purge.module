@@ -13,15 +13,6 @@
  */
 function purge_expire_cache($expire_urls) {
   module_load_include('inc', 'purge', 'includes/purge');
-  // First render an array of all requests for all proxy servers
+  // Just pass on to the purge_urls function which will do all the magic.
   $purge_requests = purge_urls($expire_urls);
-  // Now set the handler
-//  $handler = variable_get('purge_handler', 'purge_drupal');
-  // Issue the requests using the selected handler
-  $purge_results =  $handler($purge_requests);
-  // Check if logging is enabled
-  $log_enabled = variable_get('purge_watchdog', 0);
-  if ($log_enabled) {
-    purge_logging($purge_results);
-  }
 }

@@ -55,6 +55,8 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
   $options = array();
   // Get all basic configuration.
   // $bundle = new PurgeBundleRuntime();
+  $test_urls = array('http://mijncake/node/1', 'http://mijncake/');
+  purge_urls($test_urls);
   // $bundle->purgeables['url'] =  array('http://mijncake/node/1');
   // $bundle->process();
   // $bundle->execute();
@@ -233,7 +235,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
         '#type' => 'fieldset',
         '#title' => 'Domain Configuration',
       );
-      $form['domain']['domain_conf'] = array(
+      $form['domain']['domains'] = array(
         '#type' => 'textarea',
         '#title' => t('Domains'),
         '#description' => t('For each domain name Purge sends out a request. One domain per line.'),
@@ -247,10 +249,10 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
         '#title' => 'Header Configuration',
       );
       $headers = array();
-      foreach ($item->headers as $key => $value) {
-        $headers[] = implode(": ", array($key, $value));
+      foreach ($item->headers as $header_key => $header_value) {
+        $headers[] = implode(": ", array($header_key, $header_value));
       }
-      $form['header']['header_conf'] = array(
+      $form['header']['headers'] = array(
         '#type' => 'textarea',
         '#title' => t('Header'),
         '#description' => t('Headers are added to each request. One header per line. Format: Header: value'),
@@ -487,10 +489,13 @@ function purge_item_form_load($form, &$form_state) {
       break;
     case 'header':
       $headers = preg_split('/$\R?^/m', $form_state['values']['headers']);
+      // echo test;
+      drupal_set_message(serialize($headers));
+      $item->headers = array();
       foreach ($headers as $header) {
         $header_key = trim(strstr($header, ":", true));
-        $header_value = trim(strstr(header, ":"), " :\t");
-        $this->headers[$header_key] = $header_value;
+        $header_value = trim(strstr($header, ":"), " :\t");
+        $item->headers[$header_key] = $header_value;
       }
       break;
   }

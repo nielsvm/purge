@@ -9,33 +9,6 @@
 module_load_include('inc', 'purge', 'includes/purge');
 module_load_include('inc', 'purge', 'includes/defaults');
 
-// Then provide some extensions to bundles.
-/**
- * Object definition for the Single Bundle.
- *   This bundle will contain just a single item.
- */
-class PurgeBundleSingle extends PurgeBundleBasic {
-  // public $target = array();
-  public $single;
-
-  /**
-   * Constructor for for the Single Bundle.
-   */
-  public function __construct($item_name, $item_type) {
-    // Get the data from the given dataset.
-    $select_data = parent::select_data();
-    // dprint_r($select_data);
-    // dprint_r($select_data[$item_type][$item_name]);
-    // Then create an object out of it.
-    $item_data = $select_data[$item_type][$item_name];
-    $this->{$item_type}[$item_name] = unserialize($item_data);
-    // $this->{$item_type}['localhost'] = unserialize($item_data);
-    // parent::$item_type[$item_name] = unserialize($item_data);
-    // set the single pointer to the created item.
-    $this->single = $this->{$item_type}[$item_name];
-  }
-}
-
 /**
  * Menu callback for purge admin settings.
  */
@@ -56,7 +29,7 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
   // Get all basic configuration.
   // $bundle = new PurgeBundleRuntime();
   $test_urls = array('http://mijncake/node/1', 'http://mijncake/');
-  purge_urls($test_urls);
+  // purge_urls($test_urls);
   // $bundle->purgeables['url'] =  array('http://mijncake/node/1');
   // $bundle->process();
   // $bundle->execute();
@@ -489,13 +462,38 @@ function purge_item_form_load($form, &$form_state) {
       break;
     case 'header':
       $headers = preg_split('/$\R?^/m', $form_state['values']['headers']);
-      // echo test;
-      drupal_set_message(serialize($headers));
       $item->headers = array();
       foreach ($headers as $header) {
         $header_key = trim(strstr($header, ":", true));
         $header_value = trim(strstr($header, ":"), " :\t");
         $item->headers[$header_key] = $header_value;
+      }
+      break;
+    case 'set':
+      // Loop through all item types
+      foreach ($item->pointers as $pointer_type => $pointer) {
+        // Get the item valuea from the form
+        $items = $form_state['values'][$pointer_type . '_settings'];
+        $items_enabled = array();
+        // See if this was a single of multi field.
+        if ($form['set'][$pointer_type][$pointer_type . '_settings']['#multiple'] == 0) {
+          $item_name = $items;
+          $item->{$pointer_type}[$item_name] = $bundle->{$pointer_type}[$item_name];
+          $items_enabled = array($items);
+        }
+        else {
+          // Multiple options form
+          foreach ($items as $item_name => $item_selected) {
+            // Check each item if it's selected
+            if ($item_selected != '0') {
+              // Point to set property to the bundle object
+              $item->{$pointer_type}[$item_name] = $bundle->{$pointer_type}[$item_name];
+              $items_enabled[] = $item_name;
+            }
+          }
+        }
+        // Set the pointers
+        $item->pointers[$pointer_type] = $items_enabled;
       }
       break;
   }

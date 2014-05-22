@@ -65,7 +65,14 @@ class PurgeBundleDefault extends PurgeBundleBasic {
           'http_ban' => 'HTTP request method BAN.',
           'http_get' => 'HTTP request method GET.',
         ),
-        'default_value' => 'http_purge',
+      ),
+      'multi' => array(
+        'name' => t('Parallel'),
+        'description' => t('Issue the purge requests in parallel.'),
+      ),
+      'non_blocking' => array(
+        'name' => t('Non Blocking'),
+        'description' => t('Issue non-blocking requests. Enhances performance but disables error reporting.'),
       ),
     );
 
@@ -131,6 +138,9 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->purger['drupal_http_request']->description = t('The native http request function of Drupal.');
     $this->purger['drupal_http_request']->enabled = 1;
     $this->purger['drupal_http_request']->access = PURGE_ACCESS_ENABLE;
+    $this->purger['drupal_http_request']->options = array(
+      'method' => 'http_purge',
+    );
 
     // Curl Single Purger
     $this->purger['curl'] = new PurgeItemPurgerCurl();
@@ -139,11 +149,8 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->purger['curl']->enabled = 1;
     $this->purger['curl']->access = PURGE_ACCESS_ENABLE;
     $this->purger['curl']->options = array(
-      'multi' => array(
-        'name' => t('Parallel'),
-        'description' => t('Execute the purge requests one at a time or in parallel?'),
-        'default_value' => 1,
-      ),
+      'method' => 'http_purge',
+      'multi' => 1,
     );
 
     // HTTPrl Purger.
@@ -155,16 +162,9 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->purger['httprl']->enabled = 1;
     $this->purger['httprl']->access = PURGE_ACCESS_ENABLE;
     $this->purger['httprl']->options = array(
-      'multi' => array(
-        'name' => t('Parallel'),
-        'description' => t('Execute the purge requests one at a time or in parallel?'),
-        'default_value' => 1,
-      ),
-      'non_blocking' => array(
-        'name' => t('Non Blocking'),
-        'description' => t('Send the requests in a non-blocking way.'),
-        'default_value' => 1,
-      ),
+      'method' => 'http_purge',
+      'multi' => 1,
+      'non_blocking' => 1,
     );
 
 
@@ -179,7 +179,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
         'purgeable_url_domain' => 1,
       ),
       'purger' => array(
-        'method' => 'PURGE',
+        'method' => 'http_purge',
       ),
       'set' => array(
         'watchdog' => 1,
@@ -207,7 +207,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
         'purgeable_url_domain' => 0,
       ),
       'purger' => array(
-        'method' => 'PURGE',
+        'method' => 'http_purge',
         'multi' => 1,
       ),
       'set' => array(

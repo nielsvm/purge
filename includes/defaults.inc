@@ -5,9 +5,6 @@
  *   Provides default configuration and purgers or the Purge module.
  */
 
-// Load the purge.inc file
-// module_load_include('inc', 'purge');
-
 /**
  * Class definition for the Defaults Bundle.
  */
@@ -36,6 +33,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['domain']->options = array(
       'purgeable_url_domain' => array(
         'name' => t('Purgeable URL Domain'),
+        'context' => 'type',
         'description' => t('This wil use the domain supplies in by the purgeable url.'),
         'default_value' => 1,
       ),
@@ -59,20 +57,26 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['purger']->options = array(
       'method' => array(
         'name' => t('Purge Method'),
+        'context' => 'item',
         'description' => t('The method used to perform the purge.'),
         'values' => array(
           'http_purge' => 'HTTP request method PURGE',
           'http_ban' => 'HTTP request method BAN.',
           'http_get' => 'HTTP request method GET.',
         ),
+        'default_value' => 'http_purge',
       ),
       'multi' => array(
         'name' => t('Parallel'),
+        'context' => 'item',
         'description' => t('Issue the purge requests in parallel.'),
+        'default_value' => 1,
       ),
       'non_blocking' => array(
         'name' => t('Non Blocking'),
+        'context' => 'item',
         'description' => t('Issue non-blocking requests. Enhances performance but disables error reporting.'),
+        'default_value' => 1,
       ),
     );
 
@@ -86,6 +90,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['set']->options = array(
       'watchdog' => array(
         'name' => t('Enable Logging'),
+        'context' => 'type',
         'description' => t('Log activities to the Drupal watchdog log.'),
         'default_value' => 1,
       ),

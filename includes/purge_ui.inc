@@ -7,7 +7,7 @@
 
 // Load the purge.inc file
 module_load_include('inc', 'purge', 'includes/purge');
-module_load_include('inc', 'purge', 'includes/defaults');
+// module_load_include('inc', 'purge', 'includes/defaults');
 
 /**
  * Menu callback for purge admin settings.
@@ -286,11 +286,12 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
             // First display a form for all type specific options
             if ($options[$option_name]['context'] == 'type') {
             // If the set has a value for this option
-              if (isset($item->options[$pointer_type])) {
-                $options[$option_name]['set_value'] = $item->options[$pointer_type][$option_name];
+              if (isset($item->options[$pointer_type][$option_name])) {
+                $option['set_value'] = $item->options[$pointer_type][$option_name];
               }
               // Now generate a form for these options.
-              $form['set'][$pointer_type][$pointer_type . '_options'][$option_name] = purge_option_form($options);
+              $form['set'][$pointer_type][$pointer_type . '_options'][$item_name . '_' . $option_name] =
+                purge_option_form($option);
             }
             // Then save the item specific options
             elseif ($options[$option_name]['context'] == 'item') {
@@ -306,7 +307,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
               if (isset($bundle->{$pointer_type}[$pointer_name]->options[$item_option_name])) {
                 $this_item_options[$item_option_name] = $item_option;
                 if (isset($item->options[$pointer_type][$item_option_name])) {
-                  $item_option['set_value'] = $item->options[$pointer_type][$item_option_name];
+                  $this_item_options[$item_option_name]['set_value'] = $item->options[$pointer_type][$item_option_name];
                 }
               }
             }
@@ -321,8 +322,10 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
                 ),
               );
               // Generate an option form.
-              $form['set'][$pointer_type][$pointer_type . '_options'][$pointer_name][$pointer_name . '_settings']
-                = purge_option_form($this_item_options);
+              foreach ($this_item_options as $option_name => $option) {
+                $form['set'][$pointer_type][$pointer_type . '_options'][$pointer_name][$pointer_name . '_' . $option_name]
+                  = purge_option_form($option);
+              }
             }
           }
         }
@@ -339,6 +342,12 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
         '#title' => t('Set Options'),
         '#description' => t('These settings apply to this set only.'),
       );
+      foreach ($options as $option_name => $option) {
+        if (isset($item->options['set'][$option_name])) {
+          $option['set_value'] = $item->options['set'][$option_name];
+        }
+        $form[$item_type]['options'][$item_type . '_' . $option_name] =  purge_option_form($option);
+      }
     }
     else {
       $form[$item_type]['options'] = array(
@@ -346,9 +355,6 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
         '#title' => t('Default Options'),
         '#description' => t('These defaults can be overruled per set.'),
       );
-    }
-    foreach ($options as $option_name => $option) {
-      $form[$item_type]['options'][$option_name] =  purge_option_form($options);
     }
   }
 
@@ -411,26 +417,23 @@ function purge_item_form_submit($form, &$form_state) {
 /**
  * Form generator for option form.
  */
-function purge_option_form($options) {
-  $form = array();
-  foreach ($options as $option_name => $option) {
-    $form[$option_name] = array(
-      '#title' => $option['name'],
-      '#description' => $option['description'],
-    );
-    if (isset($option['values'])) {
-      $form[$option_name]['#type'] = 'select';
-      $form[$option_name]['#options'] = $option['values'];
-    }
-    else {
-      $form[$option_name]['#type'] = 'checkbox';
-    }
-    if (isset($option['set_value'])) {
-      $form[$option_name]['#default_value'] = $option['set_value'];
-    }
-    else {
-      $form[$option_name]['#default_value'] = $option['default_value'];
-    }
+function purge_option_form($option) {
+  $form = array(
+    '#title' => $option['name'],
+    '#description' => $option['description'],
+  );
+  if (isset($option['values'])) {
+    $form['#type'] = 'select';
+    $form['#options'] = $option['values'];
+  }
+  else {
+    $form['#type'] = 'checkbox';
+  }
+  if (isset($option['set_value'])) {
+    $form['#default_value'] = $option['set_value'];
+  }
+  else {
+    $form['#default_value'] = $option['default_value'];
   }
   return $form;
 }
@@ -519,6 +522,26 @@ function purge_item_form_load($form, &$form_state) {
         }
         // Set the pointers
         $item->pointers[$pointer_type] = $items_enabled;
+        // Set the options
+        if (isset($bundle->type[$pointer_type]->options)) {
+          foreach ($bundle->type[$pointer_type]->options as $option_name => $option) {
+            // Check if context is type
+            if ($option['context'] == 'type') {
+              $item->options[$pointer_type][$option_name] = $form_state['values'][$pointer_type . '_' . $option_name];
+            }
+            // or process as item specific options.
+            elseif ($option['context'] == 'item') {
+              $item_name = $form_state['values'][$pointer_type . '_settings'];
+              $item->options[$pointer_type][$option_name] = $form_state['values'][$item_name . '_' . $option_name];
+            }
+          }
+        }
+      }
+      // Now process the set options
+      foreach ($bundle->type['set']->options as $option_name => $option) {
+        if ($option['context'] == 'type') {
+          $item->options['set'][$option_name] = $form_state['values']['set_' . $option_name];
+        }
       }
       break;
   }

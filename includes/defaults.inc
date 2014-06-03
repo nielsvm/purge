@@ -187,7 +187,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
         'method' => 'http_purge',
       ),
       'set' => array(
-        'watchdog' => 1,
+        'watchdog' => 0,
       ),
     );
     $this->set['minimal_set']->pointers = array(
@@ -212,8 +212,8 @@ class PurgeBundleDefault extends PurgeBundleBasic {
         'purgeable_url_domain' => 0,
       ),
       'purger' => array(
-        'method' => 'http_purge',
-        'multi' => 1,
+        'method' => 'http_ban',
+        'multi' => 0,
       ),
       'set' => array(
         'watchdog' => 1

@@ -742,6 +742,36 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
   }
 }
 
+/**
+ * Class definition for the API Bundle class.
+ */
+class PurgeBundleAPI extends PurgeBundleBasic {
+  public $api = array();
+
+  /**
+   * Save function.
+   *   For API Bundles this merges the API bundle into the current
+   *   configuration.
+   */
+  public function save() {
+    // Get the currently configured bundle.
+    $bundle = new PurgeBundleBasic();
+
+    // Loop through the types.
+    foreach ($bundle->type as $type_name => $type) {
+      // Now pass each items of this API bundle.
+      foreach ($this->{$type_name} as $item_name => $item) {
+        // Overwrite the bundle
+        $bundle->{$type_name}[$item_name] = $item;
+      }
+    }
+    // Delete items no longer in the API bundle.
+    //    unset($bundle->{$type_name}[$item_name]);
+
+    // Save the bundle
+    $bundle->save();
+  }
+}
 
 /**
  * Purges urls from reverse proxy caches
@@ -755,6 +785,33 @@ function purge_urls($urls) {
   $bundle->process();
   // dprint_r($bundle->queues);
   $bundle->execute();
+}
+
+
+/**
+ * (Re)Configure.
+ *   Loads all API provided bundles.
+ */
+function purge_configure($api = NULL) {
+  // Start out by fetching the currently configured bundle.
+  $bundle = new PurgeBasicBundle();
+
+  // Invoke hook_purge_configure to get the api bundle.
+  $api_modules = module_implements('purge_configure');
+  foreach ($api_modules as $api_module) {
+    $api_bundle = module_invoke($api_module, 'purge_configure', $api);
+
+    // Loop through the types.
+    foreach ($bundle->type as $type_name => $type) {
+      // Now pass each items of this API bundle.
+      foreach ($api_bundle->{$type_name} as $item_name => $item) {
+        // Overwrite the bundle
+        $bundle->{$type_name}[$item_name] = $item;
+      }
+    }
+  }
+  // Save the bundle.
+  $bundle->save();
 }
 
 

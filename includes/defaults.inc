@@ -105,14 +105,6 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->target['drupal_url']->access = PURGE_ACCESS_ENABLE;
     $this->target['drupal_url']->urls = array();
 
-    // The localhost target
-    $this->target['localhost'] = new PurgeItemTargetStatic();
-    $this->target['localhost']->name = t('Localhost');
-    $this->target['localhost']->description = t('The default localhost ip address.');
-    $this->target['localhost']->enabled = 1;
-    $this->target['localhost']->access = PURGE_ACCESS_FULL;
-    $this->target['localhost']->urls = array('http://127.0.0.1');
-
 
     // Domain definition.
     // The domain from the Drupal Basd URL.
@@ -146,7 +138,28 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->purger['drupal_http_request']->options = array(
       'method' => 'http_purge',
     );
+  }
 
+
+  /**
+   * Save the Defaults.
+   *   Will overwrite all existing configurations!
+   */
+  public function save() {
+    parent::save();
+  }
+}
+
+/**
+ * Class definition for the Dependency Bundle.
+ *   These items have dependencies and are only offered when these are met.
+ */
+class PurgeBundleDepend extends PurgeBundleBasic {
+
+  /**
+   * Construct.
+   */
+  public function __construct() {
     // Curl Single Purger
     $this->purger['curl'] = new PurgeItemPurgerCurl();
     $this->purger['curl']->name = t('Curl');
@@ -171,14 +184,51 @@ class PurgeBundleDefault extends PurgeBundleBasic {
       'multi' => 1,
       'non_blocking' => 1,
     );
+  }
+}
 
+
+
+/**
+ * Class definition for the Example Bundle.
+ *   Provides a set of examples for various uses.
+ */
+class PurgeBundleExample extends PurgeBundleBasic {
+
+  /**
+   * Constructor.
+   */
+  public function __construct() {
+    // Targets
+    // The localhost target
+    $this->target['localhost'] = new PurgeItemTargetStatic();
+    $this->target['localhost']->name = t('Localhost');
+    $this->target['localhost']->description = t('The default localhost ip address.');
+    $this->target['localhost']->enabled = 1;
+    $this->target['localhost']->access = PURGE_ACCESS_FULL;
+    $this->target['localhost']->urls = array('http://127.0.0.1');
+
+    // Domains
+    // Get the current domain from the domain object.
+    $item_domain_drupal = new PurgeItemDomainDrupal();
+    $item_domain_drupal->get_data_cached();
+
+    $this->domain['current_domain'] = new PurgeItemDomain();
+    $this->domain['current_domain']->name = t('Current Domain');
+    $this->domain['current_domain']->description = t('Use the current domain as an example domain.');
+    $this->domain['current_domain']->enabled = 1;
+    $this->domain['current_domain']->access = PURGE_ACCESS_FULL;
+    $this->domain['current_domain']->domains = $item_domain_drupal->domains[0];
+
+    // Headers
+    // Sets
 
     // Now create the set objects
     $this->set['minimal_set'] = new PurgeItemSet();
     $this->set['minimal_set']->name = t('Minimal Set');
     $this->set['minimal_set']->description = t('Uses Drupal native methods to issue the requests.');
     $this->set['minimal_set']->enabled = 1;
-    $this->set['minimal_set']->access = PURGE_ACCESS_CLONE;
+    $this->set['minimal_set']->access = PURGE_ACCESS_FULL;
     $this->set['minimal_set']->options = array(
       'domain' => array(
         'purgeable_url_domain' => 1,
@@ -187,7 +237,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
         'method' => 'http_purge',
       ),
       'set' => array(
-        'watchdog' => 0,
+        'watchdog' => 1,
       ),
     );
     $this->set['minimal_set']->pointers = array(
@@ -206,7 +256,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->set['default_set']->name = t('Default Set');
     $this->set['default_set']->description = t('Uses Drupal native methods to issue the requests.');
     $this->set['default_set']->enabled = 1;
-    $this->set['default_set']->access = PURGE_ACCESS_CLONE;
+    $this->set['default_set']->access = PURGE_ACCESS_FULL;
     $this->set['default_set']->options = array(
       'domain' => array(
         'purgeable_url_domain' => 0,
@@ -233,14 +283,5 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->set['default_set']->header = array('gzip' => $this->header['gzip']);
     $this->set['default_set']->purger = array('curl' => $this->purger['curl']);
 
-  }
-
-  /**
-   * Save the Defaults.
-   *   Will overwrite all existing configurations!
-   *   Use reconfigure to restore the defaults but keep the other items.
-   */
-  public function save() {
-    parent::save();
   }
 }

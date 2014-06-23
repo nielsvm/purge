@@ -2,41 +2,32 @@
 
 /**
  * @file
- * Contains \Drupal\purgetest\Plugin\PurgePurger\Fastly.
+ * Contains \Drupal\purgetest\Plugin\PurgePurger\Akamai.
  */
 
 namespace Drupal\purgetest\Plugin\PurgePurger;
 
-use Guzzle\Http\Client;
 use Drupal\purge\Purger\PurgerBase;
 use Drupal\purge\Purgeable\PurgeableInterface;
 
 /**
- * A purger that purges the Fastly CDN.
+ * A purger that lets the Akamai CDN purge.
  *
  * @PurgePurger(
- *   id = "fastly",
- *   label = @Translation("Fastly"),
- *   description = @Translation("A purger that purges the Fastly CDN."),
- *   service_dependencies = {"http_default_client"}
+ *   id = "akamai",
+ *   label = @Translation("Akamai"),
+ *   description = @Translation("A purger that lets the Akamai CDN purge."),
+ *   service_dependencies = {}
  * )
  */
-class Fastly extends PurgerBase {
-  
-  /**
-   * Instantiate the fastly purger.
-   * 
-   * @param Guzzle\Http\Client $http_default_client
-   *   The default HTTP client service.
-   */
-  function __construct(Client $http_default_client) {
-  }
-  
+class Akamai extends PurgerBase {
+
   /**
    * {@inheritdoc}
    */
   public function purge(PurgeableInterface $purgeable) {
-    throw new \Exception('Not yet implemented');
+    $purgeable->setState(PurgeableInterface::STATE_PURGEFAILED);
+    return FALSE;
   }
 
   /**

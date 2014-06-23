@@ -2,31 +2,42 @@
 
 /**
  * @file
- * Contains \Drupal\purgetest\Plugin\PurgePurger\Acquia.
+ * Contains \Drupal\purgetest\Plugin\PurgePurger\Fastly.
  */
 
 namespace Drupal\purgetest\Plugin\PurgePurger;
 
+use Guzzle\Http\Client as HttpClient;
 use Drupal\purge\Purger\PurgerBase;
 use Drupal\purge\Purgeable\PurgeableInterface;
 
 /**
- * A purger that purges Acquia Cloud.
+ * A purger that purges the Fastly CDN.
  *
  * @PurgePurger(
- *   id = "acquia",
- *   label = @Translation("Acquia Purger"),
- *   description = @Translation("A purger that purges Acquia Cloud."),
- *   service_dependencies = {}
+ *   id = "fastly",
+ *   label = @Translation("Fastly"),
+ *   description = @Translation("A purger that purges the Fastly CDN."),
+ *   service_dependencies = {"http_default_client"}
  * )
  */
-class Acquia extends PurgerBase {
+class Fastly extends PurgerBase {
+
+  /**
+   * Instantiate the fastly purger.
+   *
+   * @param Guzzle\Http\Client $http_default_client
+   *   The default HTTP client service.
+   */
+  function __construct(HttpClient $http_default_client) {
+  }
 
   /**
    * {@inheritdoc}
    */
   public function purge(PurgeableInterface $purgeable) {
-    throw new \Exception('Not yet implemented');
+    $purgeable->setState(PurgeableInterface::STATE_PURGED);
+    return TRUE;
   }
 
   /**

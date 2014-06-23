@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purgetest\Plugin\PurgePurger\Akamai.
+ * Contains \Drupal\purgetest\Plugin\PurgePurger\Acquia.
  */
 
 namespace Drupal\purgetest\Plugin\PurgePurger;
@@ -11,22 +11,23 @@ use Drupal\purge\Purger\PurgerBase;
 use Drupal\purge\Purgeable\PurgeableInterface;
 
 /**
- * A purger that lets the Akamai CDN purge.
+ * A purger that purges Acquia Cloud.
  *
  * @PurgePurger(
- *   id = "akamai",
- *   label = @Translation("Akamai"),
- *   description = @Translation("A purger that lets the Akamai CDN purge."),
+ *   id = "acquia",
+ *   label = @Translation("Acquia Purger"),
+ *   description = @Translation("A purger that purges Acquia Cloud."),
  *   service_dependencies = {}
  * )
  */
-class Akamai extends PurgerBase {
+class Acquia extends PurgerBase {
 
   /**
    * {@inheritdoc}
    */
   public function purge(PurgeableInterface $purgeable) {
-    throw new \Exception('Not yet implemented');
+    $purgeable->setState(PurgeableInterface::STATE_PURGING);
+    return FALSE;
   }
 
   /**

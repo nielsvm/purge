@@ -44,29 +44,56 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
     // fieldset for each type
     $form['purge'][$type] = array(
       '#type' => 'fieldset',
-      '#title' => $type,
+      '#title' => $bundle->type[$type]->name,
     );
+    $form['purge'][$type]['description'] = array(
+      '#type' => 'item',
+      '#markup' => $bundle->type[$type]->description,
+    );
+    // Add link
+    if (in_array(PURGE_ACCESS_FULL, $bundle->type[$type]->access)) {
+      $form['purge'][$type]['add'] = array(
+        '#type' => 'item',
+        '#title' => l(t('Add @type', array('@type' => $bundle->type[$type]->name)), "admin/config/system/purge/add/{$type}"),
+      );
+    }
+
     $options = array();
     foreach ($bundle->{$type} as $item_name => $item) {
       // See what actions are available in the UI
       $actions = array();
-      if ($item->access != PURGE_ACCESS_SYSTEM) {
-        $actions[] = l(t('View'), "admin/config/system/purge/{$type}/{$item_name}");
-      }
-      if ($item->access >= PURGE_ACCESS_ENABLE) {
-        if ($item->enabled == 1) {
-          $actions[] = l(t('Disable'), "admin/config/system/purge/{$type}/{$item_name}/disable");
+      // Skip all system items.
+      if (!in_array(PURGE_ACCESS_SYSTEM, $item->access)) {
+        // Check if we'll only show an edit option.
+        if (
+          in_array(PURGE_ACCESS_FULL, $item->access) ||
+          in_array(PURGE_ACCESS_ENABLE, $item->access) ||
+          in_array(PURGE_ACCESS_RENAME, $item->access)
+        ) {
+          $actions[] = l(t('Edit'), "admin/config/system/purge/{$type}/{$item_name}/edit");
         }
-        else {
-          $actions[] = l(t('Enable'), "admin/config/system/purge/{$type}/{$item_name}/enable");
+        // else check if a view action is needed.
+        elseif (in_array(PURGE_ACCESS_VIEW, $item->access)) {
+          $actions[] = l(t('View'), "admin/config/system/purge/{$type}/{$item_name}/view");
         }
-      }
-      if ($item->access >= PURGE_ACCESS_CLONE) {
-        $actions[] = l(t('Clone'), "admin/config/system/purge/{$type}/{$item_name}/clone");
-      }
-      if ($item->access > PURGE_ACCESS_CLONE) {
-        $actions[] = l(t('Edit'), "admin/config/system/purge/{$type}/{$item_name}/edit");
-        $actions[] = l(t('Delete'), "admin/config/system/purge/{$type}/{$item_name}/delete");
+
+        // Enable/Disable actions
+        if (in_array(PURGE_ACCESS_FULL, $item->access) || in_array(PURGE_ACCESS_ENABLE, $item->access)) {
+          if ($item->enabled == 1) {
+            $actions[] = l(t('Disable'), "admin/config/system/purge/{$type}/{$item_name}/disable");
+          }
+          else {
+            $actions[] = l(t('Enable'), "admin/config/system/purge/{$type}/{$item_name}/enable");
+          }
+        }
+        // Clone
+        if (in_array(PURGE_ACCESS_FULL, $item->access) || in_array(PURGE_ACCESS_CLONE, $item->access)) {
+          $actions[] = l(t('Clone'), "admin/config/system/purge/{$type}/{$item_name}/clone");
+        }
+        // Delete action is this is user provided object 
+        if ($item->provider == 'user') {
+          $actions[] = l(t('Delete'), "admin/config/system/purge/{$type}/{$item_name}/delete");
+        }
       }
 
       // Get the current status.
@@ -91,6 +118,46 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
       '#options' => $options,
     );
   }
+  return $form;
+}
+
+/**
+ * Menu callback for the add item form.
+ */
+function purge_item_add_form($form, &$form_state, $item_type) {
+  // Load the bundle.
+  $bundle = new PurgeBundleBasic();
+  $form = array();
+
+  // First check if this itme type is allowed to be added.
+  if (!in_array(PURGE_ACCESS_FULL, $bundle->type[$item_type]->access)) {
+    drupal_set_message(t('You are not permitted to add items of type @type.', array('@type' => $bundle->type[$item_type]->name)));
+    drupal_goto('admin/config/system/purge');
+    return;
+  }
+  // The header of the selecfield.
+  $header = array(
+    'name' => t('Name'),
+    'description' => t('Description'),
+    'provider' => t('Provided by'),
+  );
+  // The options.
+  $options = array(
+    'new' => array(
+      'name' => t('New'),
+      'description' => t('Start from scratch with an empty @type.', array('@type' => $bundle->type[$item_type]->name)),
+      'provider' => t('You!'),
+    ),
+  );
+
+  $form['template_select'] = array(
+    '#type' => 'tableselect',
+    '#header' => $header,
+    '#options' => $options,
+    '#multiple' => FALSE,
+    '#default_value' => 'new',
+  );
+
   return $form;
 }
 

@@ -13,23 +13,13 @@
 
 // Config permissions.
 define('PURGE_ACCESS_SYSTEM', 0);
-define('PURGE_ACCESS_VIEW', 1);
+define('PURGE_ACCESS_LIST', 1);
 define('PURGE_ACCESS_ENABLE', 2);
-define('PURGE_ACCESS_CLONE', 3);
-define('PURGE_ACCESS_FULL', 4);
+define('PURGE_ACCESS_RENAME', 3);
+define('PURGE_ACCESS_CLONE', 4);
+define('PURGE_ACCESS_VIEW', 5);
+define('PURGE_ACCESS_FULL', 6);
 
-// API options.
-define('PURGE_API_STATIC', 0);
-define('PURGE_API_CACHED', 1);
-define('PURGE_API_BATCH', 2);
-define('PURGE_API_RUNTIME', 3);
-define('PURGE_API_CONFIG', 4);
-
-// Purger features
-define('PURGE_HANDLER_STATIC_DOMAIN', 0);
-define('PURGE_HANDLER_SINGLE', 1);
-define('PURGE_HANDLER_MULTI', 2);
-define('PURGE_HANDLER_NON_BLOCKING', 3);
 
 
 /**
@@ -107,16 +97,16 @@ abstract class PurgeItemBasic {
   public $name = '';
   public $description = '';
   public $enabled = 1;
-  public $access = PURGE_ACCESS_FULL;
+  public $access = array(PURGE_ACCESS_FULL);
+  public $provider = 'user';
   public $options;
-  public $api;
 }
 
 /**
  * Class definition for the Types object class.
  */
 class PurgeItemType extends PurgeItemBasic implements PurgeOptionable {
-  public $parentclass;
+
 }
 
 
@@ -794,8 +784,13 @@ function purge_urls($urls) {
  */
 function purge_configure($api = NULL) {
   // Start out by fetching the currently configured bundle.
-  $bundle = new PurgeBasicBundle();
+  $bundle = new PurgeBundleBasic();
 
+  // Then get the Depend bundle.
+  $depend_bundle = new PurgeBundleDepend();
+  $depend_bundle->save();
+
+  $modifed_bundle = new PurgeBundleBasic();
   // Invoke hook_purge_configure to get the api bundle.
   $api_modules = module_implements('purge_configure');
   foreach ($api_modules as $api_module) {

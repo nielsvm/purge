@@ -15,10 +15,15 @@ module_load_include('inc', 'purge', 'includes/defaults');
  * Implements hook_install().
  */
 function purge_install() {
-  //Add the system and template proxy configurations
+  // Add the default  configurations
   $bundle = new PurgeBundleDefault();
-  // Save the bundle.
   $bundle->save();
+
+  $depend_bundle =  new PurgeBundleDepend();
+  $depend_bundle->save();
+  // Reconfigure to load Depend and API bundles.
+  purge_configure();
+
 }
 
 /**

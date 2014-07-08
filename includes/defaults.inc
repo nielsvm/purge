@@ -219,7 +219,8 @@ class PurgeBundleExample extends PurgeBundleBasic {
     $this->target['localhost']->name = t('Localhost');
     $this->target['localhost']->description = t('The default localhost ip address.');
     $this->target['localhost']->enabled = 1;
-    $this->target['localhost']->access = PURGE_ACCESS_FULL;
+    $this->target['localhost']->access = array(PURGE_ACCESS_FULL);
+    $this->target['localhost']->provider = 'purge_example';
     $this->target['localhost']->urls = array('http://127.0.0.1');
 
     // Domains
@@ -227,11 +228,12 @@ class PurgeBundleExample extends PurgeBundleBasic {
     $item_domain_drupal = new PurgeItemDomainDrupal();
     $item_domain_drupal->get_data_cached();
 
-    $this->domain['current_domain'] = new PurgeItemDomain();
+    $this->domain['current_domain'] = new PurgeItemDomainStatic();
     $this->domain['current_domain']->name = t('Current Domain');
     $this->domain['current_domain']->description = t('Use the current domain as an example domain.');
     $this->domain['current_domain']->enabled = 1;
-    $this->domain['current_domain']->access = PURGE_ACCESS_FULL;
+    $this->domain['current_domain']->access = array(PURGE_ACCESS_FULL);
+    $this->domain['current_domain']->provider = 'purge_example';
     $this->domain['current_domain']->domains = $item_domain_drupal->domains[0];
 
     // Headers
@@ -242,7 +244,8 @@ class PurgeBundleExample extends PurgeBundleBasic {
     $this->set['minimal_set']->name = t('Minimal Set');
     $this->set['minimal_set']->description = t('Uses Drupal native methods to issue the requests.');
     $this->set['minimal_set']->enabled = 1;
-    $this->set['minimal_set']->access = PURGE_ACCESS_FULL;
+    $this->set['minimal_set']->access = array(PURGE_ACCESS_FULL);
+    $this->set['minimal_set']->provider = 'purge_example';
     $this->set['minimal_set']->options = array(
       'domain' => array(
         'purgeable_url_domain' => 1,
@@ -270,7 +273,8 @@ class PurgeBundleExample extends PurgeBundleBasic {
     $this->set['default_set']->name = t('Default Set');
     $this->set['default_set']->description = t('Uses Drupal native methods to issue the requests.');
     $this->set['default_set']->enabled = 1;
-    $this->set['default_set']->access = PURGE_ACCESS_FULL;
+    $this->set['default_set']->access = array(PURGE_ACCESS_FULL);
+    $this->set['default_set']->provider = 'purge_example';
     $this->set['default_set']->options = array(
       'domain' => array(
         'purgeable_url_domain' => 0,

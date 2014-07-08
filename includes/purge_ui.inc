@@ -127,7 +127,15 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
 function purge_item_add_form($form, &$form_state, $item_type) {
   // Load the bundle.
   $bundle = new PurgeBundleBasic();
+  // And load the example bundle.
+  module_load_include('inc', 'purge', 'includes/defaults');
+  $example_bundle = new PurgeBundleExample();
   $form = array();
+  // Hidden field with item_type information for later processing.
+  $form['item_type'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $item_type,
+  );
 
   // First check if this itme type is allowed to be added.
   if (!in_array(PURGE_ACCESS_FULL, $bundle->type[$item_type]->access)) {
@@ -141,7 +149,9 @@ function purge_item_add_form($form, &$form_state, $item_type) {
     'description' => t('Description'),
     'provider' => t('Provided by'),
   );
+
   // The options.
+  // First the option to create a new item.
   $options = array(
     'new' => array(
       'name' => t('New'),
@@ -149,6 +159,14 @@ function purge_item_add_form($form, &$form_state, $item_type) {
       'provider' => t('You!'),
     ),
   );
+  // Now include all built in examples.
+  foreach ($example_bundle->{$item_type} as $item_name => $item) {
+    $options[$item_name] = array(
+      'name' => $item->name,
+      'description' => $item->description,
+      'provider' => t('Purge Examples'),
+    );
+  }
 
   $form['template_select'] = array(
     '#type' => 'tableselect',
@@ -157,9 +175,24 @@ function purge_item_add_form($form, &$form_state, $item_type) {
     '#multiple' => FALSE,
     '#default_value' => 'new',
   );
+  // Submit
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Select'),
+  );
 
   return $form;
 }
+
+/**
+  *  * Callback for the select button on the template form.
+  *   */
+function purge_item_add_form_submit($form, &$form_state) {
+  if ($form_state['values']['template_select'] == 'new') {
+    $form_state['redirect'] = 'admin/config/system/purge/' . $form_state['values']['item_type'] . '/new/add';
+  }
+}
+
 
 /**
  * Menu callback for purge item settins.

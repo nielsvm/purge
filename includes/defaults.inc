@@ -263,10 +263,10 @@ class PurgeBundleExample extends PurgeBundleBasic {
       'header' => array('gzip'),
       'purger' => array('drupal_http_request'),
     );
-    $this->set['minimal_set']->target = array('drupal_url' => $this->target['drupal_url']);
-    $this->set['minimal_set']->domain = array('drupal_domain' => $this->domain['drupal_domain']);
-    $this->set['minimal_set']->header = array('gzip' => $this->header['gzip']);
-    $this->set['minimal_set']->purger = array('drupal_http_request' => $this->purger['drupal_http_request']);
+    // $this->set['minimal_set']->target = array('drupal_url' => $this->target['drupal_url']);
+    // $this->set['minimal_set']->domain = array('drupal_domain' => $this->domain['drupal_domain']);
+    // $this->set['minimal_set']->header = array('gzip' => $this->header['gzip']);
+    // $this->set['minimal_set']->purger = array('drupal_http_request' => $this->purger['drupal_http_request']);
 
     // Now create the set objects
     $this->set['default_set'] = new PurgeItemSet();
@@ -293,13 +293,13 @@ class PurgeBundleExample extends PurgeBundleBasic {
       'header' => array('gzip'),
       'purger' => array('curl'),
     );
-    $this->set['default_set']->target = array(
-      'drupal_url' => $this->target['drupal_url'],
-      'localhost' => $this->target['localhost'],
-    );
-    $this->set['default_set']->domain = array('drupal_domain' => $this->domain['drupal_domain']);
-    $this->set['default_set']->header = array('gzip' => $this->header['gzip']);
-    $this->set['default_set']->purger = array('curl' => $this->purger['curl']);
+    // $this->set['default_set']->target = array(
+    //  'drupal_url' => $this->target['drupal_url'],
+    //  'localhost' => $this->target['localhost'],
+    // );
+    // $this->set['default_set']->domain = array('drupal_domain' => $this->domain['drupal_domain']);
+    // $this->set['default_set']->header = array('gzip' => $this->header['gzip']);
+    // $this->set['default_set']->purger = array('curl' => $this->purger['curl']);
 
   }
 }

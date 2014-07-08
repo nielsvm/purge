@@ -188,8 +188,16 @@ function purge_item_add_form($form, &$form_state, $item_type) {
   *  * Callback for the select button on the template form.
   *   */
 function purge_item_add_form_submit($form, &$form_state) {
-  if ($form_state['values']['template_select'] == 'new') {
-    $form_state['redirect'] = 'admin/config/system/purge/' . $form_state['values']['item_type'] . '/new/add';
+  if (isset($form_state['values']['template_select'])) {
+    // New item selected.
+    if ($form_state['values']['template_select'] == 'new') {
+      $form_state['redirect'] = 'admin/config/system/purge/' . $form_state['values']['item_type'] . '/new/add';
+    }
+    // Example selected.
+    else {
+      $form_state['redirect'] = 'admin/config/system/purge/' . $form_state['values']['item_type'] .
+        '/' . $form_state['values']['template_select'] . '/example';
+    }
   }
 }
 
@@ -223,6 +231,30 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
     $item->name = '';
     $item->description = '';
   }
+  elseif ($action == 'example') {
+    // Get the example bundle
+    module_load_include('inc', 'purge', 'includes/defaults');
+    $examples = new PurgeBundleExample();
+    $item = clone $examples->{$item_type}[$item_name];
+    // Set pointers for sets.
+    if ($item_type == 'set') {
+      foreach ($item->pointers as $pointer_type => $pointers) {
+        foreach ($pointers as $pointer_name) {
+          // Check if the bundle has the item.
+          if (!isset($bundle->{$pointer_type}[$pointer_name])) {
+            // Check look for it in the exampele bundle.
+            if (isset($example->{$pointer_type}[$pointer_name])) {
+              // add it to the bundle.
+              $bundle->{$pointer_type}[$pointer_name] = clone $example{$pointer_type}[$pointer_name];
+            }
+          }
+          // Link the item to the bundle object.
+          $item->{$pointer_type}[$pointer_name] = $bundle->{$pointer_type}[$pointer_name];
+        }
+      }
+    }
+  }
+
   else {
     $item = $bundle->{$item_type}[$item_name];
   }
@@ -552,7 +584,7 @@ function purge_item_form_load($form, &$form_state) {
   // See what action is to be taken.
   $item_name = $form_state['values']['machine_name'];
   $item_type = $form_state['values']['item_type'];
-  if ($item_action == 'add' || $item_action == 'clone') {
+  if ($item_action == 'add' || $item_action == 'clone' || $item_action == 'example') {
     switch ($item_type) {
       case 'target':
         $bundle->target[$item_name] = new PurgeItemTargetStatic();

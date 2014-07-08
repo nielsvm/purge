@@ -35,7 +35,7 @@ function purge_menu() {
     'file'              => 'includes/purge_ui.inc',
   );
   $items['admin/config/system/purge/%'] = array(
-    'title'             => 'Configuration items of type',
+    'title'             => 'Configuration Items',
     'type'              => MENU_NORMAL_ITEM,
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('purge_configuration_form', 4),

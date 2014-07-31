@@ -47,6 +47,14 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['header']->access = array(PURGE_ACCESS_FULL);
     $this->type['header']->provider = 'purge_default';
 
+    $this->type['queue'] = new PurgeItemType();
+    $this->type['queue']->name = t('Queue');
+    $this->type['queue']->description = t('Queue Purge requests to handle large numbers of purges.');
+    $this->type['queue']->enabled = 0;
+    $this->type['queue']->access = array(PURGE_ACCESS_LIST,PURGE_ACCESS_ENABLE);
+    $this->type['queue']->provider = 'purge_default';
+    // $this->type['queue']->options = array(
+
     // Handler type definition.
     $this->type['handler'] = new PurgeItemType();
     $this->type['handler']->name = t('Handler');
@@ -130,6 +138,15 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->header['gzip']->provider = 'purge_default';
     $this->header['gzip']->headers = array('Accept-Encoding' => 'gzip');
 
+
+    // Queue definitions
+    // The Fake Queue.
+    $this->queue['fake'] = new PurgeItemQueueFake();
+    $this->queue['fake']->name = t('No Queue');
+    $this->queue['fake']->description = t('Do not queue the purges but process them right away.');
+    $this->queue['fake']->enabled = 1;
+    $this->queue['fake']->access = array(PURGE_ACCESS_LIST,PURGE_ACCESS_ENABLE);
+    $this->queue['fake']->provider = 'purge_default';
 
     // Handler definitions.
     // Drupal http request.
@@ -261,6 +278,7 @@ class PurgeBundleExample extends PurgeBundleBasic {
       'target' => array('drupal_url'),
       'domain' => array('drupal_domain'),
       'header' => array('gzip'),
+      'queue' => array('fake'),
       'handler' => array('drupal_http_request'),
     );
 
@@ -286,6 +304,7 @@ class PurgeBundleExample extends PurgeBundleBasic {
       'target' => array('drupal_url', 'localhost'),
       'domain' => array('drupal_domain'),
       'header' => array('gzip'),
+      'queue' => array('fake'),
       'handler' => array('curl'),
     );
   }

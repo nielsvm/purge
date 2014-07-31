@@ -90,7 +90,7 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
         if (in_array(PURGE_ACCESS_FULL, $item->access) || in_array(PURGE_ACCESS_CLONE, $item->access)) {
           $actions[] = l(t('Clone'), "admin/config/system/purge/{$type}/{$item_name}/clone");
         }
-        // Delete action is this is user provided object 
+        // Delete action is this is user provided object.
         if ($item->provider == 'user') {
           $actions[] = l(t('Delete'), "admin/config/system/purge/{$type}/{$item_name}/delete");
         }
@@ -370,7 +370,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
         $rows = array();
         $default_value = array();
         $multiple = true;
-        if ($pointer_type == 'handler' || $pointer_type == 'option') {
+        if ($pointer_type == 'handler' || $pointer_type == 'queue') {
           $multiple = false;
         }
         foreach ($bundle->{$pointer_type} as $pointer_name => $pointer) {

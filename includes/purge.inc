@@ -188,6 +188,30 @@ class PurgeItemHeaderStatic extends PurgeItemHeader {
 
 }
 
+
+/**
+ * Class definition for Queues.
+ */
+abstract class PurgeItemQueue extends PurgeItemBasic {
+
+}
+
+/**
+ * Class definition for the Fake Queue.
+ *   This will issue all requests in the current process.
+ */
+class PurgeItemQueueFake extends PurgeItemQueue {
+  public $queue = array();
+
+  /**
+   * Dummy function.
+   */
+  public function process() {
+    // Since the we'll need a full bundle we'll rely on a fallback in the
+    // runtime bundle.
+  }
+}
+
 /**
  * Class definition for Handlers.
  */
@@ -364,11 +388,13 @@ class PurgeItemPurgerBasicUrl extends PurgeItemPurger implements PurgeProcessabl
     'target' => array(),
     'domain' => array(),
     'header' => array(),
+    'queue' => array(),
     'handler' => array(),
   );
   public $target = array();
   public $domain = array();
   public $header = array();
+  public $queue = array();
   public $handler = array();
 
   /**
@@ -451,18 +477,19 @@ class PurgeItemPurgerBasicUrl extends PurgeItemPurger implements PurgeProcessabl
       }
 
     }
+    // Get the hanlder and its options.
     $handler = $this->pointers['handler'][0];
     $handler_options = array();
     $handler_options = $this->options['handler'];
-    // Check if the purger has handler options set.
 
     $queue_item = array (
-      'queue' => 'no_queue',
       'handler' => $handler,
       'handler_options' => $handler_options,
       'purges' => $purges,
     );
-    return $queue_item;
+    $queue_name = $this->pointers['queue'][0];
+    $this->queue[$queue_name]->queue[] = $queue_item;
+    // return $queue_item;
   }
 }
 
@@ -475,6 +502,7 @@ Class PurgeBundleBasic {
   public $target = array();
   public $domain = array();
   public $header = array();
+  public $queue = array();
   public $handler = array();
 
   /**
@@ -491,7 +519,7 @@ Class PurgeBundleBasic {
         $this->{$type_name}[$item_name] = unserialize($item_data);
       }
     }
-    // Purgerss need special handling
+    // Purgers need special handling
     foreach ($this->purger as $purger_name => $purger) {
       // Each type name that is a pointer.
       foreach ($purger->pointers as $pointer_type => $item_names ) {
@@ -546,7 +574,6 @@ Class PurgeBundleBasic {
       }
 
     }
-    // dprint_r($errors);
     return $errors;
   }
 
@@ -577,7 +604,6 @@ Class PurgeBundleBasic {
  */
 class PurgeBundleRuntime extends PurgeBundleBasic {
   public $purgeables;
-  public $queues;
 
   /**
    * Constructor for the Configuration bundle.
@@ -652,7 +678,8 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
       foreach ($purgeables as $purgeable) {
         // Pass all purgers.
         foreach ($this->purger as $purger_name => $purger) {
-          $this->queues[] = $this->purger[$purger_name]->process($purgeable_type_name, $purgeable);
+          // Process the Purgeable.
+          $this->purger[$purger_name]->process($purgeable_type_name, $purgeable);
         }
       }
     }
@@ -664,10 +691,10 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
    */
   public function execute() {
   // Pass each of the queues.
-    foreach ($this->queues as $queue) {
-      $handler_name = $queue['handler'];
+    foreach ($this->queue as $queue_name => $queue) {
+      $handler_name = $queue_item['handler'];
       // Execute the queue.
-      $this->handler[$handler_name]->execute($queue['purges'], $queue['handler_options']);
+      $this->handler[$handler_name]->execute($queue_item['purges'], $queue['handler_options']);
     }
   }
 }
@@ -706,7 +733,7 @@ class PurgeBundleAPI extends PurgeBundleBasic {
 /**
  * Purges urls from reverse proxy caches
  *
- * @param $purge_urls
+ * @param $urls
  *   Array of urls to remove from the proxy cache using the http purge method.
  */
 function purge_urls($urls) {

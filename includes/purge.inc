@@ -23,33 +23,10 @@ define('PURGE_ACCESS_FULL', 6);
 
 
 /**
- * Interface definitions for Setable items.
- *   These items can be include in a set.
- */
-interface PurgeSetable {
-
-}
-
-/**
- * Interface definition for Optionable items.
- */
-interface PurgeOptionable {
-
-}
-
-/**
  * Interface definition for Validateable items.
  */
 interface PurgeValidateable {
   function validate();
-}
-
-/**
- * Interface definition for static items.
- *   Items imlementing this contain just static data.
- */
-interface PurgeStaticable {
-
 }
 
 /**
@@ -61,31 +38,23 @@ interface PurgeCacheable {
 }
 
 /**
- * Interface definition for processable items.
- *   These items will have their data fetched for each purgeable.
- */
-interface PurgeProcessable {
-  function process($purgeable_type, $purgealbe);
-}
-
-/**
  * Interface definition for item that can process Purgeable urls.
  */
-interface PurgeProcessableUrl extends PurgeProcessable {
+interface PurgeProcessableUrl {
   function process_url($purgeable_url);
 }
 
 /**
  * Interface definition for item that can process Purgeable domains.
  */
-interface PurgeProcessableDomain extends PurgeProcessable {
+interface PurgeProcessableDomain {
   function process_domain($purgeable_domain);
 }
 
 /**
  * Interface definition for item that can process Purgeable Tags.
  */
-interface PurgeProcessableTag extends PurgeProcessable {
+interface PurgeProcessableTag {
   function process_tag($purgeable_tag);
 }
 
@@ -105,7 +74,7 @@ abstract class PurgeItemBasic {
 /**
  * Class definition for the Types object class.
  */
-class PurgeItemType extends PurgeItemBasic implements PurgeOptionable {
+class PurgeItemType extends PurgeItemBasic {
 
 }
 
@@ -220,31 +189,31 @@ class PurgeItemHeaderStatic extends PurgeItemHeader {
 }
 
 /**
- * Class definition for Purge Purger.
+ * Class definition for Handlers.
  */
-abstract class PurgeItemPurger extends PurgeItemBasic implements PurgeOptionable {
+abstract class PurgeItemHandler extends PurgeItemBasic {
 
 }
 
 /**
- * Class definition for the Drupal HTTP request Purger.
+ * Class definition for the Drupal HTTP request handler.
  */
-class PurgeItemPurgerDrupal extends PurgeItemPurger {
+class PurgeItemHandlerDrupal extends PurgeItemHandler {
 
   /**
    * Function to execute items from a queue.
    *
    * @param array $purges
    *
-   * @param array $purger_options
+   * @param array $handler_options
    *
    * @return array $purges
    */
-  public function execute($purges, $purger_options) {
+  public function execute($purges, $handler_options) {
     foreach ($purges as $purge_id => $purge) {
       $options = array(
         'headers' => $purge['headers'],
-        'method' => $purger_options['method'],
+        'method' => $handler_options['method'],
       );
       $results = drupal_http_request($purge['purge_url'],$options);
       $purges[$purge_id]['http_code'] = 200; // $results['code'];
@@ -256,23 +225,23 @@ class PurgeItemPurgerDrupal extends PurgeItemPurger {
 /**
  * Class definition for the Curl HTTP request library.
  */
-class PurgeItemPurgerCurl extends PurgeItemPurger {
+class PurgeItemHandlerCurl extends PurgeItemHandler {
 
   /**
-   * Funtion will determin what options are set and call the right execute
+   * Funtion will determine what options are set and call the right execute
    * function.
    */
-  public function execute($purges, $purger_options) {
-    if ($purger_options['multi']) {
-      //if ($purger_options['legacy']) {
-      //  $purges = $this->execute_legacy($purges, $purger_options);
+  public function execute($purges, $handler_options) {
+    if ($handler_options['multi']) {
+      //if ($handler_options['legacy']) {
+      //  $purges = $this->execute_legacy($purges, $handler_options);
       //}
       //else {
-        $purges = $this->execute_multi($purges, $purger_options);
+        $purges = $this->execute_multi($purges, $handler_options);
       // }
     }
     else {
-      $purges = $this->execute_single($purges, $purger_options);
+      $purges = $this->execute_single($purges, $handler_options);
     }
     return $purges;
   }
@@ -280,9 +249,9 @@ class PurgeItemPurgerCurl extends PurgeItemPurger {
   /**
    * Function to procerss a single purge with curl.
    */
-  private function execute_single($purges, $purger_options) {
+  private function execute_single($purges, $handler_options) {
     foreach ($purges as $purge_id => $purge) {
-      $curl_request = $this->get_curl_request($purge, $purger_options);
+      $curl_request = $this->get_curl_request($purge, $handler_options);
       // Execute the request
       curl_exec($curl_request);
       // Get http status code.
@@ -295,10 +264,10 @@ class PurgeItemPurgerCurl extends PurgeItemPurger {
   /**
    * Function to process multiple purges with curl.
    */
-  private function execute_multi($purges, $purger_options) {
+  private function execute_multi($purges, $handler_options) {
     $curl_purges = curl_multi_init();
     foreach ($purges as $purge_id => $purge) {
-      $curl_requests[$purge_id] = $this->get_curl_request($purge, $purger_options);
+      $curl_requests[$purge_id] = $this->get_curl_request($purge, $handler_options);
       curl_multi_add_handle($curl_purges, $curl_requests[$purge_id]);
     }
     // Execute the purge requests
@@ -338,13 +307,13 @@ class PurgeItemPurgerCurl extends PurgeItemPurger {
   /**
    * Function to construct a curl request object.
    */
-  private function get_curl_request($purge, $purger_options) {
+  private function get_curl_request($purge, $handler_options) {
     $headers = array();
     foreach ($purge['headers'] as $header_key => $header_value) {
       $headers[] = $header_key . ": " . $header_value;
     }
     $curl_request = curl_init();
-    curl_setopt($curl_request, CURLOPT_CUSTOMREQUEST, $purger_options['method']);
+    curl_setopt($curl_request, CURLOPT_CUSTOMREQUEST, $handler_options['method']);
     curl_setopt($curl_request, CURLOPT_URL, $purge['purge_url']);
     curl_setopt($curl_request, CURLOPT_HEADER, 1);
     curl_setopt($curl_request, CURLOPT_HTTPHEADER, $purge['headers']);
@@ -356,16 +325,16 @@ class PurgeItemPurgerCurl extends PurgeItemPurger {
 }
 
 /**
- * Class definition for HTTPrl purger.
+ * Class definition for HTTPrl handler.
  */
-class PurgeItemPurgerHttprl extends PurgeItemPurger {
+class PurgeItemHandlerHttprl extends PurgeItemHandler {
 
-  public function execute($purges, $purger_options) {
+  public function execute($purges, $handler_options) {
     foreach ($purges as $purge_id => $purge) {
       $headers_array = headers2array($purge['headers']);
       // Gather options
       $options = array(
-        'method' => $purger_options['method'],
+        'method' => $handler_options['method'],
         'blocking' => FALSE,
         'headers' => $purge['headers'],
       );
@@ -380,31 +349,36 @@ class PurgeItemPurgerHttprl extends PurgeItemPurger {
   }
 }
 
+/**
+ * Class definition for Purgers.
+ */
+abstract class PurgeItemPurger extends PurgeItemBasic {
 
+}
 
 /**
- * Class definition for Purge Configuration Sets.
+ * Class definition for the Basic Url Purger.
  */
-class PurgeItemSet extends PurgeItemBasic implements PurgeOptionable, PurgeProcessable{
+class PurgeItemPurgerBasicUrl extends PurgeItemPurger implements PurgeProcessableUrl {
   public $pointers = array(
     'target' => array(),
     'domain' => array(),
     'header' => array(),
-    'purger' => array(),
+    'handler' => array(),
   );
   public $target = array();
   public $domain = array();
   public $header = array();
-  public $purger = array();
+  public $handler = array();
 
   /**
-   * Serialize the Set data and replace pointers with a string.
+   * Serialize the Purger data and replace pointers with a string.
    */
   public function __sleep() {
     // Iterate through all pointers objects and replace with names
     $this->get_pointers();
 
-    return array('name', 'description', 'enabled', 'access', 'options', 'api', 'pointers');
+    return array('name', 'description', 'enabled', 'access', 'options', 'provider', 'pointers');
   }
 
   /**
@@ -422,22 +396,19 @@ class PurgeItemSet extends PurgeItemBasic implements PurgeOptionable, PurgeProce
   /**
    * Process purgeables.
    *
-   * @param string $purgeable_type
-   * @param array $purgeable
+   * @param array $purgeablea_url
    *
    * @return array $queue_item
    */
-  public function process($purgeable_type, $purgeable) {
+  public function process_url($purgeable_url) {
     $purges = array();
     // First set all processable items with the purgeable data.
     // echo $purgeable_type;
-    if ($purgeable_type == 'urls') {
-      foreach ($this->pointers as $pointer_type => $pointers) {
-        foreach ($pointers as $pointer_name) {
-          if ($pointer_type != 'purger') {
-            if ($this->{$pointer_type}[$pointer_name] instanceof PurgeProcessableUrl) {
-              $this->{$pointer_type}[$pointer_name]->process_url($purgeable);
-            }
+    foreach ($this->pointers as $pointer_type => $pointers) {
+      foreach ($pointers as $pointer_name) {
+        if ($pointer_type != 'handler') {
+          if ($this->{$pointer_type}[$pointer_name] instanceof PurgeProcessableUrl) {
+            $this->{$pointer_type}[$pointer_name]->process_url($purgeable_url);
           }
         }
       }
@@ -458,7 +429,6 @@ class PurgeItemSet extends PurgeItemBasic implements PurgeOptionable, PurgeProce
       if ($this->options['domain']['purgeable_url_domain']) {
         $domains[] = parse_url($purgeable, PHP_URL_HOST);
       }
-      // dprint_r($domains);
       // Gather headers.
       $headers = array();
       foreach ($this->header as $header_name => $header) {
@@ -481,17 +451,15 @@ class PurgeItemSet extends PurgeItemBasic implements PurgeOptionable, PurgeProce
       }
 
     }
-    $purger = $this->pointers['purger'][0];
-    $purger_options = array();
-    $purger_options = $this->options['purger'];
-    // $purger_options = $this->options['purger'];
-    // dprint_r($this->options);
-    // Check if the set has purger options set.
+    $handler = $this->pointers['handler'][0];
+    $handler_options = array();
+    $handler_options = $this->options['handler'];
+    // Check if the purger has handler options set.
 
     $queue_item = array (
       'queue' => 'no_queue',
-      'purger' => $purger,
-      'purger_options' => $purger_options,
+      'handler' => $handler,
+      'handler_options' => $handler_options,
       'purges' => $purges,
     );
     return $queue_item;
@@ -503,11 +471,11 @@ class PurgeItemSet extends PurgeItemBasic implements PurgeOptionable, PurgeProce
  */
 Class PurgeBundleBasic {
   public $type = array();
-  public $set = array();
+  public $purger = array();
   public $target = array();
   public $domain = array();
   public $header = array();
-  public $purger = array();
+  public $handler = array();
 
   /**
    * Constructor for the basic bundle.
@@ -523,33 +491,11 @@ Class PurgeBundleBasic {
         $this->{$type_name}[$item_name] = unserialize($item_data);
       }
     }
-    // Sets need special handling
-    // $pointer_types = array('target', 'domain', 'header', 'purger', 'option');
-    // Each Set
-    foreach ($this->set as $set_name => $set) {
-      // Set options
-      // First set the purger options.
-      foreach ($this->type as $type_name => $type) {
-        // dprint_r($type);
-    //    if (isset($type->options)) {
-     //     if (!isset($this->set[$set_name]->options[$type_name])) {
-      //      $this->set[$set_name]->options[$type_name] = $type->options['default_value'];
-       //   }
-       // }
-      }
+    // Purgerss need special handling
+    foreach ($this->purger as $purger_name => $purger) {
       // Each type name that is a pointer.
-      foreach ($set->pointers as $pointer_type => $item_names ) {
-        $this->set[$set_name]->{$pointer_type} = array();
-        foreach ($item_names as $item_name) {
-          // Each item name now only referenced by name
-          foreach ($item_names as $item_name) {
-            // Link back to the object in the bundle
-         //  dprint_r($this->{$pointer_type}[$item_name]);
-         //  $this->set[$set_name]->{$pointer_type}[$item_name] = $this->{$type_name}[$item_name];
-            // Populate the set options with the type and item options.
-          //  $this->set[$set_name]->options[$pointer_type] = $this->type[$pointer_type]->options;
-          }
-        }
+      foreach ($purger->pointers as $pointer_type => $item_names ) {
+        $this->purger[$purger_name]->{$pointer_type} = array();
       }
     }
   }
@@ -648,15 +594,15 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
     $runtime_data['type'] = $all_data['type'];
 
     // For loop through the set_data and collect active items.
-    $data['set'] = array();
-    foreach ($all_data['set'] as $set_name => $set_data) {
-      // check if the set is enabled.
-      if (strpos($set_data, "s:7:\"enabled\";i:1")) {
-        $data['set'][$set_name] = $set_data;
-        // Create the set object.
-        $this->set[$set_name] = unserialize($set_data);
+    $data['purger'] = array();
+    foreach ($all_data['purger'] as $purger_name => $purger_data) {
+      // check if the purger is enabled.
+      if (strpos($purger_data, "s:7:\"enabled\";i:1")) {
+        $data['purger'][$purger_name] = $purger_data;
+        // Create the purger object.
+        $this->purger[$purger_name] = unserialize($purger_data);
         // Now loop through the pointers
-        foreach ($this->set[$set_name]->pointers as $pointer_type => $item_names) {
+        foreach ($this->purger[$purger_name]->pointers as $pointer_type => $item_names) {
           foreach ($item_names as $item_name) {
             $item_data = $all_data[$pointer_type][$item_name];
             // Check in the data if the item is enabled.
@@ -664,7 +610,7 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
               // Check if the item object isn't allready there.
               if (isset($this->{$pointer_type}[$item_name])) {
                 // If so just link the pointer to it.
-                $this->set[$set_name]->{$pointer_type}[$item_name] = $this->{$pointer_type}[$item_name];
+                $this->purger[$purger_name]->{$pointer_type}[$item_name] = $this->{$pointer_type}[$item_name];
               }
               else {
                 // Create the object from data
@@ -674,17 +620,13 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
                   $this->{$pointer_type}[$item_name]->get_data_cached();
                 }
                 // And link the pointer
-                $this->set[$set_name]->{$pointer_type}[$item_name] = $this->{$pointer_type}[$item_name];
+                $this->purger[$purger_name]->{$pointer_type}[$item_name] = $this->{$pointer_type}[$item_name];
                 // And keep the item data
                 $data[$pointer_type][$item_name] = $item_data;
 
               }
             }
           }
-          // Set the type options.
-          // if (isset($this->type[$pointer_type]->options)) {
-          //  $this->set[$set_name]->options[$pointer_type] = $this->type[$pointer_type]->options;
-          // }
         }
       }
     }
@@ -706,13 +648,11 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
    */
   public function process() {
     // Walk the purgeables.
-    // print_r($this->purgeables);
     foreach ($this->purgeables as $purgeable_type_name => $purgeables) {
       foreach ($purgeables as $purgeable) {
-        // Pass all sets.
-        foreach ($this->set as $set_name => $set) {
-          // print_r($purgeable_type_name);
-          $this->queues[] = $this->set[$set_name]->process($purgeable_type_name, $purgeable);
+        // Pass all purgers.
+        foreach ($this->purger as $purger_name => $purger) {
+          $this->queues[] = $this->purger[$purger_name]->process($purgeable_type_name, $purgeable);
         }
       }
     }
@@ -725,9 +665,9 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
   public function execute() {
   // Pass each of the queues.
     foreach ($this->queues as $queue) {
-      $purger_name = $queue['purger'];
+      $handler_name = $queue['handler'];
       // Execute the queue.
-      $this->purger[$purger_name]->execute($queue['purges'], $queue['purger_options']);
+      $this->handler[$handler_name]->execute($queue['purges'], $queue['handler_options']);
     }
   }
 }

@@ -35,9 +35,9 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
   // Else set to all available types
   else {
     $types = array_keys($bundle->type);
-    // Make sure sets are displayed first.
-    $types = array_diff($types, array('set'));
-    array_unshift($types, 'set');
+    // Make sure purgers are displayed first.
+    $types = array_diff($types, array('purger'));
+    array_unshift($types, 'purger');
   }
   // Loop through all types.
   foreach ($types as $type) {
@@ -220,8 +220,8 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
       case 'header':
         $item = new PurgeItemHeaderStatic();
         break;
-      case 'set':
-        $item = new PurgeItemSet();
+      case 'purger':
+        $item = new PurgeItemPurgerBasicUrl();
         break;
     }
     $item_name = '';
@@ -236,8 +236,8 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
     module_load_include('inc', 'purge', 'includes/defaults');
     $examples = new PurgeBundleExample();
     $item = clone $examples->{$item_type}[$item_name];
-    // Set pointers for sets.
-    if ($item_type == 'set') {
+    // Set pointers for purgers.
+    if ($item_type == 'purger') {
       foreach ($item->pointers as $pointer_type => $pointers) {
         foreach ($pointers as $pointer_name) {
           // Check if the bundle has the item.
@@ -307,7 +307,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
   $form['purge_item']['enabled'] = array(
     '#type' => 'checkbox',
     '#title' => t('Enabled'),
-    '#description' => t('Disabled items will ignored during operations, even when included in sets.'),
+    '#description' => t('Disabled items will ignored during operations, even when included in purgers.'),
     '#default_value' => $item->enabled,
   );
   // Now switch between the item_types to generate their respecitve forms.
@@ -356,22 +356,21 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
         '#default_value' => implode("\n", $headers),
       );
     break;
-    case 'set':
-      $form['set'] = array(
+    case 'purger':
+      $form['purger'] = array(
         '#type' => 'fieldset',
-        '#title' => 'Set configuration',
+        '#title' => 'Purger configuration',
       );
       // Generate the set
       $table_header = array(
         'name' => t('Name'),
         'description' => t('Description'),
       );
-      // foreach ($item->pointers
       foreach ($item->pointers as $pointer_type => $pointer_names) {
         $rows = array();
         $default_value = array();
         $multiple = true;
-        if ($pointer_type == 'purger' || $pointer_type == 'option') {
+        if ($pointer_type == 'handler' || $pointer_type == 'option') {
           $multiple = false;
         }
         foreach ($bundle->{$pointer_type} as $pointer_name => $pointer) {
@@ -388,14 +387,13 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
             }
           }
         }
-        $form['set'][$pointer_type] = array(
+        $form['purger'][$pointer_type] = array(
           '#type' => 'fieldset',
           '#title' => $bundle->type[$pointer_type]->name,
           '#description' => $bundle->type[$pointer_type]->description,
         );
-        $form['set'][$pointer_type][$pointer_type . '_settings'] = array(
+        $form['purger'][$pointer_type][$pointer_type . '_settings'] = array(
           '#type' => 'tableselect',
-          '#title' => 'test', // $bundle->type[$pointer_type]->name,
           '#header' => $table_header,
           '#options' => $rows,
           '#default_value' => $default_value,
@@ -405,9 +403,8 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
         // Check if this type has options.
         $options = array();
         if (isset($bundle->type[$pointer_type]->options)) {
-          // isset($bundle->{$pointer_type}[$pointer_name]->options)) {
           // Now get the form items for the options.
-          $form['set'][$pointer_type][$pointer_type . '_options'] = array(
+          $form['purger'][$pointer_type][$pointer_type . '_options'] = array(
             '#type' => 'fieldset',
             '#title' => $bundle->type[$pointer_type]->name . ' ' . t('Options'),
           );
@@ -417,12 +414,12 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
           foreach ($options as $option_name => $option) {
             // First display a form for all type specific options
             if ($options[$option_name]['context'] == 'type') {
-            // If the set has a value for this option
+            // If the purger has a value for this option
               if (isset($item->options[$pointer_type][$option_name])) {
-                $option['set_value'] = $item->options[$pointer_type][$option_name];
+                $option['purger_value'] = $item->options[$pointer_type][$option_name];
               }
               // Now generate a form for these options.
-              $form['set'][$pointer_type][$pointer_type . '_options'][$item_name . '_' . $option_name] =
+              $form['purger'][$pointer_type][$pointer_type . '_options'][$item_name . '_' . $option_name] =
                 purge_option_form($option);
             }
             // Then save the item specific options
@@ -439,12 +436,12 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
               if (isset($bundle->{$pointer_type}[$pointer_name]->options[$item_option_name])) {
                 $this_item_options[$item_option_name] = $item_option;
                 if (isset($item->options[$pointer_type][$item_option_name])) {
-                  $this_item_options[$item_option_name]['set_value'] = $item->options[$pointer_type][$item_option_name];
+                  $this_item_options[$item_option_name]['purger_value'] = $item->options[$pointer_type][$item_option_name];
                 }
               }
             }
             if (count($this_item_options) > 0) {
-              $form['set'][$pointer_type][$pointer_type . '_options'][$pointer_name] = array(
+              $form['purger'][$pointer_type][$pointer_type . '_options'][$pointer_name] = array(
                 '#type' => 'fieldset',
                 '#title' => $bundle->{$pointer_type}[$pointer_name]->name . ' ' . t('Options'),
                 '#states' => array(
@@ -455,7 +452,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
               );
               // Generate an option form.
               foreach ($this_item_options as $option_name => $option) {
-                $form['set'][$pointer_type][$pointer_type . '_options'][$pointer_name][$pointer_name . '_' . $option_name]
+                $form['purger'][$pointer_type][$pointer_type . '_options'][$pointer_name][$pointer_name . '_' . $option_name]
                   = purge_option_form($option);
               }
             }
@@ -468,15 +465,15 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
   $options = array();
   $options = $bundle->type[$item_type]->options;
   if (count($options) > 0) {
-    if ($item_type == 'set') {
+    if ($item_type == 'purger') {
       $form[$item_type]['options'] = array(
         '#type' => 'fieldset',
-        '#title' => t('Set Options'),
-        '#description' => t('These settings apply to this set only.'),
+        '#title' => t('Purger Options'),
+        '#description' => t('These settings apply to this purger only.'),
       );
       foreach ($options as $option_name => $option) {
-        if (isset($item->options['set'][$option_name])) {
-          $option['set_value'] = $item->options['set'][$option_name];
+        if (isset($item->options['purger'][$option_name])) {
+          $option['purger_value'] = $item->options['purger'][$option_name];
         }
         $form[$item_type]['options'][$item_type . '_' . $option_name] =  purge_option_form($option);
       }
@@ -485,7 +482,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
       $form[$item_type]['options'] = array(
         '#type' => 'fieldset',
         '#title' => t('Default Options'),
-        '#description' => t('These defaults can be overruled per set.'),
+        '#description' => t('These defaults can be overruled per purger.'),
       );
     }
   }
@@ -561,8 +558,8 @@ function purge_option_form($option) {
   else {
     $form['#type'] = 'checkbox';
   }
-  if (isset($option['set_value'])) {
-    $form['#default_value'] = $option['set_value'];
+  if (isset($option['purger_value'])) {
+    $form['#default_value'] = $option['purger_value'];
   }
   else {
     $form['#default_value'] = $option['default_value'];
@@ -598,9 +595,9 @@ function purge_item_form_load($form, &$form_state) {
         $bundle->header[$item_name] = new PurgeItemHeaderStatic();
         $item = $bundle->header[$item_name];
         break;
-      case 'set':
-        $bundle->set[$item_name] = new PurgeItemSet();
-        $item = $bundle->set[$item_name];
+      case 'purger':
+        $bundle->purger[$item_name] = new PurgeItemPurgerBasicUrl();
+        $item = $bundle->purger[$item_name];
         break;
     }
   }
@@ -629,14 +626,14 @@ function purge_item_form_load($form, &$form_state) {
         $item->headers[$header_key] = $header_value;
       }
       break;
-    case 'set':
+    case 'purger':
       // Loop through all item types
       foreach ($item->pointers as $pointer_type => $pointer) {
         // Get the item valuea from the form
         $items = $form_state['values'][$pointer_type . '_settings'];
         $items_enabled = array();
         // See if this was a single of multi field.
-        if ($form['set'][$pointer_type][$pointer_type . '_settings']['#multiple'] == 0) {
+        if ($form['purger'][$pointer_type][$pointer_type . '_settings']['#multiple'] == 0) {
           $item_name = $items;
           $item->{$pointer_type}[$item_name] = $bundle->{$pointer_type}[$item_name];
           $items_enabled = array($items);
@@ -669,10 +666,10 @@ function purge_item_form_load($form, &$form_state) {
           }
         }
       }
-      // Now process the set options
-      foreach ($bundle->type['set']->options as $option_name => $option) {
+      // Now process the purger options
+      foreach ($bundle->type['purger']->options as $option_name => $option) {
         if ($option['context'] == 'type') {
-          $item->options['set'][$option_name] = $form_state['values']['set_' . $option_name];
+          $item->options['purger'][$option_name] = $form_state['values']['purger_' . $option_name];
         }
       }
       break;

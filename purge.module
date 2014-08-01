@@ -16,3 +16,12 @@ function purge_expire_cache($expire_urls) {
   // Just pass on to the purge_urls function which will do all the magic.
   $purge_requests = purge_urls($expire_urls);
 }
+
+/**
+ * Callback for Queued purges.
+ */
+function purge_queue_callback($queue_items) {
+  module_load_include('inc', 'purge', 'includes/purge');
+  purge_queue_execute($queue_items);
+}
+

@@ -1,37 +1,19 @@
 Purge
-The purge module clears urls from reverse proxy caches like Varnish
-(http://varnish-cache.org/), Squid (http://www.squid-cache.org/) and Nginx
-(http://nginx.net/) by issuing an http PURGE request to them. It works in 
-conjunction with the Cache Expiration (http://drupal.org/project/expire)
-module to act on events that are likely to expire urls from the proxy cache.
-This allows delivering content updates faster to end users.
 
-Requirements:
-- One or more reverse proxy caches (http://en.wikipedia.org/wiki/Reverse_proxy)
-like Varnish (recommended), Squid or Nginx that point to your webserver(s).
-- Varnish needs a modification to its configuration file. See this section in the
-Varnish section in the Drupal handbook: http://drupal.org/node/1054886#purge
-- Squid needs to have purging enabled in its configuration. See
-http://docstore.mik.ua/squid/FAQ-7.html#ss7.5
-- Nginx needs an extra module and configuration. See 
-http://labs.frickle.com/nginx_ngx_cache_purge/ and the installation hints below.
-Also see this issue http://drupal.org/node/1048000 for more background info
-- PHP with curl(http://php.net/manual/en/book.curl.php) enabled. The Purge
-module uses curl for issuing the http PURGE requests.
-- Acquia Managed Cloud and Dev Cloud hosting services support Purging. See the 
-configuration settings below.
-- Purge requires the expire module http://drupal.org/project/expire
+The Purge module aims to provide a framework to clear pages from external
+caches like Reverse Proxy Caches (Varnish, Nginx, Squid), hosting plaforms and
+CDNs. 
 
-Installation:
-- Unpack, place and enable just like any other module.
-- Navigate to Administration -> Site configuration -> Purge settings
-- Set your Varnish or Squid proxy url(s) like "http://localhost" or
-"http://192.168.1.23:8080 http://192.168.2.34:8080" for multiple hosts.
-- If your using nginx you need to specify the purge path and the get method in
-your proxy setting like this:
-"http://192.168.1.76:8080/purge?purge_method=get"
-- If your site is on one of the Acquia Hosting services configure like:
-"http://yoursite.com/?purge_method=ah"
+Note: Purge doesn't act on itself. It requires input on _what_ to purge. The
+expire module provides a good starting point for most users. More advanced
+needs can be soled by using the Rules module. http://drupal.org/project/rules
+
+Supported platforms and integrations:
+- Example configurations available for Varnish, Nginx and Squid. See
+  INSTALL.txt for platform specific installation instructions.
+- Integration with the Expire module. (recommended)
+  http://drupal.org/project/expire
+
 
 Q&A:
 Q: How do I know if its working?

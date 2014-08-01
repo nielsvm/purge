@@ -9,8 +9,6 @@
 /**
  * Constant definitions.
  */
-
-
 // Config permissions.
 define('PURGE_ACCESS_SYSTEM', 0);
 define('PURGE_ACCESS_LIST', 1);
@@ -19,7 +17,6 @@ define('PURGE_ACCESS_RENAME', 3);
 define('PURGE_ACCESS_CLONE', 4);
 define('PURGE_ACCESS_VIEW', 5);
 define('PURGE_ACCESS_FULL', 6);
-
 
 
 /**
@@ -209,6 +206,28 @@ class PurgeItemQueueFake extends PurgeItemQueue {
   public function process() {
     // Since the we'll need a full bundle we'll rely on a fallback in the
     // runtime bundle.
+  }
+}
+
+/**
+ * Defines the Queue Runner Queue.
+ *   Uses the Queue Runner module to off load purges to a daemon, allowing
+ *   continues and un-delayed purging.
+ */
+class PurgeItemQueueRunner extends PurgeItemQueue {
+  public $queue = array();
+
+  /**
+   * Processes the queue.
+   */
+  public function process() {
+    // Create a queuerunner task for each queue item.
+    foreach ($queue as $queue_item) {
+      $task = array();
+      $task['title'] = 'Purge Task';
+      $task['data'] = $queue_item;
+      queue_runner_add($task, 'purge_queue_callback');
+    }
   }
 }
 

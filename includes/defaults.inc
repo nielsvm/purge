@@ -53,7 +53,26 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['queue']->enabled = 0;
     $this->type['queue']->access = array(PURGE_ACCESS_LIST,PURGE_ACCESS_ENABLE);
     $this->type['queue']->provider = 'purge_default';
-    // $this->type['queue']->options = array(
+    $this->type['queue']->options = array(
+      'batch' => array(
+        'name' => t('Batch size'),
+        'context' => 'item',
+        'description' => t('Configure how many purges will be processed in a single queue task.'),
+        'values' => array(
+          '1' => t('Single'),
+          '10' => '10',
+          '25' => '25 (Default)',
+          '50' => '50',
+        ),
+        'default_value' => '25',
+      ),
+      'parallel' => array(
+        'name' => t('Parellel Processing'),
+        'context' => 'item',
+        'description' => t('Process the batches in parallel.'),
+        'default_value' => 0,
+      ),
+    );
 
     // Handler type definition.
     $this->type['handler'] = new PurgeItemType();
@@ -147,6 +166,20 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->queue['fake']->enabled = 1;
     $this->queue['fake']->access = array(PURGE_ACCESS_LIST,PURGE_ACCESS_ENABLE);
     $this->queue['fake']->provider = 'purge_default';
+
+    // The QueueRunner Queue
+    $this->queue['runner'] = new PurgeItemQueueRunner();
+    $this->queue['runner']->name = 'Queue Runner';
+    $this->queue['runner']->description = t('Use the Queue Runner Module to offload purges to a continues cli process.');
+    $this->queue['runner']->enabled = 1;
+    $this->queue['runner']->access = array(PURGE_ACCESS_LIST,PURGE_ACCESS_ENABLE);
+    $this->queue['runner']->provider = 'purge_default';
+    $this->queue['runner']->options = array(
+      'batch' => '25',
+      'parallel' => 1,
+    );
+
+
 
     // Handler definitions.
     // Drupal http request.

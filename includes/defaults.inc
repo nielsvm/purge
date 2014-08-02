@@ -87,9 +87,9 @@ class PurgeBundleDefault extends PurgeBundleBasic {
         'context' => 'item',
         'description' => t('The method used to perform the purge.'),
         'values' => array(
-          'http_purge' => 'HTTP request method PURGE',
-          'http_ban' => 'HTTP request method BAN.',
-          'http_get' => 'HTTP request method GET.',
+          'PURGE' => 'HTTP request method PURGE',
+          'BAN' => 'HTTP request method BAN.',
+          'GET' => 'HTTP request method GET.',
         ),
         'default_value' => 'http_purge',
       ),
@@ -222,7 +222,7 @@ class PurgeBundleDepend extends PurgeBundleAPI {
     $this->handler['curl']->access = array(PURGE_ACCESS_LIST,PURGE_ACCESS_ENABLE);
     $this->handler['curl']->provider = 'purge_depend';
     $this->handler['curl']->options = array(
-      'method' => 'http_purge',
+      'method' => 'PURGE',
       'multi' => 1,
     );
 
@@ -236,7 +236,7 @@ class PurgeBundleDepend extends PurgeBundleAPI {
     $this->handler['httprl']->access = array(PURGE_ACCESS_LIST,PURGE_ACCESS_ENABLE);
     $this->handler['httprl']->provider = 'purge_depend';
     $this->handler['httprl']->options = array(
-      'method' => 'http_purge',
+      'method' => 'PURGE',
       'multi' => 1,
       'non_blocking' => 1,
     );

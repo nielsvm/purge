@@ -13,6 +13,9 @@ module_load_include('inc', 'purge', 'includes/purge');
  * Menu callback for purge admin settings.
  */
 function purge_configuration_form($form, &$form_state, $item_type = NULL) {
+  // Debugging
+  // purge_expire_cache(array('http://purge72/node/1'));
+  // purge_urls(array('http://purge72/node/1'));
   $form = array();
   $form['purge'] = array(
     '#type' => 'item',
@@ -488,12 +491,12 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
   }
 
   // Now display submit buttons.
-  if ($action != 'view' && $item->access >= PURGE_ACCESS_CLONE) {
+  if ($action != 'view' && in_array(PURGE_ACCESS_FULL, $item->access)) {
     $form['submit']  = array(
       '#type' => 'submit',
       '#value' => t('Save'),
     );
-    if ($item instanceof PurgeValidateble) {
+    if ($item instanceof PurgeValidateable) {
       $form['validate'] = array(
         '#type' => 'submit',
         '#value' => t('Preview'),
@@ -524,7 +527,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
  * Form validation for the item form.
  */
 function purge_item_form_validate($form, &$form_state) {
-  // First get the bundle with the form state
+  // First get the item with the form state
   $bundle = purge_item_form_load($form, $form_state);
   $errors = $bundle->validate();
   if (count($errors) > 0) {

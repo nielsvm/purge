@@ -20,36 +20,56 @@ define('PURGE_ACCESS_FULL', 6);
 
 
 /**
- * Interface definition for Validateable items.
+ * Defines validateable items.
+ *
+ * The item can validates it's own settings.
  */
 interface PurgeValidateable {
   function validate();
 }
 
 /**
- * Interface definition for Cacheable.
- *   The data will be fetched once and cached for reuse.
+ * Defines cacheable items.
+ *
+ * Cacheable items don't have initial values. This interface sets the item
+ * properties with a value that is cached for reuse.
  */
 interface PurgeCacheable {
   function get_data_cached();
 }
 
 /**
- * Interface definition for item that can process Purgeable urls.
+ * Defines processable items.
+ *
+ * Processable items take a Purgeable (URL, domain or tag) to set their
+ * properties for each purgable it's used with.
  */
-interface PurgeProcessableUrl {
+interface PurgeProcessable {
+
+}
+
+/**
+ * Defines URL processable items.
+ *
+ * URL processable items take a Purgeable URL to set their properties.
+ */
+interface PurgeProcessableUrl extends PurgeProcessable {
   function process_url($purgeable_url);
 }
 
 /**
- * Interface definition for item that can process Purgeable domains.
+ * Defines domain processable items.
+ *
+ * Domain processable items take a Purgeable domain to set their properties.
  */
-interface PurgeProcessableDomain {
+interface PurgeProcessableDomain extends PurgeProcessable {
   function process_domain($purgeable_domain);
 }
 
 /**
- * Interface definition for item that can process Purgeable Tags.
+ * Defines tag processable items.
+ *
+ * Domain processable items take a Purgeable tag to set their properties.
  */
 interface PurgeProcessableTag {
   function process_tag($purgeable_tag);
@@ -57,7 +77,8 @@ interface PurgeProcessableTag {
 
 /**
  * Class for purge configuration management.
- *   Defines a basic configuration object.
+ *
+ * Defines a basic configuration item.
  */
 abstract class PurgeItemBasic {
   public $name = '';
@@ -70,6 +91,9 @@ abstract class PurgeItemBasic {
 
 /**
  * Class definition for the Types object class.
+ *
+ * Type objects are used to define all the items managed by the Purge module.
+ * These objects can be manipulated and extended for advanced uses.
  */
 class PurgeItemType extends PurgeItemBasic {
 
@@ -78,6 +102,9 @@ class PurgeItemType extends PurgeItemBasic {
 
 /**
  * Abstract Class definition for Purge Targets.
+ *
+ * Targets are the destination of the purge requests. Typically a reverse proxy
+ * server or an API endpoint.
  */
 abstract class PurgeItemTarget extends PurgeItemBasic implements PurgeValidateable {
   public $urls = array();
@@ -90,15 +117,16 @@ abstract class PurgeItemTarget extends PurgeItemBasic implements PurgeValidateab
   public function validate() {
     // Call the parent for name validation
     $errors = array();
-    $errors = parent::validate();
+    // $errors = parent::validate();
     // Validate the URLs
-    foreach ($urls as $url) {
-      if (!valid_url($url)) {
+    foreach ($this->urls as $url) {
+      if (!valid_url($url, TRUE)) {
         $errors[] = array(
           'urls' => t('Invalid Target URL')
         );
       }
     }
+    drupal_set_message(serialize($errors));
     return $errors;
   }
 }
@@ -166,7 +194,6 @@ class PurgeItemDomainDrupal extends PurgeItemDomain implements PurgeCacheable {
    */
   public function get_data_cached() {
     $base_url = $GLOBALS['base_url'];
-    // dprint_r($base_url);
     $this->domains = array(parse_url($base_url, PHP_URL_HOST));
   }
 }
@@ -201,11 +228,10 @@ class PurgeItemQueueFake extends PurgeItemQueue {
   public $queue = array();
 
   /**
-   * Dummy function.
+   * Calls the BundleQueue object.
    */
   public function process() {
-    // Since the we'll need a full bundle we'll rely on a fallback in the
-    // runtime bundle.
+    $queue_bundle = new PurgeBundleQueue($this->queue);
   }
 }
 
@@ -222,11 +248,12 @@ class PurgeItemQueueRunner extends PurgeItemQueue {
    */
   public function process() {
     // Create a queuerunner task for each queue item.
-    foreach ($queue as $queue_item) {
+    foreach ($this->queue as $queue_item) {
       $task = array();
       $task['title'] = 'Purge Task';
+      // $task['action'] = 'purge_worker_callback';
       $task['data'] = $queue_item;
-      queue_runner_add($task, 'purge_queue_callback');
+      queue_runner_add($task, 'purge_worker');
     }
   }
 }
@@ -482,7 +509,7 @@ class PurgeItemPurgerBasicUrl extends PurgeItemPurger implements PurgeProcessabl
         }
       }
       // Now lets fill the purges array
-      $parsed_purgeable = parse_url($purgeable);
+      $parsed_purgeable = parse_url($purgeable_url);
       foreach ($target_urls as $target_url) {
         foreach ($domains as $domain) {
           $purge_headers = $headers;
@@ -508,7 +535,6 @@ class PurgeItemPurgerBasicUrl extends PurgeItemPurger implements PurgeProcessabl
     );
     $queue_name = $this->pointers['queue'][0];
     $this->queue[$queue_name]->queue[] = $queue_item;
-    // return $queue_item;
   }
 }
 
@@ -579,19 +605,16 @@ Class PurgeBundleBasic {
   public function validate() {
     $errors = array();
     foreach ($this->type as $type_name => $type) {
-      foreach ($this->{$type_name} as $items) {
-        foreach ($items as $item_name => $item) {
-          if ($item instanceof PurgeValidateable) {
-            $item_errors = $item->validate();
-            if (count($item_errors) > 0) {
-              foreach ($item_errors as $item_error) {
-                $errors[] = $item_error;
-              }
+      foreach ($this->{$type_name} as $item) {
+        if ($item instanceof PurgeValidateable) {
+          $item_errors = $item->validate();
+          if (count($item_errors) > 0) {
+            foreach ($item_errors as $item_error) {
+              $errors[] = $item_error;
             }
           }
         }
       }
-
     }
     return $errors;
   }
@@ -678,17 +701,6 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
   }
 
   /**
-   * Receive requests as flat array of requests.
-   *
-   * @param array $new_requests
-   *   Flat array, just urls.
-   */
-  public function add_purgeable($purge) {
-    // Add to the bundle array
-  }
-
-
-  /**
    * Process all requests.
    */
   public function process() {
@@ -697,10 +709,21 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
       foreach ($purgeables as $purgeable) {
         // Pass all purgers.
         foreach ($this->purger as $purger_name => $purger) {
-          // Process the Purgeable.
-          $this->purger[$purger_name]->process($purgeable_type_name, $purgeable);
+          // Handle purgeable URLs.
+          if ($purgeable_type_name == 'urls') {
+            if ($this->purger[$purger_name] instanceof PurgeProcessableUrl) {
+              // Process the Purgeable URL.
+              $this->purger[$purger_name]->process_url($purgeable);
+            }
+          }
         }
       }
+    }
+    // Now process the queues.
+    foreach ($this->queue as $queue) {
+      //if (count($queue->queue) > 0) {
+        $queue->process();
+      // }
     }
   }
 
@@ -714,6 +737,40 @@ class PurgeBundleRuntime extends PurgeBundleBasic {
       $handler_name = $queue_item['handler'];
       // Execute the queue.
       $this->handler[$handler_name]->execute($queue_item['purges'], $queue['handler_options']);
+    }
+  }
+}
+
+/**
+ * Executes queued purges.
+ *
+ * This is a minimal bundle, containing just the handlers needed to
+ * process all queued purges.
+ */
+class PurgeBundleQueue extends PurgeBundleBasic {
+
+  /**
+   * Constructs the bundle from queue items and executes the purges.
+   *
+   * @param array $queue_items
+   */
+  function __construct($queue_items) {
+    // Get the raw data from the variable (or cache at a later stage).
+    $all_data = $this->get_data();
+
+    // Figure out which handlers we'll need for these purges.
+    foreach ($queue_items as $queue_item) {
+      $handler_name = $queue_item['handler'];
+      if (!isset($this->handler[$handler_name])) {
+        // Create the object from the serialized data.
+        $this->handler[$handler_name] = unserialize($all_data['handler'][$handler_name]);
+      }
+    }
+
+    // Execute all queue items to the handlers.
+    foreach ($queue_items as $queue_item) {
+      $handler_name = $queue_item['handler'];
+      $this->handler[$handler_name]->execute($queue_item['purges'], $queue_item['handler_options']);
     }
   }
 }
@@ -760,7 +817,7 @@ function purge_urls($urls) {
   $bundle->purgeables['urls'] =  $urls;
   $bundle->process();
   // dprint_r($bundle->queues);
-  $bundle->execute();
+  // $bundle->execute();
 }
 
 

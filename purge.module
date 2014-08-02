@@ -9,7 +9,9 @@
 /**
  * Implements hook_expire_cache().
  *
- * Takes an array from expire.module and issues purges.
+ * @param array $expire_urls
+ *   Takes an array from expire.module and issues purges.
+ *   This can be either relative of fully qualified URLs.
  */
 function purge_expire_cache($expire_urls) {
   module_load_include('inc', 'purge', 'includes/purge');
@@ -20,8 +22,32 @@ function purge_expire_cache($expire_urls) {
 /**
  * Callback for Queued purges.
  */
-function purge_queue_callback($queue_items) {
+function purge_worker_callback($queue_items) {
   module_load_include('inc', 'purge', 'includes/purge');
   purge_queue_execute($queue_items);
+
+  return True;
 }
 
+function purge_finalize_callback($queue_items) {
+}
+
+/**
+ * Implements hook_queue_runner_workers().
+ *
+ * @return array
+ *   An array of workers to register.
+ */
+function purge_queue_runner_workers() {
+  return array(
+    'purge_worker' => array(
+      'callback' => 'purge_worker_callback',
+      'includes' => array(
+        'file_extension' => 'inc',
+        'module' => 'purge',
+        'file' => 'includes/purge',
+      ),
+      'finalize' => 'purge_finalize_callback',
+    ),
+  );
+}

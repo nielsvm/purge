@@ -24,7 +24,7 @@ function purge_expire_cache($expire_urls) {
  */
 function purge_worker_callback($queue_items) {
   module_load_include('inc', 'purge', 'includes/purge');
-  purge_queue_execute($queue_items);
+  purge_queue_execute($queue_items['data']);
 
   return True;
 }
@@ -40,13 +40,8 @@ function purge_finalize_callback($queue_items) {
  */
 function purge_queue_runner_workers() {
   return array(
-    'purge_worker' => array(
+    'purge_worker_callback' => array(
       'callback' => 'purge_worker_callback',
-      'includes' => array(
-        'file_extension' => 'inc',
-        'module' => 'purge',
-        'file' => 'includes/purge',
-      ),
       'finalize' => 'purge_finalize_callback',
     ),
   );

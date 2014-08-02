@@ -248,13 +248,19 @@ class PurgeItemQueueRunner extends PurgeItemQueue {
    */
   public function process() {
     // Create a queuerunner task for each queue item.
-    foreach ($this->queue as $queue_item) {
-      $task = array();
-      $task['title'] = 'Purge Task';
-      // $task['action'] = 'purge_worker_callback';
-      $task['data'] = $queue_item;
-      queue_runner_add($task, 'purge_worker');
-    }
+    $task = array();
+    $task['title'] = 'Purge Task';
+    $task['data'] = $this->queue;
+
+    // foreach ($this->queue as $queue_item) {
+    //  $subtask['data']['title'] = 'Purge Task';
+      // $subtask['data']['action'] = 'purge_worker_callback';
+    //  $subtask['data']['data'] = $queue_item;
+    //  $subtask['data']['worker']['callback'] = 'purge_worker_callback';
+    //  $subtask['data']['worker']['finalize'] = 'purge_worker_finalize';
+    //  $task['subtasks'][] = $subtask;
+   //  }
+    queue_runner_add($task, 'purge_worker_callback');
   }
 }
 
@@ -754,7 +760,7 @@ class PurgeBundleQueue extends PurgeBundleBasic {
    *
    * @param array $queue_items
    */
-  function __construct($queue_items) {
+  public function __construct($queue_items) {
     // Get the raw data from the variable (or cache at a later stage).
     $all_data = $this->get_data();
 
@@ -766,7 +772,12 @@ class PurgeBundleQueue extends PurgeBundleBasic {
         $this->handler[$handler_name] = unserialize($all_data['handler'][$handler_name]);
       }
     }
+  }
 
+  /**
+   * Executes all queueditems with their handlers.
+   */
+  public function execute($queue_items) {
     // Execute all queue items to the handlers.
     foreach ($queue_items as $queue_item) {
       $handler_name = $queue_item['handler'];
@@ -816,10 +827,17 @@ function purge_urls($urls) {
   $bundle = new PurgeBundleRuntime();
   $bundle->purgeables['urls'] =  $urls;
   $bundle->process();
-  // dprint_r($bundle->queues);
-  // $bundle->execute();
 }
 
+/**
+ * Executes queued purges.
+ *
+ * @param array $queue_items
+ */
+function purge_queue_execute($queue_items) {
+  $bundle = new PurgeBundleQueue($queue_items);
+  $results = $bundle->execute($queue_items);
+}
 
 /**
  * (Re)Configure.

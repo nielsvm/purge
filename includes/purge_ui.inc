@@ -258,6 +258,7 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
     }
   }
 
+
   else {
     $item = $bundle->{$item_type}[$item_name];
   }
@@ -498,9 +499,9 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
     );
     if ($item instanceof PurgeValidateable) {
       $form['validate'] = array(
-        '#type' => 'submit',
-        '#value' => t('Preview'),
-        '#submit' => array('purge_item_form_validate'),
+        '#type' => 'button',
+        '#value' => t('Validate'),
+       // '#submit' => array('purge_item_form_validate'),
       );
     }
   }
@@ -527,13 +528,33 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
  * Form validation for the item form.
  */
 function purge_item_form_validate($form, &$form_state) {
+  $errors = array();
   // First get the item with the form state
   $bundle = purge_item_form_load($form, $form_state);
-  $errors = $bundle->validate();
+  // First validate the item.
+  $item_type = $form_state['values']['item_type'];
+  $item_name = $form_state['values']['machine_name'];
+  $item = $bundle->{$item_type}[$item_name];
+  $errors = $item->validate();
+  if (count($errors) == 0) {
+    // Validate the bundle.
+   // $errors = $bundle->validate();
+  }
+  // Now set a form error.
   if (count($errors) > 0) {
-    foreach ($errors as $error_name => $error_message) {
+    foreach ($errors as $error) {
       // Display the errors
-      form_set_error($error_name, $error_message);
+      form_set_error($error['name'], $error['message']);
+    }
+  }
+  else {
+    // Check if we're being triggered by the validate butten.
+    if ($form_state['clicked_button']['#type'] == 'button') {
+      $form_state['rebuild'] == FALSE;
+      drupal_set_message(t('@item_type @item_name validated correctly.', array(
+        '@item_type' => $bundle->type[$item_type]->name,
+        '@item_name' => $form_state['values']['name'],
+      )));
     }
   }
 }
@@ -542,9 +563,112 @@ function purge_item_form_validate($form, &$form_state) {
  * Form submit for the item form.
  */
 function purge_item_form_submit($form, &$form_state) {
+  // Get the bundle from the current form state.
   $bundle = purge_item_form_load($form, $form_state);
+  // Save it.
   $bundle->save();
+  $item_type = $form_state['values']['item_type'];
+  drupal_set_message(t('@item_type @item_name was saved.', array(
+    '@item_type' => $bundle->type[$item_type]->name,
+    '@item_name' => $form_state['values']['name'],
+  )));
+
+  // Redirect to main admin page.
+  $form_state['redirect'] = 'admin/config/system/purge';
 }
+
+/**
+ * Form for simple yes/no operations on items.
+ */
+function purge_item_action_form($form, &$form_state, $item_type, $item_name, $action) {
+  // Get the bundle and the item.
+  $bundle = new PurgeBundleBasic();
+  $item = $bundle->{$item_type}[$item_name];
+  $access = FALSE;
+  // Check if we can enable/disable this item.
+  if ($action == 'enable' || $action == 'disable') {
+    if (in_array(PURGE_ACCESS_ENABLE, $item->access) || in_array(PURGE_ACCESS_FULL, $item->access)) {
+      $access == TRUE;
+      if ($action == 'enable') {
+        // Check if the item is already enabled.
+        if ($item->enabled == 1) {
+          drupal_set_message(t('@item_type @item_name is already enabled.'), array(
+            '@item_type' => $bundle->type[$item_type],
+            '#item_name' => $item->name,
+          ));
+          $form_state['redirect'] = 'admin/config/system/purge';
+          return;
+        }
+        else {
+          // Enable the tiem.
+          $item->enabled = 1;
+        }
+      }
+      if ($action == 'disable') {
+        if ($item->enabled == 0) {
+          drupal_set_message(t('@item_type @item_name is already disabled.', array(
+            '@item_type' => $bundle->type[$item_type],
+            '#item_name' => $item->name,
+          )));
+          $form_state['redirect'] = 'admin/config/system/purge';
+          return;
+        }
+        else {
+          // Disable the item.
+          $item->enabled = 0;
+        }
+      }
+    }
+  }
+  elseif ($action == 'delete') {
+    // Check if we have access to delete this item.
+    if (in_array(PURGE_ACCESS_FULL, $item->access)) {
+      $access = TRUE;
+      // Check if something bad happens is this item is deleted.
+      unset($bundle->{$item_type}[$item_name]);
+    }
+  }
+  else {
+    // Unkown action. Throw warming and redirect to main admin view.
+    drupal_set_message(t('Unkown action'), 'error');
+    $form_state['redirect'] = 'admin/config/system/purge';
+    return;
+  }
+  // Now make sure we have access.
+  if (!$access) {
+    drupal_set_message(t('Action not allowed'), 'warning');
+    $form_state['redirect'] = 'admin/config/system/purge';
+    return;
+  }
+  else {
+    // Check if there would be errors after this action.
+    $errors = $bundle->validate;
+    if (count($errors) > 0 ) {
+      // Display this warming:
+      $message = t(
+        'If you confirm to @action @item_type @item_name your current configuration will no longer be valid.'
+          . ' See these warmings:', array(
+            '@action' => $action,
+            '@item_type' => $bundle->type[$item_type]->name,
+            '@item_name' => $item->name,
+          )
+        );
+      // Dispaly each error message.
+      foreach ($errors as $error) {
+        $message .= '<br>' . $error;
+      }
+      drupal_set_message($message, 'warning');
+    }
+    $form = array();
+    $form['action'] = array(
+      '#title' => 'Confirm'
+    );
+  }
+  return $form;
+}
+
+
+
 
 /**
  * Form generator for option form.
@@ -569,6 +693,7 @@ function purge_option_form($option) {
   }
   return $form;
 }
+
 
 /**
  * Function to load an item from current form values.
@@ -615,7 +740,14 @@ function purge_item_form_load($form, &$form_state) {
   // Now for each item specific property
   switch ($item_type) {
     case 'target':
-      $item->urls = preg_split('/$\R?^/m', $form_state['values']['urls']);
+      // Start with an empty array.
+      $item->urls = array();
+      // Get the URLs from the form state.
+      $urls = preg_split('/$\R?^/m', $form_state['values']['urls']);
+      // trims each url.
+      foreach ($urls as $url) {
+        $item->urls[] = trim($url);
+      }
       break;
     case 'domain':
       $item->domains = preg_split('/$\R?^/m', $form_state['values']['domains']);

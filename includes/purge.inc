@@ -115,18 +115,17 @@ abstract class PurgeItemTarget extends PurgeItemBasic implements PurgeValidateab
    * @return $errors
    */
   public function validate() {
-    // Call the parent for name validation
     $errors = array();
-    // $errors = parent::validate();
     // Validate the URLs
     foreach ($this->urls as $url) {
       if (!valid_url($url, TRUE)) {
+        $url = check_plain($url);
         $errors[] = array(
-          'urls' => t('Invalid Target URL')
+          'name' => 'urls',
+          'message' => t('Target URL @url in target @name is an invalid target URL.', array('@url' => $url, '@name' => $this->name))
         );
       }
     }
-    drupal_set_message(serialize($errors));
     return $errors;
   }
 }
@@ -232,6 +231,7 @@ class PurgeItemQueueFake extends PurgeItemQueue {
    */
   public function process() {
     $queue_bundle = new PurgeBundleQueue($this->queue);
+    $queue_bundle->execute($this->queue);
   }
 }
 
@@ -252,14 +252,6 @@ class PurgeItemQueueRunner extends PurgeItemQueue {
     $task['title'] = 'Purge Task';
     $task['data'] = $this->queue;
 
-    // foreach ($this->queue as $queue_item) {
-    //  $subtask['data']['title'] = 'Purge Task';
-      // $subtask['data']['action'] = 'purge_worker_callback';
-    //  $subtask['data']['data'] = $queue_item;
-    //  $subtask['data']['worker']['callback'] = 'purge_worker_callback';
-    //  $subtask['data']['worker']['finalize'] = 'purge_worker_finalize';
-    //  $task['subtasks'][] = $subtask;
-   //  }
     queue_runner_add($task, 'purge_worker_callback');
   }
 }

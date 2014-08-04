@@ -557,6 +557,7 @@ function purge_item_form_validate($form, &$form_state) {
       )));
     }
   }
+  return $form;
 }
 
 /**
@@ -575,6 +576,7 @@ function purge_item_form_submit($form, &$form_state) {
 
   // Redirect to main admin page.
   $form_state['redirect'] = 'admin/config/system/purge';
+  return $form;
 }
 
 /**
@@ -588,13 +590,14 @@ function purge_item_action_form($form, &$form_state, $item_type, $item_name, $ac
   // Check if we can enable/disable this item.
   if ($action == 'enable' || $action == 'disable') {
     if (in_array(PURGE_ACCESS_ENABLE, $item->access) || in_array(PURGE_ACCESS_FULL, $item->access)) {
-      $access == TRUE;
+      $access = TRUE;
       if ($action == 'enable') {
+        $actioned = t('enabled');
         // Check if the item is already enabled.
         if ($item->enabled == 1) {
-          drupal_set_message(t('@item_type @item_name is already enabled.'), array(
-            '@item_type' => $bundle->type[$item_type],
-            '#item_name' => $item->name,
+          drupal_set_message(t('@item_type is already enabled.'), array(
+            '@item_type' => $bundle->type[$item_type]->name,
+          //  '#item_name' => $item->name,
           ));
           $form_state['redirect'] = 'admin/config/system/purge';
           return;
@@ -605,9 +608,10 @@ function purge_item_action_form($form, &$form_state, $item_type, $item_name, $ac
         }
       }
       if ($action == 'disable') {
+        $actioned = t('disabled');
         if ($item->enabled == 0) {
-          drupal_set_message(t('@item_type @item_name is already disabled.', array(
-            '@item_type' => $bundle->type[$item_type],
+          drupal_set_message(t('@item_type  @item_name is already disabled.', array(
+            '@item_type' => $bundle->type[$item_type]->name,
             '#item_name' => $item->name,
           )));
           $form_state['redirect'] = 'admin/config/system/purge';
@@ -621,6 +625,7 @@ function purge_item_action_form($form, &$form_state, $item_type, $item_name, $ac
     }
   }
   elseif ($action == 'delete') {
+    $actioned = t('deleted');
     // Check if we have access to delete this item.
     if (in_array(PURGE_ACCESS_FULL, $item->access)) {
       $access = TRUE;
@@ -642,8 +647,8 @@ function purge_item_action_form($form, &$form_state, $item_type, $item_name, $ac
   }
   else {
     // Check if there would be errors after this action.
-    $errors = $bundle->validate;
-    if (count($errors) > 0 ) {
+    $errors = $bundle->validate();
+    if (count($errors) > 0) {
       // Display this warming:
       $message = t(
         'If you confirm to @action @item_type @item_name your current configuration will no longer be valid.'
@@ -655,17 +660,87 @@ function purge_item_action_form($form, &$form_state, $item_type, $item_name, $ac
         );
       // Dispaly each error message.
       foreach ($errors as $error) {
-        $message .= '<br>' . $error;
+        $message = $message . '<br>' . $error;
       }
       drupal_set_message($message, 'warning');
     }
-    $form = array();
-    $form['action'] = array(
-      '#title' => 'Confirm'
-    );
+    // Display the question if there are errors or the action is delete.
+    if (count($errors) > 0 || $action == 'delete') {
+      $form = array();
+      $form['action'] = array(
+        // Hidden fields to save arguments in form state.
+        'item_type' => array(
+          '#type' => 'hidden',
+          '#default_value' => $item_type,
+        ),
+        'item_name' => array(
+          '#type' => 'hidden',
+          '#default_value' => $item_name,
+        ),
+        'action' => array(
+          '#type' => 'hidden',
+          '#default_value' => $action,
+        ),
+        'question' => array(
+          '#type' => 'item',
+          '#markup' => t('Are you sure you want to @action the @item_type @item_name ?', array(
+            '@action' => t($action),
+            '@item_type' => $bundle->type[$item_type]->name,
+            '@item_name' => $item->name,
+          )),
+        ),
+        'confirm' => array(
+          '#type' => 'submit',
+          '#value' => t('Confirm'),
+          '#submit' => array('purge_item_action_form_submit'),
+        ),
+        'cancel' => array(
+          '#type' => 'submit',
+          '#value' => t('Cancel'),
+          '#submit' => array('purge_item_action_form_cancel'),
+        ),
+      );
+    }
+    else {
+      //Save the bundle;
+      $bundle->save();
+
+     // drupal_set_message(t('@item_type blabla @item_name was @actioned'), array(
+      //  '@item_type' => $bundle->type[$item_type]->name,
+       // '@item_name' => $bundle->{$item_type}[$item_name]->name,
+       // '@actioned' => $actioned,
+     // ));
+      $form_state['redirect'] = 'admin/config/system/purge';
+    }
+
   }
   return $form;
 }
+
+/**
+ * Form submition for item ation form.
+ */
+function purge_item_action_form_submit($form, &$form_state) {
+  // load the bundle and the item.
+  $bundle = new PurgeBundleBasic();
+  $item_type = $form_state['values']['item_type'];
+  $item_name = $form_state['values']['item_name'];
+  $action = $form_state['values']['action'];
+  $item = $bundle->{$item_type}[$item_name];
+
+  $form_state['redirect'] = 'admin/config/system/purge';
+  return $form;
+}
+
+/**
+ * Simple form callback to redirect to the main page.
+ */
+function purge_item_action_form_cancel($form, &$form_state) {
+  $form_state['redirect'] = 'admin/config/system/purge';
+
+  return $form;
+}
+
 
 
 

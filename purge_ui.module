@@ -52,5 +52,33 @@ function purge_menu() {
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'includes/purge_ui.inc',
   );
+  $items['admin/config/system/purge/%/%/enable'] = array(
+    'title'             => 'Enable Item',
+    'type'              => MENU_NORMAL_ITEM,
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('purge_item_action_form', 4, 5, 6),
+    'access arguments'  => array('administer site configuration'),
+    'file path'         => drupal_get_path('module', 'purge'),
+    'file'              => 'includes/purge_ui.inc',
+  );
+  $items['admin/config/system/purge/%/%/disable'] = array(
+    'title'             => 'Disable Item',
+    'type'              => MENU_NORMAL_ITEM,
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('purge_item_action_form', 4, 5, 6),
+    'access arguments'  => array('administer site configuration'),
+    'file path'         => drupal_get_path('module', 'purge'),
+    'file'              => 'includes/purge_ui.inc',
+  );
+  $items['admin/config/system/purge/%/%/delete'] = array(
+    'title'             => 'Delete Item',
+    'type'              => MENU_NORMAL_ITEM,
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('purge_item_action_form', 4, 5, 6),
+    'access arguments'  => array('administer site configuration'),
+    'file path'         => drupal_get_path('module', 'purge'),
+    'file'              => 'includes/purge_ui.inc',
+  );
+
   return $items;
 }

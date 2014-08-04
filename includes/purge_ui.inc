@@ -73,29 +73,29 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
           in_array(PURGE_ACCESS_ENABLE, $item->access) ||
           in_array(PURGE_ACCESS_RENAME, $item->access)
         ) {
-          $actions[] = l(t('Edit'), "admin/config/system/purge/{$type}/{$item_name}/edit");
+          $actions[] = l(t('Edit'), "admin/config/system/purge/edit/{$type}/{$item_name}");
         }
         // else check if a view action is needed.
         elseif (in_array(PURGE_ACCESS_VIEW, $item->access)) {
-          $actions[] = l(t('View'), "admin/config/system/purge/{$type}/{$item_name}/view");
+          $actions[] = l(t('View'), "admin/config/system/purge/view/{$type}/{$item_name}");
         }
 
         // Enable/Disable actions
         if (in_array(PURGE_ACCESS_FULL, $item->access) || in_array(PURGE_ACCESS_ENABLE, $item->access)) {
           if ($item->enabled == 1) {
-            $actions[] = l(t('Disable'), "admin/config/system/purge/{$type}/{$item_name}/disable");
+            $actions[] = l(t('Disable'), "admin/config/system/purge/disable/{$type}/{$item_name}");
           }
           else {
-            $actions[] = l(t('Enable'), "admin/config/system/purge/{$type}/{$item_name}/enable");
+            $actions[] = l(t('Enable'), "admin/config/system/purge/enable/{$type}/{$item_name}");
           }
         }
         // Clone
         if (in_array(PURGE_ACCESS_FULL, $item->access) || in_array(PURGE_ACCESS_CLONE, $item->access)) {
-          $actions[] = l(t('Clone'), "admin/config/system/purge/{$type}/{$item_name}/clone");
+          $actions[] = l(t('Clone'), "admin/config/system/purge/clone/{$type}/{$item_name}");
         }
         // Delete action is this is user provided object.
         if ($item->provider == 'user') {
-          $actions[] = l(t('Delete'), "admin/config/system/purge/{$type}/{$item_name}/delete");
+          $actions[] = l(t('Delete'), "admin/config/system/purge/delete/{$type}/{$item_name}");
         }
       }
 
@@ -194,11 +194,11 @@ function purge_item_add_form_submit($form, &$form_state) {
   if (isset($form_state['values']['template_select'])) {
     // New item selected.
     if ($form_state['values']['template_select'] == 'new') {
-      $form_state['redirect'] = 'admin/config/system/purge/' . $form_state['values']['item_type'] . '/new/add';
+      $form_state['redirect'] = 'admin/config/system/purge/add/' . $form_state['values']['item_type'] . '/new';
     }
     // Example selected.
     else {
-      $form_state['redirect'] = 'admin/config/system/purge/' . $form_state['values']['item_type'] .
+      $form_state['redirect'] = 'admin/config/system/purge/add/' . $form_state['values']['item_type'] .
         '/' . $form_state['values']['template_select'] . '/example';
     }
   }
@@ -505,21 +505,32 @@ function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $ac
       );
     }
   }
-  if ($item->access >= PURGE_ACCESS_ENABLE) {
+  // Enable/disable buton.
+  if (in_array(PURGE_ACCESS_ENABLE, $item->access)) {
     if ($item->enabled) {
       $form['disable'] = array(
         '#type' => 'submit',
+        '#name' => 'disable',
         '#value' => t('Disable'),
-        '#submit' => array('purge_item_form_disable'),
+        '#submit' => array('purge_form_button_callback'),
       );
     }
     else {
       $form['enable'] = array(
         '#type' => 'submit',
+        '#name' => 'enable',
         '#value' => t('Enable'),
-        '#submit' => array('purge_item_form_enable'),
+        '#submit' => array('purge_form_button_callback'),
       );
     }
+  }
+  if (in_array(PURGE_ACCESS_FULL, $item->access)) {
+    $form['delete'] = array(
+      '#type' => 'submit',
+      '#name' => 'delete',
+      '#value' => t('Delete'),
+      '#submit' => array('purge_form_button_callback'),
+    );
   }
   return $form;
 }
@@ -580,9 +591,11 @@ function purge_item_form_submit($form, &$form_state) {
 }
 
 /**
- * Form for simple yes/no operations on items.
+ * Callback for enable/disable.
+ *
+ * Calls the confirmation form if the bundle doesn't validate after.
  */
-function purge_item_action_form($form, &$form_state, $item_type, $item_name, $action) {
+function purge_item_action_callback($item_type, $item_name, $action) {
   // Get the bundle and the item.
   $bundle = new PurgeBundleBasic();
   $item = $bundle->{$item_type}[$item_name];
@@ -595,11 +608,10 @@ function purge_item_action_form($form, &$form_state, $item_type, $item_name, $ac
         $actioned = t('enabled');
         // Check if the item is already enabled.
         if ($item->enabled == 1) {
-          drupal_set_message(t('@item_type is already enabled.'), array(
-            '@item_type' => $bundle->type[$item_type]->name,
-          //  '#item_name' => $item->name,
+          drupal_set_message(t('@item_name is already enabled.'), array(
+            '@item_name' => $item->name,
           ));
-          $form_state['redirect'] = 'admin/config/system/purge';
+          drupal_goto('admin/config/system/purge');
           return;
         }
         else {
@@ -612,9 +624,9 @@ function purge_item_action_form($form, &$form_state, $item_type, $item_name, $ac
         if ($item->enabled == 0) {
           drupal_set_message(t('@item_type  @item_name is already disabled.', array(
             '@item_type' => $bundle->type[$item_type]->name,
-            '#item_name' => $item->name,
+            '@item_name' => $item->name,
           )));
-          $form_state['redirect'] = 'admin/config/system/purge';
+          drupal_goto('admin/config/system/purge');
           return;
         }
         else {
@@ -624,7 +636,25 @@ function purge_item_action_form($form, &$form_state, $item_type, $item_name, $ac
       }
     }
   }
-  elseif ($action == 'delete') {
+  // Unown action.
+  else {
+    return;
+  }
+  $bundle->save();
+  drupal_set_message('Saved');
+  drupal_goto('admin/config/system/purge');
+
+}
+
+
+/**
+ * Form for simple yes/no operations on items.
+ */
+function purge_item_action_form($form, &$form_state, $item_type, $item_name, $action) {
+  // Get the bundle and the item.
+  $bundle = new PurgeBundleBasic();
+  $item = $bundle->{$item_type}[$item_name];
+  if ($action == 'delete') {
     $actioned = t('deleted');
     // Check if we have access to delete this item.
     if (in_array(PURGE_ACCESS_FULL, $item->access)) {
@@ -696,23 +726,12 @@ function purge_item_action_form($form, &$form_state, $item_type, $item_name, $ac
         ),
         'cancel' => array(
           '#type' => 'submit',
+          '#name' => 'cancel',
           '#value' => t('Cancel'),
-          '#submit' => array('purge_item_action_form_cancel'),
+          '#submit' => array('purge_form_button_callback'),
         ),
       );
     }
-    else {
-      //Save the bundle;
-      $bundle->save();
-
-     // drupal_set_message(t('@item_type blabla @item_name was @actioned'), array(
-      //  '@item_type' => $bundle->type[$item_type]->name,
-       // '@item_name' => $bundle->{$item_type}[$item_name]->name,
-       // '@actioned' => $actioned,
-     // ));
-      $form_state['redirect'] = 'admin/config/system/purge';
-    }
-
   }
   return $form;
 }
@@ -728,15 +747,54 @@ function purge_item_action_form_submit($form, &$form_state) {
   $action = $form_state['values']['action'];
   $item = $bundle->{$item_type}[$item_name];
 
+  // Perform the action.
+  if ($action == 'delete') {
+    // Delete the item from the bundle.
+    $item_name_full = $item->name;
+    unset($bundle->{$item_type}[$item_name]);
+    // Save the bundle.
+    $bundle->save();
+    // Display a status message.
+    drupal_set_message(t('@item_name is now deleted.', array('@item_name' => drupal_ucfirst($item_name_full))));
+  }
+
   $form_state['redirect'] = 'admin/config/system/purge';
   return $form;
 }
 
 /**
- * Simple form callback to redirect to the main page.
+ * Simple form callback to redirect after a form button is clicked.
  */
-function purge_item_action_form_cancel($form, &$form_state) {
-  $form_state['redirect'] = 'admin/config/system/purge';
+function purge_form_button_callback($form, &$form_state) {
+  // Cancel button.
+  if ($form_state['clicked_button']['#name'] == 'cancel') {
+    // Redirect to main page.
+    $form_state['redirect'] = 'admin/config/system/purge';
+  }
+  // Enable button.
+  elseif ($form_state['clicked_button']['#name'] == 'enable') {
+    $form_state['redirect'] = 'admin/config/system/purge/enable/'
+      . $form_state['values']['item_type'] . '/'
+      . $form_state['values']['machine_name']
+    ;
+  }
+  // Disable button.
+  elseif ($form_state['clicked_button']['#name'] == 'disable') {
+    $form_state['redirect'] = 'admin/config/system/purge/disable/'
+      . $form_state['values']['item_type'] . '/'
+      . $form_state['values']['machine_name']
+    ;
+  }
+  // Delete button.
+  elseif ($form_state['clicked_button']['#name'] == 'delete') {
+    $form_state['redirect'] = 'admin/config/system/purge/delete/'
+      . $form_state['values']['item_type'] . '/'
+      . $form_state['values']['machine_name']
+    ;
+  }
+
+
+
 
   return $form;
 }

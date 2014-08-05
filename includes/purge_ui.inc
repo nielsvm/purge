@@ -30,7 +30,7 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
   );
   $options = array();
   // Get all basic configuration.
-  $bundle = new PurgeBundleBasic();
+  $bundle = new PurgeBundleFull();
   // See if the type was passed as an agruement.
   if ($item_type) {
     $types = array($item_type);
@@ -129,7 +129,7 @@ function purge_configuration_form($form, &$form_state, $item_type = NULL) {
  */
 function purge_item_add_form($form, &$form_state, $item_type) {
   // Load the bundle.
-  $bundle = new PurgeBundleBasic();
+  $bundle = new PurgeBundleFull();
   // And load the example bundle.
   module_load_include('inc', 'purge', 'includes/defaults');
   $example_bundle = new PurgeBundleExample();
@@ -210,7 +210,7 @@ function purge_item_add_form_submit($form, &$form_state) {
  */
 function purge_item_form($form, &$form_state, $item_type, $item_name = NULL, $action = 'view') {
   // First lets load a bundle.
-  $bundle = new PurgeBundleBasic();
+  $bundle = new PurgeBundleFull();
   // Select the object we need for this form.
   if ($action == 'add') {
     switch ($item_type) {
@@ -600,7 +600,7 @@ function purge_item_form_submit($form, &$form_state) {
  */
 function purge_item_action_callback($item_type, $item_name, $action) {
   // Get the bundle and the item.
-  $bundle = new PurgeBundleBasic();
+  $bundle = new PurgeBundleFull();
   $item = $bundle->{$item_type}[$item_name];
   $access = FALSE;
   // Check if we can enable/disable this item.
@@ -655,7 +655,7 @@ function purge_item_action_callback($item_type, $item_name, $action) {
  */
 function purge_item_action_form($form, &$form_state, $item_type, $item_name, $action) {
   // Get the bundle and the item.
-  $bundle = new PurgeBundleBasic();
+  $bundle = new PurgeBundleFull();
   $item = $bundle->{$item_type}[$item_name];
   if ($action == 'delete') {
     $actioned = t('deleted');
@@ -744,7 +744,7 @@ function purge_item_action_form($form, &$form_state, $item_type, $item_name, $ac
  */
 function purge_item_action_form_submit($form, &$form_state) {
   // load the bundle and the item.
-  $bundle = new PurgeBundleBasic();
+  $bundle = new PurgeBundleFull();
   $item_type = $form_state['values']['item_type'];
   $item_name = $form_state['values']['item_name'];
   $action = $form_state['values']['action'];
@@ -840,7 +840,7 @@ function purge_option_form($option) {
  * @return object $bundle
  */
 function purge_item_form_load($form, &$form_state) {
-  $bundle = new PurgeBundleBasic;
+  $bundle = new PurgeBundleFull;
   $item_action = $form_state['values']['item_action'];
   // See what action is to be taken.
   $item_name = $form_state['values']['machine_name'];
@@ -954,7 +954,7 @@ function purge_item_form_load($form, &$form_state) {
 function purge_item_name_exists($item_name) {
   $error = 0;
   // Get a basic bundle.
-  $bundle = new PurgeBundleBasic();
+  $bundle = new PurgeBundleFull();
   foreach($bundle->type as $type_name => $type) {
     if ($type_name == $item_name) {
       $error = 1;

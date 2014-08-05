@@ -474,7 +474,6 @@ class PurgeItemPurgerBasicUrl extends PurgeItemPurger implements PurgeProcessabl
   public function process_url($purgeable_url) {
     $purges = array();
     // First set all processable items with the purgeable data.
-    // echo $purgeable_type;
     foreach ($this->pointers as $pointer_type => $pointers) {
       foreach ($pointers as $pointer_name) {
         if ($pointer_type != 'handler') {
@@ -539,8 +538,18 @@ class PurgeItemPurgerBasicUrl extends PurgeItemPurger implements PurgeProcessabl
 
 /**
  * Class definition for basic bundles.
+ *
+ * Bundles are objects containing purposed set of properties and methods,
+ * depending on its subclass.
+ *
+ * This is a basic parent class.
  */
-Class PurgeBundleBasic {
+class PurgeBundleBasic {
+  /**
+   * Holds and array of objects of the type PurgeItemType.
+   *
+   * @see PurgeItemType
+   */
   public $type = array();
   public $purger = array();
   public $target = array();
@@ -548,29 +557,6 @@ Class PurgeBundleBasic {
   public $header = array();
   public $queue = array();
   public $handler = array();
-
-  /**
-   * Constructor for the basic bundle.
-   */
-  public function __construct() {
-    // Get the data from the given dataset.
-    $select_data = $this->get_data();
-    // Then get the datastructure of the types up.
-    foreach ($select_data['type'] as $type_name => $type_data) {
-      $this->type[$type_name] = unserialize($type_data);
-      // And create an object for each item
-      foreach ($select_data[$type_name] as $item_name => $item_data) {
-        $this->{$type_name}[$item_name] = unserialize($item_data);
-      }
-    }
-    // Purgers need special handling
-    foreach ($this->purger as $purger_name => $purger) {
-      // Each type name that is a pointer.
-      foreach ($purger->pointers as $pointer_type => $item_names ) {
-        $this->purger[$purger_name]->{$pointer_type} = array();
-      }
-    }
-  }
 
   /**
    * Function to select data from the dataset.
@@ -595,9 +581,41 @@ Class PurgeBundleBasic {
       $this->type[$type_name] = unserialize($type_data);
     }
   }
+}
+
+/**
+ * Provides a full bundle.
+ *
+ * The full bundle contains the complete purge module configuration. Used for
+ * management and operations that require all items, including disabled ones.
+ */
+class PurgeBundleFull extends PurgeBundleBasic {
 
   /**
-   * Validate the bundle.
+   * Constructs the full bundle.
+   */
+  public function __construct() {
+    // Get the data from the given dataset.
+    $select_data = $this->get_data();
+    // Then get the datastructure of the types up.
+    foreach ($select_data['type'] as $type_name => $type_data) {
+      $this->type[$type_name] = unserialize($type_data);
+      // And create an object for each item
+      foreach ($select_data[$type_name] as $item_name => $item_data) {
+        $this->{$type_name}[$item_name] = unserialize($item_data);
+      }
+    }
+    // Purgers need special handling
+    foreach ($this->purger as $purger_name => $purger) {
+      // Each type name that is a pointer.
+      foreach ($purger->pointers as $pointer_type => $item_names ) {
+        $this->purger[$purger_name]->{$pointer_type} = array();
+      }
+    }
+  }
+
+  /**
+   * Validates the bundle.
    *
    * @return array $errors
    */
@@ -619,7 +637,7 @@ Class PurgeBundleBasic {
   }
 
   /**
-   * Save the bundle to the variable.
+   * Saves the bundle to the variable.
    */
   public function save() {
     $data = array();

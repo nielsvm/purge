@@ -161,16 +161,17 @@ abstract class PurgeItemDomain extends PurgeItemBasic {
    * Validate the domains.
    */
   public function validate() {
+    $errors = array();
     foreach ($this->domains as $domain) {
       $pieces = explode(".",$domain);
       foreach($pieces as $piece) {
         if (!preg_match('/^[a-z\d][a-z\d-]{0,62}$/i', $piece) || preg_match('/-$/', $piece) ) {
           $errors[] = array(
-            'provider' => 'purge_domain',
+            'name' => 'domains',
             'message' => t('Invalid domain'),
           );
         }
-        return errors;
+        return $errors;
       }
     }
   }

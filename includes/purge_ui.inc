@@ -188,8 +188,8 @@ function purge_item_add_form($form, &$form_state, $item_type) {
 }
 
 /**
-  *  * Callback for the select button on the template form.
-  *   */
+  *  Callback for the select button on the template form.
+  */
 function purge_item_add_form_submit($form, &$form_state) {
   if (isset($form_state['values']['template_select'])) {
     // New item selected.
@@ -198,8 +198,8 @@ function purge_item_add_form_submit($form, &$form_state) {
     }
     // Example selected.
     else {
-      $form_state['redirect'] = 'admin/config/system/purge/add/' . $form_state['values']['item_type'] .
-        '/' . $form_state['values']['template_select'] . '/example';
+      $form_state['redirect'] = 'admin/config/system/purge/example/' . $form_state['values']['item_type'] .
+        '/' . $form_state['values']['template_select'];
     }
   }
 }
@@ -546,26 +546,29 @@ function purge_item_form_validate($form, &$form_state) {
   $item_type = $form_state['values']['item_type'];
   $item_name = $form_state['values']['machine_name'];
   $item = $bundle->{$item_type}[$item_name];
-  $errors = $item->validate();
-  if (count($errors) == 0) {
+  // Validate if needed.
+  if ($item instanceof PurgeValidateable) {
+    $errors = $item->validate();
+    if (count($errors) == 0) {
     // Validate the bundle.
-   // $errors = $bundle->validate();
-  }
-  // Now set a form error.
-  if (count($errors) > 0) {
-    foreach ($errors as $error) {
-      // Display the errors
-      form_set_error($error['name'], $error['message']);
+     // $errors = $bundle->validate();
     }
-  }
-  else {
-    // Check if we're being triggered by the validate butten.
-    if ($form_state['clicked_button']['#type'] == 'button') {
-      $form_state['rebuild'] == FALSE;
-      drupal_set_message(t('@item_type @item_name validated correctly.', array(
-        '@item_type' => $bundle->type[$item_type]->name,
-        '@item_name' => $form_state['values']['name'],
-      )));
+    // Now set a form error.
+    if (count($errors) > 0) {
+      foreach ($errors as $error) {
+        // Display the errors
+        form_set_error($error['name'], $error['message']);
+      }
+    }
+    else {
+      // Check if we're being triggered by the validate butten.
+      if ($form_state['clicked_button']['#type'] == 'button') {
+        $form_state['rebuild'] == FALSE;
+        drupal_set_message(t('@item_type @item_name validated correctly.', array(
+          '@item_type' => $bundle->type[$item_type]->name,
+          '@item_name' => $form_state['values']['name'],
+        )));
+      }
     }
   }
   return $form;

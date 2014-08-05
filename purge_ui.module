@@ -25,6 +25,15 @@ function purge_menu() {
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'includes/purge_ui.inc',
   );
+  $items['admin/config/system/purge/list/%'] = array(
+    'title'             => 'Configuration Items',
+    'type'              => MENU_NORMAL_ITEM,
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('purge_configuration_form', 5),
+    'access arguments'  => array('administer site configuration'),
+    'file path'         => drupal_get_path('module', 'purge'),
+    'file'              => 'includes/purge_ui.inc',
+  );
   $items['admin/config/system/purge/add/%'] = array(
     'title'             => 'Add Item',
     'type'              => MENU_NORMAL_ITEM,
@@ -43,15 +52,16 @@ function purge_menu() {
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'includes/purge_ui.inc',
   );
-  $items['admin/config/system/purge/list/%'] = array(
-    'title'             => 'Configuration Items',
+  $items['admin/config/system/purge/example/%/%'] = array(
+    'title'             => 'Purge Configuration Item',
     'type'              => MENU_NORMAL_ITEM,
     'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('purge_configuration_form', 5),
+    'page arguments'    => array('purge_item_form', 5, 6,  'example'),
     'access arguments'  => array('administer site configuration'),
     'file path'         => drupal_get_path('module', 'purge'),
     'file'              => 'includes/purge_ui.inc',
   );
+
   $items['admin/config/system/purge/edit/%/%'] = array(
     'title'             => 'Purge Configuration Item',
     'type'              => MENU_NORMAL_ITEM,

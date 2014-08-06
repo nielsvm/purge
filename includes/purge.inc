@@ -39,20 +39,8 @@ interface PurgeValidateable {
  * When the item fails its dependency check it cannot be enabled and will be
  * disabled on the next validation.
  */
-interface PurgeDependable {
-  /**
-   * Declares all the items dependencies.
-   *
-   * @return array $depend
-   */
-  function depends();
+interface PurgeDependable extends PurgeValidateable {
 
-  /**
-   * Checks if the items dependencies are met.
-   *
-   * @return bool $passed
-   */
-  function check_depend();
 }
 
 /**
@@ -117,10 +105,35 @@ interface PurgeProcessableTag {
 abstract class PurgeItemBasic {
   public $name = '';
   public $description = '';
+  public $available = 1;
   public $enabled = 1;
   public $access = array(PURGE_ACCESS_FULL);
   public $provider = 'user';
+  public $item = array();
+  public $depend = array();
   public $options;
+
+  /**
+   * Does basic dependency checks for builtin dependencies.
+   *
+   */
+  public function validate() {
+    $errors = array();
+    // Check if we're a Dependable item or if we have dependencies in the items.
+    if ($this instanceof PurgeDependable || count($this->item['depend']) > 0) {
+      // Check if we have depend objects on board.
+      if (count($this->depend) > 0) {
+        foreach ($this->depend as $depend_name => $depend) {
+          $depend_errors = array();
+          $depend_errors = $depend->validate();
+          foreach ($depend_errors as $depend_error) {
+            $errors[] = $depend_error;
+          }
+        }
+      }
+    }
+    return $errors;
+  }
 }
 
 /**
@@ -131,6 +144,95 @@ abstract class PurgeItemBasic {
  */
 class PurgeItemType extends PurgeItemBasic {
 
+}
+
+/**
+ * Declares dependancies of the dependable items.
+ */
+class PurgeItemDepend extends PurgeItemBasic implements PurgeValidateable {
+
+  /**
+   * Validates the dependency.
+   */
+  public function validate() {
+    $errors = array();
+    return $errors;
+
+  }
+}
+
+/**
+ * Checks if a module is enabled.
+ */
+class PurgeItemDependModule extends PurgeItemDepend {
+  public $modules = array();
+
+  /**
+   * Constructs a module dependency from an array of module.
+   *
+   * @param array $modulenames
+   *
+   */
+  public function __construct($module_names) {
+    foreach($module_names as $module_name) {
+      // @TODO: Check if things change and call reconfigure if needed.
+      $this->modules[$module_name] = module_exists($module_name);
+    }
+  }
+
+  /**
+   * Checks if the modules are installed and enabled.
+   *
+   * @param string $module_name
+   */
+  public function check_depend($module_name = NULL) {
+    $pass = 0;
+    if (!is_null($module_name)) {
+      $modules = array($module_name => 0);
+    }
+    else {
+      $modules = $this->modules;
+    }
+    foreach ($modules as $module_name => $module_status) {
+
+      if (module_exists($module_name)) {
+        $this->module_status[$module_name] = 1;
+        $pass = 1;
+      }
+    }
+    return $pass;
+  }
+}
+
+/**
+ * Checks if the curl library is installed.
+ */
+class PurgeItemDependCurl extends PurgeItemDepend {
+
+  /**
+   * Declares the dependency on the curl library.
+   */
+  public function depends() {
+    $dependables = array(
+      'custom' => array(
+        'curl' => array(
+          'name' => t('The Curl library for PHP.'),
+          'description' => t('Install the curl library.'),
+          'help_link' => 'http://php.net/manual/en/book.curl.php',
+        ),
+      ),
+    );
+    return $dependables;
+  }
+
+
+  /**
+   * Checks if the curl library is installed.
+   */
+  public function check_depend() {
+    $pass = (extension_loaded('curl'));
+    return $pass;
+  }
 }
 
 
@@ -156,7 +258,8 @@ abstract class PurgeItemTarget extends PurgeItemBasic implements PurgeValidateab
         $url = check_plain($url);
         $errors[] = array(
           'name' => 'urls',
-          'message' => t('Target URL @url in target @name is an invalid target URL.', array('@url' => $url, '@name' => $this->name))
+          'message' => t('Target URL @url in target @name is an invalid target URL.',
+            array('@url' => $url, '@name' => $this->name))
         );
       }
     }
@@ -170,6 +273,7 @@ abstract class PurgeItemTarget extends PurgeItemBasic implements PurgeValidateab
 class PurgeItemTargetStatic extends PurgeItemTarget implements PurgeValidateable {
 
 }
+
 
 /**
  * Class definition for the Drupal Target.
@@ -285,7 +389,6 @@ class PurgeItemQueueFake extends PurgeItemQueue {
     $queue_bundle = new PurgeBundleQueue($this->queue);
     $queue_bundle->execute($this->queue);
   }
-
 }
 
 /**
@@ -354,16 +457,6 @@ class PurgeItemQueueRunner extends PurgeItemQueue implements PurgeDependable {
     return $dependables;
   }
 
-  /**
-   * Checks if the Queue RUnner module is installed and enabled.
-   */
-  public function check_depend() {
-    // Check if the Queue Runner module is enabled.
-    $pass = module_exists('queue_runner');
-
-
-    return $pass;
-  }
 }
 
 

@@ -8,7 +8,7 @@
 /**
  * Class definition for the Defaults Bundle.
  */
-class PurgeBundleDefault extends PurgeBundleBasic {
+class PurgeBundleDefault extends PurgeBundleFull {
 
   /**
    * Construct the default bundle.
@@ -30,14 +30,6 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->type['domain']->enabled = 1;
     $this->type['domain']->access = array(PURGE_ACCESS_FULL);
     $this->type['domain']->provider = 'purge_default';
-    $this->type['domain']->options = array(
-      'purgeable_url_domain' => array(
-        'name' => t('Purgeable URL Domain'),
-        'context' => 'type',
-        'description' => t('This wil use the domain supplies in by the purgeable url.'),
-        'default_value' => 1,
-      ),
-    );
 
     // Header type definition.
     $this->type['header'] = new PurgeItemType();
@@ -144,6 +136,13 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->domain['drupal_domain']->provider = 'purge_default';
     $this->domain['drupal_domain']->domains = array();
 
+    $this->domain['purgeable_url_domain'] = new PurgeItemDomainPurgeableUrl();
+    $this->domain['purgeable_url_domain']->name = t('Purgeable URL Domain');
+    $this->domain['purgeable_url_domain']->description = t('Use the domain name provided by the Purgeable URL.');
+    $this->domain['purgeable_url_domain']->enabled = 1;
+    $this->domain['purgeable_url_domain']->access = array(PURGE_ACCESS_LIST,PURGE_ACCESS_ENABLE);
+    $this->domain['purgeable_url_domain']->provider = 'purge_default';
+
 
     // Header definitions.
     // The Gzip header.
@@ -153,7 +152,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
       'The Gzip header enables compression and is enabled by default on most http clients.'
     );
     $this->header['gzip']->enabled = 1;
-    $this->header['gzip']->access = array(PURGE_ACCESS_LIST,PURGE_ACCESS_ENABLE,PURGE_ACCESS_VIEW);
+    $this->header['gzip']->access = array(PURGE_ACCESS_LIST,PURGE_ACCESS_CLONE,PURGE_ACCESS_VIEW);
     $this->header['gzip']->provider = 'purge_default';
     $this->header['gzip']->headers = array('Accept-Encoding' => 'gzip');
 
@@ -192,28 +191,7 @@ class PurgeBundleDefault extends PurgeBundleBasic {
     $this->handler['drupal_http_request']->options = array(
       'method' => 'http_purge',
     );
-  }
 
-
-  /**
-   * Save the Defaults.
-   *   Will overwrite all existing configurations!
-   */
-  public function save() {
-    parent::save();
-  }
-}
-
-/**
- * Class definition for the Dependency Bundle.
- *   These items have dependencies and are only offered when these are met.
- */
-class PurgeBundleDepend extends PurgeBundleAPI {
-
-  /**
-   * Construct.
-   */
-  public function __construct() {
     // Curl Single Handler
     $this->handler['curl'] = new PurgeItemHandlerCurl();
     $this->handler['curl']->name = t('Curl');
@@ -241,16 +219,7 @@ class PurgeBundleDepend extends PurgeBundleAPI {
       'non_blocking' => 1,
     );
   }
-  /**
-   * Save the Defaults.
-   *   Will overwrite all existing configurations!
-   */
-  public function save() {
-    parent::save();
-  }
 }
-
-
 
 
 /**
@@ -287,7 +256,7 @@ class PurgeBundleExample extends PurgeBundleBasic {
     $this->domain['current_domain']->domains = $item_domain_drupal->domains[0];
 
     // Headers
-    // Purgerss
+    // Purgers
 
     // Now create the purger objects
     $this->purger['minimal_purger'] = new PurgeItemPurgerBasicUrl();
@@ -297,9 +266,6 @@ class PurgeBundleExample extends PurgeBundleBasic {
     $this->purger['minimal_purger']->access = array(PURGE_ACCESS_FULL);
     $this->purger['minimal_purger']->provider = 'purge_example';
     $this->purger['minimal_purger']->options = array(
-      'domain' => array(
-        'purgeable_url_domain' => 1,
-      ),
       'handler' => array(
         'method' => 'http_purge',
       ),
@@ -322,9 +288,6 @@ class PurgeBundleExample extends PurgeBundleBasic {
     $this->purger['default_purger']->access = array(PURGE_ACCESS_FULL);
     $this->purger['default_purger']->provider = 'purge_example';
     $this->purger['default_purger']->options = array(
-      'domain' => array(
-        'purgeable_url_domain' => 0,
-      ),
       'handler' => array(
         'method' => 'http_ban',
         'multi' => 0,

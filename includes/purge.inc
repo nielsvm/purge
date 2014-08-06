@@ -20,12 +20,46 @@ define('PURGE_ACCESS_FULL', 6);
 
 
 /**
- * Defines validateable items.
+ * Validates the item.
  *
  * The item can validates it's own settings.
  */
 interface PurgeValidateable {
+  /**
+   * Validates the item.
+   *
+   * @return array $errors
+   */
   function validate();
+}
+
+/**
+ * Makes the item dependable on other items, modules or custom requirements.
+ *
+ * When the item fails its dependency check it cannot be enabled and will be
+ * disabled on the next validation.
+ */
+interface PurgeDependable {
+  /**
+   * Declares all the items dependencies.
+   *
+   * @return array $depend
+   */
+  function depends();
+
+  /**
+   * Checks if the items dependencies are met.
+   *
+   * @return bool $passed
+   */
+  function check_depend();
+}
+
+/**
+ * Configures the item.
+ */
+interface PurgeConfigurable {
+  function configure();
 }
 
 /**
@@ -185,6 +219,23 @@ class PurgeItemDomainStatic extends PurgeItemDomain {
 }
 
 /**
+ * Used the domain supplied by the purgeable url.
+ */
+class PurgeItemDomainPurgeableUrl extends PurgeItemDomain implements PurgeProcessableUrl {
+
+  /**
+   * Get the domain name from the url and set it as the current domains value.
+   */
+  public function process_url($url) {
+    // Whipe the current value.
+    $this->domains = array();
+    // parse the url.
+    $this->domain[] = parse_url($url, PHP_URL_HOST);
+  }
+}
+
+
+/**
  * Class definition for the Drupal domain item.
  */
 class PurgeItemDomainDrupal extends PurgeItemDomain implements PurgeCacheable {
@@ -234,14 +285,16 @@ class PurgeItemQueueFake extends PurgeItemQueue {
     $queue_bundle = new PurgeBundleQueue($this->queue);
     $queue_bundle->execute($this->queue);
   }
+
 }
 
 /**
- * Defines the Queue Runner Queue.
- *   Uses the Queue Runner module to off load purges to a daemon, allowing
- *   continues and un-delayed purging.
+ * Use the Queue Runner Queue.
+ *
+ * Uses the Queue Runner module to off load purges to a daemon, allowing
+ * continues and un-delayed purging.
  */
-class PurgeItemQueueRunner extends PurgeItemQueue {
+class PurgeItemQueueRunner extends PurgeItemQueue implements PurgeDependable {
   public $queue = array();
 
   /**
@@ -255,7 +308,64 @@ class PurgeItemQueueRunner extends PurgeItemQueue {
 
     queue_runner_add($task, 'purge_worker_callback');
   }
+
+  /**
+   * Validates all depedencies.
+   */
+  public function validate() {
+    $errors = array();
+    $pass = $this->check_depend();
+    if (!$pass) {
+      $dependables = $this->depends();
+      foreach ($dependable as $dependable_name => $dependable) {
+        if ($dependable['pass'] == 0) {
+          $errors[] = array(
+            'name' => $dependable_name,
+            'message' => $dependable['description'],
+          );
+        }
+      }
+    }
+    return $errors;
+  }
+
+  /**
+   * Declares the module dependancy for the Queue Runner module.
+   */
+  public function depends() {
+    $description = t('Install and enable the Queue Runner module.');
+    // Check the dependecy
+    $pass = $this->check_depend();
+
+    if ($pass) {
+      $description = t('Queue Runner module enabled.');
+    }
+    $dependables = array(
+      'module' => array(
+        'queue_runner' => array(
+          'type' => 'contrib_module',
+          'name' => t('Queue Runner'),
+          'description' => $description,
+          'help url' => 'http://drupal.org/project/queue_runner',
+          'pass' => $pass,
+        ),
+      ),
+    );
+    return $dependables;
+  }
+
+  /**
+   * Checks if the Queue RUnner module is installed and enabled.
+   */
+  public function check_depend() {
+    // Check if the Queue Runner module is enabled.
+    $pass = module_exists('queue_runner');
+
+
+    return $pass;
+  }
 }
+
 
 /**
  * Class definition for Handlers.
@@ -294,7 +404,7 @@ class PurgeItemHandlerDrupal extends PurgeItemHandler {
 /**
  * Class definition for the Curl HTTP request library.
  */
-class PurgeItemHandlerCurl extends PurgeItemHandler {
+class PurgeItemHandlerCurl extends PurgeItemHandler implements PurgeDependable {
 
   /**
    * Funtion will determine what options are set and call the right execute
@@ -391,6 +501,30 @@ class PurgeItemHandlerCurl extends PurgeItemHandler {
     return $curl_request;
   }
 
+  /**
+   * Declares the dependency on the curl library.
+   */
+  public function depends() {
+    $dependables = array(
+      'custom' => array(
+        'curl' => array(
+          'name' => t('The Curl library for PHP.'),
+          'description' => t('Install the curl library.'),
+          'help_link' => 'http://php.net/manual/en/book.curl.php',
+        ),
+      ),
+    );
+    return $dependables;
+  }
+
+
+  /**
+   * Checks if the curl library is installed.
+   */
+  public function check_depend() {
+    $pass = (extension_loaded('curl'));
+    return $pass;
+  }
 }
 
 /**
@@ -544,7 +678,7 @@ class PurgeItemPurgerBasicUrl extends PurgeItemPurger implements PurgeProcessabl
  *
  * This is a basic parent class.
  */
-class PurgeBundleBasic {
+abstract class PurgeBundleBasic {
   /**
    * Holds and array of objects of the type PurgeItemType.
    *
@@ -566,7 +700,7 @@ class PurgeBundleBasic {
   public function get_data() {
     // Get the data from the given dataset.
     $data = array();
-    $data = variable_get('purge_config');
+    $data = variable_get('purge_config', NULL);
 
     return $data;
   }
@@ -589,7 +723,7 @@ class PurgeBundleBasic {
  * The full bundle contains the complete purge module configuration. Used for
  * management and operations that require all items, including disabled ones.
  */
-class PurgeBundleFull extends PurgeBundleBasic {
+class PurgeBundleFull extends PurgeBundleBasic implements PurgeValidateable {
 
   /**
    * Constructs the full bundle.
@@ -613,6 +747,33 @@ class PurgeBundleFull extends PurgeBundleBasic {
       }
     }
   }
+
+  /**
+   * Merges another bundle into this one.
+   *
+   * @param object $merge_bundle
+   *   A bundle, instance of PurgeBundleBasic.
+   * @param bool $overwrite
+   *   Overwrites with the merge bundle value should a duplicate be found.
+   */
+  public function merge($merge_bundle, $overwrite = 1) {
+    // First check if this is actually another bundle.
+    if (!$merge_bundle instanceof PurgeBundleBasic) {
+      return;
+    }
+    // Loop through all types.
+    foreach ($this->type as $type_name => $type) {
+      // Walk the merge bundle item.
+      foreach ($merge_bundle->{$type_name} as $item_name => $item) {
+        // Check if the item exists in this bundle.
+        if ($overwrite == 1 || !isset($this->{$type_name}[$item_name])) {
+          // Set the merged item.
+          $this->{$type_name}[$item_name] = clone $merge_bundle->{$type_name}[$item_name];
+        }
+      }
+    }
+  }
+
 
   /**
    * Validates the bundle.
@@ -798,34 +959,11 @@ class PurgeBundleQueue extends PurgeBundleBasic {
 }
 
 /**
- * Class definition for the API Bundle class.
+ * Contains items offered by modules implementing the Purge API.
+ *
  */
-class PurgeBundleAPI extends PurgeBundleBasic {
+abstract class PurgeBundleAPI extends PurgeBundleBasic {
   public $api = array();
-
-  /**
-   * Save function.
-   *   For API Bundles this merges the API bundle into the current
-   *   configuration.
-   */
-  public function save() {
-    // Get the currently configured bundle.
-    $bundle = new PurgeBundleBasic();
-
-    // Loop through the types.
-    foreach ($bundle->type as $type_name => $type) {
-      // Now pass each items of this API bundle.
-      foreach ($this->{$type_name} as $item_name => $item) {
-        // Overwrite the bundle
-        $bundle->{$type_name}[$item_name] = $item;
-      }
-    }
-    // Delete items no longer in the API bundle.
-    //    unset($bundle->{$type_name}[$item_name]);
-
-    // Save the bundle
-    $bundle->save();
-  }
 }
 
 /**
@@ -856,26 +994,14 @@ function purge_queue_execute($queue_items) {
  */
 function purge_configure($api = NULL) {
   // Start out by fetching the currently configured bundle.
-  $bundle = new PurgeBundleBasic();
+  $bundle = new PurgeBundleFull();
 
-  // Then get the Depend bundle.
-  $depend_bundle = new PurgeBundleDepend();
-  $depend_bundle->save();
-
-  $modifed_bundle = new PurgeBundleBasic();
   // Invoke hook_purge_configure to get the api bundle.
   $api_modules = module_implements('purge_configure');
   foreach ($api_modules as $api_module) {
     $api_bundle = module_invoke($api_module, 'purge_configure', $api);
-
-    // Loop through the types.
-    foreach ($bundle->type as $type_name => $type) {
-      // Now pass each items of this API bundle.
-      foreach ($api_bundle->{$type_name} as $item_name => $item) {
-        // Overwrite the bundle
-        $bundle->{$type_name}[$item_name] = $item;
-      }
-    }
+    // Merge the API bundle into the main one.
+    $bundle->merge($api_bundle);
   }
   // Save the bundle.
   $bundle->save();

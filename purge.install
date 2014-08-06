@@ -17,13 +17,12 @@ module_load_include('inc', 'purge', 'includes/defaults');
 function purge_install() {
   // Add the default  configurations
   $bundle = new PurgeBundleDefault();
-  $bundle->save();
 
-  $depend_bundle =  new PurgeBundleDepend();
-  $depend_bundle->save();
+
   // Reconfigure to load Depend and API bundles.
-  purge_configure();
+  // $bundle->configure();
 
+  $bundle->save();
 }
 
 /**

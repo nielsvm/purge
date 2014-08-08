@@ -1,0 +1,8 @@
+services:
+  # Define a fake cache bin by tagging it with cache.bin. This only implements
+  # methods to clear cache tags.
+  purge_core_invalidation.listener:
+    class: Drupal\purge_core_invalidation\CacheTagDeletionListener
+    arguments: ['@purge.queue', '@purge.purgeables']
+    tags:
+      - { name: cache.bin }

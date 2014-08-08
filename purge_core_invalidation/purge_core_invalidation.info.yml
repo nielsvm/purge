@@ -1,4 +1,4 @@
-name: Cache tag queuer
+name: Purge core invalidation
 type: module
 description: 'Queues all cleared Drupal cache tags, which is essential if you want your content changes purged.'
 package: Purge

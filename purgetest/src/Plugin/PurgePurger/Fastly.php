@@ -7,7 +7,7 @@
 
 namespace Drupal\purgetest\Plugin\PurgePurger;
 
-use Guzzle\Http\Client as HttpClient;
+use Drupal\Core\Http\Client as HttpClient;
 use Drupal\purge\Purger\PurgerBase;
 use Drupal\purge\Purgeable\PurgeableInterface;
 
@@ -18,7 +18,7 @@ use Drupal\purge\Purgeable\PurgeableInterface;
  *   id = "fastly",
  *   label = @Translation("Fastly"),
  *   description = @Translation("A purger that purges the Fastly CDN."),
- *   service_dependencies = {"http_default_client"}
+ *   service_dependencies = {"http_client"}
  * )
  */
 class Fastly extends PurgerBase {
@@ -26,10 +26,10 @@ class Fastly extends PurgerBase {
   /**
    * Instantiate the fastly purger.
    *
-   * @param Guzzle\Http\Client $http_default_client
+   * @param \Drupal\Core\Http\Client $http_client
    *   The default HTTP client service.
    */
-  function __construct(HttpClient $http_default_client) {
+  function __construct(HttpClient $http_client) {
   }
 
   /**
@@ -44,6 +44,13 @@ class Fastly extends PurgerBase {
    * {@inheritdoc}
    */
   public function purgeMultiple(array $purgeables) {
+    throw new \Exception('Not yet implemented');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getClaimTimeHint() {
     throw new \Exception('Not yet implemented');
   }
 

@@ -9,6 +9,7 @@ namespace Drupal\purge\Queue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Purgeable\PurgeablesServiceInterface;
@@ -54,23 +55,20 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
   /**
    * Instantiate the queue service.
    *
+   * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
+   *   The plugin manager for this service.
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $service_container
    *   The service container.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Traversable $container_namespaces
-   *   An object that implements \Traversable which contains the root paths
-   *   keyed by the corresponding namespace to look for plugin implementations.
    * @param \Drupal\purge\Purgeable\PurgeablesServiceInterface $purge_purgeables
    *   The service that instantiates purgeable objects for claimed queue items.
    */
-  function __construct(ContainerInterface $service_container, ConfigFactoryInterface $config_factory, \Traversable $container_namespaces, PurgeablesServiceInterface $purge_purgeables) {
+  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, ConfigFactoryInterface $config_factory, PurgeablesServiceInterface $purge_purgeables) {
+    $this->pluginManager = $pluginManager;
     $this->serviceContainer = $service_container;
     $this->configFactory = $config_factory;
     $this->purgePurgeables = $purge_purgeables;
-
-    // Initialize the plugin discovery, factory and set container_namespaces.
-    $this->initializePluginDiscovery($container_namespaces, 'PurgeQueue');
 
     // Initialize the queue plugin as configured in purge.queue.yml.
     $this->initializeQueue();
@@ -92,10 +90,10 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
    */
   public function getPlugins($simple = FALSE) {
     if (!$simple) {
-      return $this->discovery->getDefinitions();
+      return $this->pluginManager->getDefinitions();
     }
     $plugins = array();
-    foreach ($this->discovery->getDefinitions() as $plugin) {
+    foreach ($this->pluginManager->getDefinitions() as $plugin) {
       $plugins[$plugin['id']] = sprintf('%s: %s', $plugin['label'], $plugin['description']);
     }
     return $plugins;
@@ -114,7 +112,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
       $plugin_id = $this->configFactory->get('purge.queue')->get('plugin');
 
       // Test if the configured queue is a valid and existing queue plugin.
-      if (is_null($this->discovery->getDefinition($plugin_id))) {
+      if (is_null($this->pluginManager->getDefinition($plugin_id))) {
         throw new InvalidQueueConfiguredException(
           "The queue plugin '$plugin_id' does not exist.");
       }
@@ -132,7 +130,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
 
     // Lookup the plugin ID, definition and class from the discoverer.
     $plugin_id = current($this->getPluginsLoaded());
-    $plugin_definition = $this->discovery->getDefinition($plugin_id);
+    $plugin_definition = $this->pluginManager->getDefinition($plugin_id);
     $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
 
     // Retrieve all the requested service arguments.

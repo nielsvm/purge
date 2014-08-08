@@ -8,6 +8,7 @@
 namespace Drupal\purge\Purger;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\ServiceBase;
@@ -40,20 +41,17 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
   /**
    * Instantiate the purger service.
    *
+   * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
+   *   The plugin manager for this service.
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $service_container
    *   The service container.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Traversable $container_namespaces
-   *   An object that implements \Traversable which contains the root paths
-   *   keyed by the corresponding namespace to look for plugin implementations.
    */
-  function __construct(ContainerInterface $service_container, ConfigFactoryInterface $config_factory, \Traversable $container_namespaces) {
+  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, ConfigFactoryInterface $config_factory) {
+    $this->pluginManager = $pluginManager;
     $this->serviceContainer = $service_container;
     $this->configFactory = $config_factory;
-
-    // Initialize the plugin discovery, factory and set container_namespaces.
-    $this->initializePluginDiscovery($container_namespaces, 'PurgePurger');
 
     // Instantiate all the purgers and let them configure themselves.
     $this->initializePurgers();
@@ -72,7 +70,7 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
   public function getPlugins($simple = FALSE) {
     static $definitions;
     if (is_null($definitions)) {
-      $definitions = $this->discovery->getDefinitions();
+      $definitions = $this->pluginManager->getDefinitions();
       unset($definitions['dummy']);
     }
     if (!$simple) {
@@ -98,7 +96,7 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
       // in 'purge.purger.yml' is set to 'automatic_detection', else those
       // plugins therein specified are loaded.
       if ($plugins == 'automatic_detection') {
-        foreach (array_keys($this->discovery->getDefinitions()) as $plugin_id) {
+        foreach (array_keys($this->pluginManager->getDefinitions()) as $plugin_id) {
           if ($plugin_id !== 'dummy') {
             $plugin_ids[] = $plugin_id;
           }
@@ -110,7 +108,7 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
           if ($plugin_id === 'dummy') {
             continue;
           }
-          elseif (!is_null($this->discovery->getDefinition($plugin_id))) {
+          elseif (!is_null($this->pluginManager->getDefinition($plugin_id))) {
             $plugin_ids[] = $plugin_id;
           }
         }
@@ -134,7 +132,7 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
 
     // Iterate each purger plugin we should load and instantiate them.
     foreach ($this->getPluginsLoaded() as $plugin_id) {
-      $plugin_definition = $this->discovery->getDefinition($plugin_id);
+      $plugin_definition = $this->pluginManager->getDefinition($plugin_id);
       $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
 
       // Prepare the requested service arguments.

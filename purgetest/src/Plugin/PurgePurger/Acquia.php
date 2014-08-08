@@ -47,6 +47,13 @@ class Acquia extends PurgerBase {
   /**
    * {@inheritdoc}
    */
+  public function getClaimTimeHint() {
+    throw new \Exception('Not yet implemented');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getNumberPurged() {
     throw new \Exception('Not yet implemented');
   }

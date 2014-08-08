@@ -7,6 +7,7 @@
 
 namespace Drupal\purge\Purgeable;
 
+use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Purgeable\PurgeablesServiceInterface;
@@ -20,12 +21,11 @@ class PurgeablesService extends ServiceBase implements PurgeablesServiceInterfac
   /**
    * Instantiates a PurgeablesService.
    *
-   * @param \Traversable $container_namespaces
-   *   An object that implements \Traversable which contains the root paths
-   *   keyed by the corresponding namespace to look for plugin implementations.
+   * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
+   *   The plugin manager for this service.
    */
-  public function __construct(\Traversable $container_namespaces) {
-    $this->initializePluginDiscovery($container_namespaces, 'PurgePurgeable');
+  public function __construct(PluginManagerInterface $pluginManager) {
+    $this->pluginManager = $pluginManager;
   }
 
   /**
@@ -49,7 +49,7 @@ class PurgeablesService extends ServiceBase implements PurgeablesServiceInterfac
    * @return \Drupal\purge\Purgeable\PurgeableInterface
    */
   private function createInstance($plugin_id, $representation) {
-    $plugin_definition = $this->discovery->getDefinition($plugin_id);
+    $plugin_definition = $this->pluginManager->getDefinition($plugin_id);
     $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
 
     // Instantiate the purgeable and immediately set its plugin ID.
@@ -72,7 +72,7 @@ class PurgeablesService extends ServiceBase implements PurgeablesServiceInterfac
    */
   public function matchFromStringRepresentation($representation) {
     $match = NULL;
-    foreach ($this->discovery->getDefinitions() as $type) {
+    foreach ($this->pluginManager->getDefinitions() as $type) {
       try {
         $match = $this->createInstance($type['id'], $representation);
       }

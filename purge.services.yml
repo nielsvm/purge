@@ -9,12 +9,12 @@ services:
     arguments: ['@plugin.manager.purge.purger', '@service_container', '@config.factory']
 
   # PURGEABLE: The service to generate purgeable objects, that describe purges.
-  plugin.manager.purge.purgeable:
+  plugin.manager.purge.purgeables:
     class: Drupal\purge\Purgeable\PurgeableManager
     parent: default_plugin_manager
   purge.purgeables:
     class: Drupal\purge\Purgeable\PurgeablesService
-    arguments: ['@plugin.manager.purge.purgeable']
+    arguments: ['@plugin.manager.purge.purgeables']
 
   # QUEUE: The service interface for managing purgeable objects in the queue.
   plugin.manager.purge.queue:

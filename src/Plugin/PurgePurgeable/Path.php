@@ -37,6 +37,10 @@ class Path extends PurgeableBase {
       throw new InvalidStringRepresentationException(
         'A HTTP path should not contain a *.');
     }
+    if (strpos($representation, ':') !== FALSE) {
+      throw new InvalidStringRepresentationException(
+        'A HTTP path should not contain a : and look like a tag.');
+    }
     if (preg_match('/[A-Za-z]/', $representation) === 0) {
       throw new InvalidStringRepresentationException(
         'A HTTP path should have alphabet characters in it.');

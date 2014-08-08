@@ -59,11 +59,12 @@ interface PurgerInterface {
    *
    * This method helps consumers putting the purger to work to determine how
    * many items can be claimed from the queue or processed in total during the
-   * full runtime period of the script. The purger can take environment info
+   * full runtime period of the script. The purger can take environmental data
    * like whether it is running on the CLI or not and combine these with other
-   * things it knows about itself, e.g. the way purging is implemented. Based on
-   * these kind of factors the purger can give a safe hint of how many things
-   * it can purge per script run preventing PHP to crash suddenly.
+   * facts it knows about itself, e.g. the way purging is implemented. Based on
+   * these the purger should give a safe indication of how many items it can
+   * purge per script without exposing the API user to the risk of the current
+   * PHP request/process to crash.
    *
    * @warning
    *   Multiple purgers can be active per Drupal installation which affects the
@@ -80,24 +81,31 @@ interface PurgerInterface {
    * Gets a reasonable number of seconds that this purger thinks it needs per purge.
    *
    * The 'purge.queue' service accepts a expiry time in seconds when one or more
-   * purgeables are being claimed for immediate purging. This method gives a fair
-   * indication of how many seconds this purger thinks it will need per item and
-   * can therefore be used to safely determine the total amount of seconds that
-   * are given back to the queue as expiry time. Let's assume this function returns
-   * 5 seconds for this purger and 10 items are being claimed from the queue, that
-   * means that the queue API should release the claimed items after 50 seconds.
+   * purgeables are being claimed for immediate purging. This method is supposed
+   * to give a indication of how many seconds this purger thinks it will need
+   * for the execution of one single purge. This estimation is then multiplied
+   * for every claimed queue item: so if this method returns 5 (int) and 4 items
+   * are claimed from the queue at once, the total lease expiry time is 20
+   * seconds. If the purger fails to execute all 4 within those 20 seconds, the
+   * queue will release the claimed items and another purger instance may get in
+   * and try them again.
    *
    * @warning
-   *   Every purger should implement this and return a number of seconds that is
-   *   on the safe side but not too overexaggerated, so could 3 seconds be fair for
-   *   an external cache system running on this server and would 10 be better for
-   *   a remotely hosted server with network latency in between.
+   *   Every implemented purger should implement this method and take it very
+   *   seriously, as it strongly influences the performance of the system. Too
+   *   low will result in double purging and many retries, too high might result
+   *   in capacity assumptions being lower than actually true. For a purger
+   *   wiping items on localhost (e.g.: UNIX socket) two seconds can be
+   *   realistic whereas a CDN with a remote purge web-service (+ network
+   *   latency) needs at least 120 seconds for full purge executions. All the
+   *   time taken by your implementation details, need to be taken into account.
    *
    * @warning
-   *   Multiple purgers can be active per Drupal installation which will affect the
-   *   needed claim time, however, implementors should not take this into account. In
-   *   PurgerService::getClaimTimeHint() all values are added up so each purger
-   *   plugin should only return what it thinks it needs.
+   *   Users can configure multiple active purgers at once, for instance on to
+   *   clear a CDN while the other clears a local caching Nginx instance. There
+   *   is however no necessity for implementations of this method to incorporate
+   *   that, as PurgerService::getClaimTimeHint() will automatically add up all
+   *   estimations returned by each individual purger.
    *
    * @return int
    *   Integer, a safe number of seconds where in which one purgeable could be processed.

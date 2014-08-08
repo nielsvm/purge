@@ -1,6 +1,6 @@
-name: Purge
+name: Purge API
 type: module
-description: 'Purge allows you to clear content from external cache systems and CDNs.'
+description: 'Purge provides a generic (external) cache invalidation API. This module provides the means to purge and queue purge instructions.'
 package: Purge
 version: VERSION
 core: 8.x

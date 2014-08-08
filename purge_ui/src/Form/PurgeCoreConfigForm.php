@@ -75,10 +75,8 @@ class PurgeCoreConfigForm extends ConfigFormBase {
   public function buildForm(array $form, array &$form_state) {
     $form['intro'] = array(
       '#type' => 'item',
-      '#description' => $this->t('Purge provides external cache invalidation
-        services in a generic and technology agnostic manner, where service
-        plugins do all the hard work. This form allows you to configure which
-        plugins provide which services.')
+      '#description' => $this->t('The purge module provides a generic (external)
+        cache invalidation interface, technology agnostic.')
     );
 
     // Settings related to the purge.purger service.
@@ -86,7 +84,8 @@ class PurgeCoreConfigForm extends ConfigFormBase {
     $purgers = $this->purgePurger->getPlugins(TRUE);
     $form['purger'] = array(
       '#type' => 'details',
-      '#title' => t('Purger'),
+      '#title' => $this->t('Purger'),
+      '#description' => $this->t('The purger is the plugin that executes purge instructions on the external cache system.'),
       '#open' => TRUE,
     );
     if (empty($purgers)) {
@@ -102,15 +101,15 @@ class PurgeCoreConfigForm extends ConfigFormBase {
         '#default_value' => ($plugins == 'automatic_detection') ? $plugins : 'manual',
         '#type' => 'radios',
         '#options' => array(
-          'automatic_detection' => $this->t('Automatically load all purgers'),
-          'manual' => $this->t('Manual selection'),
+          'automatic_detection' => $this->t('Use all available purgers'),
+          'manual' => $this->t('Select plugins:'),
         ),
       );
       $form['purger']['purger_plugins'] = array(
         '#default_value' => $this->purgePurger->getPluginsLoaded(),
         '#options' => $purgers,
         '#type' => 'checkboxes',
-        '#description' => $this->t('Purgers execute all purgeable instructions.'),
+        '#description' => $this->t('When multiple purgers are enabled, each purge instruction will be sent to all plugins. If one plugin fails to execute a purge, all purgers are considered to have failed.'),
         '#states' => array(
           'disabled' => array(
             ':input[name="purger_detection"]' => array('value' => 'automatic_detection'),
@@ -123,6 +122,7 @@ class PurgeCoreConfigForm extends ConfigFormBase {
     $form['queue'] = array(
       '#type' => 'details',
       '#title' => t('Queue'),
+      '#description' => $this->t('The queue is where purge instructions are getting stored in.'),
       '#open' => TRUE,
     );
     $form['queue']['queue_plugin'] = array(

@@ -75,6 +75,12 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
 
     // Initialize the transaction buffer as empty.
     $this->buffer = array();
+  }
+
+  /**
+   * Commit the queue buffer upon service destruction.
+   */
+  public function __destruct() {
 
     // The queue service attempts to collect all actions done for purgeables
     // in $this->buffer, and commits them as infrequent as possible during
@@ -82,7 +88,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
     // shutdown and by doing so, attempts to reduce and bundle the amount of
     // work the queue has to do (e.g., queries, disk writes, mallocs). This
     // helps purge to scale better and should cause no noticeable side-effects.
-    register_shutdown_function(array($this, 'commit'));
+    $this->commit();
   }
 
   /**

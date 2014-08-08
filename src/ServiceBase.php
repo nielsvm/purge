@@ -31,7 +31,7 @@ abstract class ServiceBase extends ServiceProviderBase implements ServiceInterfa
     }
     $plugins = array();
     foreach ($this->pluginManager->getDefinitions() as $plugin) {
-      $plugins[$plugin['id']] = $plugin['label'];
+      $plugins[$plugin['id']] = (string)$plugin['label'];
     }
     return $plugins;
   }

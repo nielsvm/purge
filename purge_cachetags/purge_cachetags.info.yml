@@ -1,0 +1,8 @@
+name: Cache tag queuer
+type: module
+description: 'Queues all cleared Drupal cache tags, which is essential if you want your content changes purged.'
+package: Purge
+version: VERSION
+core: 8.x
+dependencies:
+  - purge

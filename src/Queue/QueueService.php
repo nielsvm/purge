@@ -14,8 +14,8 @@ use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Purgeable\PurgeablesServiceInterface;
 use Drupal\purge\Purgeable\PurgeableInterface;
-use Drupal\purge\Queue\UnexpectedServiceConditionException;
-use Drupal\purge\Queue\InvalidQueueConfiguredException;
+use Drupal\purge\Queue\Exception\UnexpectedServiceConditionException;
+use Drupal\purge\Queue\Exception\InvalidQueueConfiguredException;
 use Drupal\purge\Queue\QueueInterface;
 
 /**

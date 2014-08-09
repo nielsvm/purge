@@ -8,8 +8,8 @@
 namespace Drupal\purge\Purgeable;
 
 use Drupal\purge\Purgeable\PurgeableInterface;
-use Drupal\purge\Purgeable\InvalidStringRepresentationException;
-use Drupal\purge\Purgeable\InvalidPurgeablePropertyException;
+use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
+use Drupal\purge\Purgeable\Exception\InvalidPurgeablePropertyException;
 
 /**
  * Base purgeable: which instructs the purger what to wipe.

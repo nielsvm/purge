@@ -13,7 +13,7 @@ use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Purger\PurgerServiceInterface;
-use Drupal\purge\Purger\InvalidPurgerBehaviorException;
+use Drupal\purge\Purger\Exception\InvalidPurgerBehaviorException;
 use Drupal\purge\Purgeable\PurgeableInterface;
 
 /**

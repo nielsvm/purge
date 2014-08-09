@@ -10,8 +10,8 @@ namespace Drupal\purge\Purgeable;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\purge\ServiceBase;
+use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
 use Drupal\purge\Purgeable\PurgeablesServiceInterface;
-use Drupal\purge\Purgeable\InvalidStringRepresentationException;
 
 /**
  * Provides a service that instantiates purgeable objects on-demand.

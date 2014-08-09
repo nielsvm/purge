@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purgeable\InvalidStringRepresentationException.
+ * Contains \Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException.
  */
 
-namespace Drupal\purge\Purgeable;
+namespace Drupal\purge\Purgeable\Exception;
 
 /**
  * Exception that gets thrown when no purgeable type supports the input string.

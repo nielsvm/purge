@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purgeable\InvalidPurgeablePropertyException.
+ * Contains \Drupal\purge\Purgeable\Exception\InvalidPurgeablePropertyException.
  */
 
-namespace Drupal\purge\Purgeable;
+namespace Drupal\purge\Purgeable\Exception;
 
 /**
  * Exception thrown when a data property on the purgeable is called that does

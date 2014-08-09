@@ -9,7 +9,7 @@ namespace Drupal\purge\Plugin\PurgePurgeable;
 
 use Drupal\purge\Purgeable\PurgeableBase;
 use Drupal\purge\Plugin\PurgePurgeable\Path;
-use Drupal\purge\Purgeable\InvalidStringRepresentationException;
+use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
 
 /**
  * Describes a path based cache wipe with wildcard, e.g. "news/*".

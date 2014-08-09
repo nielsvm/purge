@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queue\InvalidQueueConfiguredException.
+ * Contains \Drupal\purge\Queue\Exception\InvalidQueueConfiguredException.
  */
 
-namespace Drupal\purge\Queue;
+namespace Drupal\purge\Queue\Exception;
 
 /**
  * Exception thrown when the 'queue' setting in "purge.plugin_detection" is set

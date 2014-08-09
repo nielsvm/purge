@@ -8,7 +8,7 @@
 namespace Drupal\purge\Plugin\PurgePurgeable;
 
 use Drupal\purge\Purgeable\PurgeableBase;
-use Drupal\purge\Purgeable\InvalidStringRepresentationException;
+use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
 
 /**
  * Instructs a full domain or full cache clear, string representation: "*".

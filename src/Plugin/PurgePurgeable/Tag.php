@@ -8,7 +8,7 @@
 namespace Drupal\purge\Plugin\PurgePurgeable;
 
 use Drupal\purge\Purgeable\PurgeableBase;
-use Drupal\purge\Purgeable\InvalidStringRepresentationException;
+use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
 
 /**
  * Describes a cache wipe by Drupal cache tag, e.g.: 'user:1', 'menu:footer'.

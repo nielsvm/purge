@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains Drupal\purge\Purger\UnsupportedPurgeableException.
+ * Contains \Drupal\purge\Purger\Exception\UnsupportedPurgeableException.
  */
 
-namespace Drupal\purge\Purger;
+namespace Drupal\purge\Purger\Exception;
 
 /**
  * Exception thrown by the purger when it does not support the given purgeable.

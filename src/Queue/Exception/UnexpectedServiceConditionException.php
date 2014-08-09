@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queue\UnexpectedServiceConditionException.
+ * Contains \Drupal\purge\Queue\Exception\UnexpectedServiceConditionException.
  */
 
-namespace Drupal\purge\Queue;
+namespace Drupal\purge\Queue\Exception;
 
 /**
  * Exception thrown when the queue plugin is not acting in the way that was

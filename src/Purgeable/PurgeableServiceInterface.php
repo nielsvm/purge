@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purgeable\PurgeablesServiceInterface.
+ * Contains \Drupal\purge\Purgeable\PurgeableServiceInterface.
  */
 
 namespace Drupal\purge\Purgeable;
@@ -12,7 +12,7 @@ use Drupal\purge\ServiceInterface;
 /**
  * Describes a service that instantiates purgeable objects on-demand.
  */
-interface PurgeablesServiceInterface extends ServiceInterface {
+interface PurgeableServiceInterface extends ServiceInterface {
 
   /**
    * Instantiate a purgeable based upon a serialized queue item.

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purgeable\PurgeablesService.
+ * Contains \Drupal\purge\Purgeable\PurgeableService.
  */
 
 namespace Drupal\purge\Purgeable;
@@ -11,15 +11,15 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
-use Drupal\purge\Purgeable\PurgeablesServiceInterface;
+use Drupal\purge\Purgeable\PurgeableServiceInterface;
 
 /**
  * Provides a service that instantiates purgeable objects on-demand.
  */
-class PurgeablesService extends ServiceBase implements PurgeablesServiceInterface {
+class PurgeableService extends ServiceBase implements PurgeableServiceInterface {
 
   /**
-   * Instantiates a PurgeablesService.
+   * Instantiates a PurgeableService.
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
    *   The plugin manager for this service.

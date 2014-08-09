@@ -12,7 +12,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\purge\ServiceBase;
-use Drupal\purge\Purgeable\PurgeablesServiceInterface;
+use Drupal\purge\Purgeable\PurgeableServiceInterface;
 use Drupal\purge\Purgeable\PurgeableInterface;
 use Drupal\purge\Queue\Exception\UnexpectedServiceConditionException;
 use Drupal\purge\Queue\Exception\InvalidQueueConfiguredException;
@@ -36,7 +36,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
   /**
    * The service that generates purgeable objects on-demand.
    *
-   * @var \Drupal\purge\Purgeable\PurgeablesServiceInterface
+   * @var \Drupal\purge\Purgeable\PurgeableServiceInterface
    */
   protected $purgePurgeables;
 
@@ -61,10 +61,10 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
    *   The service container.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\purge\Purgeable\PurgeablesServiceInterface $purge_purgeables
+   * @param \Drupal\purge\Purgeable\PurgeableServiceInterface $purge_purgeables
    *   The service that instantiates purgeable objects for claimed queue items.
    */
-  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, ConfigFactoryInterface $config_factory, PurgeablesServiceInterface $purge_purgeables) {
+  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, ConfigFactoryInterface $config_factory, PurgeableServiceInterface $purge_purgeables) {
     $this->pluginManager = $pluginManager;
     $this->serviceContainer = $service_container;
     $this->configFactory = $config_factory;

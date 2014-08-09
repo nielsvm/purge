@@ -13,7 +13,7 @@ services:
     class: Drupal\purge\Purgeable\PurgeableManager
     parent: default_plugin_manager
   purge.purgeables:
-    class: Drupal\purge\Purgeable\PurgeablesService
+    class: Drupal\purge\Purgeable\PurgeableService
     arguments: ['@plugin.manager.purge.purgeables']
 
   # QUEUE: The service interface for managing purgeable objects in the queue.

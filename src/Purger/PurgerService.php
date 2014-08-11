@@ -152,8 +152,9 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
    */
   public function purge(PurgeableInterface $purgeable) {
 
-    // With just one loaded purger we can simply call purge() on it and finish. Beware that this purge() function
-    // is bound to the same PurgerInterface::purge() so behaviors need to be identical and transparent.
+    // When there is just one loaded purger, we can directly call
+    // PurgerInteface::purge(). As both PurgerService and the loaded plugin are
+    // sharing the same interface, the behavior has to be exactly identical.
     if (count($this->purgers) === 1) {
       if (current($this->purgers)->purge($purgeable)) {
         if ($purgeable->getState() !== PurgeableInterface::STATE_PURGED) {
@@ -165,89 +166,190 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
       return FALSE;
     }
 
-    // When more than one purgers are loaded the situation becomes more complex as one purger could succeed while
-    // another could fail or require purge() to be called twice for it to finish ("purging"). To let this API be
-    // as reliable as possible one failed purge() implies a full failure and returns FALSE, at the risk of letting
-    // something be purged twice by purgers that did succeed the first time.
-    else {
-      $results = array();
-      foreach ($this->purgers as $plugin_id => $purger) {
+    // When multiple purgers are loaded, the situation becomes complexer. One
+    // purger can fail (or require a two-step call), while the other succeeds
+    // when processing a purgeable. For that reason, a single failing purger
+    // will cause this call to return FALSE even if that means that - when
+    // being reattempted - the good purger will purge something twice. This
+    // approach might cause double purging, but prevents unnecessary complexity.
+    foreach ($this->purgers as $plugin_id => $purger) {
 
-        // Set the state of the purgeable to claimed for every new purger that processes it.
-        $purgeable->setState(PurgeableInterface::STATE_CLAIMED);
+      // For every purger that attempts to purge this purgeable, reset its state.
+      $purgeable->setState(PurgeableInterface::STATE_CLAIMED);
 
-        // Call the purger and let it attempt to purge this purgeable.
-        if ($results[] = $purger->purge($purgeable)) {
-          if ($purgeable->getState() !== PurgeableInterface::STATE_PURGED) {
-            throw new InvalidPurgerBehaviorException(
-              "The purger '$plugin_id' returned TRUE without setting state to STATE_PURGED.");
-          }
-        }
-        else {
-          $state = $purgeable->getState();
-          if (!(($state === PurgeableInterface::STATE_PURGEFAILED) || ($state === PurgeableInterface::STATE_PURGING))) {
-            throw new InvalidPurgerBehaviorException(
-              "The purger '$plugin_id' returned FALSE without setting state to PURGING or PURGEFAILED.");
-          }
-
-          // Break the loop as soon as one purger failed. If the purger in the previous iteration succeeded that one
-          // will be repeated, but other purgers to follow will not be even tried anymore.
-          break;
+      // Let this purger; purge the given purgeable and collect the result.
+      if ($results[] = $purger->purge($purgeable)) {
+        if ($purgeable->getState() !== PurgeableInterface::STATE_PURGED) {
+          throw new InvalidPurgerBehaviorException(
+            "The purger '$plugin_id' returned TRUE without setting state to STATE_PURGED.");
         }
       }
-    }
+      else {
+        $state = $purgeable->getState();
+        if (!(($state === PurgeableInterface::STATE_PURGEFAILED) || ($state === PurgeableInterface::STATE_PURGING))) {
+          throw new InvalidPurgerBehaviorException(
+            "The purger '$plugin_id' returned FALSE without setting state to PURGING or PURGEFAILED.");
+        }
 
-    // Return FALSE if one of the purgers failed and set the purgeable to PURGEFAILED.
-    foreach ($results as $result) {
-      if (!$result) {
+        // Since this purger claims that it failed, we assume the entire set of
+        // purgers to have failed. Working purgers might have to repeat purger
+        // this object for no reason, but at least we can assure that this
+        // purgeable was not entirely purged.
         $purgeable->setState(PurgeableInterface::STATE_PURGEFAILED);
         return FALSE;
       }
     }
 
-    // Else return TRUE, and the state will also be PURGED as that would have else caused an exception in the logic above.
+    // No purgers failed and therefore the state certainly is STATE_PURGED, as
+    // the logic above would have caused exceptions to be thrown otherwise.
     return TRUE;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function purgeMultiple(array $purgeables) {return array();
-    throw new \Exception('Not yet implemented');
+  public function purgeMultiple(array $purgeables) {
+
+    foreach ($this->purgers as $plugin_id => $purger) {
+
+      // Set the state of each purgeable object to STATE_CLAIMED.
+      foreach ($purgeables as $purgeable) {
+        $purgeable->setState(PurgeableInterface::STATE_CLAIMED);
+      }
+
+      // Attempt to purge all purgeable objects with this purger.
+      if ($purger->purgeMultiple($purgeables)) {
+
+        // As it succeeded, assure all purgeable objects to be in STATE_PURGED.
+        foreach ($purgeables as $purgeable) {
+          if ($purgeable->getState() !== PurgeableInterface::STATE_PURGED) {
+            throw new InvalidPurgerBehaviorException(
+              "The purger '$plugin_id' returned TRUE without setting state to STATE_PURGED.");
+          }
+        }
+      }
+
+      // Handle failure and assume the full call to have failed.
+      else {
+
+        // When the call failed, check if all purgeables have the right state.
+        foreach ($purgeables as $purgeable) {
+          $state = $purgeable->getState();
+          if (!(($state === PurgeableInterface::STATE_PURGEFAILED) || ($state === PurgeableInterface::STATE_PURGING))) {
+            throw new InvalidPurgerBehaviorException(
+              "The purger '$plugin_id' returned FALSE without setting state to PURGING or PURGEFAILED.");
+          }
+        }
+
+        // Since this purger failed, the entire call fails and returns FALSE.
+        return FALSE;
+      }
+    }
+
+    return TRUE;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCapacityLimit() {
-    throw new \Exception('Not yet implemented');
+    static $limit;
+
+    // As the limit gets cached during this request, calculate it only once.
+    if (is_null($limit)) {
+      $limit = 0;
+
+      // Ask each to report how many purgeable's it thinks it can purge.
+      foreach ($this->purgers as $purger) {
+        $purger_limit = $purger->getCapacityLimit();
+        if (!is_int($purger_limit)) {
+          throw new InvalidPurgerBehaviorException(
+            "The purger '$plugin_id' did not return an integer on getCapacityLimit().");
+        }
+        $limit += $purger_limit;
+      }
+
+      // When multiple purgers are active, we lower the capacity limit.
+      if (count($this->purgers) !== 1) {
+        $limit = (int)floor($limit / count($this->purgers));
+      }
+    }
+
+    return $limit;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getClaimTimeHint() {
-    throw new \Exception('Not yet implemented');
+    static $seconds;
+
+    // We are caching the hint value so that it gets calculated just once.
+    if (is_null($seconds)) {
+      $seconds = 0;
+
+      foreach ($this->purgers as $purger) {
+        $purger_seconds = $purger->getClaimTimeHint();
+        if (!is_int($purger_seconds)) {
+          throw new InvalidPurgerBehaviorException(
+            "The purger '$plugin_id' did not return an integer on getClaimTimeHint().");
+        }
+        elseif ($purger_seconds === 0) {
+          throw new InvalidPurgerBehaviorException(
+            "The purger '$plugin_id' cannot report a 0 seconds claim time on getClaimTimeHint().");
+        }
+        $seconds += $purger_seconds;
+      }
+    }
+
+    return $seconds;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getNumberPurged() {
-    throw new \Exception('Not yet implemented');
+    $successes = 0;
+    foreach ($this->purgers as $purger) {
+      $purger_successes = $purger->getNumberPurged();
+      if (!is_int($purger_successes)) {
+        throw new InvalidPurgerBehaviorException(
+          "The purger '$plugin_id' did not return an integer on getNumberPurged().");
+      }
+      $successes += $purger_successes;
+    }
+    return $successes;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getNumberFailed() {
-    throw new \Exception('Not yet implemented');
+    $failures = 0;
+    foreach ($this->purgers as $purger) {
+      $purger_failures = $purger->getNumberFailed();
+      if (!is_int($purger_failures)) {
+        throw new InvalidPurgerBehaviorException(
+          "The purger '$plugin_id' did not return an integer on getNumberFailed().");
+      }
+      $failures += $purger_failures;
+    }
+    return $failures;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getNumberPurging() {
-    throw new \Exception('Not yet implemented');
+    $purging = 0;
+    foreach ($this->purgers as $purger) {
+      $purger_purging = $purger->getNumberPurging();
+      if (!is_int($purger_purging)) {
+        throw new InvalidPurgerBehaviorException(
+          "The purger '$plugin_id' did not return an integer on getNumberPurging().");
+      }
+      $purging += $purger_purging;
+    }
+    return $purging;
   }
 }

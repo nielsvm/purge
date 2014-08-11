@@ -24,15 +24,22 @@ use Drupal\purge\Purgeable\PurgeableInterface;
 class Dummy extends PurgerBase {
 
   /**
+   * @var int
+   */
+  protected $failures;
+
+  /**
    * Instantiate the dummy purger.
    */
   function __construct() {
+    $this->failures = 0;
   }
 
   /**
    * {@inheritdoc}
    */
   public function purge(PurgeableInterface $purgeable) {
+    $this->failures += 1;
     $purgeable->setState(PurgeableInterface::STATE_PURGEFAILED);
     return FALSE;
   }
@@ -41,34 +48,45 @@ class Dummy extends PurgerBase {
    * {@inheritdoc}
    */
   public function purgeMultiple(array $purgeables) {
-    throw new \Exception('Not yet implemented');
+    foreach ($purgeables as $purgeable) {
+      $this->failures += 1;
+      $purgeable->setState(PurgeableInterface::STATE_PURGEFAILED);
+    }
+    return FALSE;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCapacityLimit() {
-    throw new \Exception('Not yet implemented');
+    return 100;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getClaimTimeHint() {
+    return 1;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getNumberPurged() {
-    throw new \Exception('Not yet implemented');
+    return 0;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getNumberFailed() {
-    throw new \Exception('Not yet implemented');
+    return $this->failures;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getNumberPurging() {
-    throw new \Exception('Not yet implemented');
+    return 0;
   }
 }

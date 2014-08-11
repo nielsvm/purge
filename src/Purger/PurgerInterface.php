@@ -101,7 +101,7 @@ interface PurgerInterface {
    *   time taken by your implementation details, need to be taken into account.
    *
    * @warning
-   *   Users can configure multiple active purgers at once, for instance on to
+   *   Users can configure multiple active purgers at once, for instance one to
    *   clear a CDN while the other clears a local caching Nginx instance. There
    *   is however no necessity for implementations of this method to incorporate
    *   that, as PurgerService::getClaimTimeHint() will automatically add up all

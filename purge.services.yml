@@ -1,25 +1,25 @@
 services:
 
-  # PURGER: The purge executor that lets its purgers process given purgeable's.
-  plugin.manager.purge.purger:
-    class: Drupal\purge\Purger\PurgerManager
-    parent: default_plugin_manager
+  # PURGE.PURGER: The executive service, which processes purgeable objects.
   purge.purger:
     class: Drupal\purge\Purger\PurgerService
     arguments: ['@plugin.manager.purge.purger', '@service_container', '@config.factory']
-
-  # PURGEABLE: The service to generate purgeable objects, that describe purges.
-  plugin.manager.purge.purgeables:
-    class: Drupal\purge\Purgeable\PurgeableManager
+  plugin.manager.purge.purger:
+    class: Drupal\purge\Purger\PurgerManager
     parent: default_plugin_manager
+
+  # PURGE.PURGEABLES: The purgeable object factory.
   purge.purgeables:
     class: Drupal\purge\Purgeable\PurgeableService
     arguments: ['@plugin.manager.purge.purgeables']
-
-  # QUEUE: The service interface for managing purgeable objects in the queue.
-  plugin.manager.purge.queue:
-    class: Drupal\purge\Queue\QueueManager
+  plugin.manager.purge.purgeables:
+    class: Drupal\purge\Purgeable\PurgeableManager
     parent: default_plugin_manager
+
+  # PURGE.QUEUE: The queue in which to store, claim and release purgeable objects from.
   purge.queue:
     class: Drupal\purge\Queue\QueueService
     arguments: ['@plugin.manager.purge.queue', '@service_container', '@config.factory', '@purge.purgeables']
+  plugin.manager.purge.queue:
+    class: Drupal\purge\Queue\QueueManager
+    parent: default_plugin_manager

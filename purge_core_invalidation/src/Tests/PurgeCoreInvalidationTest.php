@@ -44,7 +44,7 @@ class PurgeCoreInvalidationTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('purge', 'purge_core_invalidation');
+  public static $modules = array('purge_core_invalidation');
 
   function setUp() {
     parent::setUp();
@@ -82,7 +82,7 @@ class PurgeCoreInvalidationTest extends WebTestBase {
     }
 
     // The listener should not directly commit tags, test the queue is empty.
-    $this->assertFalse(0, $this->purgeQueue->claim(), 'Tags wiped, cache still empty.');
+    $this->assertFalse($this->purgeQueue->claim(), 'Tags wiped, cache still empty.');
 
     // Call the destructor - which is dirty - to enforce commits to the queue.
     $this->listener->__destruct();

@@ -71,7 +71,7 @@ abstract class PurgeableBase implements PurgeableInterface {
    */
   public function __get($name) {
     if (is_null($this->queueItemInfo)) {
-      $this->initiatlizeQueueItemArray();
+      $this->initializeQueueItemArray();
     }
     if (!in_array($name, $this->queueItemInfo['keys'])) {
       throw new InvalidPurgeablePropertyException(
@@ -85,7 +85,7 @@ abstract class PurgeableBase implements PurgeableInterface {
   /**
    * Initialize $this->queueItemInfo with its standard data.
    */
-  private function initiatlizeQueueItemArray() {
+  private function initializeQueueItemArray() {
     $this->queueItemInfo = array(
       'data' => sprintf('%s>%s', $this->pluginId, $this->representation),
       'item_id' => NULL,
@@ -106,7 +106,7 @@ abstract class PurgeableBase implements PurgeableInterface {
    */
   public function setQueueItemInfo($item_id, $created) {
     if (is_null($this->queueItemInfo)) {
-      $this->initiatlizeQueueItemArray();
+      $this->initializeQueueItemArray();
     }
     $this->queueItemInfo['item_id'] = $item_id;
     $this->queueItemInfo['created'] = $created;
@@ -117,7 +117,7 @@ abstract class PurgeableBase implements PurgeableInterface {
    */
   public function setQueueItemId($item_id) {
     if (is_null($this->queueItemInfo)) {
-      $this->initiatlizeQueueItemArray();
+      $this->initializeQueueItemArray();
     }
     $this->queueItemInfo['item_id'] = $item_id;
   }
@@ -127,7 +127,7 @@ abstract class PurgeableBase implements PurgeableInterface {
    */
   public function setQueueItemCreated($created) {
     if (is_null($this->queueItemInfo)) {
-      $this->initiatlizeQueueItemArray();
+      $this->initializeQueueItemArray();
     }
     $this->queueItemInfo['created'] = $created;
   }

@@ -113,8 +113,8 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
     if (is_null($plugin_id)) {
 
       // The queue service always interacts with just one underlying queue,
-      // which is hardcoded in configuration. Configuring a queue plugin that
-      // does not exist, will cause an exception to be thrown.
+      // which is stored in configuration. Configuring a queue plugin that
+      // does not exist, will cause a InvalidQueueConfiguredException thrown.
       $plugin_id = $this->configFactory->get('purge.queue')->get('plugin');
 
       // Test if the configured queue is a valid and existing queue plugin.

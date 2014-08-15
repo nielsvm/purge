@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains \Drupal\purge_ui\Form\PurgeCoreConfigForm.
+ * Contains \Drupal\purge_ui\Form\PurgeUiMainConfigForm.
  */
 
 namespace Drupal\purge_ui\Form;
@@ -16,7 +16,7 @@ use Drupal\purge\Queue\QueueServiceInterface;
 /**
  * Configure settings for the Purge core APIs.
  */
-class PurgeCoreConfigForm extends ConfigFormBase {
+class PurgeUiMainConfigForm extends ConfigFormBase {
 
   /**
    * Stores the configuration factory.
@@ -36,7 +36,7 @@ class PurgeCoreConfigForm extends ConfigFormBase {
   protected $purgeQueue;
 
   /**
-   * Constructs a PurgeCoreConfigForm object.
+   * Constructs a PurgeUiMainConfigForm object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.

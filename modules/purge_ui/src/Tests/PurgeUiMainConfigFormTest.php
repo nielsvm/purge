@@ -52,6 +52,9 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
    */
   public static $modules = array('purge_ui', 'purge_test');
 
+  /**
+   * Setup the test.
+   */
   function setUp() {
     parent::setUp();
     $this->configFactory = $this->container->get('config.factory');

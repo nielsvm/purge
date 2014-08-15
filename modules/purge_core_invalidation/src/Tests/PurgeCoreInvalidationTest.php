@@ -43,6 +43,9 @@ class PurgeCoreInvalidationTest extends WebTestBase {
    */
   public static $modules = array('purge_core_invalidation');
 
+  /**
+   * Setup the test.
+   */
   function setUp() {
     parent::setUp();
     $this->purgeQueue = $this->container->get('purge.queue');

@@ -9,10 +9,7 @@ namespace Drupal\purge_core_invalidation\Tests;
 
 use Drupal\simpletest\WebTestBase;
 use Drupal\Core\Cache\Cache;
-use Drupal\purge\Queue\QueueServiceInterface;
-use Drupal\purge\Queue\PurgeableServiceInterface;
 use Drupal\purge\Plugin\PurgePurgeable\Tag;
-use Drupal\purge_core_invalidation\CacheTagDeletionListener;
 
 /**
  * Test the outer and inner workings of CacheTagDeletionListener.

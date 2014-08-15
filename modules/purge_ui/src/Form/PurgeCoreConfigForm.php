@@ -8,6 +8,7 @@ namespace Drupal\purge_ui\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\Purger\PurgerServiceInterface;
 use Drupal\purge\Queue\QueueServiceInterface;
@@ -72,7 +73,7 @@ class PurgeCoreConfigForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, array &$form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $form['intro'] = array(
       '#type' => 'item',
       '#description' => $this->t('The purge module provides a generic (external)
@@ -142,16 +143,16 @@ class PurgeCoreConfigForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, array &$form_state) {
-    if (isset($form_state['values']['purger_plugins'])) {
-      if ($form_state['values']['purger_detection'] == 'automatic_detection') {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    if ($form_state->hasValue('purger_plugins')) {
+      if ($form_state->getValue('purger_detection') == 'automatic_detection') {
         $this->configFactory->get('purge.purger')
           ->set('plugins', 'automatic_detection')
           ->save();
       }
       else {
         $purgers = array();
-        foreach ($form_state['values']['purger_plugins'] as $option) {
+        foreach ($form_state->getValue('purger_plugins') as $option) {
           if (is_string($option)) {
             $purgers[] = $option;
           }
@@ -161,9 +162,9 @@ class PurgeCoreConfigForm extends ConfigFormBase {
           ->save();
       }
     }
-    if (isset($form_state['values']['queue_plugin'])) {
+    if ($form_state->hasValue('queue_plugin')) {
       $this->configFactory->get('purge.queue')
-        ->set('plugin', $form_state['values']['queue_plugin'])
+        ->set('plugin', $form_state->getValue('queue_plugin'))
         ->save();
     }
     parent::submitForm($form, $form_state);

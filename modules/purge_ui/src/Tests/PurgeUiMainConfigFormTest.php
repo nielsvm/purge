@@ -10,7 +10,7 @@ namespace Drupal\purge_ui\Tests;
 use Drupal\simpletest\WebTestBase;
 
 /**
- * Test the outer and inner workings of CacheTagDeletionListener.
+ * Tests the configuration form that sets the active plugins.
  *
  * @group purge
  * @see \Drupal\purge\Purger\PurgerServiceInterface

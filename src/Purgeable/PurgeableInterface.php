@@ -169,7 +169,7 @@ interface PurgeableInterface {
    * Get the current state as string.
    *
    * @return
-   *   The string can be prefixed with 'STATE_' to let it match a constant.
+   *   The string comes without the 'STATE_' prefix as on the constants.
    */
   public function getStateString();
 }

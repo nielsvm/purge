@@ -45,8 +45,12 @@ class PurgePurger extends Plugin {
    * An ordered array of service definitions that this plugin requires, which
    * will be passed to the constructor of the plugin upon instantiation.
    *
+   * @code
+   * service_dependencies = {"database", "lock", "language_manager"}
+   * @endcode
+   *
    * @var array
    */
-  public $service_dependencies;
+  public $service_dependencies = array();
 
 }

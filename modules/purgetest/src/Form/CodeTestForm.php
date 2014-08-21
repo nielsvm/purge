@@ -29,7 +29,7 @@ class CodeTestForm extends FormBase {
     $this->purgeQueue = \Drupal::getContainer()->get('purge.queue');
     $this->purgePurgeables = \Drupal::getContainer()->get('purge.purgeables');
     $this->purgePurger = \Drupal::getContainer()->get('purge.purger');
-    //$this->purgeDiagnostics = \Drupal::getContainer()->get('purge.diagnostics');
+    $this->purgeDiagnostics = \Drupal::getContainer()->get('purge.diagnostics');
   }
 
   /**
@@ -79,7 +79,7 @@ class CodeTestForm extends FormBase {
       $this->purgePurger,
       $this->purgeQueue,
       $this->purgePurgeables,
-      NULL
+      $this->purgeDiagnostics
     );
     $result = call_user_func_array(array($object, $method), $args);
     return array('#markup' => "<pre>" . var_export($result, TRUE) . "</pre>");

@@ -23,3 +23,11 @@ services:
   plugin.manager.purge.queue:
     class: Drupal\purge\Queue\QueueManager
     parent: default_plugin_manager
+
+  # PURGE.DIAGNOSTICS: The tests service which warns and monitors for issues.
+  purge.diagnostics:
+    class: Drupal\purge\RuntimeTest\RuntimeTestService
+    arguments: ['@plugin.manager.purge.diagnostics', '@service_container', '@purge.purger', '@purge.queue']
+  plugin.manager.purge.diagnostics:
+    class:  Drupal\purge\RuntimeTest\RuntimeTestManager
+    parent: default_plugin_manager

@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgeRuntimeTest\TestC.
+ * Contains \Drupal\purge_test\Plugin\PurgeRuntimeTest\TestC.
  */
 
-namespace Drupal\purge\Plugin\PurgeRuntimeTest;
+namespace Drupal\purge_test\Plugin\PurgeRuntimeTest;
 
 use Drupal\purge\Queue\QueueInterface;
 use Drupal\purge\RuntimeTest\RuntimeTestInterface;

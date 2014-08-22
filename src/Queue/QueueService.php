@@ -117,6 +117,12 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
       // does not exist, will cause a InvalidQueueConfiguredException thrown.
       $plugin_id = $this->configFactory->get('purge.queue')->get('plugin');
 
+      // Test if the configuration returned is valid.
+      if (is_null($plugin_id) || !is_scalar($plugin_id)) {
+        throw new InvalidQueueConfiguredException(
+          "The purge.queue configuration key 'plugin' seems missing.");
+      }
+
       // Test if the configured queue is a valid and existing queue plugin.
       if (is_null($this->pluginManager->getDefinition($plugin_id))) {
         throw new InvalidQueueConfiguredException(

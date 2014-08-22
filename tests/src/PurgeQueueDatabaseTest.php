@@ -17,4 +17,19 @@ use Drupal\purge\Tests\PurgeQueueTestBase;
  */
 class PurgeQueueDatabaseTest extends PurgeQueueTestBase {
   protected $plugin_id = 'database';
+
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = array('system');
+
+  /**
+   * Set up the test.
+   */
+  function setUp() {
+    parent::setUp();
+    $this->installSchema('system', array('queue'));
+  }
 }

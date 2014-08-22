@@ -7,7 +7,7 @@
 
 namespace Drupal\purge\Tests;
 
-use Drupal\simpletest\WebTestBase;
+use Drupal\simpletest\KernelTestBase;
 use Drupal\purge\Queue\QueueInterface;
 
 /**
@@ -17,7 +17,7 @@ use Drupal\purge\Queue\QueueInterface;
  * @group purge
  * @see \Drupal\purge\Queue\QueueInterface
  */
-abstract class PurgeQueueTestBase extends WebTestBase {
+abstract class PurgeQueueTestBase extends KernelTestBase {
 
   /**
    * Modules to enable.
@@ -50,6 +50,7 @@ abstract class PurgeQueueTestBase extends WebTestBase {
    */
   function setUp() {
     parent::setUp();
+    $this->installConfig(array('purge'));
     $this->purgeQueue = $this->container->get('purge.queue');
     $this->initializeQueue();
   }

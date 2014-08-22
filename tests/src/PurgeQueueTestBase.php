@@ -8,7 +8,7 @@
 namespace Drupal\purge\Tests;
 
 use Drupal\simpletest\KernelTestBase;
-use Drupal\purge\Queue\QueueInterface;
+use Drupal\purge\Tests\PurgeTestBase;
 
 /**
  * Provides a base queue for all PurgeQueue plugins and thoroughly tests
@@ -17,14 +17,7 @@ use Drupal\purge\Queue\QueueInterface;
  * @group purge
  * @see \Drupal\purge\Queue\QueueInterface
  */
-abstract class PurgeQueueTestBase extends KernelTestBase {
-
-  /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  public static $modules = array('purge');
+abstract class PurgeQueueTestBase extends PurgeTestBase {
 
   /**
    * The plugin ID of the queue plugin being tested.
@@ -32,11 +25,6 @@ abstract class PurgeQueueTestBase extends KernelTestBase {
    * @var string
    */
   protected $plugin_id;
-
-  /**
-   * @var \Drupal\purge\Queue\QueueServiceInterface
-   */
-  protected $purgeQueue;
 
   /**
    * The queue plugin being tested.
@@ -50,15 +38,14 @@ abstract class PurgeQueueTestBase extends KernelTestBase {
    */
   function setUp() {
     parent::setUp();
-    $this->installConfig(array('purge'));
-    $this->purgeQueue = $this->container->get('purge.queue');
     $this->initializeQueue();
+    $this->setUpQueuePlugin();
   }
 
   /**
    * Load the queue plugin and make $this->queue available.
    */
-  protected function initializeQueue() {
+  protected function setUpQueuePlugin() {
     if (!is_null($this->queue)) {
       return;
     }

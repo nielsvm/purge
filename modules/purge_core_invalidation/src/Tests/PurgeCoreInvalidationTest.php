@@ -7,8 +7,8 @@
 
 namespace Drupal\purge_core_invalidation\Tests;
 
-use Drupal\simpletest\KernelTestBase;
 use Drupal\Core\Cache\Cache;
+use Drupal\purge\Tests\PurgeTestBase;
 use Drupal\purge\Plugin\PurgePurgeable\Tag;
 
 /**
@@ -19,17 +19,7 @@ use Drupal\purge\Plugin\PurgePurgeable\Tag;
  * @see \Drupal\purge\Queue\QueueServiceInterface
  * @see \Drupal\purge\Purgeable\PurgeableServiceInterface
  */
-class PurgeCoreInvalidationTest extends KernelTestBase {
-
-  /**
-   * @var \Drupal\purge\Queue\QueueServiceInterface
-   */
-  protected $purgeQueue;
-
-  /**
-   * @var \Drupal\purge\Purgeable\PurgeableServiceInterface
-   */
-  protected $purgePurgeables;
+class PurgeCoreInvalidationTest extends PurgeTestBase {
 
   /**
    * @var \Drupal\purge_core_invalidation\CacheTagDeletionListener
@@ -41,7 +31,7 @@ class PurgeCoreInvalidationTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = array('purge', 'purge_core_invalidation');
+  public static $modules = array('purge_core_invalidation');
 
   /**
    * Setup the test.
@@ -50,12 +40,8 @@ class PurgeCoreInvalidationTest extends KernelTestBase {
     parent::setUp();
 
     // Configure the memory queue, which is fast, compliant and does the job.
-    $this->installConfig(array('purge'));
-    $this->container->get('config.factory')
-      ->get('purge.queue')->set('plugin', 'memory')->save();
-
-    $this->purgeQueue = $this->container->get('purge.queue');
-    $this->purgePurgeables = $this->container->get('purge.purgeables');
+    $this->setUpQueue('memory');
+    $this->initializeQueue();
     $this->listener = $this->container->get('purge_core_invalidation.listener');
   }
 

@@ -54,4 +54,19 @@ interface RuntimeTestServiceInterface extends ServiceInterface, \Iterator, \Coun
    *     - REQUIREMENT_ERROR: The requirement failed with an error.
    */
   public function getHookRequirementsArray();
+
+  /**
+   * Checks whether one of the diagnostic tests reports full failure.
+   *
+   * This method provides a simple - boolean evaluable - way to determine if
+   * a \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_ERROR severity
+   * was reported by one of the tests. If SEVERITY_ERROR was reported, purging
+   * cannot continue and should happen once all problems are resolved.
+   *
+   * @return FALSE or \Drupal\purge\RuntimeTest\RuntimeTestInterface.
+   *   If everything is fine, this returns FALSE. But, if a blocking problem
+   *   exists, the first failing test object is returned holding a UI applicable
+   *   recommendation message.
+   */
+  public function isSystemOnFire();
 }

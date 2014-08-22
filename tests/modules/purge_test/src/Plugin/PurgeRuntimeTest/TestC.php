@@ -30,10 +30,4 @@ class TestC extends RuntimeTestBase implements RuntimeTestInterface {
    */
   public function run() {
   }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getRecommendation() {
-  }
 }

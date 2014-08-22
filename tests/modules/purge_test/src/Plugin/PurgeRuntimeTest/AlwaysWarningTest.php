@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_test\Plugin\PurgeRuntimeTest\TestB.
+ * Contains \Drupal\purge_test\Plugin\PurgeRuntimeTest\AlwaysWarningTest.
  */
 
 namespace Drupal\purge_test\Plugin\PurgeRuntimeTest;
@@ -15,19 +15,21 @@ use Drupal\purge\RuntimeTest\RuntimeTestBase;
  * Tests if there is a purger plugin that invalidates an external cache.
  *
  * @PurgeRuntimeTest(
- *   id = "test_b",
- *   title = @Translation("Test B"),
+ *   id = "alwayswarning",
+ *   title = @Translation("Always a warning"),
  *   description = @Translation("A fake test to test the runtime tests api."),
  *   service_dependencies = {},
  *   dependent_queue_plugins = {},
- *   dependent_purger_plugins = {"nonexistent"}
+ *   dependent_purger_plugins = {}
  * )
  */
-class TestB extends RuntimeTestBase implements RuntimeTestInterface {
+class AlwaysWarningTest extends RuntimeTestBase implements RuntimeTestInterface {
 
   /**
    * {@inheritdoc}
    */
   public function run() {
+    $this->recommendation = "This is a warning for unit testing.";
+    return SELF::SEVERITY_WARNING;
   }
 }

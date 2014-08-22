@@ -121,12 +121,11 @@ interface RuntimeTestInterface extends PluginInspectionInterface {
    *
    * @return array
    *   An associative array with the following elements:
-   *   - title: The name of the requirement.
-   *   - value: The current value (e.g., version, time, level, etc). During
-   *     install phase, this should only be used for version numbers, do not set
-   *     it if not applicable.
-   *   - description: The description of the requirement/status.
-   *   - severity: The requirement's result/severity level, one of:
+   *   - title: The name of this test.
+   *   - value: The current value (e.g., version, time, level, etc), will not
+   *     be set if not applicable.
+   *   - description: The description of the test.
+   *   - severity: The test's result/severity level, one of:
    *     - REQUIREMENT_INFO: For info only.
    *     - REQUIREMENT_OK: The requirement is satisfied.
    *     - REQUIREMENT_WARNING: The requirement failed with a warning.

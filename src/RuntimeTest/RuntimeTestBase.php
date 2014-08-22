@@ -164,10 +164,14 @@ abstract class RuntimeTestBase extends PluginBase implements RuntimeTestInterfac
    */
   public function getHookRequirementsArray() {
     $this->runTest();
+    $description = $this->getDescription();
+    if ($recommendation = $this->getRecommendation()) {
+      $description = $recommendation;
+    }
     return array(
-      'title' => $this->getTitle(),
+      'title' => $this->t('Purge - @title', array('@title' => $this->getTitle())),
       'value' => $this->getValue(),
-      'description' => $this->getDescription(),
+      'description' => $description,
       'severity' => $this->getSeverity()
     );
   }

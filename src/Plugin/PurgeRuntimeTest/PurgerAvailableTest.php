@@ -64,7 +64,7 @@ class PurgerAvailableTest extends RuntimeTestBase implements RuntimeTestInterfac
         "your external cache or CDN.");
       return SELF::SEVERITY_ERROR;
     }
-    elseif (count($purgers) > 2) {
+    elseif (count($purgers) > 3) {
       $this->value = implode(', ', $purgers);
       $this->recommendation = $this->t("You have more than 3 purgers active ".
         "on one system. This introduces the risk of congesting Drupal as ".

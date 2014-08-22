@@ -7,7 +7,7 @@
 
 namespace Drupal\purge_core_invalidation\Tests;
 
-use Drupal\simpletest\WebTestBase;
+use Drupal\simpletest\KernelTestBase;
 use Drupal\Core\Cache\Cache;
 use Drupal\purge\Plugin\PurgePurgeable\Tag;
 
@@ -19,7 +19,7 @@ use Drupal\purge\Plugin\PurgePurgeable\Tag;
  * @see \Drupal\purge\Queue\QueueServiceInterface
  * @see \Drupal\purge\Purgeable\PurgeableServiceInterface
  */
-class PurgeCoreInvalidationTest extends WebTestBase {
+class PurgeCoreInvalidationTest extends KernelTestBase {
 
   /**
    * @var \Drupal\purge\Queue\QueueServiceInterface
@@ -41,13 +41,19 @@ class PurgeCoreInvalidationTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('purge_core_invalidation');
+  public static $modules = array('purge', 'purge_core_invalidation');
 
   /**
    * Setup the test.
    */
   function setUp() {
     parent::setUp();
+
+    // Configure the memory queue, which is fast, compliant and does the job.
+    $this->installConfig(array('purge'));
+    $this->container->get('config.factory')
+      ->get('purge.queue')->set('plugin', 'memory')->save();
+
     $this->purgeQueue = $this->container->get('purge.queue');
     $this->purgePurgeables = $this->container->get('purge.purgeables');
     $this->listener = $this->container->get('purge_core_invalidation.listener');

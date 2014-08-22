@@ -41,6 +41,13 @@ class RuntimeTestService extends ServiceBase implements RuntimeTestServiceInterf
   protected $purgeQueue;
 
   /**
+   * Current iterator position.
+   *
+   * @ingroup iterator
+   */
+  private $position = 0;
+
+  /**
    * Keeps all instantiated tests.
    *
    * @var array
@@ -55,6 +62,9 @@ class RuntimeTestService extends ServiceBase implements RuntimeTestServiceInterf
     $this->serviceContainer = $service_container;
     $this->purgePurger = $purge_purger;
     $this->purgeQueue = $purge_queue;
+
+    // Set $this->position to 0, as this object is iterable.
+    $this->position = 0;
 
     // Instantiate all tests, but we are not calling run() on them yet.
     $this->initializeTests();
@@ -133,8 +143,55 @@ class RuntimeTestService extends ServiceBase implements RuntimeTestServiceInterf
 
       // Use the Reflection API to instantiate our test.
       $reflector = new \ReflectionClass($plugin_class);
-      $this->tests[$plugin_id] = $reflector->newInstanceArgs($arguments);
+      $this->tests[] = $reflector->newInstanceArgs($arguments);
     }
   }
 
+  /**
+   * {@inheritdoc}
+   * @ingroup iterator
+   */
+  function rewind() {
+    $this->position = 0;
+  }
+
+  /**
+   * {@inheritdoc}
+   * @ingroup iterator
+   */
+  function current() {
+    return $this->tests[$this->position];
+  }
+
+  /**
+   * {@inheritdoc}
+   * @ingroup iterator
+   */
+  function key() {
+    return $this->position;
+  }
+
+  /**
+   * {@inheritdoc}
+   * @ingroup iterator
+   */
+  function next() {
+    ++$this->position;
+  }
+
+  /**
+   * {@inheritdoc}
+   * @ingroup iterator
+   */
+  function valid() {
+    return isset($this->tests[$this->position]);
+  }
+
+  /**
+   * {@inheritdoc}
+   * @ingroup countable
+   */
+  public function count() {
+    return count($this->tests);
+  }
 }

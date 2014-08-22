@@ -16,7 +16,7 @@ use Drupal\purge\Queue\QueueServiceInterface;
 /**
  * Describes a service that interacts with runtime tests.
  */
-interface RuntimeTestServiceInterface extends ServiceInterface {
+interface RuntimeTestServiceInterface extends ServiceInterface, \Iterator, \Countable {
 
   /**
    * Instantiate the purger service.

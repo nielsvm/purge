@@ -1,0 +1,16 @@
+<?PHP
+
+/**
+ * @file
+ * Installation file of the purge_ui module.
+ */
+
+/**
+ * Implementation of hook_requirements().
+ */
+function purge_ui_requirements($phase) {
+  if ($phase !== 'runtime') {
+    return array();
+  }
+  return \Drupal::service('purge.diagnostics')->getHookRequirementsArray();
+}

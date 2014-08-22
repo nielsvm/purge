@@ -117,6 +117,18 @@ interface RuntimeTestInterface extends PluginInspectionInterface {
   public function getValue();
 
   /**
+   * Get the severity level, expressed as hook_requirements() severity.
+   *
+   * @return int
+   *   Integer, matching either of the following constants:
+   *    - REQUIREMENT_INFO
+   *    - REQUIREMENT_OK
+   *    - REQUIREMENT_WARNING
+   *    - REQUIREMENT_ERROR
+   */
+  public function getHookRequirementsSeverity();
+
+  /**
    * Generates a hook_requirements() compatible item array.
    *
    * @return array

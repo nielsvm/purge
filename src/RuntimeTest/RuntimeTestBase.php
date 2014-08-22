@@ -95,14 +95,7 @@ abstract class RuntimeTestBase extends PluginBase implements RuntimeTestInterfac
   }
 
   /**
-   * Get the severity level.
-   *
-   * @return int
-   *   Integer, matching either of the following constants:
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_INFO
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_OK
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_WARNING
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_ERROR
+   * {@inheritdoc}
    */
   public function getSeverity() {
     $this->runTest();
@@ -110,10 +103,7 @@ abstract class RuntimeTestBase extends PluginBase implements RuntimeTestInterfac
   }
 
   /**
-   * Get the severity level as unprefixed string.
-   *
-   * @return
-   *  The string comes without the 'SEVERITY_' prefix as on the constants.
+   * {@inheritdoc}
    */
   public function getSeverityString() {
     $this->runTest();
@@ -127,9 +117,7 @@ abstract class RuntimeTestBase extends PluginBase implements RuntimeTestInterfac
   }
 
   /**
-   * Get a recommendation matching the severity level.
-   *
-   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   * {@inheritdoc}
    */
   public function getRecommendation() {
     $this->runTest();
@@ -137,9 +125,7 @@ abstract class RuntimeTestBase extends PluginBase implements RuntimeTestInterfac
   }
 
   /**
-   * Get an optional value for the test output, may return NULL.
-   *
-   * @return NULL or \Drupal\Core\StringTranslation\TranslationWrapper
+   * {@inheritdoc}
    */
   public function getValue() {
     $this->runTest();
@@ -147,20 +133,30 @@ abstract class RuntimeTestBase extends PluginBase implements RuntimeTestInterfac
   }
 
   /**
-   * Generates a hook_requirements() compatible item array.
-   *
-   * @return array
-   *   An associative array with the following elements:
-   *   - title: The name of the requirement.
-   *   - value: The current value (e.g., version, time, level, etc). During
-   *     install phase, this should only be used for version numbers, do not set
-   *     it if not applicable.
-   *   - description: The description of the requirement/status.
-   *   - severity: The requirement's result/severity level, one of:
-   *     - REQUIREMENT_INFO: For info only.
-   *     - REQUIREMENT_OK: The requirement is satisfied.
-   *     - REQUIREMENT_WARNING: The requirement failed with a warning.
-   *     - REQUIREMENT_ERROR: The requirement failed with an error.
+   * {@inheritdoc}
+   */
+  public function getHookRequirementsSeverity() {
+    static $mapping;
+    $this->runTest();
+    if (is_null($mapping)) {
+      include_once DRUPAL_ROOT . '/core/includes/install.inc';
+
+      // Currently, our constants hold the exact same values as core's
+      // requirement constants. However, as our runtime test API is more than
+      // just a fancy objectification of hook_requirements we need to assure
+      // that this lasts over time, and thus map the constants.
+      $mapping = array(
+        SELF::SEVERITY_INFO      => REQUIREMENT_INFO,
+        SELF::SEVERITY_OK        => REQUIREMENT_OK,
+        SELF::SEVERITY_WARNING   => REQUIREMENT_WARNING,
+        SELF::SEVERITY_ERROR     => REQUIREMENT_ERROR,
+      );
+    }
+    return $mapping[$this->getSeverity()];
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function getHookRequirementsArray() {
     $this->runTest();
@@ -172,7 +168,7 @@ abstract class RuntimeTestBase extends PluginBase implements RuntimeTestInterfac
       'title' => $this->t('Purge - @title', array('@title' => $this->getTitle())),
       'value' => $this->getValue(),
       'description' => $description,
-      'severity' => $this->getSeverity()
+      'severity' => $this->getHookRequirementsSeverity()
     );
   }
 }

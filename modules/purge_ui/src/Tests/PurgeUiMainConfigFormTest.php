@@ -154,10 +154,10 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
     $edit['purger_detection'] = 'manual';
     $this->drupalPostForm($this->path, $edit, t('Save configuration'));
     $plugins = explode(',', $this->configFactory->get('purge.purger')->get('plugins'));
-    $loaded = $this->purgePurger->getPluginsLoaded();
+    $enabled = $this->purgePurger->getPluginsEnabled();
     $this->assertTrue(in_array('purger_a', $plugins), 'plugin_a configured');
     $this->assertTrue(in_array('purger_b', $plugins), 'plugin_b configured');
-    $this->assertTrue(in_array('purger_a', $loaded), 'plugin_a active');
-    $this->assertTrue(in_array('purger_b', $loaded), 'plugin_b active');
+    $this->assertTrue(in_array('purger_a', $enabled), 'plugin_a active');
+    $this->assertTrue(in_array('purger_b', $enabled), 'plugin_b active');
   }
 }

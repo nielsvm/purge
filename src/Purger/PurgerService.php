@@ -58,26 +58,18 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
   }
 
   /**
-   * Retrieve a list of all available plugins providing the service.
-   *
-   * @param bool $simple
-   *   When provided TRUE the returned values should provide plugin name strings.
-   *
-   * @return array
-   *   Associative array with the machine names as key and the additional plugin
-   *   metadata as another associative array in the value.
+   * {@inheritdoc}
    */
   public function getPlugins($simple = FALSE) {
-    static $definitions;
-    if (is_null($definitions)) {
-      $definitions = $this->pluginManager->getDefinitions();
-      unset($definitions['dummy']);
+    if (empty($this->plugins)) {
+      $this->plugins = $this->pluginManager->getDefinitions();
+      unset($this->plugins['dummy']);
     }
     if (!$simple) {
-      return $definitions;
+      return $this->plugins;
     }
     $plugins = array();
-    foreach ($definitions as $plugin) {
+    foreach ($this->plugins as $plugin) {
       $plugins[$plugin['id']] = sprintf('%s: %s', $plugin['label'], $plugin['description']);
     }
     return $plugins;
@@ -86,20 +78,16 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function getPluginsLoaded() {
-    static $plugin_ids;
-    if (is_null($plugin_ids)) {
+  public function getPluginsEnabled() {
+    if (empty($this->plugins_enabled)) {
       $plugins = $this->configFactory->get('purge.purger')->get('plugins');
-      $plugin_ids = array();
 
-      // By default all available purgers are loaded when the 'plugins' setting
+      // By default all available purgers are enabled when the 'plugins' setting
       // in 'purge.purger.yml' is set to 'automatic_detection', else those
-      // plugins therein specified are loaded.
+      // plugins therein specified are enabled.
       if ($plugins == 'automatic_detection') {
-        foreach (array_keys($this->pluginManager->getDefinitions()) as $plugin_id) {
-          if ($plugin_id !== 'dummy') {
-            $plugin_ids[] = $plugin_id;
-          }
+        foreach (array_keys($this->getPlugins()) as $plugin_id) {
+          $this->plugins_enabled[] = $plugin_id;
         }
       }
       else {
@@ -108,18 +96,27 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
           if ($plugin_id === 'dummy') {
             continue;
           }
-          elseif (!is_null($this->pluginManager->getDefinition($plugin_id))) {
-            $plugin_ids[] = $plugin_id;
+          elseif (!is_null($this->getPlugins($plugin_id))) {
+            $this->plugins_enabled[] = $plugin_id;
           }
         }
       }
 
-      // When no purgers exist the 'dummy' purger will be loaded instead.
+      // When no purgers exist the 'dummy' purger will be enabled instead.
       if (empty($plugin_ids)) {
-        $plugin_ids[] = 'dummy';
+        $this->plugins_enabled[] = 'dummy';
       }
     }
-    return $plugin_ids;
+    return $this->plugins_enabled;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function reload() {
+    parent::reload();
+    $this->purgers = NULL;
+    $this->initializePurgers();
   }
 
   /**
@@ -131,7 +128,7 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
     }
 
     // Iterate each purger plugin we should load and instantiate them.
-    foreach ($this->getPluginsLoaded() as $plugin_id) {
+    foreach ($this->getPluginsEnabled() as $plugin_id) {
       $plugin_definition = $this->pluginManager->getDefinition($plugin_id);
       $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
 
@@ -152,8 +149,8 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
    */
   public function purge(PurgeableInterface $purgeable) {
 
-    // When there is just one loaded purger, we can directly call
-    // PurgerInteface::purge(). As both PurgerService and the loaded plugin are
+    // When there is just one enabled purger, we can directly call
+    // PurgerInteface::purge(). As both PurgerService and the enabled plugin are
     // sharing the same interface, the behavior has to be exactly identical.
     if (count($this->purgers) === 1) {
       if (current($this->purgers)->purge($purgeable)) {

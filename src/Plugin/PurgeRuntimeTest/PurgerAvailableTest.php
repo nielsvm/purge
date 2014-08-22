@@ -54,7 +54,7 @@ class PurgerAvailableTest extends RuntimeTestBase implements RuntimeTestInterfac
    * {@inheritdoc}
    */
   public function run() {
-    $purgers = $this->purgePurger->getPluginsLoaded();
+    $purgers = $this->purgePurger->getPluginsEnabled();
 
     // Test for the 'dummy' purger, which only loads if nothing else exists.
     if (in_array('dummy', $purgers)) {

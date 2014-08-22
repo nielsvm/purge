@@ -36,18 +36,18 @@ class Purge extends CodeTestBase {
 
   /**
    * $plugins = array(
-   *   'purger' => $purger->getPluginsLoaded(),
-   *   'queue' => $queue->getPluginsLoaded(),
-   *   'purgeables' => $purgeables->getPluginsLoaded(),
-   *   'diagnostics' => $diagnostics->getPlugins(TRUE)
+   *   'purger' => $purger->getPluginsEnabled(),
+   *   'queue' => $queue->getPluginsEnabled(),
+   *   'purgeables' => $purgeables->getPluginsEnabled(),
+   *   'diagnostics' => $diagnostics->getPluginsEnabled(TRUE)
    * );
    */
   public function pluginListLoaded($purger, $queue, $purgeables, $diagnostics) {
     $plugins = array(
-      'purger' => $purger->getPluginsLoaded(),
-      'queue' => $queue->getPluginsLoaded(),
-      'purgeables' => $purgeables->getPluginsLoaded(),
-      'diagnostics' => $diagnostics->getPluginsLoaded()
+      'purger' => $purger->getPluginsEnabled(),
+      'queue' => $queue->getPluginsEnabled(),
+      'purgeables' => $purgeables->getPluginsEnabled(),
+      'diagnostics' => $diagnostics->getPluginsEnabled()
     );
     return $plugins;
   }

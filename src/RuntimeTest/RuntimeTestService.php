@@ -75,11 +75,14 @@ class RuntimeTestService extends ServiceBase implements RuntimeTestServiceInterf
    * {@inheritdoc}
    */
   public function getPlugins($simple = FALSE) {
+    if (empty($this->plugins)) {
+      $this->plugins = $this->pluginManager->getDefinitions();
+    }
     if (!$simple) {
-      return $this->pluginManager->getDefinitions();
+      return $this->plugins;
     }
     $plugins = array();
-    foreach ($this->pluginManager->getDefinitions() as $plugin) {
+    foreach ($this->plugins as $plugin) {
       $plugins[$plugin['id']] = sprintf('%s: %s', $plugin['title'], $plugin['description']);
     }
     return $plugins;
@@ -88,12 +91,10 @@ class RuntimeTestService extends ServiceBase implements RuntimeTestServiceInterf
   /**
    * {@inheritdoc}
    */
-  public function getPluginsLoaded() {
-    static $plugin_ids;
-    if (is_null($plugin_ids)) {
-      $loaded_queues = $this->purgeQueue->getPluginsLoaded();
-      $loaded_purgers = $this->purgePurger->getPluginsLoaded();
-      $plugin_ids = array();
+  public function getPluginsEnabled() {
+    if (empty($this->plugins_enabled)) {
+      $enabled_queues = $this->purgeQueue->getPluginsEnabled();
+      $enabled_purgers = $this->purgePurger->getPluginsEnabled();
 
       // Define a lambda that tests whether a plugin should be loaded.
       $load = function($needles, $haystack) {
@@ -107,17 +108,27 @@ class RuntimeTestService extends ServiceBase implements RuntimeTestServiceInterf
       };
 
       // Determine for each test if it should be loaded.
-      foreach ($this->pluginManager->getDefinitions() as $plugin) {
-        if (!$load($plugin['dependent_queue_plugins'], $loaded_queues)) {
+      foreach ($this->getPlugins() as $plugin) {
+        if (!$load($plugin['dependent_queue_plugins'], $enabled_queues)) {
           continue;
         }
-        if (!$load($plugin['dependent_purger_plugins'], $loaded_purgers)) {
+        if (!$load($plugin['dependent_purger_plugins'], $enabled_purgers)) {
           continue;
         }
-        $plugin_ids[] = $plugin['id'];
+        $this->plugins_enabled[] = $plugin['id'];
       }
     }
-    return $plugin_ids;
+    return $this->plugins_enabled;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function reload() {
+    parent::reload();
+    $this->position = 0;
+    $this->tests = NULL;
+    $this->initializeTests();
   }
 
   /**
@@ -129,7 +140,7 @@ class RuntimeTestService extends ServiceBase implements RuntimeTestServiceInterf
     }
 
     // Iterate each test that we should load and instantiate.
-    foreach ($this->getPluginsLoaded() as $plugin_id) {
+    foreach ($this->getPluginsEnabled() as $plugin_id) {
       $plugin_definition = $this->pluginManager->getDefinition($plugin_id);
       $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
 

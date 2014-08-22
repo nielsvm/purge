@@ -19,19 +19,30 @@ interface ServiceInterface extends ServiceProviderInterface, ServiceModifierInte
    * Retrieve a list of all available plugins providing the service.
    *
    * @param bool $simple
-   *   When provided TRUE the returned values should provide plugin name strings.
+   *   When $simple is TRUE the returned array will use user interface readable
+   *   strings as element values instead of plugin definition arrays.
    *
    * @return array
-   *   Associative array with the machine names as key and the additional plugin
+   *   Associative array with the plugin ID's as key and the additional plugin
    *   metadata as another associative array in the value.
    */
   public function getPlugins($simple = FALSE);
 
   /**
-   * Retrieve all the plugin ID's of the plugins the service actually uses.
+   * Retrieve a list of plugin ID's that are enabled.
    *
    * @return array
-   *   Non-associative array with the plugin ID's of the loaded/used plugins.
+   *   Non-associative array with the plugin ID's of the enabled plugins.
    */
-  public function getPluginsLoaded();
+  public function getPluginsEnabled();
+
+  /**
+   * Reload the service and reinstantiate all enabled plugins.
+   *
+   * @warning
+   *   Reloading a service implies that all cached data will be reset and that
+   *   plugins get reinstantiated during the current request, which should
+   *   normally not be used. This method is specifically used in unit tests. 
+   */
+  public function reload();
 }

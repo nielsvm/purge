@@ -95,11 +95,14 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
    * {@inheritdoc}
    */
   public function getPlugins($simple = FALSE) {
+    if (empty($this->plugins)) {
+      $this->plugins = $this->pluginManager->getDefinitions();
+    }
     if (!$simple) {
-      return $this->pluginManager->getDefinitions();
+      return $this->plugins;
     }
     $plugins = array();
-    foreach ($this->pluginManager->getDefinitions() as $plugin) {
+    foreach ($this->plugins as $plugin) {
       $plugins[$plugin['id']] = sprintf('%s: %s', $plugin['label'], $plugin['description']);
     }
     return $plugins;
@@ -108,9 +111,8 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function getPluginsLoaded() {
-    static $plugin_id;
-    if (is_null($plugin_id)) {
+  public function getPluginsEnabled() {
+    if (empty($this->plugins_enabled)) {
 
       // The queue service always interacts with just one underlying queue,
       // which is stored in configuration. Configuring a queue plugin that
@@ -128,8 +130,21 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
         throw new InvalidQueueConfiguredException(
           "The queue plugin '$plugin_id' does not exist.");
       }
+
+      $this->plugins_enabled[] = $plugin_id;
     }
-    return array($plugin_id);
+    return $this->plugins_enabled;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function reload() {
+    $this->commit();
+    parent::reload();
+    $this->buffer = array();
+    $this->queue = NULL;
+    $this->initializeQueue();
   }
 
   /**
@@ -141,7 +156,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
     }
 
     // Lookup the plugin ID, definition and class from the discoverer.
-    $plugin_id = current($this->getPluginsLoaded());
+    $plugin_id = current($this->getPluginsEnabled());
     $plugin_definition = $this->pluginManager->getDefinition($plugin_id);
     $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
 

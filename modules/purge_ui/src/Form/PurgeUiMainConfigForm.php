@@ -107,7 +107,7 @@ class PurgeUiMainConfigForm extends ConfigFormBase {
         ),
       );
       $form['purger']['purger_plugins'] = array(
-        '#default_value' => $this->purgePurger->getPluginsLoaded(),
+        '#default_value' => $this->purgePurger->getPluginsEnabled(),
         '#options' => $purgers,
         '#type' => 'checkboxes',
         '#description' => $this->t('When multiple purgers are enabled, each purge instruction will be sent to all plugins. If one plugin fails to execute a purge, all purgers are considered to have failed.'),

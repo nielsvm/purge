@@ -103,7 +103,7 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
       }
 
       // When no purgers exist the 'dummy' purger will be enabled instead.
-      if (empty($plugin_ids)) {
+      if (empty($this->plugins_enabled)) {
         $this->plugins_enabled[] = 'dummy';
       }
     }

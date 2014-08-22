@@ -68,6 +68,12 @@ abstract class PurgeTestBase extends KernelTestBase {
    */
   protected function setUpQueue($plugin_id) {
     $this->configFactory->get('purge.queue')->set('plugin', $plugin_id)->save();
+    if (!is_null($this->purgeQueue)) {
+      $this->purgeQueue->reload();
+      if (!is_null($this->purgeDiagnostics)) {
+        $this->purgeDiagnostics->reload();
+      }
+    }
   }
 
   /**
@@ -78,6 +84,12 @@ abstract class PurgeTestBase extends KernelTestBase {
    */
   protected function setUpPurger($plugin_id) {
     $this->configFactory->get('purge.purger')->set('plugins', $plugin_id)->save();
+    if (!is_null($this->purgePurger)) {
+      $this->purgePurger->reload();
+      if (!is_null($this->purgeDiagnostics)) {
+        $this->purgeDiagnostics->reload();
+      }
+    }
   }
 
   /**

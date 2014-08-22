@@ -17,7 +17,7 @@ use Drupal\purge\RuntimeTest\RuntimeTestBase;
  *
  * @PurgeRuntimeTest(
  *   id = "purgeravailable",
- *   title = @Translation("Purger"),
+ *   title = @Translation("Purger(s) configured"),
  *   description = @Translation("Tests if there is a purger plugin available."),
  *   service_dependencies = {"purge.purger"},
  *   dependent_queue_plugins = {},
@@ -64,16 +64,17 @@ class PurgerAvailableTest extends RuntimeTestBase implements RuntimeTestInterfac
         "your external cache or CDN.");
       return SELF::SEVERITY_ERROR;
     }
-    elseif (count($purgers) > 3) {
+    elseif (count($purgers) > 2) {
       $this->value = implode(', ', $purgers);
       $this->recommendation = $this->t("You have more than 3 purgers active ".
-        "on one system. This introduces the risk of congesting the system as ".
-        "multiple purgers are kept busy to clear several external caches. The ".
-        "recommendation is to simplify your architecture.");
+        "on one system. This introduces the risk of congesting Drupal as ".
+        "multiple purgers are clearing external caches. It is highly ".
+        "recommended is to simplify your caching architecture.");
       return SELF::SEVERITY_WARNING;
     }
     else {
       $this->value = implode(', ', $purgers);
+      $this->recommendation = $this->t("Purger configured.");
       return SELF::SEVERITY_OK;
     }
   }

@@ -95,7 +95,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
    * {@inheritdoc}
    */
   public function getPlugins($simple = FALSE) {
-    if (empty($this->plugins)) {
+    if (is_null($this->plugins)) {
       $this->plugins = $this->pluginManager->getDefinitions();
     }
     if (!$simple) {
@@ -112,7 +112,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
    * {@inheritdoc}
    */
   public function getPluginsEnabled() {
-    if (empty($this->plugins_enabled)) {
+    if (is_null($this->plugins_enabled)) {
 
       // The queue service always interacts with just one underlying queue,
       // which is stored in configuration. Configuring a queue plugin that

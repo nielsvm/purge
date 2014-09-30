@@ -61,7 +61,7 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
    * {@inheritdoc}
    */
   public function getPlugins($simple = FALSE) {
-    if (empty($this->plugins)) {
+    if (is_null($this->plugins)) {
       $this->plugins = $this->pluginManager->getDefinitions();
       unset($this->plugins['dummy']);
     }
@@ -79,7 +79,7 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
    * {@inheritdoc}
    */
   public function getPluginsEnabled() {
-    if (empty($this->plugins_enabled)) {
+    if (is_null($this->plugins_enabled)) {
       $plugins = $this->configFactory->get('purge.purger')->get('plugins');
 
       // By default all available purgers are enabled when the 'plugins' setting

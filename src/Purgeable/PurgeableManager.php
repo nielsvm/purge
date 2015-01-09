@@ -32,6 +32,7 @@ class PurgeableManager extends DefaultPluginManager {
       'Plugin/PurgePurgeable',
       $namespaces,
       $module_handler,
+      'Drupal\purge\Purgeable\PurgeableInterface',
       'Drupal\purge\Annotation\PurgePurgeable');
     $this->setCacheBackend($cache_backend, 'purge_purgeable_plugins');
   }

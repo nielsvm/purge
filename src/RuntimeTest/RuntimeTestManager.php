@@ -32,6 +32,7 @@ class RuntimeTestManager extends DefaultPluginManager {
       'Plugin/PurgeRuntimeTest',
       $namespaces,
       $module_handler,
+      'Drupal\purge\RuntimeTest\RuntimeTestInterface',
       'Drupal\purge\Annotation\PurgeRuntimeTest');
     $this->setCacheBackend($cache_backend, 'purge_runtimetest_plugins');
   }

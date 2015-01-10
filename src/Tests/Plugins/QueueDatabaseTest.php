@@ -2,12 +2,12 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\PurgeQueueDatabaseTest.
+ * Contains \Drupal\purge\Tests\Plugins\QueueDatabaseTest.
  */
 
-namespace Drupal\purge\Tests;
+namespace Drupal\purge\Tests\Plugins;
 
-use Drupal\purge\Tests\PurgeQueueTestBase;
+use Drupal\purge\Tests\Queue\PluginTestBase;
 
 /**
  * Tests the 'database' queue plugin.
@@ -15,7 +15,7 @@ use Drupal\purge\Tests\PurgeQueueTestBase;
  * @group purge
  * @see \Drupal\purge\Queue\QueueInterface
  */
-class PurgeQueueDatabaseTest extends PurgeQueueTestBase {
+class QueueDatabaseTest extends PluginTestBase {
   protected $plugin_id = 'database';
 
   /**

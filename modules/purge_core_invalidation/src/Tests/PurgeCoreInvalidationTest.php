@@ -8,7 +8,7 @@
 namespace Drupal\purge_core_invalidation\Tests;
 
 use Drupal\Core\Cache\Cache;
-use Drupal\purge\Tests\PurgeTestBase;
+use Drupal\purge\Tests\TestBase;
 use Drupal\purge\Plugin\PurgePurgeable\Tag;
 
 /**
@@ -19,7 +19,7 @@ use Drupal\purge\Plugin\PurgePurgeable\Tag;
  * @see \Drupal\purge\Queue\QueueServiceInterface
  * @see \Drupal\purge\Purgeable\PurgeableServiceInterface
  */
-class PurgeCoreInvalidationTest extends PurgeTestBase {
+class PurgeCoreInvalidationTest extends TestBase {
 
   /**
    * @var \Drupal\purge_core_invalidation\CacheTagDeletionListener
@@ -40,8 +40,7 @@ class PurgeCoreInvalidationTest extends PurgeTestBase {
     parent::setUp();
 
     // Configure the memory queue, which is fast, compliant and does the job.
-    $this->setUpQueue('memory');
-    $this->initializeQueue();
+    $this->initializeQueueService('memory');
     $this->listener = $this->container->get('purge_core_invalidation.listener');
   }
 

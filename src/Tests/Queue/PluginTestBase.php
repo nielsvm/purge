@@ -2,22 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\PurgeQueueTestBase.
+ * Contains \Drupal\purge\Tests\Queue\PluginTestBase.
  */
 
-namespace Drupal\purge\Tests;
+namespace Drupal\purge\Tests\Queue;
 
-use Drupal\simpletest\KernelTestBase;
-use Drupal\purge\Tests\PurgeTestBase;
+use Drupal\purge\Tests\TestBase;
 
 /**
- * Provides a base queue for all PurgeQueue plugins and thoroughly tests
- * the plugin's compliance with \Drupal\purge\Queue\QueueInterface.
+ * Provides a abstract test class to aid thorough tests for queue plugins.
  *
  * @group purge
  * @see \Drupal\purge\Queue\QueueInterface
  */
-abstract class PurgeQueueTestBase extends PurgeTestBase {
+abstract class PluginTestBase extends TestBase {
 
   /**
    * The plugin ID of the queue plugin being tested.
@@ -25,6 +23,13 @@ abstract class PurgeQueueTestBase extends PurgeTestBase {
    * @var string
    */
   protected $plugin_id;
+
+  /**
+  * The plugin manager for queues ('plugin.manager.purge.queue').
+  *
+  * @var \Drupal\purge\Queue\QueueManager
+  */
+  protected $pluginManagerPurgeQueue;
 
   /**
    * The queue plugin being tested.
@@ -38,7 +43,8 @@ abstract class PurgeQueueTestBase extends PurgeTestBase {
    */
   function setUp() {
     parent::setUp();
-    $this->initializeQueue();
+    $this->pluginManagerPurgeQueue =
+      $this->container->get('plugin.manager.purge.queue');
     $this->setUpQueuePlugin();
   }
 
@@ -51,7 +57,7 @@ abstract class PurgeQueueTestBase extends PurgeTestBase {
     }
 
     // Perform essential assertions and prepare common variables.
-    $plugins = $this->purgeQueue->getPlugins();
+    $plugins = $this->pluginManagerPurgeQueue->getDefinitions();
     $id = $this->plugin_id;
     $this->assertTrue(isset($plugins[$id]), 'The plugin is found.');
     if (!isset($plugins[$id])) return FALSE;

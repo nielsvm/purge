@@ -61,7 +61,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function getPlugins($simple = FALSE) {
-    if (is_null($this->plugins)) {
+    if (empty($this->plugins)) {
       $this->plugins = $this->pluginManager->getDefinitions();
       unset($this->plugins['dummy']);
     }

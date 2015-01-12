@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queue\QueueService.
+ * Contains \Drupal\purge\Queue\Service.
  */
 
 namespace Drupal\purge\Queue;
@@ -12,16 +12,16 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\purge\ServiceBase;
-use Drupal\purge\Purgeable\PurgeableServiceInterface;
-use Drupal\purge\Purgeable\PurgeableInterface;
+use Drupal\purge\Purgeable\ServiceInterface as PurgeableService;
+use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 use Drupal\purge\Queue\Exception\UnexpectedServiceConditionException;
 use Drupal\purge\Queue\Exception\InvalidQueueConfiguredException;
-use Drupal\purge\Queue\QueueInterface;
+use Drupal\purge\Queue\PluginInterface;
 
 /**
  * Provides the service that lets purgeables interact with the underlying queue.
  */
-class QueueService extends ServiceBase implements QueueServiceInterface {
+class Service extends ServiceBase implements ServiceInterface {
 
   /**
    * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -36,14 +36,14 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
   /**
    * The service that generates purgeable objects on-demand.
    *
-   * @var \Drupal\purge\Purgeable\PurgeableServiceInterface
+   * @var \Drupal\purge\Purgeable\ServiceInterface
    */
   protected $purgePurgeables;
 
   /**
    * The Queue (plugin) object in which all items are stored.
    *
-   * @var \Drupal\purge\Queue\QueueInterface
+   * @var \Drupal\purge\Queue\PluginInterface
    */
   protected $queue;
 
@@ -61,10 +61,10 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
    *   The service container.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\purge\Purgeable\PurgeableServiceInterface $purge_purgeables
+   * @param \Drupal\purge\Purgeable\ServiceInterface $purge_purgeables
    *   The service that instantiates purgeable objects for claimed queue items.
    */
-  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, ConfigFactoryInterface $config_factory, PurgeableServiceInterface $purge_purgeables) {
+  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, ConfigFactoryInterface $config_factory, PurgeableService $purge_purgeables) {
     $this->pluginManager = $pluginManager;
     $this->serviceContainer = $service_container;
     $this->configFactory = $config_factory;
@@ -174,7 +174,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function add(PurgeableInterface $purgeable) {
+  public function add(Purgeable $purgeable) {
     $duplicate = FALSE;
     foreach ($this->buffer as $bufferedPurgeable) {
       if ($purgeable->data === $bufferedPurgeable->data) {
@@ -183,7 +183,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
       }
     }
     if (!$duplicate) {
-      $purgeable->setState(PurgeableInterface::STATE_ADDING);
+      $purgeable->setState(Purgeable::STATE_ADDING);
       $this->buffer[] = $purgeable;
     }
   }
@@ -201,7 +201,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
         }
       }
       if (!$duplicate) {
-        $purgeable->setState(PurgeableInterface::STATE_ADDING);
+        $purgeable->setState(Purgeable::STATE_ADDING);
         $this->buffer[] = $purgeable;
       }
     }
@@ -230,7 +230,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
 
     // If a locally buffered purgeable object was found, update and return it.
     if ($match) {
-      $match->setState(PurgeableInterface::STATE_CLAIMED);
+      $match->setState(Purgeable::STATE_CLAIMED);
       $match->setQueueItemInfo($item->item_id, $item->created);
       return $match;
     }
@@ -238,7 +238,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
     // If the item was not locally buffered (usually), instantiate one.
     else {
       $purgeable = $this->purgePurgeables->fromQueueItemData($item->data);
-      $purgeable->setState(PurgeableInterface::STATE_CLAIMED);
+      $purgeable->setState(Purgeable::STATE_CLAIMED);
       $purgeable->setQueueItemInfo($item->item_id, $item->created);
       $this->buffer[] = $purgeable;
       return $purgeable;
@@ -271,7 +271,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
 
       // If a match was found, update and overwrite the object in $items.
       if ($match) {
-        $match->setState(PurgeableInterface::STATE_CLAIMED);
+        $match->setState(Purgeable::STATE_CLAIMED);
         $match->setQueueItemInfo($item->item_id, $item->created);
         $items[$i] = $match;
       }
@@ -279,7 +279,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
       // If the item was not locally buffered (usually), instantiate one.
       else {
         $purgeable = $this->purgePurgeables->fromQueueItemData($item->data);
-        $purgeable->setState(PurgeableInterface::STATE_CLAIMED);
+        $purgeable->setState(Purgeable::STATE_CLAIMED);
         $purgeable->setQueueItemInfo($item->item_id, $item->created);
         $this->buffer[] = $purgeable;
         $items[$i] = $purgeable;
@@ -292,36 +292,36 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function release(PurgeableInterface $purgeable) {
-    $this->bufferSetState(PurgeableInterface::STATE_RELEASING, array($purgeable));
+  public function release(Purgeable $purgeable) {
+    $this->bufferSetState(Purgeable::STATE_RELEASING, array($purgeable));
   }
 
   /**
    * {@inheritdoc}
    */
   public function releaseMultiple(array $purgeables) {
-    $this->bufferSetState(PurgeableInterface::STATE_RELEASING, $purgeables);
+    $this->bufferSetState(Purgeable::STATE_RELEASING, $purgeables);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function delete(PurgeableInterface $purgeable) {
-    $this->bufferSetState(PurgeableInterface::STATE_DELETING, array($purgeable));
+  public function delete(Purgeable $purgeable) {
+    $this->bufferSetState(Purgeable::STATE_DELETING, array($purgeable));
   }
 
   /**
    * {@inheritdoc}
    */
   public function deleteMultiple(array $purgeables) {
-    $this->bufferSetState(PurgeableInterface::STATE_DELETING, $purgeables);
+    $this->bufferSetState(Purgeable::STATE_DELETING, $purgeables);
   }
 
   /**
    * {@inheritdoc}
    */
   function emptyQueue() {
-    $this->bufferSetState(PurgeableInterface::STATE_DELETED, $this->buffer);
+    $this->bufferSetState(Purgeable::STATE_DELETED, $this->buffer);
     $this->queue->deleteQueue();
     $this->buffer = array();
   }
@@ -331,7 +331,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
    *
    * @param array $states
    *   A non-associative array containing one or more state constants as
-   *   found under PurgeableInterface::STATE_*.
+   *   found under \Drupal\purge\Purgeable\PluginInterface::STATE_*.
    *
    * @return
    *   Returns a non-associative array with purgeable objects, but only those
@@ -351,9 +351,10 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
    * Set a certain state on each purgeable in the given array.
    *
    * @param $state
-   *   Integer matching to any of the PurgeableInterface::STATE_* constants.
+   *   Integer matching to any of the \Drupal\purge\Purgeable
+   *   \PluginInterface::STATE_* constants.
    * @param array $purgeables
-   *   A non-associative array with \Drupal\purge\Purgeable\PurgeableInterface
+   *   A non-associative array with \Drupal\purge\Purgeable\PluginInterface
    *   objects that need the given state applied.
    * @param bool $checkid
    *   If TRUE, only change the state on objects that have a non-NULL item_id.
@@ -393,7 +394,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
    * Commit all adding purgeables in the buffer to the queue.
    */
   private function commitAdding() {
-    $items = $this->bufferGetFiltered(array(PurgeableInterface::STATE_ADDING));
+    $items = $this->bufferGetFiltered(array(Purgeable::STATE_ADDING));
     if (empty($items)) {
       return;
     }
@@ -409,7 +410,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
         else {
           $purgeable->setQueueItemId($id);
           $purgeable->setQueueItemCreated(time());
-          $purgeable->setState(PurgeableInterface::STATE_ADDED);
+          $purgeable->setState(Purgeable::STATE_ADDED);
         }
       }
 
@@ -432,7 +433,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
           }
           $purgeable->setQueueItemId($ids[$i]);
           $purgeable->setQueueItemCreated(time());
-          $purgeable->setState(PurgeableInterface::STATE_ADDED);
+          $purgeable->setState(Purgeable::STATE_ADDED);
         }
       }
     }
@@ -442,7 +443,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
    * Commit all releasing purgeables in the buffer to the queue.
    */
   private function commitReleasing() {
-    $items = $this->bufferGetFiltered(array(PurgeableInterface::STATE_RELEASING));
+    $items = $this->bufferGetFiltered(array(Purgeable::STATE_RELEASING));
     if (empty($items)) {
       return;
     }
@@ -452,14 +453,14 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
       if (count($items) === 1) {
         $purgeable = current($items);
         $this->queue->releaseItem($purgeable);
-        $purgeable->setState(PurgeableInterface::STATE_RELEASED);
+        $purgeable->setState(Purgeable::STATE_RELEASED);
       }
 
       // Release multiple items at once back to the queue.
       else {
         $this->queue->releaseItemMultiple($items);
         foreach ($items as $purgeable) {
-          $purgeable->setState(PurgeableInterface::STATE_RELEASED);
+          $purgeable->setState(Purgeable::STATE_RELEASED);
         }
       }
     }
@@ -469,7 +470,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
    * Commit all deleting purgeables in the buffer to the queue.
    */
   private function commitDeleting() {
-    $items = $this->bufferGetFiltered(array(PurgeableInterface::STATE_DELETING));
+    $items = $this->bufferGetFiltered(array(Purgeable::STATE_DELETING));
     if (empty($items)) {
       return;
     }
@@ -479,7 +480,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
       if (count($items) === 1) {
         $purgeable = current($items);
         $this->queue->deleteItem($purgeable);
-        $purgeable->setState(PurgeableInterface::STATE_DELETED);
+        $purgeable->setState(Purgeable::STATE_DELETED);
         foreach ($this->buffer as $i => $bufferedPurgeable) {
           if ($purgeable->item_id === $bufferedPurgeable->item_id) {
             unset($this->buffer[$i]);
@@ -491,7 +492,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface {
       else {
         $this->queue->deleteItemMultiple($items);
         foreach ($items as $purgeable) {
-          $purgeable->setState(PurgeableInterface::STATE_DELETED);
+          $purgeable->setState(Purgeable::STATE_DELETED);
           foreach ($this->buffer as $i => $bufferedPurgeable) {
             if ($purgeable->item_id === $bufferedPurgeable->item_id) {
               unset($this->buffer[$i]);

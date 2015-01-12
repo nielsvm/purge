@@ -8,8 +8,8 @@
 namespace Drupal\purge_core_invalidation;
 
 use Drupal\Core\Cache\NullBackend;
-use Drupal\purge\Queue\QueueServiceInterface;
-use Drupal\purge\Purgeable\PurgeableServiceInterface;
+use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
+use Drupal\purge\Purgeable\ServiceInterfce as PurgeableServiceInterface;
 
 /**
  * Fake cache back-end that queues deleted cache tags (for getting purged).
@@ -17,12 +17,12 @@ use Drupal\purge\Purgeable\PurgeableServiceInterface;
 class CacheTagDeletionListener extends NullBackend {
 
   /**
-   * @var \Drupal\purge\Queue\QueueServiceInterface
+   * @var \Drupal\purge\Queue\ServiceInterface
    */
   protected $purgeQueue;
 
   /**
-   * @var \Drupal\purge\Purgeable\PurgeableServiceInterface
+   * @var \Drupal\purge\Purgeable\ServiceInterface
    */
   protected $purgePurgeables;
 
@@ -34,9 +34,9 @@ class CacheTagDeletionListener extends NullBackend {
   /**
    * {@inheritdoc}
    *
-   * @param \Drupal\purge\Queue\QueueServiceInterface $purge_queue
+   * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
    *   The purge queue service.
-   * @param \Drupal\purge\Purgeable\PurgeableServiceInterface $purge_purgeables
+   * @param \Drupal\purge\Purgeable\ServiceInterface $purge_purgeables
    *   The purgeables factory service.
    */
   public function __construct(QueueServiceInterface $purge_queue, PurgeableServiceInterface $purge_purgeables) {

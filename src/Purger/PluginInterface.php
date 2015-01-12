@@ -2,24 +2,24 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purger\PurgerInterface.
+ * Contains \Drupal\purge\Purger\PluginInterface.
  */
 
 namespace Drupal\purge\Purger;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\purge\Purgeable\PurgeableInterface;
+use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 
 /**
  * Describes a purger: the executor that takes purgeable instruction objects and
  * wipes the described things from an external cache system.
  */
-interface PurgerInterface {
+interface PluginInterface {
 
   /**
    * Wipe the given purgeable from the external cache system.
    *
-   * @param \Drupal\purge\Purgeable\PurgeableInterface $purgeable
+   * @param \Drupal\purge\Purgeable\PluginInterface $purgeable
    *   A purgeable describes a single item to be purged and can be created using
    *   the 'purge.purgeables' service, either directly or through a queue claim.
    *
@@ -30,22 +30,22 @@ interface PurgerInterface {
    *
    * @return
    *   Returns TRUE on full success and FALSE in any other case. In addition it
-   *   always calls \Drupal\purge\Purgeable\PurgeableInterface::setState() on
+   *   always calls \Drupal\purge\Purgeable\PluginInterface::setState() on
    *   the $purgeable instance, setting it to STATE_PURGED or STATE_PURGEFAILED.
    */
-  public function purge(PurgeableInterface $purgeable);
+  public function purge(Purgeable $purgeable);
 
   /**
    * Wipe all given purgeables from the external cache system.
    *
    * @param array $purgeables
    *   Non-associative array with purgeable object instances compliant with
-   *   \Drupal\purge\Purgeable\PurgeableInterface, either directly generated
+   *   \Drupal\purge\Purgeable\PluginInterface, either directly generated
    *   through the 'purge.purgeables' service or claimed from 'purge.queue'.
    *
    * @return
    *   Returns TRUE if all were successfully purged but FALSE if just one of
-   *   them failed. The \Drupal\purge\Purgeable\PurgeableInterface::setState()
+   *   them failed. The \Drupal\purge\Purgeable\PluginInterface::setState()
    *   method is being called on each of them and states are set to either
    *   STATE_PURGED, STATE_PURGING or STATE_PURGEFAILED. Both failed purges as
    *   active purges will result in a FALSE and its being assumed that they
@@ -104,8 +104,8 @@ interface PurgerInterface {
    *   Users can configure multiple active purgers at once, for instance one to
    *   clear a CDN while the other clears a local caching Nginx instance. There
    *   is however no necessity for implementations of this method to incorporate
-   *   that, as PurgerService::getClaimTimeHint() will automatically add up all
-   *   estimations returned by each individual purger.
+   *   that, as \Drupal\purge\Purger\Service::getClaimTimeHint() will
+   *   automatically add up all estimations returned by each individual purger.
    *
    * @return int
    *   Integer, a safe number of seconds where in which one purgeable could be processed.

@@ -2,32 +2,32 @@ services:
 
   # PURGE.PURGER: The executive service, which processes purgeable objects.
   purge.purger:
-    class: Drupal\purge\Purger\PurgerService
+    class: Drupal\purge\Purger\Service
     arguments: ['@plugin.manager.purge.purger', '@service_container', '@config.factory']
   plugin.manager.purge.purger:
-    class: Drupal\purge\Purger\PurgerManager
+    class: Drupal\purge\Purger\PluginManager
     parent: default_plugin_manager
 
   # PURGE.PURGEABLES: The purgeable object factory.
   purge.purgeables:
-    class: Drupal\purge\Purgeable\PurgeableService
+    class: Drupal\purge\Purgeable\Service
     arguments: ['@plugin.manager.purge.purgeables']
   plugin.manager.purge.purgeables:
-    class: Drupal\purge\Purgeable\PurgeableManager
+    class: Drupal\purge\Purgeable\PluginManager
     parent: default_plugin_manager
 
   # PURGE.QUEUE: The queue in which to store, claim and release purgeable objects from.
   purge.queue:
-    class: Drupal\purge\Queue\QueueService
+    class: Drupal\purge\Queue\Service
     arguments: ['@plugin.manager.purge.queue', '@service_container', '@config.factory', '@purge.purgeables']
   plugin.manager.purge.queue:
-    class: Drupal\purge\Queue\QueueManager
+    class: Drupal\purge\Queue\PluginManager
     parent: default_plugin_manager
 
   # PURGE.DIAGNOSTICS: The tests service which warns and monitors for issues.
   purge.diagnostics:
-    class: Drupal\purge\RuntimeTest\RuntimeTestService
+    class: Drupal\purge\RuntimeTest\Service
     arguments: ['@plugin.manager.purge.diagnostics', '@service_container', '@purge.purger', '@purge.queue']
   plugin.manager.purge.diagnostics:
-    class:  Drupal\purge\RuntimeTest\RuntimeTestManager
+    class:  Drupal\purge\RuntimeTest\PluginManager
     parent: default_plugin_manager

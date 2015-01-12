@@ -8,10 +8,10 @@
 namespace Drupal\purge_test\Plugin\PurgeQueue;
 
 use Drupal\purge\Plugin\PurgeQueue\Memory;
-use Drupal\purge\Queue\QueueInterface;
+use Drupal\purge\Queue\PluginInterface;
 
 /**
- * A QueueInterface compliant memory queue for testing purposes.
+ * A \Drupal\purge\Queue\PluginInterface compliant memory queue for testing.
  *
  * @PurgeQueue(
  *   id = "queue_c",
@@ -20,4 +20,4 @@ use Drupal\purge\Queue\QueueInterface;
  *   service_dependencies = {}
  * )
  */
-class QueueC extends Memory implements QueueInterface {}
+class QueueC extends Memory implements PluginInterface {}

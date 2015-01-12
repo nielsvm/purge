@@ -32,22 +32,22 @@ abstract class TestBase extends KernelTestBase {
   protected $configFactory;
 
   /**
-   * @var \Drupal\purge\Purger\PurgerServiceInterface
+   * @var \Drupal\purge\Purger\ServiceInterface
    */
   protected $purgePurger;
 
   /**
-   * @var \Drupal\purge\Purgeable\PurgeableServiceInterface
+   * @var \Drupal\purge\Purgeable\ServiceInterface
    */
   protected $purgePurgeables;
 
   /**
-   * @var \Drupal\purge\Queue\QueueServiceInterface
+   * @var \Drupal\purge\Queue\ServiceInterface
    */
   protected $purgeQueue;
 
   /**
-   * @var \Drupal\purge\RuntimeTest\RuntimeTestServiceInterface
+   * @var \Drupal\purge\RuntimeTest\ServiceInterface
    */
   protected $purgeDiagnostics;
 

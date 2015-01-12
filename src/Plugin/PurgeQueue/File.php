@@ -7,12 +7,12 @@
 
 namespace Drupal\purge\Plugin\PurgeQueue;
 
-use Drupal\Core\StreamWrapper\PublicStream;
-use Drupal\purge\Queue\QueueInterface;
 use Drupal\purge\Plugin\PurgeQueue\Memory;
+use Drupal\Core\StreamWrapper\PublicStream;
+use Drupal\purge\Queue\PluginInterface as Queue;
 
 /**
- * A \Drupal\purge\Queue\QueueInterface compliant file-based queue.
+ * A \Drupal\purge\Queue\PluginInterface compliant file-based queue.
  *
  * @PurgeQueue(
  *   id = "file",
@@ -21,7 +21,7 @@ use Drupal\purge\Plugin\PurgeQueue\Memory;
  *   service_dependencies = {}
  * )
  */
-class File extends Memory implements QueueInterface {
+class File extends Memory implements Queue {
 
   /**
    * The file path to which the queue buffer gets written to.

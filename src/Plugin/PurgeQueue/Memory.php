@@ -7,11 +7,11 @@
 
 namespace Drupal\purge\Plugin\PurgeQueue;
 
-use Drupal\purge\Queue\QueueInterface;
-use Drupal\purge\Queue\QueueBase;
+use Drupal\purge\Queue\PluginInterface as Queue;
+use Drupal\purge\Queue\PluginBase;
 
 /**
- * A \Drupal\purge\Queue\QueueInterface compliant volatile memory buffer queue.
+ * A \Drupal\purge\Queue\PluginInterface compliant volatile memory buffer queue.
  *
  * @warning
  * This queue does not extend core's Memory queue on purpose, as it does not
@@ -24,7 +24,7 @@ use Drupal\purge\Queue\QueueBase;
  *   service_dependencies = {}
  * )
  */
-class Memory extends QueueBase implements QueueInterface {
+class Memory extends PluginBase implements Queue {
 
   /**
    * Whether the buffer has been initialized or not.

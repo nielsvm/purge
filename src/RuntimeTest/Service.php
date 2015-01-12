@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\RuntimeTest\RuntimeTestService.
+ * Contains \Drupal\purge\RuntimeTest\Service.
  */
 
 namespace Drupal\purge\RuntimeTest;
@@ -12,15 +12,15 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\purge\ServiceBase;
-use Drupal\purge\Purger\PurgerServiceInterface;
-use Drupal\purge\Queue\QueueServiceInterface;
-use Drupal\purge\RuntimeTest\RuntimeTestServiceInterface;
-use Drupal\purge\RuntimeTest\RuntimeTestInterface;
+use Drupal\purge\Purger\ServiceInterface as PurgerServiceInterface;
+use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
+use Drupal\purge\RuntimeTest\ServiceInterface;
+use Drupal\purge\RuntimeTest\PluginInterface;
 
 /**
  * Provides a service that interacts with runtime tests.
  */
-class RuntimeTestService extends ServiceBase implements RuntimeTestServiceInterface {
+class Service extends ServiceBase implements ServiceInterface {
 
   /**
    * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -30,14 +30,14 @@ class RuntimeTestService extends ServiceBase implements RuntimeTestServiceInterf
   /**
    * The purge executive service, which wipes content from external caches.
    *
-   * @var \Drupal\purge\Purger\PurgerServiceInterface
+   * @var \Drupal\purge\Purger\ServiceInterface
    */
   protected $purgePurger;
 
   /**
    * The queue in which to store, claim and release purgeable objects from.
    *
-   * @var \Drupal\purge\Queue\QueueServiceInterface
+   * @var \Drupal\purge\Queue\ServiceInterface
    */
   protected $purgeQueue;
 
@@ -160,27 +160,6 @@ class RuntimeTestService extends ServiceBase implements RuntimeTestServiceInterf
   }
 
   /**
-   * Generates a hook_requirements() compatible array.
-   *
-   * @warning
-   *   Although it shares the same name, this method doesn't return a individual
-   *   item array as RuntimeTestInterface::getHookRequirementsArray() does. It
-   *   returns a full array (as hook_requirements() expects) for all tests.
-   *
-   * @return array
-   *   An associative array where the keys are arbitrary but unique (test id)
-   *   and the values themselves are associative arrays with these elements:
-   *   - title: The name of this test.
-   *   - value: The current value (e.g., version, time, level, etc), will not
-   *     be set if not applicable.
-   *   - description: The description of the test.
-   *   - severity: The test's result/severity level, one of:
-   *     - REQUIREMENT_INFO: For info only.
-   *     - REQUIREMENT_OK: The requirement is satisfied.
-   *     - REQUIREMENT_WARNING: The requirement failed with a warning.
-   *     - REQUIREMENT_ERROR: The requirement failed with an error.
-   */
-  /**
    * {@inheritdoc}
    */
   public function getHookRequirementsArray() {
@@ -195,18 +174,18 @@ class RuntimeTestService extends ServiceBase implements RuntimeTestServiceInterf
    * Checks whether one of the diagnostic tests reports full failure.
    *
    * This method provides a simple - boolean evaluable - way to determine if
-   * a \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_ERROR severity
+   * a \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_ERROR severity
    * was reported by one of the tests. If SEVERITY_ERROR was reported, purging
    * cannot continue and should happen once all problems are resolved.
    *
-   * @return FALSE or \Drupal\purge\RuntimeTest\RuntimeTestInterface.
+   * @return FALSE or a \Drupal\purge\RuntimeTest\PluginInterface test object.
    *   If everything is fine, this returns FALSE. But, if a blocking problem
    *   exists, the first failing test object is returned holding a UI applicable
    *   recommendation message.
    */
   public function isSystemOnFire() {
     foreach ($this as $test) {
-      if ($test->getSeverity() === RuntimeTestInterface::SEVERITY_ERROR) {
+      if ($test->getSeverity() === PluginInterface::SEVERITY_ERROR) {
         return $test;
       }
     }

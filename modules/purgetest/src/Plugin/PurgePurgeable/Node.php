@@ -7,7 +7,7 @@
 
 namespace Drupal\purgetest\Plugin\PurgePurgeable;
 
-use Drupal\purge\Purgeable\PurgeableBase;
+use Drupal\purge\Purgeable\PluginBase;
 use Drupal\purge\Purgeable\InvalidStringRepresentationException;
 
 /**
@@ -18,7 +18,7 @@ use Drupal\purge\Purgeable\InvalidStringRepresentationException;
  *   label = @Translation("Node Purgeable")
  * )
  */
-class Node extends PurgeableBase {
+class Node extends PluginBase {
 
   /**
    * {@inheritdoc}

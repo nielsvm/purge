@@ -8,8 +8,8 @@
 namespace Drupal\purgetest\Plugin\PurgePurger;
 
 use Drupal\Core\Http\Client as HttpClient;
-use Drupal\purge\Purger\PurgerBase;
-use Drupal\purge\Purgeable\PurgeableInterface;
+use Drupal\purge\Purger\PluginBase;
+use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 
 /**
  * A purger that purges the Fastly CDN.
@@ -21,7 +21,7 @@ use Drupal\purge\Purgeable\PurgeableInterface;
  *   service_dependencies = {"http_client"}
  * )
  */
-class Fastly extends PurgerBase {
+class Fastly extends PluginBase {
 
   /**
    * Instantiate the fastly purger.
@@ -35,8 +35,8 @@ class Fastly extends PurgerBase {
   /**
    * {@inheritdoc}
    */
-  public function purge(PurgeableInterface $purgeable) {
-    $purgeable->setState(PurgeableInterface::STATE_PURGED);
+  public function purge(Purgeable $purgeable) {
+    $purgeable->setState(Purgeable::STATE_PURGED);
     return TRUE;
   }
 

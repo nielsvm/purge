@@ -7,8 +7,8 @@
 
 namespace Drupal\purge_test\Plugin\PurgeRuntimeTest;
 
-use Drupal\purge\RuntimeTest\RuntimeTestInterface;
-use Drupal\purge\RuntimeTest\RuntimeTestBase;
+use Drupal\purge\RuntimeTest\PluginInterface;
+use Drupal\purge\RuntimeTest\PluginBase;
 
 /**
  * Tests if there is a purger plugin that invalidates an external cache.
@@ -22,7 +22,7 @@ use Drupal\purge\RuntimeTest\RuntimeTestBase;
  *   dependent_purger_plugins = {}
  * )
  */
-class QueueSpecificWarningTest extends RuntimeTestBase implements RuntimeTestInterface {
+class QueueSpecificWarningTest extends PluginBase implements PluginInterface {
 
   /**
    * {@inheritdoc}

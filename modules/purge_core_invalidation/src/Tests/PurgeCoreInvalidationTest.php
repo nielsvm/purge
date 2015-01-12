@@ -16,8 +16,8 @@ use Drupal\purge\Plugin\PurgePurgeable\Tag;
  *
  * @group purge
  * @see \Drupal\purge_core_invalidation\CacheTagDeletionListener
- * @see \Drupal\purge\Queue\QueueServiceInterface
- * @see \Drupal\purge\Purgeable\PurgeableServiceInterface
+ * @see \Drupal\purge\Queue\ServiceInterface
+ * @see \Drupal\purge\Purgeable\ServiceInterface
  */
 class PurgeCoreInvalidationTest extends TestBase {
 

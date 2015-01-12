@@ -10,8 +10,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\purge\Purger\PurgerServiceInterface;
-use Drupal\purge\Queue\QueueServiceInterface;
+use Drupal\purge\Purger\ServiceInterface as PurgerServiceInterface;
+use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 
 /**
  * Configure settings for the Purge core APIs.
@@ -26,12 +26,12 @@ class PurgeUiMainConfigForm extends ConfigFormBase {
   protected $configFactory;
 
   /**
-   * @var \Drupal\purge\Purger\PurgerServiceInterface
+   * @var \Drupal\purge\Purger\ServiceInterface
    */
   protected $purgePurger;
 
   /**
-   * @var \Drupal\purge\Queue\QueueServiceInterface
+   * @var \Drupal\purge\Queue\ServiceInterface
    */
   protected $purgeQueue;
 
@@ -40,9 +40,9 @@ class PurgeUiMainConfigForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\purge\Purger\PurgerServiceInterface $purge_purger
+   * @param \Drupal\purge\Purger\ServiceInterface $purge_purger
    *   The purger service.
-   * @param \Drupal\purge\Queue\QueueServiceInterface $purge_queue
+   * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
    *   The purge queue service.
    */
   public function __construct(ConfigFactoryInterface $config_factory, PurgerServiceInterface $purge_purger, QueueServiceInterface $purge_queue) {

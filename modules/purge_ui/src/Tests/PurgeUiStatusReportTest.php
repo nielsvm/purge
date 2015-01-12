@@ -15,12 +15,12 @@ use Drupal\simpletest\WebTestBase;
  *
  * @group purge
  * @see purge_ui_requirements()
- * @see \Drupal\purge\RuntimeTest\RuntimeTestServiceInterface
+ * @see \Drupal\purge\RuntimeTest\ServiceInterface
  */
 class PurgeUiStatusReportTest extends WebTestBase {
 
   /**
-   * @var \Drupal\purge\RuntimeTest\RuntimeTestServiceInterface
+   * @var \Drupal\purge\RuntimeTest\ServiceInterface
    */
   protected $purgeDiagnostics;
 

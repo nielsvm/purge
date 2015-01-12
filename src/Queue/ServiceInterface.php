@@ -2,34 +2,34 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queue\QueueServiceInterface.
+ * Contains \Drupal\purge\Queue\ServiceInterface.
  */
 
 namespace Drupal\purge\Queue;
 
-use Drupal\purge\ServiceInterface;
-use Drupal\purge\Purgeable\PurgeableInterface;
+use Drupal\purge\ServiceInterface as PurgeServiceInterface;
+use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 
 /**
  * Describes a service that lets purgeables interact with the underlying queue.
  */
-interface QueueServiceInterface extends ServiceInterface {
+interface ServiceInterface extends PurgeServiceInterface {
 
   /**
    * Add a purgeable to the queue, schedule it for later purging.
    *
-   * @param \Drupal\purge\Purgeable\PurgeableInterface $purgeable
+   * @param \Drupal\purge\Purgeable\PluginInterface $purgeable
    *   A purgeable describes a single item to be purged and can be created using
    *   the 'purge.purgeables' service. The object instance added to the queue
    *   can be claimed and executed by the 'purge.purger' service later.
    */
-  public function add(PurgeableInterface $purgeable);
+  public function add(Purgeable $purgeable);
 
   /**
    * Add multiple purgeables to the queue, schedule them for later purging.
    *
    * @param array $purgeables
-   *   A non-associative array with \Drupal\purge\Purgeable\PurgeableInterface
+   *   A non-associative array with \Drupal\purge\Purgeable\PluginInterface
    *   objects to be added to the queue. The purgeables can later be claimed
    *   from the queue and fed to the 'purge.purger' executor.
    */
@@ -46,7 +46,7 @@ interface QueueServiceInterface extends ServiceInterface {
    *   processes, due this inefficiency the one-hour default is recommended for
    *   most purgers.
    *
-   * @return \Drupal\purge\Purgeable\PurgeableInterface
+   * @return \Drupal\purge\Purgeable\PluginInterface
    *   Returned will be a fully instantiated purgeable object or FALSE when the
    *   queue is empty. Be aware that its expected that the claimed item needs
    *   to be fed to the purger within the specified $lease_time, else they will
@@ -71,7 +71,7 @@ interface QueueServiceInterface extends ServiceInterface {
    *
    * @return array
    *   Returned will be a non-associative array with the given amount of
-   *   \Drupal\purge\Purgeable\PurgeableInterface objects as claimed. Be aware
+   *   \Drupal\purge\Purgeable\PluginInterface objects as claimed. Be aware
    *   that its expected that the claimed purgeables will need to be processed
    *   by the purger within the given $lease_time, else they will become
    *   available again. The returned array might be empty when the queue is.
@@ -81,18 +81,18 @@ interface QueueServiceInterface extends ServiceInterface {
   /**
    * Release a purgeable that couldn't be purged, back to the queue.
    *
-   * @param \Drupal\purge\Purgeable\PurgeableInterface $purgeable
+   * @param \Drupal\purge\Purgeable\PluginInterface $purgeable
    *   The purgeable that couldn't be held for longer or that failed processing,
    *   to be marked as free for processing in the queue. Once released, other
    *   consumers can claim and attempt purging it again.
    */
-  public function release(PurgeableInterface $purgeable);
+  public function release(Purgeable $purgeable);
 
   /**
    * Release purgeables that couldn't be purged, back to the queue.
    *
    * @param array $purgeables
-   *   A non-associative array with \Drupal\purge\Purgeable\PurgeableInterface
+   *   A non-associative array with \Drupal\purge\Purgeable\PluginInterface
    *   objects to released and marked as available in the queue. Once released,
    *   other consumers can claim them again and attempt purging them.
    */
@@ -101,18 +101,18 @@ interface QueueServiceInterface extends ServiceInterface {
   /**
    * Delete a purged purgeable from the queue.
    *
-   * @param \Drupal\purge\Purgeable\PurgeableInterface $purgeable
+   * @param \Drupal\purge\Purgeable\PluginInterface $purgeable
    *   The purgeable that was successfully purged and that should be removed
    *   from the queue. The object instance might remain to exist but should not
    *   be accessed anymore, cleanup might occur later during runtime.
    */
-  public function delete(PurgeableInterface $purgeable);
+  public function delete(Purgeable $purgeable);
 
   /**
    * Delete multiple purgeables from the queue at once.
    *
    * @param array $purgeables
-   *   A non-associative array with \Drupal\purge\Purgeable\PurgeableInterface
+   *   A non-associative array with \Drupal\purge\Purgeable\PluginInterface
    *   objects to be removed from the queue. Once called, the instance might
    *   still exists but should not be accessed anymore, cleanup might occur
    *   later during runtime.

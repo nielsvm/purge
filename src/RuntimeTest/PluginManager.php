@@ -2,22 +2,22 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purger\PurgerManager.
+ * Contains \Drupal\purge\RuntimeTest\PluginManager.
  */
 
-namespace Drupal\purge\Purger;
+namespace Drupal\purge\RuntimeTest;
 
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * The purger plugin manager.
+ * The runtime test plugin manager.
  */
-class PurgerManager extends DefaultPluginManager {
+class PluginManager extends DefaultPluginManager {
 
   /**
-   * Constructs the PurgerManager object.
+   * Constructs the PluginManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -29,11 +29,11 @@ class PurgerManager extends DefaultPluginManager {
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct(
-      'Plugin/PurgePurger',
+      'Plugin/PurgeRuntimeTest',
       $namespaces,
       $module_handler,
-      'Drupal\purge\Purger\PurgerInterface',
-      'Drupal\purge\Annotation\PurgePurger');
-    $this->setCacheBackend($cache_backend, 'purge_purger_plugins');
+      'Drupal\purge\RuntimeTest\PluginInterface',
+      'Drupal\purge\Annotation\PurgeRuntimeTest');
+    $this->setCacheBackend($cache_backend, 'purge_runtimetest_plugins');
   }
 }

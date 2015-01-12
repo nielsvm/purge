@@ -7,7 +7,8 @@
 
 namespace Drupal\purge\Plugin\PurgePurgeable;
 
-use Drupal\purge\Purgeable\PurgeableBase;
+use Drupal\purge\Purgeable\PluginInterace as Purgeable;
+use Drupal\purge\Purgeable\PluginBase;
 use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
 
 /**
@@ -20,7 +21,7 @@ use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
  *   label = @Translation("Tag Purgeable")
  * )
  */
-class Tag extends PurgeableBase {
+class Tag extends PluginBase implements Purgeable {
 
   /**
    * {@inheritdoc}

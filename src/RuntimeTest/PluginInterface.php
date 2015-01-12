@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\RuntimeTest\RuntimeTestInterface.
+ * Contains \Drupal\purge\RuntimeTest\PluginInterface.
  */
 
 namespace Drupal\purge\RuntimeTest;
@@ -12,7 +12,7 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
 /**
  * Describes a runtime test that tests a specific purging requirement.
  */
-interface RuntimeTestInterface extends PluginInspectionInterface {
+interface PluginInterface extends PluginInspectionInterface {
 
   /**
    * Non-blocking severity -- Informational message only.
@@ -61,10 +61,10 @@ interface RuntimeTestInterface extends PluginInspectionInterface {
    *
    * @return int
    *   Integer, matching either of the following constants:
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_INFO
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_OK
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_WARNING
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_ERROR
+   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_INFO
+   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_OK
+   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_WARNING
+   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_ERROR
    */
   public function run();
 
@@ -87,10 +87,10 @@ interface RuntimeTestInterface extends PluginInspectionInterface {
    *
    * @return int
    *   Integer, matching either of the following constants:
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_INFO
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_OK
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_WARNING
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_ERROR
+   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_INFO
+   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_OK
+   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_WARNING
+   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_ERROR
    */
   public function getSeverity();
 

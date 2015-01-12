@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purger\PurgerService.
+ * Contains \Drupal\purge\Purger\Service.
  */
 
 namespace Drupal\purge\Purger;
@@ -12,14 +12,14 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\ServiceBase;
-use Drupal\purge\Purger\PurgerServiceInterface;
+use Drupal\purge\Purger\ServiceInterface;
 use Drupal\purge\Purger\Exception\InvalidPurgerBehaviorException;
-use Drupal\purge\Purgeable\PurgeableInterface;
+use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 
 /**
  * Provides the service that allows transparent access to one or more purgers.
  */
-class PurgerService extends ServiceBase implements PurgerServiceInterface {
+class Service extends ServiceBase implements ServiceInterface {
 
   /**
    * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -147,14 +147,14 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function purge(PurgeableInterface $purgeable) {
+  public function purge(Purgeable $purgeable) {
 
-    // When there is just one enabled purger, we can directly call
-    // PurgerInteface::purge(). As both PurgerService and the enabled plugin are
-    // sharing the same interface, the behavior has to be exactly identical.
+    // When there is just one enabled purger, we can directly call \Drupal\purge
+    // \Purger\PluginInterface::purge(). As both Service and the enabled plugin
+    // are sharing the same interface, the behavior has to be exactly identical.
     if (count($this->purgers) === 1) {
       if (current($this->purgers)->purge($purgeable)) {
-        if ($purgeable->getState() !== PurgeableInterface::STATE_PURGED) {
+        if ($purgeable->getState() !== Purgeable::STATE_PURGED) {
           throw new InvalidPurgerBehaviorException(
             "The purger '" . key($this->purgers) . "' returned TRUE without setting state to STATE_PURGED.");
         }
@@ -172,18 +172,18 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
     foreach ($this->purgers as $plugin_id => $purger) {
 
       // For every purger that attempts to purge this purgeable, reset its state.
-      $purgeable->setState(PurgeableInterface::STATE_CLAIMED);
+      $purgeable->setState(Purgeable::STATE_CLAIMED);
 
       // Let this purger; purge the given purgeable and collect the result.
       if ($results[] = $purger->purge($purgeable)) {
-        if ($purgeable->getState() !== PurgeableInterface::STATE_PURGED) {
+        if ($purgeable->getState() !== Purgeable::STATE_PURGED) {
           throw new InvalidPurgerBehaviorException(
             "The purger '$plugin_id' returned TRUE without setting state to STATE_PURGED.");
         }
       }
       else {
         $state = $purgeable->getState();
-        if (!(($state === PurgeableInterface::STATE_PURGEFAILED) || ($state === PurgeableInterface::STATE_PURGING))) {
+        if (!(($state === Purgeable::STATE_PURGEFAILED) || ($state === Purgeable::STATE_PURGING))) {
           throw new InvalidPurgerBehaviorException(
             "The purger '$plugin_id' returned FALSE without setting state to PURGING or PURGEFAILED.");
         }
@@ -192,7 +192,7 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
         // purgers to have failed. Working purgers might have to repeat purger
         // this object for no reason, but at least we can assure that this
         // purgeable was not entirely purged.
-        $purgeable->setState(PurgeableInterface::STATE_PURGEFAILED);
+        $purgeable->setState(Purgeable::STATE_PURGEFAILED);
         return FALSE;
       }
     }
@@ -211,7 +211,7 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
 
       // Set the state of each purgeable object to STATE_CLAIMED.
       foreach ($purgeables as $purgeable) {
-        $purgeable->setState(PurgeableInterface::STATE_CLAIMED);
+        $purgeable->setState(Purgeable::STATE_CLAIMED);
       }
 
       // Attempt to purge all purgeable objects with this purger.
@@ -219,7 +219,7 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
 
         // As it succeeded, assure all purgeable objects to be in STATE_PURGED.
         foreach ($purgeables as $purgeable) {
-          if ($purgeable->getState() !== PurgeableInterface::STATE_PURGED) {
+          if ($purgeable->getState() !== Purgeable::STATE_PURGED) {
             throw new InvalidPurgerBehaviorException(
               "The purger '$plugin_id' returned TRUE without setting state to STATE_PURGED.");
           }
@@ -232,7 +232,7 @@ class PurgerService extends ServiceBase implements PurgerServiceInterface {
         // When the call failed, check if all purgeables have the right state.
         foreach ($purgeables as $purgeable) {
           $state = $purgeable->getState();
-          if (!(($state === PurgeableInterface::STATE_PURGEFAILED) || ($state === PurgeableInterface::STATE_PURGING))) {
+          if (!(($state === Purgeable::STATE_PURGEFAILED) || ($state === Purgeable::STATE_PURGING))) {
             throw new InvalidPurgerBehaviorException(
               "The purger '$plugin_id' returned FALSE without setting state to PURGING or PURGEFAILED.");
           }

@@ -2,22 +2,22 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purgeable\PurgeableManager.
+ * Contains \Drupal\purge\Purger\PluginManager.
  */
 
-namespace Drupal\purge\Purgeable;
+namespace Drupal\purge\Purger;
 
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * The purgeable plugin manager.
+ * The purger plugin manager.
  */
-class PurgeableManager extends DefaultPluginManager {
+class PluginManager extends DefaultPluginManager {
 
   /**
-   * Constructs the PurgeableManager object.
+   * Constructs the PluginManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -29,11 +29,11 @@ class PurgeableManager extends DefaultPluginManager {
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct(
-      'Plugin/PurgePurgeable',
+      'Plugin/PurgePurger',
       $namespaces,
       $module_handler,
-      'Drupal\purge\Purgeable\PurgeableInterface',
-      'Drupal\purge\Annotation\PurgePurgeable');
-    $this->setCacheBackend($cache_backend, 'purge_purgeable_plugins');
+      'Drupal\purge\Purger\PluginInterface',
+      'Drupal\purge\Annotation\PurgePurger');
+    $this->setCacheBackend($cache_backend, 'purge_purger_plugins');
   }
 }

@@ -7,10 +7,10 @@
 
 namespace Drupal\purge\Plugin\PurgeRuntimeTest;
 
-use Drupal\purge\Queue\QueueInterface;
-use Drupal\purge\Purger\PurgerServiceInterface;
-use Drupal\purge\RuntimeTest\RuntimeTestInterface;
-use Drupal\purge\RuntimeTest\RuntimeTestBase;
+use Drupal\purge\Queue\PluginInterface as Queue;
+use Drupal\purge\Purger\ServiceInterface as PurgerService;
+use Drupal\purge\RuntimeTest\PluginInterface as RuntimeTest;
+use Drupal\purge\RuntimeTest\PluginBase;
 
 /**
  * Tests if there is a purger plugin that invalidates an external cache.
@@ -24,12 +24,12 @@ use Drupal\purge\RuntimeTest\RuntimeTestBase;
  *   dependent_purger_plugins = {}
  * )
  */
-class PurgerAvailableTest extends RuntimeTestBase implements RuntimeTestInterface {
+class PurgerAvailableTest extends PluginBase implements RuntimeTest {
 
   /**
    * The purge executive service, which wipes content from external caches.
    *
-   * @var \Drupal\purge\Purger\PurgerServiceInterface
+   * @var \Drupal\purge\Purger\ServiceInterface
    */
   protected $purgePurger;
 
@@ -45,7 +45,7 @@ class PurgerAvailableTest extends RuntimeTestBase implements RuntimeTestInterfac
    * @param \Drupal\purge\Purger\PurgerServiceInterface $purge_purger
    *   The purge executive service, which wipes content from external caches.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, PurgerServiceInterface $purge_purger) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, PurgerService $purge_purger) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->purgePurger = $purge_purger;
   }

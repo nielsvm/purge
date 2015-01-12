@@ -7,7 +7,8 @@
 
 namespace Drupal\purge\Plugin\PurgePurgeable;
 
-use Drupal\purge\Purgeable\PurgeableBase;
+use Drupal\purge\Purgeable\PluginInterace as Purgeable;
+use Drupal\purge\Purgeable\PluginBase;
 use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
 
 /**
@@ -18,7 +19,7 @@ use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
  *   label = @Translation("Full Domain Purgeable")
  * )
  */
-class FullDomain extends PurgeableBase {
+class FullDomain extends PluginBase implements Purgeable {
 
   /**
    * {@inheritdoc}

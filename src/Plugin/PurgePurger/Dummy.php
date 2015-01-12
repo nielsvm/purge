@@ -7,11 +7,12 @@
 
 namespace Drupal\purge\Plugin\PurgePurger;
 
-use Drupal\purge\Purger\PurgerBase;
-use Drupal\purge\Purgeable\PurgeableInterface;
+use Drupal\purge\Purger\PluginBase;
+use Drupal\purge\Purger\PluginInterface as Purger;
+use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 
 /**
- * A \Drupal\purge\Purger\PurgerInterface compliant dummy purger. This purger is
+ * A \Drupal\purge\Purger\PluginInterface compliant dummy purger. This purger is
  * only loaded when no other purgers exist and serves as fall back plugin.
  *
  * @PurgePurger(
@@ -21,7 +22,7 @@ use Drupal\purge\Purgeable\PurgeableInterface;
  *   service_dependencies = {}
  * )
  */
-class Dummy extends PurgerBase {
+class Dummy extends PluginBase implements Purger {
 
   /**
    * @var int
@@ -38,9 +39,9 @@ class Dummy extends PurgerBase {
   /**
    * {@inheritdoc}
    */
-  public function purge(PurgeableInterface $purgeable) {
+  public function purge(Purgeable $purgeable) {
     $this->failures += 1;
-    $purgeable->setState(PurgeableInterface::STATE_PURGEFAILED);
+    $purgeable->setState(Purgeable::STATE_PURGEFAILED);
     return FALSE;
   }
 
@@ -50,7 +51,7 @@ class Dummy extends PurgerBase {
   public function purgeMultiple(array $purgeables) {
     foreach ($purgeables as $purgeable) {
       $this->failures += 1;
-      $purgeable->setState(PurgeableInterface::STATE_PURGEFAILED);
+      $purgeable->setState(Purgeable::STATE_PURGEFAILED);
     }
     return FALSE;
   }

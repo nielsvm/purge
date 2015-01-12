@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purgeable\PurgeableBase.
+ * Contains \Drupal\purge\Purgeable\PluginBase.
  */
 
 namespace Drupal\purge\Purgeable;
 
-use Drupal\purge\Purgeable\PurgeableInterface;
+use Drupal\purge\Purgeable\PluginInterface;
 use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
 use Drupal\purge\Purgeable\Exception\InvalidPurgeablePropertyException;
 
 /**
  * Base purgeable: which instructs the purger what to wipe.
  */
-abstract class PurgeableBase implements PurgeableInterface {
+abstract class PluginBase implements PluginInterface {
 
   /**
    * Arbitrary string representing the thing that needs to be purged.

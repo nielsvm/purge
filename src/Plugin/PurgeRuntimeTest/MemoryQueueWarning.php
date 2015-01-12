@@ -7,9 +7,8 @@
 
 namespace Drupal\purge\Plugin\PurgeRuntimeTest;
 
-use Drupal\purge\Queue\QueueInterface;
-use Drupal\purge\RuntimeTest\RuntimeTestInterface;
-use Drupal\purge\RuntimeTest\RuntimeTestBase;
+use Drupal\purge\RuntimeTest\PluginInterface as RuntimeTest;
+use Drupal\purge\RuntimeTest\PluginBase;
 
 /**
  * Issues a warning on how unreliable the memory queue is for day-day use.
@@ -23,7 +22,7 @@ use Drupal\purge\RuntimeTest\RuntimeTestBase;
  *   dependent_purger_plugins = {}
  * )
  */
-class MemoryQueueWarning extends RuntimeTestBase implements RuntimeTestInterface {
+class MemoryQueueWarning extends PluginBase implements RuntimeTest {
 
   /**
    * {@inheritdoc}

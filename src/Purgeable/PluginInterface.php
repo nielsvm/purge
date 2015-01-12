@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purgeable\PurgeableInterface.
+ * Contains \Drupal\purge\Purgeable\PluginInterface.
  */
 
 namespace Drupal\purge\Purgeable;
@@ -10,7 +10,7 @@ namespace Drupal\purge\Purgeable;
 /**
  * Describes the purgeable: which instructs the purger what to wipe.
  */
-interface PurgeableInterface {
+interface PluginInterface {
 
   /**
    * Purgeable state: the purgeable object is just instantiated.
@@ -99,7 +99,7 @@ interface PurgeableInterface {
    *   The value the caller is trying to set the property to.
    *
    * @return
-   *   Nothing, it throws a \Drupal\purge\Purgeable\InvalidPurgeablePropertyException.
+   *   Nothing, it throws a \Drupal\purge\Purgeable\Exception\InvalidPurgeablePropertyException.
    */
   public function __set($name, $value);
 
@@ -111,7 +111,7 @@ interface PurgeableInterface {
    *   properties $p->item_id, $p->data, $p->created are recognized.
    * @return
    *   The requested value. When a item is being requested that does not exist
-   *   it will throw \Drupal\purge\Purgeable\InvalidPurgeablePropertyException.
+   *   it will throw \Drupal\purge\Purgeable\Exception\InvalidPurgeablePropertyException.
    */
   public function __get($name);
 

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queue\QueueManager.
+ * Contains \Drupal\purge\Queue\PluginManager.
  */
 
 namespace Drupal\purge\Queue;
@@ -14,10 +14,10 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 /**
  * The queue plugin manager.
  */
-class QueueManager extends DefaultPluginManager {
+class PluginManager extends DefaultPluginManager {
 
   /**
-   * Constructs the QueueManager object.
+   * Constructs the PluginManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -32,7 +32,7 @@ class QueueManager extends DefaultPluginManager {
       'Plugin/PurgeQueue',
       $namespaces,
       $module_handler,
-      'Drupal\purge\Queue\QueueInterface',
+      'Drupal\purge\Queue\PluginInterface',
       'Drupal\purge\Annotation\PurgeQueue');
     $this->setCacheBackend($cache_backend, 'purge_queue_plugins');
   }

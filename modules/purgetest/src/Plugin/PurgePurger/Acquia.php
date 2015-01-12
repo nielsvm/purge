@@ -7,8 +7,8 @@
 
 namespace Drupal\purgetest\Plugin\PurgePurger;
 
-use Drupal\purge\Purger\PurgerBase;
-use Drupal\purge\Purgeable\PurgeableInterface;
+use Drupal\purge\Purger\PluginBase;
+use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 
 /**
  * A purger that purges Acquia Cloud.
@@ -20,13 +20,13 @@ use Drupal\purge\Purgeable\PurgeableInterface;
  *   service_dependencies = {}
  * )
  */
-class Acquia extends PurgerBase {
+class Acquia extends PluginBase {
 
   /**
    * {@inheritdoc}
    */
-  public function purge(PurgeableInterface $purgeable) {
-    $purgeable->setState(PurgeableInterface::STATE_PURGING);
+  public function purge(Purgeable $purgeable) {
+    $purgeable->setState(Purgeable::STATE_PURGING);
     return FALSE;
   }
 

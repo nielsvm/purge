@@ -13,7 +13,7 @@ use Drupal\purge\Tests\Queue\PluginTestBase;
  * Tests the 'database' queue plugin.
  *
  * @group purge
- * @see \Drupal\purge\Queue\QueueInterface
+ * @see \Drupal\purge\Queue\PluginInterface
  */
 class QueueDatabaseTest extends PluginTestBase {
   protected $plugin_id = 'database';

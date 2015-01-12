@@ -2,17 +2,17 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purgeable\PurgeableServiceInterface.
+ * Contains \Drupal\purge\Purgeable\ServiceInterface.
  */
 
 namespace Drupal\purge\Purgeable;
 
-use Drupal\purge\ServiceInterface;
+use Drupal\purge\ServiceInterface as PurgeServiceInterface;
 
 /**
  * Describes a service that instantiates purgeable objects on-demand.
  */
-interface PurgeableServiceInterface extends ServiceInterface {
+interface ServiceInterface extends PurgeServiceInterface {
 
   /**
    * Instantiate a purgeable based upon a serialized queue item.
@@ -20,9 +20,9 @@ interface PurgeableServiceInterface extends ServiceInterface {
    * @param string $data
    *   Arbitrary PHP data structured that was stored into the queue.
    *
-   * @see \Drupal\purge\Purgeable\PurgeableBase::toQueueItemData()
+   * @see \Drupal\purge\Purgeable\PluginBase::toQueueItemData()
    *
-   * @return \Drupal\purge\Purgeable\PurgeableInterface
+   * @return \Drupal\purge\Purgeable\PluginInterface
    */
   public function fromQueueItemData($data);
 
@@ -34,7 +34,7 @@ interface PurgeableServiceInterface extends ServiceInterface {
    *   or anything else that purgeables could respond to. All purgeable
    *   types are queried for their support.
    *
-   * @return \Drupal\purge\Purgeable\PurgeableInterface
+   * @return \Drupal\purge\Purgeable\PluginInterface
    */
   public function matchFromStringRepresentation($representation);
 }

@@ -2,21 +2,21 @@
 
 /**
  * @file
- * Contains \Drupal\purge\RuntimeTest\RuntimeTestServiceInterface.
+ * Contains \Drupal\purge\RuntimeTest\ServiceInterface.
  */
 
 namespace Drupal\purge\RuntimeTest;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
-use Drupal\purge\ServiceInterface;
-use Drupal\purge\Purger\PurgerServiceInterface;
-use Drupal\purge\Queue\QueueServiceInterface;
+use Drupal\purge\ServiceInterface as PurgeServiceInterface;
+use Drupal\purge\Purger\ServiceInterface as PurgerServiceInterface;
+use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 
 /**
  * Describes a service that interacts with runtime tests.
  */
-interface RuntimeTestServiceInterface extends ServiceInterface, \Iterator, \Countable {
+interface ServiceInterface extends PurgeServiceInterface, \Iterator, \Countable {
 
   /**
    * Instantiate the purger service.
@@ -25,9 +25,9 @@ interface RuntimeTestServiceInterface extends ServiceInterface, \Iterator, \Coun
    *   The plugin manager for this service.
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $service_container
    *   The service container.
-   * @param \Drupal\purge\Purger\PurgerServiceInterface $purge_purger
+   * @param \Drupal\purge\Purger\ServiceInterface $purge_purger
    *   The purge executive service, which wipes content from external caches.
-   * @param \Drupal\purge\Queue\QueueServiceInterface $purge_queue
+   * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
    *   The queue in which to store, claim and release purgeable objects from.
    */
   function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, PurgerServiceInterface $purge_purger, QueueServiceInterface $purge_queue);
@@ -37,8 +37,9 @@ interface RuntimeTestServiceInterface extends ServiceInterface, \Iterator, \Coun
    *
    * @warning
    *   Although it shares the same name, this method doesn't return a individual
-   *   item array as RuntimeTestInterface::getHookRequirementsArray() does. It
-   *   returns a full array (as hook_requirements() expects) for all tests.
+   *   item array as \Drupal\purge\RuntimeTest\PluginInterface::
+   *     getHookRequirementsArray() does. It returns a full array (as
+   *   hook_requirements() expects) for all tests.
    *
    * @return array
    *   An associative array where the keys are arbitrary but unique (test id)
@@ -59,11 +60,11 @@ interface RuntimeTestServiceInterface extends ServiceInterface, \Iterator, \Coun
    * Checks whether one of the diagnostic tests reports full failure.
    *
    * This method provides a simple - boolean evaluable - way to determine if
-   * a \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_ERROR severity
+   * a \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_ERROR severity
    * was reported by one of the tests. If SEVERITY_ERROR was reported, purging
    * cannot continue and should happen once all problems are resolved.
    *
-   * @return FALSE or \Drupal\purge\RuntimeTest\RuntimeTestInterface.
+   * @return FALSE or \Drupal\purge\RuntimeTest\PluginInterface.
    *   If everything is fine, this returns FALSE. But, if a blocking problem
    *   exists, the first failing test object is returned holding a UI applicable
    *   recommendation message.

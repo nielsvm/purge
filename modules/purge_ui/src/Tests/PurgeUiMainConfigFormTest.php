@@ -13,8 +13,8 @@ use Drupal\simpletest\WebTestBase;
  * Tests the configuration form that sets the active plugins.
  *
  * @group purge
- * @see \Drupal\purge\Purger\PurgerServiceInterface
- * @see \Drupal\purge\Queue\QueueServiceInterface
+ * @see \Drupal\purge\Purger\ServiceInterface
+ * @see \Drupal\purge\Queue\ServiceInterface
  */
 class PurgeUiMainConfigFormTest extends WebTestBase {
 
@@ -26,12 +26,12 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
   protected $configFactory;
 
   /**
-   * @var \Drupal\purge\Purger\PurgerServiceInterface
+   * @var \Drupal\purge\Purger\ServiceInterface
    */
   protected $purgePurger;
 
   /**
-   * @var \Drupal\purge\Queue\QueueServiceInterface
+   * @var \Drupal\purge\Queue\ServiceInterface
    */
   protected $purgeQueue;
 

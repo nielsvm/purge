@@ -7,8 +7,8 @@
 
 namespace Drupal\purge\Plugin\PurgePurgeable;
 
-use Drupal\purge\Purgeable\PurgeableBase;
 use Drupal\purge\Plugin\PurgePurgeable\Path;
+use Drupal\purge\Purgeable\PluginInterace as Purgeable;
 use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
 
 /**
@@ -19,7 +19,7 @@ use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
  *   label = @Translation("Wildcard Path Purgeable")
  * )
  */
-class WildcardPath extends Path {
+class WildcardPath extends Path implements Purgeable {
 
   /**
    * {@inheritdoc}

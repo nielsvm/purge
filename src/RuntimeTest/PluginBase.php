@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\purge\RuntimeTest\RuntimeTestBase.
+ * Contains \Drupal\purge\RuntimeTest\PluginBase.
  */
 
 namespace Drupal\purge\RuntimeTest;
 
-use Drupal\Core\Plugin\PluginBase;
+use Drupal\Core\Plugin\PluginBase as CorePluginBase;
 use Drupal\purge\RuntimeTest\Exception\TestNotImplementedCorrectly;
-use Drupal\purge\RuntimeTest\RuntimeTestInterface;
+use Drupal\purge\RuntimeTest\PluginInterface;
 
 /**
  * Describes a runtime test that tests a specific purging requirement.
  */
-abstract class RuntimeTestBase extends PluginBase implements RuntimeTestInterface {
+abstract class PluginBase extends CorePluginBase implements PluginInterface {
 
   /**
    * The title of the test as described in the plugin's metadata.
@@ -32,10 +32,10 @@ abstract class RuntimeTestBase extends PluginBase implements RuntimeTestInterfac
 
   /**
    * The severity of the outcome of this test, maps to any of these constants:
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_INFO
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_OK
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_WARNING
-   *    - \Drupal\purge\RuntimeTest\RuntimeTestInterface::SEVERITY_ERROR
+   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_INFO
+   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_OK
+   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_WARNING
+   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_ERROR
    *
    * @var int
    */
@@ -56,8 +56,8 @@ abstract class RuntimeTestBase extends PluginBase implements RuntimeTestInterfac
   protected $value;
 
   /**
-   * Assures that RuntimeTestInterface::run() is executed and that the
-   * severity gets set on the object. Tests for invalid responses.
+   * Assures that \Drupal\purge\RuntimeTest\PluginInterface::run() is executed
+   * and that the severity gets set on the object. Tests for invalid responses.
    */
   protected function runTest() {
     if (!is_null($this->severity)) {

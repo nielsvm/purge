@@ -8,7 +8,7 @@
 namespace Drupal\purge\RuntimeTest\Exception;
 
 /**
- * Thrown when \Drupal\purge\RuntimeTest\RuntimeTestInterface::run is not
+ * Thrown when \Drupal\purge\RuntimeTest\PluginInterface::run is not
  * returning a severity integer as described in the API.
  */
 class TestNotImplementedCorrectly extends \Exception {}

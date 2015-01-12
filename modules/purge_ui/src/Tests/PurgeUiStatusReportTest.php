@@ -48,10 +48,17 @@ class PurgeUiStatusReportTest extends WebTestBase {
   /*
    * Test if the form is at its place and has the right permissions.
    */
-  public function testWarningRuntimeTestPresent() {
+  public function testWarningAndErrorRuntimeTestPresent() {
     $this->drupalLogin($this->admin_user);
     $this->assertResponse(200);
     $this->drupalGet($this->path);
-    $this->assertText('This is a warning for unit testing.', "Find AlwaysWarningTest.");
+
+    // @see \Drupal\purge_test\Plugin\PurgeRuntimeTest\AlwaysWarningTest
+    $this->assertText('Purge - Always a warning');
+    $this->assertText('This is a warning for unit testing.');
+
+    // @see \Drupal\purge_test\Plugin\PurgeRuntimeTest\AlwaysErrorTest
+    $this->assertText('Purge - Always an error');
+    $this->assertText('This is an error for unit testing.');
   }
 }

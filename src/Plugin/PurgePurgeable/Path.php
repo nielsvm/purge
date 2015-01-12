@@ -7,7 +7,7 @@
 
 namespace Drupal\purge\Plugin\PurgePurgeable;
 
-use Drupal\purge\Purgeable\PluginInterace as Purgeable;
+use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 use Drupal\purge\Purgeable\PluginBase;
 use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
 

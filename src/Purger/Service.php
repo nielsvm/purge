@@ -79,7 +79,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function getPluginsEnabled() {
-    if (is_null($this->plugins_enabled)) {
+    if (empty($this->plugins_enabled)) {
       $plugins = $this->configFactory->get('purge.purger')->get('plugins');
 
       // By default all available purgers are enabled when the 'plugins' setting

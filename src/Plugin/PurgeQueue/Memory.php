@@ -20,7 +20,7 @@ use Drupal\purge\Queue\PluginBase;
  * @PurgeQueue(
  *   id = "memory",
  *   label = @Translation("Memory"),
- *   description = @Translation("a non-persistent, per-request memory queue."),
+ *   description = @Translation("a non-persistent, per-request memory queue (not useful on production systems)."),
  *   service_dependencies = {}
  * )
  */

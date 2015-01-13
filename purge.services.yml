@@ -20,6 +20,8 @@ services:
   purge.queue:
     class: Drupal\purge\Queue\Service
     arguments: ['@plugin.manager.purge.queue', '@service_container', '@config.factory', '@purge.purgeables']
+    tags:
+      - { name: needs_destruction }
   plugin.manager.purge.queue:
     class: Drupal\purge\Queue\PluginManager
     parent: default_plugin_manager

@@ -16,13 +16,13 @@ use Drupal\purge\Purgeable\PluginInterface as Purgeable;
  * only loaded when no other purgers exist and serves as fall back plugin.
  *
  * @PurgePurger(
- *   id = "dummy",
- *   label = @Translation("Dummy"),
- *   description = @Translation("A purger that does exactly nothing."),
+ *   id = "null",
+ *   label = @Translation("Null backup"),
+ *   description = @Translation("A purger that doesn't do anything."),
  *   service_dependencies = {}
  * )
  */
-class Dummy extends PluginBase implements Purger {
+class Null extends PluginBase implements Purger {
 
   /**
    * @var int

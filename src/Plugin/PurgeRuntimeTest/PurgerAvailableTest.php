@@ -7,6 +7,7 @@
 
 namespace Drupal\purge\Plugin\PurgeRuntimeTest;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\Queue\PluginInterface as Queue;
 use Drupal\purge\Purger\ServiceInterface as PurgerService;
 use Drupal\purge\RuntimeTest\PluginInterface as RuntimeTest;
@@ -19,12 +20,17 @@ use Drupal\purge\RuntimeTest\PluginBase;
  *   id = "purgeravailable",
  *   title = @Translation("Purger(s) configured"),
  *   description = @Translation("Tests if there is a purger plugin available."),
- *   service_dependencies = {"purge.purger"},
+ *   service_dependencies = {"config.factory", "purge.purger"},
  *   dependent_queue_plugins = {},
  *   dependent_purger_plugins = {}
  * )
  */
 class PurgerAvailableTest extends PluginBase implements RuntimeTest {
+
+  /**
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
 
   /**
    * The purge executive service, which wipes content from external caches.
@@ -42,11 +48,14 @@ class PurgerAvailableTest extends PluginBase implements RuntimeTest {
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
    * @param \Drupal\purge\Purger\PurgerServiceInterface $purge_purger
    *   The purge executive service, which wipes content from external caches.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, PurgerService $purge_purger) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, PurgerService $purge_purger) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->configFactory = $config_factory;
     $this->purgePurger = $purge_purger;
   }
 
@@ -56,9 +65,12 @@ class PurgerAvailableTest extends PluginBase implements RuntimeTest {
   public function run() {
     $purgers = $this->purgePurger->getPluginsEnabled();
 
-    // Test for the 'dummy' purger, which only loads if nothing else exists.
-    if (in_array('dummy', $purgers)) {
-      $this->value = $this->t("n/a");
+    // Test for the 'null' purger, which only loads if nothing else exists.
+    if (in_array('null', $purgers)) {
+      $this->value = $this->configFactory->get('purge.purger')->get('plugins');
+      if ($this->value == 'automatic_detection') {
+        $this->value = $this->t("n/a");
+      }
       $this->recommendation = $this->t("There is no purger loaded which means ".
         "that you need a module enabled to provide a purger plugin to clear ".
         "your external cache or CDN.");

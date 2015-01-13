@@ -7,7 +7,7 @@
 
 namespace Drupal\purge_test\Plugin\PurgePurger;
 
-use Drupal\purge\Plugin\PurgePurger\Dummy;
+use Drupal\purge\Plugin\PurgePurger\Null;
 
 /**
  * Test purger A.
@@ -19,4 +19,4 @@ use Drupal\purge\Plugin\PurgePurger\Dummy;
  *   service_dependencies = {}
  * )
  */
-class PurgerA extends Dummy {}
+class PurgerA extends Null {}

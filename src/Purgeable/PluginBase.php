@@ -8,8 +8,9 @@
 namespace Drupal\purge\Purgeable;
 
 use Drupal\purge\Purgeable\PluginInterface;
-use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
-use Drupal\purge\Purgeable\Exception\InvalidPurgeablePropertyException;
+use Drupal\purge\Purgeable\Exception\InvalidPropertyException;
+use Drupal\purge\Purgeable\Exception\InvalidRepresentationException;
+use Drupal\purge\Purgeable\Exception\InvalidStateException;
 
 /**
  * Base purgeable: which instructs the purger what to wipe.
@@ -46,8 +47,12 @@ abstract class PluginBase implements PluginInterface {
   public function __construct($representation) {
     $this->representation = $representation;
     if (!is_string($representation)) {
-      throw new InvalidStringRepresentationException(
-        'The representation of the thing you want to purge is not a string.');
+      throw new InvalidRepresentationException(
+      'The representation of the thing you want to purge is not a string.');
+    }
+    if (empty(trim($representation))) {
+      throw new InvalidRepresentationException(
+        'The representation cannot be empty.');
     }
   }
 
@@ -62,7 +67,7 @@ abstract class PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function __set($name, $value) {
-    throw new InvalidPurgeablePropertyException(
+    throw new InvalidPropertyException(
       "You can not set '$name', use the setter methods.");
   }
 
@@ -74,7 +79,7 @@ abstract class PluginBase implements PluginInterface {
       $this->initializeQueueItemArray();
     }
     if (!in_array($name, $this->queueItemInfo['keys'])) {
-      throw new InvalidPurgeablePropertyException(
+      throw new InvalidPropertyException(
         "The property '$name' does not exist.");
     }
     else {
@@ -92,6 +97,13 @@ abstract class PluginBase implements PluginInterface {
       'created' => NULL,
     );
     $this->queueItemInfo['keys'] = array_keys($this->queueItemInfo);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPluginId() {
+    return $this->pluginId;
   }
 
   /**
@@ -136,6 +148,12 @@ abstract class PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function setState($state) {
+    if (!is_int($state)) {
+      throw new InvalidStateException('$state not an integer!');
+    }
+    if (($state < 0) || ($state > 10)) {
+      throw new InvalidStateException('$state is out of range!');
+    }
     $this->state = $state;
   }
 

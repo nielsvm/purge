@@ -28,12 +28,12 @@ class Queue extends CodeTestBase {
 
   /**
    * @services
-   * // We would like to purge 'news/*', create a purgeable and add it to the queue.
-   * $purgeable = $purgeables->matchFromStringRepresentation('news/*');
+   * // We would like to purge '/news/*', create a purgeable and add it to the queue.
+   * $purgeable = $purgeables->fromRepresentation('/news/*');
    * $queue->add($purgeable);
    */
   public function queueAddSingle($purger, $queue, $purgeables, $diagnostics) {
-    $purgeable = $purgeables->matchFromStringRepresentation('news/*');
+    $purgeable = $purgeables->fromRepresentation('/news/*');
     $queue->add($purgeable);
     return $purgeable;
   }
@@ -44,21 +44,21 @@ class Queue extends CodeTestBase {
    * for ($i = 1; $i <= 333; $i++) {
    *
    *   // Wipe cache tags that are known at the external cache.
-   *   $queue->add($purgeables->matchFromStringRepresentation("sometag:$i"));
+   *   $queue->add($purgeables->fromRepresentation("sometag:$i"));
    *
    *   // These will result in old-school PathPurgeables.
-   *   $queue->add($purgeables->matchFromStringRepresentation('random/' . $i));
+   *   $queue->add($purgeables->fromRepresentation('/random/' . $i));
    *
    *   // These will result in WildcardPathPurgeables, not necessarily supported by
    *   // every purger of course. The asterisk causes a different purgeable to respond.
-   *   $queue->add($purgeables->matchFromStringRepresentation('random/' . $i . '/*'));
+   *   $queue->add($purgeables->fromRepresentation('/random/' . $i . '/*'));
    * }
    */
   public function queueAddThousand($purger, $queue, $purgeables, $diagnostics) {
     for ($i = 1; $i <= 333; $i++) {
-      $queue->add($purgeables->matchFromStringRepresentation("sometag:$i"));
-      $queue->add($purgeables->matchFromStringRepresentation('random/' . $i));
-      $queue->add($purgeables->matchFromStringRepresentation('random/' . $i . '/*'));
+      $queue->add($purgeables->fromRepresentation("sometag:$i"));
+      $queue->add($purgeables->fromRepresentation('/random/' . $i));
+      $queue->add($purgeables->fromRepresentation('/random/' . $i . '/*'));
     }
     return $i*3;
   }

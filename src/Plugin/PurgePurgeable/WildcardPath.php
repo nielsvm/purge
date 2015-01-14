@@ -8,11 +8,11 @@
 namespace Drupal\purge\Plugin\PurgePurgeable;
 
 use Drupal\purge\Plugin\PurgePurgeable\Path;
-use Drupal\purge\Purgeable\PluginInterace as Purgeable;
-use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
+use Drupal\purge\Purgeable\PluginInterface as Purgeable;
+use Drupal\purge\Purgeable\Exception\InvalidRepresentationException;
 
 /**
- * Describes a path based cache wipe with wildcard, e.g. "news/*".
+ * Describes a path based cache wipe with wildcard, e.g. "/news/*".
  *
  * @PurgePurgeable(
  *   id = "wildcardpath",
@@ -25,18 +25,10 @@ class WildcardPath extends Path implements Purgeable {
    * {@inheritdoc}
    */
   public function __construct($representation) {
-    PurgeableBase::__construct($representation);
-    if ($representation === '*') {
-      throw new InvalidStringRepresentationException(
-        'Only an asterisk is not a valid wildcard path.');
-    }
+    parent::__construct($representation, FALSE);
     if (strpos($representation, '*') === FALSE) {
-      throw new InvalidStringRepresentationException(
-        'A wildcard purgeable should contain a *.');
-    }
-    if (preg_match('/[A-Za-z]/', $representation) === 0) {
-      throw new InvalidStringRepresentationException(
-        'A HTTP path should have alphabet characters in it.');
+      throw new InvalidRepresentationException(
+        'A wildcard purgeable should contain asterisk at all times.');
     }
   }
 }

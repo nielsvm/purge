@@ -7,9 +7,9 @@
 
 namespace Drupal\purge\Plugin\PurgePurgeable;
 
-use Drupal\purge\Purgeable\PluginInterace as Purgeable;
+use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 use Drupal\purge\Purgeable\PluginBase;
-use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
+use Drupal\purge\Purgeable\Exception\InvalidRepresentationException;
 
 /**
  * Instructs a full domain or full cache clear, string representation: "*".
@@ -27,8 +27,8 @@ class FullDomain extends PluginBase implements Purgeable {
   public function __construct($representation) {
     parent::__construct($representation);
     if ($representation !== '*') {
-      throw new InvalidStringRepresentationException(
-        'A full domain wipe is always simply represented as "*".');
+      throw new InvalidRepresentationException(
+        'A full domain(s) wipe is always represented as "*".');
     }
   }
 }

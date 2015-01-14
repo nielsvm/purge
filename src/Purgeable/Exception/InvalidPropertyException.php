@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purgeable\Exception\InvalidPurgeablePropertyException.
+ * Contains \Drupal\purge\Purgeable\Exception\InvalidPropertyException.
  */
 
 namespace Drupal\purge\Purgeable\Exception;
@@ -11,4 +11,4 @@ namespace Drupal\purge\Purgeable\Exception;
  * Exception thrown when a data property on the purgeable is called that does
  * not exist, e.g. $purgeable->idontexist.
  */
-class InvalidPurgeablePropertyException extends \Exception {}
+class InvalidPropertyException extends \Exception {}

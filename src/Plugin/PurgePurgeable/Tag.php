@@ -9,12 +9,10 @@ namespace Drupal\purge\Plugin\PurgePurgeable;
 
 use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 use Drupal\purge\Purgeable\PluginBase;
-use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
+use Drupal\purge\Purgeable\Exception\InvalidRepresentationException;
 
 /**
  * Describes a cache wipe by Drupal cache tag, e.g.: 'user:1', 'menu:footer'.
- *
- * @see \Drupal\Core\Cache\DatabaseBackend::flattenTags()
  *
  * @PurgePurgeable(
  *   id = "tag",
@@ -28,13 +26,13 @@ class Tag extends PluginBase implements Purgeable {
    */
   public function __construct($representation) {
     parent::__construct($representation);
-    if ($representation === ':') {
-      throw new InvalidStringRepresentationException(
-        'This does not look like a valid cache tag.');
+    if (strpos($representation, '/') !== FALSE) {
+      throw new InvalidRepresentationException(
+      'Tag purgeables cannot contain slashes.');
     }
-    if (strpos($representation, ':') === FALSE) {
-      throw new InvalidStringRepresentationException(
-        'The given string is not a flattened cache tag.');
+    if (strpos($representation, '*') !== FALSE) {
+      throw new InvalidRepresentationException(
+        'Tag purgeables do not contain asterisks.');
     }
   }
 }

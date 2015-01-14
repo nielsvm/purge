@@ -71,10 +71,23 @@ interface PluginInterface {
    * Instantiate a new purgeable.
    *
    * @param string $representation
-   *   A string representing this type of purgeable, e.g. "node/1" for a
-   *   path purgeable and "*" for a full domain purgeable.
+   *   String that describes what is being purged, specific format
+   *   characteristics determine the Purgeable object type requested. Each
+   *   plugin providing a type tests the string on validity and will throw a
+   *   \Drupal\purge\Purgeable\Exception\InvalidRepresentationException
+   *   for representations it does not support.
+   *
+   *   Representation examples:
+   *    - Full domain: *
+   *    - Drupal cache tags: user:1, menu:footer, rendered
+   *    - HTTP paths: /, /<front>, /news, /news?page=0
+   *    - HTTP wildcard paths: /*, /news/*
+   *
+   *   Since purgeable objects are 'messages', it will also depend on the purger
+   *   executing your requests whether they're supported, as not every platform
+   *   supports universally everything.
    * @warning
-   *   Will throw a InvalidStringRepresentationException when the given string
+   *   Will throw a InvalidRepresentationException when the given string
    *   does not match the format for this type of purgeable. For instance when
    *   a path with wildcard ('news/*') is given to the PathPurgeable, it will
    *   not instantiate.
@@ -99,7 +112,7 @@ interface PluginInterface {
    *   The value the caller is trying to set the property to.
    *
    * @return
-   *   Nothing, it throws a \Drupal\purge\Purgeable\Exception\InvalidPurgeablePropertyException.
+   *   Nothing, it throws a \Drupal\purge\Purgeable\Exception\InvalidPropertyException.
    */
   public function __set($name, $value);
 
@@ -111,9 +124,17 @@ interface PluginInterface {
    *   properties $p->item_id, $p->data, $p->created are recognized.
    * @return
    *   The requested value. When a item is being requested that does not exist
-   *   it will throw \Drupal\purge\Purgeable\Exception\InvalidPurgeablePropertyException.
+   *   it will throw \Drupal\purge\Purgeable\Exception\InvalidPropertyException.
    */
   public function __get($name);
+
+  /**
+   * Get the plugin ID of this purgeable object.
+   *
+   * @return
+   *   The plugin ID of the purgeable plugin responsible for this object.
+   */
+  public function getPluginId();
 
   /**
    * Set the plugin ID of this purgeable object, done by the Purgeable Factory.
@@ -127,7 +148,7 @@ interface PluginInterface {
    * Set all Queue API properties on the purgeable, in one call.
    *
    * @param $item_id
-   *   The unique ID returned from \Drupal\Core\Queue\QueueInterface::createItem().
+   *   The unique ID returned from \Drupal\Core\Queue\PluginInterface::createItem().
    * @param $created
    *   The timestamp when the queue item was put into the queue.
    */
@@ -137,7 +158,7 @@ interface PluginInterface {
    * Set the unique ID of the associated queue item on this purgeable object.
    *
    * @param $item_id
-   *   The unique ID returned from \Drupal\Core\Queue\QueueInterface::createItem().
+   *   The unique ID returned from \Drupal\Core\Queue\PluginInterface::createItem().
    */
   public function setQueueItemId($item_id);
 
@@ -153,7 +174,7 @@ interface PluginInterface {
    * Set the state of the purgeable.
    *
    * @param $state
-   *   Integer matching to any of the PurgeableInterface::STATE_* constants.
+   *   Integer matching to any of the PluginInterface::STATE_* constants.
    */
   public function setState($state);
 
@@ -161,7 +182,7 @@ interface PluginInterface {
    * Get the current state of the purgeable.
    *
    * @return
-   *   Integer matching to one of the PurgeableInterface::STATE_* constants.
+   *   Integer matching to one of the PluginInterface::STATE_* constants.
    */
   public function getState();
 

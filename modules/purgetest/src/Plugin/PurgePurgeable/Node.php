@@ -8,7 +8,7 @@
 namespace Drupal\purgetest\Plugin\PurgePurgeable;
 
 use Drupal\purge\Purgeable\PluginBase;
-use Drupal\purge\Purgeable\InvalidStringRepresentationException;
+use Drupal\purge\Purgeable\InvalidRepresentationException;
 
 /**
  * Wipe a node by its path from the cache, e.g 'node/5'.
@@ -24,6 +24,6 @@ class Node extends PluginBase {
    * {@inheritdoc}
    */
   public function __construct($representation) {
-    throw new InvalidStringRepresentationException('Not yet implemented');
+    throw new InvalidRepresentationException('Not yet implemented');
   }
 }

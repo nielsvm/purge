@@ -10,7 +10,8 @@ namespace Drupal\purge\Purgeable;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\purge\ServiceBase;
-use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
+use Drupal\purge\Purgeable\Exception\InvalidRepresentationException;
+use Drupal\purge\Purgeable\PluginInterface;
 use Drupal\purge\Purgeable\ServiceInterface;
 
 /**
@@ -29,56 +30,44 @@ class Service extends ServiceBase implements ServiceInterface {
   }
 
   /**
-   * Returns a preconfigured instance of a purgeable.
-   *
-   * @see \Drupal\Component\Plugin\Factory\FactoryInterface::createInstance.
-   *
-   * @param string $plugin_id
-   *   The id of the plugin being instantiated.
-   * @param string $representation
-   *   A string representing this type of purgeable, e.g. "node/1" for a
-   *   path purgeable and "*" for a full domain purgeable.
-   *
-   * @return \Drupal\purge\Purgeable\PurgeableInterface
+   * {@inheritdoc}
    */
-  private function createInstance($plugin_id, $representation) {
+  public function fromQueueItemData($data) {
+    $data = explode('>', $data);
+    return $this->fromNamedRepresentation($data[0], $data[1]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fromNamedRepresentation($plugin_id, $representation) {
     $plugin_definition = $this->pluginManager->getDefinition($plugin_id);
     $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
-
-    // Instantiate the purgeable and immediately set its plugin ID.
     $instance = new $plugin_class($representation);
     $instance->setPluginId($plugin_id);
-
     return $instance;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function fromQueueItemData($data) {
-    $data = explode('>', $data);
-    return $this->createInstance($data[0], $data[1]);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function matchFromStringRepresentation($representation) {
+  public function fromRepresentation($representation) {
     $match = NULL;
-    foreach ($this->pluginManager->getDefinitions() as $type) {
+    foreach ($this->pluginManager->getDefinitions() as $id => $type) {
       try {
-        $match = $this->createInstance($type['id'], $representation);
+        $match = $this->fromNamedRepresentation($id, $representation);
       }
-      catch (InvalidStringRepresentationException $e) {
+      catch (InvalidRepresentationException $e) {
         $match = NULL;
       }
-      if (!is_null($match) && is_object($match)) {
+      if ((!is_null($match)) && ($match instanceof PluginInterface)) {
         break;
       }
     }
     if (is_null($match)) {
-      throw new InvalidStringRepresentationException(
-        "The string '$representation' is not supported by any purgeable types");
+      throw new InvalidRepresentationException(
+        sprintf("The argument %s is not supported",
+          var_export($representation, TRUE)));
     }
     return $match;
   }

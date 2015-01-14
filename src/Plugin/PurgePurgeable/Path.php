@@ -9,10 +9,10 @@ namespace Drupal\purge\Plugin\PurgePurgeable;
 
 use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 use Drupal\purge\Purgeable\PluginBase;
-use Drupal\purge\Purgeable\Exception\InvalidStringRepresentationException;
+use Drupal\purge\Purgeable\Exception\InvalidRepresentationException;
 
 /**
- * Describes a path based cache wipe, e.g. "news/article-1".
+ * Describes a path based cache wipe, e.g. "/news/article-1".
  *
  * @PurgePurgeable(
  *   id = "path",
@@ -24,27 +24,24 @@ class Path extends PluginBase implements Purgeable {
   /**
    * {@inheritdoc}
    */
-  public function __construct($representation) {
+  public function __construct($representation, $wildcard_check = TRUE) {
     parent::__construct($representation);
-    if (empty($representation)) {
-      throw new InvalidStringRepresentationException(
-        'This does not look like a ordinary HTTP path element.');
+    if ($wildcard_check && (strpos($representation, '*') !== FALSE)) {
+      throw new InvalidRepresentationException(
+      'HTTP path purgeables should not contain asterisks, wildcard paths '
+      .' should use \Drupal\purge\Plugin\PurgePurgeable\WildcardPath.');
+    }
+    if ($representation === '*') {
+      throw new InvalidRepresentationException(
+        'HTTP path purgeables cannot be "*".');
+    }
+    if (($representation[0] !== '/') || (strpos($representation, '/') === FALSE)) {
+      throw new InvalidRepresentationException(
+        'HTTP path purgeables should always start with /, e.g.: "/node/1".');
     }
     if (strpos($representation, ' ') !== FALSE) {
-      throw new InvalidStringRepresentationException(
-        'A HTTP path element should not contain a space.');
-    }
-    if (strpos($representation, '*') !== FALSE) {
-      throw new InvalidStringRepresentationException(
-        'A HTTP path should not contain a *.');
-    }
-    if (strpos($representation, ':') !== FALSE) {
-      throw new InvalidStringRepresentationException(
-        'A HTTP path should not contain a : and look like a tag.');
-    }
-    if (preg_match('/[A-Za-z]/', $representation) === 0) {
-      throw new InvalidStringRepresentationException(
-        'A HTTP path should have alphabet characters in it.');
+      throw new InvalidRepresentationException(
+      'HTTP path and wildcard purgeables cannot contain spaces, use %20.');
     }
   }
 }

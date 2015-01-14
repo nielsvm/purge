@@ -57,8 +57,7 @@ class CacheTagsInvalidationQueuer implements CacheTagsInvalidatorInterface {
         . '" => "' . $tag . '"');
       }
       if (!in_array($tag, $this->breadcrumb)) {
-        $purgeables[] = $this->purgePurgeables
-          ->matchFromStringRepresentation($tag);
+        $purgeables[] = $this->purgePurgeables->fromRepresentation($tag);
         $this->breadcrumb[] = $tag;
       }
     }

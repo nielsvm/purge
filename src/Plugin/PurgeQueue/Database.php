@@ -76,20 +76,20 @@ class Database extends PluginBase implements Queue {
    * {@inheritdoc}
    */
   public function createItemMultiple(array $items) {
-    $item_ids = $records = array();
+    $item_ids = $records = [];
 
     // Build a array with all exactly records as they should turn into rows.
     $time = time();
     foreach ($items as $data) {
-      $records[] = array(
+      $records[] = [
         'name' => $this->name,
         'data' => serialize($data),
         'created' => $time,
-      );
+      ];
     }
 
     // Insert all of them using just one multi-row query.
-    $query = db_insert('queue')->fields(array('name', 'data', 'created'));
+    $query = db_insert('queue')->fields(['name', 'data', 'created']);
     foreach ($records as $record) {
       $query->values($record);
     }
@@ -133,10 +133,10 @@ class Database extends PluginBase implements Queue {
    * {@inheritdoc}
    */
   public function claimItemMultiple($claims = 10, $lease_time = 3600) {
-    $returned_items = $item_ids = array();
+    $returned_items = $item_ids = [];
 
     // Retrieve all items in one query.
-    $items = $this->database->queryRange('SELECT data, created, item_id FROM {queue} q WHERE expire = 0 AND name = :name ORDER BY created ASC', 0, $claims, array(':name' => $this->name));
+    $items = $this->database->queryRange('SELECT data, created, item_id FROM {queue} q WHERE expire = 0 AND name = :name ORDER BY created ASC', 0, $claims, [':name' => $this->name]);
 
     // Iterate all returned items and unpack them.
     foreach ($items as $item) {
@@ -150,9 +150,9 @@ class Database extends PluginBase implements Queue {
     // Update the items (marking them claimed) in one query.
     if (count($returned_items)) {
       $update = $this->database->update('queue')
-        ->fields(array(
+        ->fields([
           'expire' => time() + $lease_time,
-        ))
+        ])
         ->condition('item_id', $item_ids, 'IN')
         ->condition('expire', 0)
         ->execute();
@@ -173,18 +173,18 @@ class Database extends PluginBase implements Queue {
    * {@inheritdoc}
    */
   public function releaseItemMultiple(array $items) {
-    $item_ids = array();
+    $item_ids = [];
     foreach ($items as $item) {
       $item_ids[] = $item->item_id;
     }
     $update = $this->database->update('queue')
-      ->fields(array(
+      ->fields([
         'expire' => 0,
-      ))
+      ])
       ->condition('item_id', $item_ids, 'IN')
       ->execute();
     if ($update) {
-      return array();
+      return [];
     }
     else {
       return $items;
@@ -202,7 +202,7 @@ class Database extends PluginBase implements Queue {
    * {@inheritdoc}
    */
   public function deleteItemMultiple(array $items) {
-    $item_ids = array();
+    $item_ids = [];
     foreach ($items as $item) {
       $item_ids[] = $item->item_id;
     }

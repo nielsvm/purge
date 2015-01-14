@@ -51,7 +51,7 @@ class PurgeRuntimeTest extends Plugin {
    *
    * @var array
    */
-  public $service_dependencies = array();
+  public $service_dependencies = [];
 
   /**
    * If your runtime test performs checks necessary for a specific queue plugin
@@ -64,7 +64,7 @@ class PurgeRuntimeTest extends Plugin {
    *
    * @var array
    */
-  public $dependent_queue_plugins = array();
+  public $dependent_queue_plugins = [];
 
   /**
    * If your runtime test performs checks necessary for a specific purger plugin
@@ -77,6 +77,6 @@ class PurgeRuntimeTest extends Plugin {
    *
    * @var array
    */
-  public $dependent_purger_plugins = array();
+  public $dependent_purger_plugins = [];
 
 }

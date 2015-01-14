@@ -70,7 +70,7 @@ abstract class PluginTestBase extends TestBase {
     $this->assertFalse(strpos($class, 'queue'), "Class doesn't contain 'queue'.");
 
     // Retrieve all the requested service arguments.
-    $arguments = array();
+    $arguments = [];
     foreach ($plugins[$id]['service_dependencies'] as $service) {
       $arguments[] = $this->container->get($service);
     }
@@ -94,7 +94,7 @@ abstract class PluginTestBase extends TestBase {
    * Test the data integrity of data stored in the queue.
    */
   function testDataStorageIntegrity() {
-    $samples = array(
+    $samples = [
       'a' => 'string',
       'b' => 'StrinG with Capitalization',
       'c' => 1,
@@ -104,7 +104,7 @@ abstract class PluginTestBase extends TestBase {
       'g' => NULL,
       'h' => FALSE,
       'i' => TRUE
-    );
+    ];
 
     // Test if we get back the exact same thing if we store it as scalar value.
     foreach ($samples as $sample) {
@@ -159,7 +159,7 @@ abstract class PluginTestBase extends TestBase {
    * Test that createQueue() doesn't empty the queue if already created.
    */
   function testCreateQueue() {
-    $this->queue->createItem(array(1,2,3));
+    $this->queue->createItem([1,2,3]);
     $this->queue->createQueue();
     $this->assertEqual(1, $this->queue->numberOfItems(),
       'queue not emptied after double createQueue() call');
@@ -171,7 +171,7 @@ abstract class PluginTestBase extends TestBase {
    * Test creating, claiming and releasing of items.
    */
   function testCreatingClaimingAndReleasing() {
-    $this->queue->createItem(array(1,2,3));
+    $this->queue->createItem([1,2,3]);
     $claim = $this->queue->claimItem(3600);
     $this->assertFalse($this->queue->claimItem(3600), 'second claim fails');
     $this->assertTrue($this->queue->releaseItem($claim),
@@ -180,15 +180,15 @@ abstract class PluginTestBase extends TestBase {
       'item can be claimed after releaseItem() was called.');
     $this->queue->releaseItem($claim);
     $this->assertIdentical(4,
-      count($this->queue->createItemMultiple(array(1,2,3,4))),
+      count($this->queue->createItemMultiple([1,2,3,4])),
       "createItemMultiple() returned four id's");
     $claims = $this->queue->claimItemMultiple(5, 3600);
-    $this->assertIdentical(array(),
+    $this->assertIdentical([],
       $this->queue->claimItemMultiple(5, 3600),
-      'claimItemMultiple() returned an empty array');
-    $this->assertIdentical(array(),
+      'claimItemMultiple() returned an empty []');
+    $this->assertIdentical([],
       $this->queue->releaseItemMultiple($claims),
-      'releaseItemMultiple() returned an empty array');
+      'releaseItemMultiple() returned an empty []');
     $claims = $this->queue->claimItemMultiple(5, 3600);
     $this->assertIdentical(5,
       count($claims),
@@ -224,7 +224,7 @@ abstract class PluginTestBase extends TestBase {
     $this->assertIdentical(5, count($this->queue->claimItemMultiple(5, 5)),
       'claimItemMultiple(5,5) with 5s lease time.');
     $this->assertTrue(empty($this->queue->claimItemMultiple(2)),
-      'claimItemMultiple(2,5) during lease gives empty array()');
+      'claimItemMultiple(2,5) during lease gives empty []');
     sleep(6);
     $this->assertIdentical(5, count($this->queue->claimItemMultiple(5, 5)),
       'claimItemMultiple(5,5) after lease expired.');

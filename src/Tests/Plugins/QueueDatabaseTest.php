@@ -23,13 +23,13 @@ class QueueDatabaseTest extends PluginTestBase {
    *
    * @var array
    */
-  public static $modules = array('system');
+  public static $modules = ['system'];
 
   /**
    * Set up the test.
    */
   function setUp() {
     parent::setUp();
-    $this->installSchema('system', array('queue'));
+    $this->installSchema('system', ['queue']);
   }
 }

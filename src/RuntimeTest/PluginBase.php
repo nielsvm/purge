@@ -107,12 +107,12 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    */
   public function getSeverityString() {
     $this->runTest();
-    $mapping = array(
+    $mapping = [
       SELF::SEVERITY_INFO      => 'INFO',
       SELF::SEVERITY_OK        => 'OK',
       SELF::SEVERITY_WARNING   => 'WARNING',
       SELF::SEVERITY_ERROR     => 'ERROR',
-    );
+    ];
     return $mapping[$this->getSeverity()];
   }
 
@@ -145,12 +145,12 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
       // requirement constants. However, as our runtime test API is more than
       // just a fancy objectification of hook_requirements we need to assure
       // that this lasts over time, and thus map the constants.
-      $mapping = array(
+      $mapping = [
         SELF::SEVERITY_INFO      => REQUIREMENT_INFO,
         SELF::SEVERITY_OK        => REQUIREMENT_OK,
         SELF::SEVERITY_WARNING   => REQUIREMENT_WARNING,
         SELF::SEVERITY_ERROR     => REQUIREMENT_ERROR,
-      );
+      ];
     }
     return $mapping[$this->getSeverity()];
   }
@@ -164,11 +164,11 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
     if ($recommendation = $this->getRecommendation()) {
       $description = $recommendation;
     }
-    return array(
-      'title' => $this->t('Purge - @title', array('@title' => $this->getTitle())),
+    return [
+      'title' => $this->t('Purge - @title', ['@title' => $this->getTitle()]),
       'value' => $this->getValue(),
       'description' => $description,
       'severity' => $this->getHookRequirementsSeverity()
-    );
+    ];
   }
 }

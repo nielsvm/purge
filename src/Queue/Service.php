@@ -75,7 +75,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
     $this->initializeQueue();
 
     // Initialize the transaction buffer as empty.
-    $this->buffer = array();
+    $this->buffer = [];
   }
 
   /**
@@ -88,7 +88,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
     if (!$simple) {
       return $this->plugins;
     }
-    $plugins = array();
+    $plugins = [];
     foreach ($this->plugins as $plugin) {
       $plugins[$plugin['id']] = sprintf('%s: %s', $plugin['label'], $plugin['description']);
     }
@@ -129,7 +129,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   public function reload() {
     $this->commit();
     parent::reload();
-    $this->buffer = array();
+    $this->buffer = [];
     $this->queue = NULL;
     $this->initializeQueue();
   }
@@ -148,7 +148,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
     $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
 
     // Retrieve all the requested service arguments.
-    $arguments = array();
+    $arguments = [];
     foreach ($plugin_definition['service_dependencies'] as $service) {
       $arguments[] = $this->serviceContainer->get($service);
     }
@@ -241,7 +241,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
 
     // Claim multiple (raw) items from the queue, return if its empty.
     if (!($items = $this->queue->claimItemMultiple($claims, $lease_time))) {
-      return array();
+      return [];
     }
 
     // Iterate the $items array and replace each with full instances.
@@ -280,7 +280,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * {@inheritdoc}
    */
   public function release(Purgeable $purgeable) {
-    $this->bufferSetState(Purgeable::STATE_RELEASING, array($purgeable));
+    $this->bufferSetState(Purgeable::STATE_RELEASING, [$purgeable]);
   }
 
   /**
@@ -294,7 +294,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * {@inheritdoc}
    */
   public function delete(Purgeable $purgeable) {
-    $this->bufferSetState(Purgeable::STATE_DELETING, array($purgeable));
+    $this->bufferSetState(Purgeable::STATE_DELETING, [$purgeable]);
   }
 
   /**
@@ -310,7 +310,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   function emptyQueue() {
     $this->bufferSetState(Purgeable::STATE_DELETED, $this->buffer);
     $this->queue->deleteQueue();
-    $this->buffer = array();
+    $this->buffer = [];
   }
 
   /**
@@ -325,7 +325,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    *   that matched the given states requested.
    */
   private function bufferGetFiltered(array $states) {
-    $results = array();
+    $results = [];
     foreach ($this->buffer as $purgeable) {
       if (in_array($purgeable->getState(), $states)) {
         $results[] = $purgeable;
@@ -381,7 +381,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * Commit all adding purgeables in the buffer to the queue.
    */
   private function commitAdding() {
-    $items = $this->bufferGetFiltered(array(Purgeable::STATE_ADDING));
+    $items = $this->bufferGetFiltered([Purgeable::STATE_ADDING]);
     if (empty($items)) {
       return;
     }
@@ -403,7 +403,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
 
       // Add multiple at once to the queue using createItemMultiple() on the queue.
       else {
-        $data_items = array();
+        $data_items = [];
         foreach ($items as $purgeable) {
           $data_items[] = $purgeable->data;
         }
@@ -430,7 +430,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * Commit all releasing purgeables in the buffer to the queue.
    */
   private function commitReleasing() {
-    $items = $this->bufferGetFiltered(array(Purgeable::STATE_RELEASING));
+    $items = $this->bufferGetFiltered([Purgeable::STATE_RELEASING]);
     if (empty($items)) {
       return;
     }
@@ -457,7 +457,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * Commit all deleting purgeables in the buffer to the queue.
    */
   private function commitDeleting() {
-    $items = $this->bufferGetFiltered(array(Purgeable::STATE_DELETING));
+    $items = $this->bufferGetFiltered([Purgeable::STATE_DELETING]);
     if (empty($items)) {
       return;
     }

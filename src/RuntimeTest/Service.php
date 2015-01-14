@@ -81,7 +81,7 @@ class Service extends ServiceBase implements ServiceInterface {
     if (!$simple) {
       return $this->plugins;
     }
-    $plugins = array();
+    $plugins = [];
     foreach ($this->plugins as $plugin) {
       $plugins[$plugin['id']] = sprintf('%s: %s', $plugin['title'], $plugin['description']);
     }
@@ -145,8 +145,8 @@ class Service extends ServiceBase implements ServiceInterface {
       $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
 
       // Prepare the arguments that we pass onto the test constructor.
-      $arguments = array();
-      $arguments[] = array();
+      $arguments = [];
+      $arguments[] = [];
       $arguments[] = $plugin_id;
       $arguments[] = $plugin_definition;
       foreach ($plugin_definition['service_dependencies'] as $service) {
@@ -163,7 +163,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function getHookRequirementsArray() {
-    $requirements = array();
+    $requirements = [];
     foreach ($this as $test) {
       $requirements[$test->getPluginId()] = $test->getHookRequirementsArray();
     }

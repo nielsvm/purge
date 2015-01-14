@@ -50,7 +50,7 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('purge_ui', 'purge_test');
+  public static $modules = ['purge_ui', 'purge_test'];
 
   /**
    * Setup the test.
@@ -60,7 +60,7 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
     $this->configFactory = $this->container->get('config.factory');
     $this->purgePurger = $this->container->get('purge.purger');
     $this->purgeQueue = $this->container->get('purge.queue');
-    $this->admin_user = $this->drupalCreateUser(array('administer site configuration'));
+    $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
   }
 
   /**
@@ -72,18 +72,18 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
    * @see \Drupal\system\Tests\Menu\LocalTasksTest.
    */
   protected function assertLocalTasks(array $hrefs, $level = 0) {
-    $elements = $this->xpath('//*[contains(@class, :class)]//a', array(
+    $elements = $this->xpath('//*[contains(@class, :class)]//a', [
       ':class' => $level == 0 ? 'tabs primary' : 'tabs secondary',
-    ));
+    ]);
     $this->assertTrue(count($elements), 'Local tasks found.');
     foreach ($hrefs as $index => $element) {
       $expected = _url($hrefs[$index]);
       $method = ($elements[$index]['href'] == $expected ? 'pass' : 'fail');
-      $this->{$method}(format_string('Task @number href @value equals @expected.', array(
+      $this->{$method}(format_string('Task @number href @value equals @expected.', [
         '@number' => $index + 1,
         '@value' => (string) $elements[$index]['href'],
         '@expected' => $expected,
-      )));
+      ]));
     }
   }
 
@@ -96,10 +96,10 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
     $this->drupalLogin($this->admin_user);
     $this->assertResponse(200);
     $this->drupalGet('admin/config/development/performance');
-    $this->assertLocalTasks(array(
+    $this->assertLocalTasks([
       'admin/config/development/performance',
       $this->path,
-    ));
+    ]);
   }
 
   /**
@@ -127,25 +127,25 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
 
     // Test that just submitting the form, results in the exact same config.
     $this->configFactory->get('purge.queue')->set('plugin', 'queue_a')->save();
-    $this->drupalPostForm($this->path, array(), t('Save configuration'));
+    $this->drupalPostForm($this->path, [], t('Save configuration'));
     $this->assertEqual('automatic_detection',
       $this->configFactory->get('purge.purger')->get('plugins'));
     $this->assertEqual('queue_a',
       $this->configFactory->get('purge.queue')->get('plugin'));
 
     // Test that changing the queue plugin, gets reflected in the config.
-    $edit = array('queue_plugin' => 'queue_b');
+    $edit = ['queue_plugin' => 'queue_b'];
     $this->drupalPostForm($this->path, $edit, t('Save configuration'));
     $this->assertEqual('queue_b',
       $this->configFactory->get('purge.queue')->get('plugin'));
 
     // Mislead the form submit by listing purgers but set to automatic detect.
-    $edit = array(
+    $edit = [
       'purger_detection' => 'automatic_detection',
       'purger_plugins[purger_b]' => TRUE,
       'purger_plugins[purger_a]' => TRUE,
       'purger_plugins[purger_c]' => FALSE,
-    );
+    ];
     $this->drupalPostForm($this->path, $edit, t('Save configuration'));
     $this->assertEqual('automatic_detection',
       $this->configFactory->get('purge.purger')->get('plugins'));

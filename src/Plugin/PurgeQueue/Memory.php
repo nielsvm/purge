@@ -49,7 +49,7 @@ class Memory extends PluginBase implements Queue {
   private function bufferInitialize() {
     if (!$this->bufferInitialized) {
       $this->bufferInitialized = TRUE;
-      $this->buffer = array();
+      $this->buffer = [];
     }
   }
 
@@ -60,11 +60,11 @@ class Memory extends PluginBase implements Queue {
     $this->bufferInitialize();
     end($this->buffer);
     $id = key($this->buffer) + 1;
-    $this->buffer[$id] = array(
+    $this->buffer[$id] = [
       SELF::DATA => serialize($data),
       SELF::EXPIRE => 0,
       SELF::CREATED => time(),
-    );
+    ];
     return $id;
   }
 
@@ -75,13 +75,13 @@ class Memory extends PluginBase implements Queue {
     $this->bufferInitialize();
     end($this->buffer);
     $id = key($this->buffer) + 1;
-    $ids = array();
+    $ids = [];
     foreach ($items as $data) {
-      $this->buffer[$id] = array(
+      $this->buffer[$id] = [
         SELF::DATA => serialize($data),
         SELF::EXPIRE => 0,
         SELF::CREATED => time(),
-      );
+      ];
       $ids[] = $id;
       $id++;
     }
@@ -134,7 +134,7 @@ class Memory extends PluginBase implements Queue {
    * {@inheritdoc}
    */
   public function claimItemMultiple($claims = 10, $lease_time = 3600) {
-    $items = array();
+    $items = [];
     for ($i = 1; $i <= $claims; $i++) {
       if (($item = $this->claimItem($lease_time, NULL)) === FALSE) {
         break;
@@ -164,7 +164,7 @@ class Memory extends PluginBase implements Queue {
     foreach ($items as $item) {
       $this->releaseItem($item);
     }
-    return array();
+    return [];
   }
 
   /**
@@ -200,6 +200,6 @@ class Memory extends PluginBase implements Queue {
    */
   public function deleteQueue() {
     $this->bufferInitialize();
-    $this->buffer = array();
+    $this->buffer = [];
   }
 }

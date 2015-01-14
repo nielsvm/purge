@@ -55,7 +55,7 @@ class File extends Memory implements Queue {
   private function bufferInitialize() {
     if (!$this->bufferInitialized) {
       $this->bufferInitialized = TRUE;
-      $this->buffer = array();
+      $this->buffer = [];
 
       // Open and parse the queue file, if it wasn't there during initialization
       // it will automatically become written at some point.

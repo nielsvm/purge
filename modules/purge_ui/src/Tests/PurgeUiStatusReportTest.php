@@ -34,7 +34,7 @@ class PurgeUiStatusReportTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('purge_ui', 'purge_test');
+  public static $modules = ['purge_ui', 'purge_test'];
 
   /**
    * Setup the test.
@@ -42,7 +42,7 @@ class PurgeUiStatusReportTest extends WebTestBase {
   function setUp() {
     parent::setUp();
     $this->purgeDiagnostics = $this->container->get('purge.diagnostics');
-    $this->admin_user = $this->drupalCreateUser(array('administer site configuration'));
+    $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
   }
 
   /*

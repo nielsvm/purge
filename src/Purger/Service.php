@@ -73,7 +73,7 @@ class Service extends ServiceBase implements ServiceInterface {
     if (!$simple) {
       return $this->plugins;
     }
-    $plugins = array();
+    $plugins = [];
     foreach ($this->plugins as $plugin) {
       $plugins[$plugin['id']] = sprintf('%s: %s', $plugin['label'], $plugin['description']);
     }
@@ -150,7 +150,7 @@ class Service extends ServiceBase implements ServiceInterface {
       $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
 
       // Prepare the requested service arguments.
-      $arguments = array();
+      $arguments = [];
       foreach ($plugin_definition['service_dependencies'] as $service) {
         $arguments[] = $this->serviceContainer->get($service);
       }

@@ -27,14 +27,14 @@ abstract class ServiceBase extends ServiceProviderBase implements ServiceInterfa
    *
    * @var array
    */
-  protected $plugins = array();
+  protected $plugins = [];
 
   /**
    * The list of all enabled plugins and their definitions.
    *
    * @var array
    */
-  protected $plugins_enabled = array();
+  protected $plugins_enabled = [];
 
   /**
    * {@inheritdoc}
@@ -46,7 +46,7 @@ abstract class ServiceBase extends ServiceProviderBase implements ServiceInterfa
     if (!$simple) {
       return $this->plugins;
     }
-    $plugins = array();
+    $plugins = [];
     foreach ($this->plugins as $plugin) {
       $plugins[$plugin['id']] = (string)$plugin['label'];
     }
@@ -67,7 +67,7 @@ abstract class ServiceBase extends ServiceProviderBase implements ServiceInterfa
    * {@inheritdoc}
    */
   public function reload() {
-    $this->plugins = array();
-    $this->plugins_enabled = array();
+    $this->plugins = [];
+    $this->plugins_enabled = [];
   }
 }

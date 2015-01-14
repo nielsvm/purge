@@ -51,6 +51,6 @@ class PurgePurger extends Plugin {
    *
    * @var array
    */
-  public $service_dependencies = array();
+  public $service_dependencies = [];
 
 }

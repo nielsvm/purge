@@ -31,7 +31,7 @@ class CacheTagsInvalidationQueuer implements CacheTagsInvalidatorInterface {
    *
    * @var array
    */
-  protected $breadcrumb = array();
+  protected $breadcrumb = [];
 
   /**
    * {@inheritdoc}
@@ -50,7 +50,7 @@ class CacheTagsInvalidationQueuer implements CacheTagsInvalidatorInterface {
    * Queue collected tags as tag purgeables using the '@purge.queue' service.
    */
    public function invalidateTags(array $tags) {
-    $purgeables = array();
+    $purgeables = [];
     foreach ($tags as $i => $tag) {
       if (!is_int($i)) {
         throw new \LogicException('$tags item key is not an integer: "' . $i

@@ -22,7 +22,7 @@ abstract class TestBase extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = array('purge');
+  public static $modules = ['purge'];
 
   /**
    * Stores the configuration factory.
@@ -56,7 +56,7 @@ abstract class TestBase extends KernelTestBase {
    */
   function setUp() {
     parent::setUp();
-    $this->installConfig(array('purge'));
+    $this->installConfig(['purge']);
     $this->configFactory = $this->container->get('config.factory');
   }
 

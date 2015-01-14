@@ -10,7 +10,7 @@
  */
 function purge_ui_requirements($phase) {
   if ($phase !== 'runtime') {
-    return array();
+    return [];
   }
   return \Drupal::service('purge.diagnostics')->getHookRequirementsArray();
 }

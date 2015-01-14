@@ -26,7 +26,7 @@ abstract class PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function createItemMultiple(array $items) {
-    $ids = array();
+    $ids = [];
 
     // This implementation emulates multiple creation and is NOT efficient. It
     // exists for API reliability and invites derivatives to override it, for
@@ -44,7 +44,7 @@ abstract class PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function claimItemMultiple($claims = 10, $lease_time = 3600) {
-    $items = array();
+    $items = [];
 
     // This implementation emulates multiple item claiming and is NOT efficient,
     // but exists to provide a reliable API. Derivatives are invited to override
@@ -75,7 +75,7 @@ abstract class PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function releaseItemMultiple(array $items) {
-    $failures = array();
+    $failures = [];
 
     // This implementation emulates multiple item releases and is NOT efficient,
     // but exists to provide API reliability. Derivatives are invited to

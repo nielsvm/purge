@@ -91,11 +91,11 @@ abstract class PluginBase implements PluginInterface {
    * Initialize $this->queueItemInfo with its standard data.
    */
   private function initializeQueueItemArray() {
-    $this->queueItemInfo = array(
+    $this->queueItemInfo = [
       'data' => sprintf('%s>%s', $this->pluginId, $this->representation),
       'item_id' => NULL,
       'created' => NULL,
-    );
+    ];
     $this->queueItemInfo['keys'] = array_keys($this->queueItemInfo);
   }
 
@@ -171,7 +171,7 @@ abstract class PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function getStateString() {
-    $mapping = array(
+    $mapping = [
       SELF::STATE_NEW           => 'NEW',
       SELF::STATE_ADDING        => 'ADDING',
       SELF::STATE_ADDED         => 'ADDED',
@@ -183,7 +183,7 @@ abstract class PluginBase implements PluginInterface {
       SELF::STATE_RELEASED      => 'RELEASED',
       SELF::STATE_DELETING      => 'DELETING',
       SELF::STATE_DELETED       => 'DELETED',
-    );
+    ];
     return $mapping[$this->getState()];
   }
 }

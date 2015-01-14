@@ -503,4 +503,11 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
     // helps purge to scale better and should cause no noticeable side-effects.
     $this->commit();
   }
+
+  /**
+   * In case PHP's destructor gets called, call destruct.
+   */
+  function __destruct() {
+    $this->destruct();
+  }
 }

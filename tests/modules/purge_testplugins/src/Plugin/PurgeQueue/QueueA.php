@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge_test\Plugin\PurgeQueue\QueueB.
+ * Contains \Drupal\purge_testplugins\Plugin\PurgeQueue\QueueA.
  */
 
-namespace Drupal\purge_test\Plugin\PurgeQueue;
+namespace Drupal\purge_testplugins\Plugin\PurgeQueue;
 
 use Drupal\purge\Plugin\PurgeQueue\Memory;
 use Drupal\purge\Queue\PluginInterface;
@@ -14,10 +14,10 @@ use Drupal\purge\Queue\PluginInterface;
  * A \Drupal\purge\Queue\PluginInterface compliant memory queue for testing.
  *
  * @PurgeQueue(
- *   id = "queue_b",
- *   label = @Translation("Memqueue B"),
+ *   id = "queue_a",
+ *   label = @Translation("Memqueue A"),
  *   description = @Translation("A volatile and non-persistent memory queue"),
  *   service_dependencies = {}
  * )
  */
-class QueueB extends Memory implements PluginInterface {}
+class QueueA extends Memory implements PluginInterface {}

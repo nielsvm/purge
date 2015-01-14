@@ -1,4 +1,4 @@
-name: 'Purge Test'
+name: 'Purge Plugins for testing'
 type: module
 description: 'Support module for purge module testing.'
 package: Testing

@@ -52,8 +52,8 @@ abstract class TestBase extends KernelTestBase {
   protected $purgeDiagnostics;
 
   /**
-  * Set up the test object.
-  */
+   * Set up the test object.
+   */
   function setUp() {
     parent::setUp();
     $this->installConfig(array('purge'));
@@ -61,8 +61,8 @@ abstract class TestBase extends KernelTestBase {
   }
 
   /**
-  * Make all purge services available.
-  */
+   * Make all purge services available.
+   */
   protected function initializeAllServices() {
     $this->initializePurgerService();
     $this->initializePurgeablesService();
@@ -71,11 +71,11 @@ abstract class TestBase extends KernelTestBase {
   }
 
   /**
-  * Make $this->purgePurger available.
-  *
-  * @param $plugin_id
-  *   The plugin ID of the purger to be configured.
-  */
+   * Make $this->purgePurger available.
+   *
+   * @param $plugin_id
+   *   The plugin ID of the purger to be configured.
+   */
   protected function initializePurgerService($plugin_id = NULL) {
     if (!is_null($plugin_id)) {
       $this->configFactory->get('purge.purger')
@@ -93,8 +93,8 @@ abstract class TestBase extends KernelTestBase {
   }
 
   /**
-  * Make $this->purgePurgeables available.
-  */
+   * Make $this->purgePurgeables available.
+   */
   protected function initializePurgeablesService() {
     if (is_null($this->purgePurgeables)) {
       $this->purgePurgeables = $this->container->get('purge.purgeables');
@@ -102,11 +102,11 @@ abstract class TestBase extends KernelTestBase {
   }
 
   /**
-  * Make $this->purgeQueue available.
-  *
-  * @param $plugin_id
-  *   The plugin ID of the queue to be configured.
-  */
+   * Make $this->purgeQueue available.
+   *
+   * @param $plugin_id
+   *   The plugin ID of the queue to be configured.
+   */
   protected function initializeQueueService($plugin_id = NULL) {
     if (!is_null($plugin_id)) {
       $this->configFactory->get('purge.queue')
@@ -124,8 +124,8 @@ abstract class TestBase extends KernelTestBase {
   }
 
   /**
-  * Make $this->purgeDiagnostics available.
-  */
+   * Make $this->purgeDiagnostics available.
+   */
   protected function initializeDiagnosticsService() {
     if (is_null($this->purgeDiagnostics)) {
       $this->purgeDiagnostics = $this->container->get('purge.diagnostics');

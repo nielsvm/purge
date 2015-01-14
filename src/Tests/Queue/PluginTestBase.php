@@ -25,10 +25,10 @@ abstract class PluginTestBase extends TestBase {
   protected $plugin_id;
 
   /**
-  * The plugin manager for queues ('plugin.manager.purge.queue').
-  *
-  * @var \Drupal\purge\Queue\PluginManager
-  */
+   * The plugin manager for queues ('plugin.manager.purge.queue').
+   *
+   * @var \Drupal\purge\Queue\PluginManager
+   */
   protected $pluginManagerPurgeQueue;
 
   /**

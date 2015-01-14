@@ -1,8 +1,0 @@
-name: Purge Testing Sandbox
-type: module
-description: 'A temporary sandbox module to test plugins and APIs with.'
-package: Purge
-version: VERSION
-core: 8.x
-dependencies:
-  - purge

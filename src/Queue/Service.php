@@ -8,6 +8,7 @@
 namespace Drupal\purge\Queue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\DestructableInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
@@ -21,7 +22,7 @@ use Drupal\purge\Queue\PluginInterface;
 /**
  * Provides the service that lets purgeables interact with the underlying queue.
  */
-class Service extends ServiceBase implements ServiceInterface {
+class Service extends ServiceBase implements ServiceInterface, DestructableInterface {
 
   /**
    * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -75,20 +76,6 @@ class Service extends ServiceBase implements ServiceInterface {
 
     // Initialize the transaction buffer as empty.
     $this->buffer = array();
-  }
-
-  /**
-   * Commit the queue buffer upon service destruction.
-   */
-  public function __destruct() {
-
-    // The queue service attempts to collect all actions done for purgeables
-    // in $this->buffer, and commits them as infrequent as possible during
-    // runtime. At minimum it will commit to the underlying queue plugin upon
-    // shutdown and by doing so, attempts to reduce and bundle the amount of
-    // work the queue has to do (e.g., queries, disk writes, mallocs). This
-    // helps purge to scale better and should cause no noticeable side-effects.
-    $this->commit();
   }
 
   /**
@@ -501,5 +488,19 @@ class Service extends ServiceBase implements ServiceInterface {
         }
       }
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function destruct() {
+
+    // The queue service attempts to collect all actions done for purgeables
+    // in $this->buffer, and commits them as infrequent as possible during
+    // runtime. At minimum it will commit to the underlying queue plugin upon
+    // shutdown and by doing so, attempts to reduce and bundle the amount of
+    // work the queue has to do (e.g., queries, disk writes, mallocs). This
+    // helps purge to scale better and should cause no noticeable side-effects.
+    $this->commit();
   }
 }

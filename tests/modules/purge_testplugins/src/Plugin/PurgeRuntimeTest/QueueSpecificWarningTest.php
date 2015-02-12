@@ -17,7 +17,6 @@ use Drupal\purge\RuntimeTest\PluginBase;
  *   id = "queuewarning",
  *   title = @Translation("Queue specific warning"),
  *   description = @Translation("A fake test to test the runtime tests api."),
- *   service_dependencies = {},
  *   dependent_queue_plugins = {"queue_b"},
  *   dependent_purger_plugins = {}
  * )

@@ -17,7 +17,6 @@ use Drupal\purge\RuntimeTest\PluginBase;
  *   id = "memoryqueuewarning",
  *   title = @Translation("Memory queue"),
  *   description = @Translation("Warns when the memory queue is in use."),
- *   service_dependencies = {},
  *   dependent_queue_plugins = {"memory"},
  *   dependent_purger_plugins = {}
  * )

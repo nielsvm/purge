@@ -9,7 +9,6 @@ namespace Drupal\purge\Purger;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
-use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Purger\ServiceInterface;
@@ -146,18 +145,7 @@ class Service extends ServiceBase implements ServiceInterface {
 
     // Iterate each purger plugin we should load and instantiate them.
     foreach ($this->getPluginsEnabled() as $plugin_id) {
-      $plugin_definition = $this->pluginManager->getDefinition($plugin_id);
-      $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
-
-      // Prepare the requested service arguments.
-      $arguments = [];
-      foreach ($plugin_definition['service_dependencies'] as $service) {
-        $arguments[] = $this->serviceContainer->get($service);
-      }
-
-      // Use the Reflection API to instantiate our plugin.
-      $reflector = new \ReflectionClass($plugin_class);
-      $this->purgers[$plugin_id] = $reflector->newInstanceArgs($arguments);
+      $this->purgers[] = $this->pluginManager->createInstance($plugin_id);
     }
   }
 
@@ -366,4 +354,5 @@ class Service extends ServiceBase implements ServiceInterface {
     }
     return $purging;
   }
+
 }

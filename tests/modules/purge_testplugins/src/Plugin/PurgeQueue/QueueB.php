@@ -17,7 +17,6 @@ use Drupal\purge\Queue\PluginInterface;
  *   id = "queue_b",
  *   label = @Translation("Memqueue B"),
  *   description = @Translation("A volatile and non-persistent memory queue"),
- *   service_dependencies = {}
  * )
  */
 class QueueB extends Memory implements PluginInterface {}

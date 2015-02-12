@@ -17,7 +17,6 @@ use Drupal\purge\RuntimeTest\PluginBase;
  *   id = "alwayswarning",
  *   title = @Translation("Always a warning"),
  *   description = @Translation("A fake test to test the runtime tests api."),
- *   service_dependencies = {},
  *   dependent_queue_plugins = {},
  *   dependent_purger_plugins = {}
  * )

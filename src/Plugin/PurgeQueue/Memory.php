@@ -7,7 +7,8 @@
 
 namespace Drupal\purge\Plugin\PurgeQueue;
 
-use Drupal\purge\Queue\PluginInterface as Queue;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\purge\Queue\PluginInterface;
 use Drupal\purge\Queue\PluginBase;
 
 /**
@@ -21,10 +22,9 @@ use Drupal\purge\Queue\PluginBase;
  *   id = "memory",
  *   label = @Translation("Memory"),
  *   description = @Translation("a non-persistent, per-request memory queue (not useful on production systems)."),
- *   service_dependencies = {}
  * )
  */
-class Memory extends PluginBase implements Queue {
+class Memory extends PluginBase implements PluginInterface {
 
   /**
    * Whether the buffer has been initialized or not.
@@ -42,6 +42,13 @@ class Memory extends PluginBase implements Queue {
   const DATA = 0;
   const EXPIRE = 1;
   const CREATED = 2;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static();
+  }
 
   /**
    * Initialize the buffer.

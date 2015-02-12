@@ -42,18 +42,6 @@ class PurgeRuntimeTest extends Plugin {
   public $description;
 
   /**
-   * An ordered array of service definitions that this plugin requires, which
-   * will be passed to the constructor of the plugin upon instantiation.
-   *
-   * @code
-   * service_dependencies = {"database", "lock", "language_manager"}
-   * @endcode
-   *
-   * @var array
-   */
-  public $service_dependencies = [];
-
-  /**
    * If your runtime test performs checks necessary for a specific queue plugin
    * to work, you can bind this test to the queues with this setting. If any of
    * the listed queues aren't loaded, your test won't run either.

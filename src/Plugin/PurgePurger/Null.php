@@ -7,6 +7,7 @@
 
 namespace Drupal\purge\Plugin\PurgePurger;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Purger\PluginBase;
 use Drupal\purge\Purger\PluginInterface as Purger;
 use Drupal\purge\Purgeable\PluginInterface as Purgeable;
@@ -19,7 +20,6 @@ use Drupal\purge\Purgeable\PluginInterface as Purgeable;
  *   id = "null",
  *   label = @Translation("Null backup"),
  *   description = @Translation("A purger that doesn't do anything."),
- *   service_dependencies = {}
  * )
  */
 class Null extends PluginBase implements Purger {
@@ -34,6 +34,13 @@ class Null extends PluginBase implements Purger {
    */
   function __construct() {
     $this->failures = 0;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static();
   }
 
   /**

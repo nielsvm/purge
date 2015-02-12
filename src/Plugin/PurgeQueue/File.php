@@ -9,7 +9,7 @@ namespace Drupal\purge\Plugin\PurgeQueue;
 
 use Drupal\purge\Plugin\PurgeQueue\Memory;
 use Drupal\Core\StreamWrapper\PublicStream;
-use Drupal\purge\Queue\PluginInterface as Queue;
+use Drupal\purge\Queue\PluginInterface;
 
 /**
  * A \Drupal\purge\Queue\PluginInterface compliant file-based queue.
@@ -18,10 +18,9 @@ use Drupal\purge\Queue\PluginInterface as Queue;
  *   id = "file",
  *   label = @Translation("File"),
  *   description = @Translation("a file-based queue for fast I/O systems."),
- *   service_dependencies = {}
  * )
  */
-class File extends Memory implements Queue {
+class File extends Memory implements PluginInterface {
 
   /**
    * The file path to which the queue buffer gets written to.

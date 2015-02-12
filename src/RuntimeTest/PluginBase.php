@@ -7,6 +7,7 @@
 
 namespace Drupal\purge\RuntimeTest;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\PluginBase as CorePluginBase;
 use Drupal\purge\RuntimeTest\Exception\TestNotImplementedCorrectly;
 use Drupal\purge\RuntimeTest\PluginInterface;
@@ -54,6 +55,17 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    * @var mixed
    */
   protected $value;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition
+    );
+  }
 
   /**
    * Assures that \Drupal\purge\RuntimeTest\PluginInterface::run() is executed

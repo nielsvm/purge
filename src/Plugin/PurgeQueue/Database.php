@@ -20,7 +20,6 @@ use Drupal\purge\Queue\PluginBase;
  *   id = "database",
  *   label = @Translation("Database"),
  *   description = @Translation("A scalable database backed queue."),
- *   service_dependencies = {"database", "queue.database"}
  * )
  */
 class Database extends PluginBase implements Queue {
@@ -63,6 +62,16 @@ class Database extends PluginBase implements Queue {
 
     // Instantiate the database queue using the factory.
     $this->dbqueue = $this->queueDatabase->get($this->name);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $container->get('database'),
+      $container->get('queue.database')
+    );
   }
 
   /**

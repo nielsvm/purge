@@ -7,12 +7,13 @@
 
 namespace Drupal\purge\RuntimeTest;
 
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 
 /**
  * Describes a runtime test that tests a specific purging requirement.
  */
-interface PluginInterface extends PluginInspectionInterface {
+interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPluginInterface {
 
   /**
    * Non-blocking severity -- Informational message only.

@@ -9,7 +9,6 @@ namespace Drupal\purge\RuntimeTest;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
-use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Purger\ServiceInterface as PurgerServiceInterface;
@@ -141,21 +140,7 @@ class Service extends ServiceBase implements ServiceInterface {
 
     // Iterate each test that we should load and instantiate.
     foreach ($this->getPluginsEnabled() as $plugin_id) {
-      $plugin_definition = $this->pluginManager->getDefinition($plugin_id);
-      $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
-
-      // Prepare the arguments that we pass onto the test constructor.
-      $arguments = [];
-      $arguments[] = [];
-      $arguments[] = $plugin_id;
-      $arguments[] = $plugin_definition;
-      foreach ($plugin_definition['service_dependencies'] as $service) {
-        $arguments[] = $this->serviceContainer->get($service);
-      }
-
-      // Use the Reflection API to instantiate our test.
-      $reflector = new \ReflectionClass($plugin_class);
-      $this->tests[] = $reflector->newInstanceArgs($arguments);
+      $this->tests[] = $this->pluginManager->createInstance($plugin_id);
     }
   }
 

@@ -7,6 +7,7 @@
 
 namespace Drupal\purge\Plugin\PurgeRuntimeTest;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\Queue\PluginInterface as Queue;
 use Drupal\purge\Purger\ServiceInterface as PurgerService;
@@ -20,7 +21,6 @@ use Drupal\purge\RuntimeTest\PluginBase;
  *   id = "purgeravailable",
  *   title = @Translation("Purger(s) configured"),
  *   description = @Translation("Tests if there is a purger plugin available."),
- *   service_dependencies = {"config.factory", "purge.purger"},
  *   dependent_queue_plugins = {},
  *   dependent_purger_plugins = {}
  * )
@@ -57,6 +57,19 @@ class PurgerAvailableTest extends PluginBase implements RuntimeTest {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
     $this->purgePurger = $purge_purger;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('config.factory'),
+      $container->get('purge.purger')
+    );
   }
 
   /**

@@ -16,7 +16,6 @@ use Drupal\purge\Plugin\PurgePurger\Null;
  *   id = "purger_c",
  *   label = @Translation("Purger C"),
  *   description = @Translation("Test purger C."),
- *   service_dependencies = {}
  * )
  */
 class PurgerC extends Null {}

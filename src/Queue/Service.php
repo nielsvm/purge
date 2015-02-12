@@ -11,7 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\DestructableInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
-use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Purgeable\ServiceInterface as PurgeableService;
 use Drupal\purge\Purgeable\PluginInterface as Purgeable;
@@ -142,20 +141,9 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
       return;
     }
 
-    // Lookup the plugin ID, definition and class from the discoverer.
+    // Lookup the plugin ID and instantiate the queue.
     $plugin_id = current($this->getPluginsEnabled());
-    $plugin_definition = $this->pluginManager->getDefinition($plugin_id);
-    $plugin_class = DefaultFactory::getPluginClass($plugin_id, $plugin_definition);
-
-    // Retrieve all the requested service arguments.
-    $arguments = [];
-    foreach ($plugin_definition['service_dependencies'] as $service) {
-      $arguments[] = $this->serviceContainer->get($service);
-    }
-
-    // Use the Reflection API to instantiate our plugin.
-    $reflector = new \ReflectionClass($plugin_class);
-    $this->queue = $reflector->newInstanceArgs($arguments);
+    $this->queue = $this->pluginManager->createInstance($plugin_id);
   }
 
   /**

@@ -8,12 +8,13 @@
 namespace Drupal\purge\Queue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\ReliableQueueInterface;
 
 /**
  * Describes a ReliableQueueInterface compliant queue that can hold queue items.
  */
-interface PluginInterface extends ReliableQueueInterface {
+interface PluginInterface extends ReliableQueueInterface, ContainerFactoryPluginInterface {
 
   /**
    * Add multiple items to the queue and store them efficiently.

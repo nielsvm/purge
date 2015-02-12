@@ -43,8 +43,7 @@ abstract class PluginTestBase extends TestBase {
    */
   function setUp() {
     parent::setUp();
-    $this->pluginManagerPurgeQueue =
-      $this->container->get('plugin.manager.purge.queue');
+    $this->pluginManagerPurgeQueue = $this->container->get('plugin.manager.purge.queue');
     $this->setUpQueuePlugin();
   }
 
@@ -55,31 +54,7 @@ abstract class PluginTestBase extends TestBase {
     if (!is_null($this->queue)) {
       return;
     }
-
-    // Perform essential assertions and prepare common variables.
-    $plugins = $this->pluginManagerPurgeQueue->getDefinitions();
-    $id = $this->plugin_id;
-    $this->assertTrue(isset($plugins[$id]), 'The plugin is found.');
-    if (!isset($plugins[$id])) return FALSE;
-    $this->assertTrue(!empty(trim((string)$plugins[$id]['label'])),
-      'The label is set.');
-    $this->assertTrue(!empty(trim((string)$plugins[$id]['description'])),
-      'The description is set.');
-    $class = basename(str_replace('\\', '/', $plugins[$id]['class']));
-    $this->assertFalse(strpos($class, 'Queue'), "Class doesn't contain 'Queue'.");
-    $this->assertFalse(strpos($class, 'queue'), "Class doesn't contain 'queue'.");
-
-    // Retrieve all the requested service arguments.
-    $arguments = [];
-    foreach ($plugins[$id]['service_dependencies'] as $service) {
-      $arguments[] = $this->container->get($service);
-    }
-
-    // Use the Reflection API to instantiate our plugin.
-    $reflector = new \ReflectionClass($plugins[$id]['class']);
-    $this->queue = $reflector->newInstanceArgs($arguments);
-
-    // Create the queue and confirm the output of createQueue().
+    $this->queue = $this->pluginManagerPurgeQueue->createInstance($this->plugin_id);
     $this->assertNull($this->queue->createQueue(), 'createQueue returns NULL');
   }
 

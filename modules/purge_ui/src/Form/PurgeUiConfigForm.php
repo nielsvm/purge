@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains \Drupal\purge_ui\Form\PurgeUiMainConfigForm.
+ * Contains \Drupal\purge_ui\Form\PurgeUiConfigForm.
  */
 
 namespace Drupal\purge_ui\Form;
@@ -15,7 +15,7 @@ use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 /**
  * Configure settings for the Purge core APIs.
  */
-class PurgeUiMainConfigForm extends ConfigFormBase {
+class PurgeUiConfigForm extends ConfigFormBase {
 
   /**
    * @var \Drupal\purge\Purger\ServiceInterface
@@ -28,7 +28,7 @@ class PurgeUiMainConfigForm extends ConfigFormBase {
   protected $purgeQueue;
 
   /**
-   * Constructs a PurgeUiMainConfigForm object.
+   * Constructs a PurgeUiConfigForm object.
    *
    * @param \Drupal\purge\Purger\ServiceInterface $purge_purger
    *   The purger service.

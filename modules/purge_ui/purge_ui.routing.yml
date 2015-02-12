@@ -2,6 +2,6 @@ purge_ui.core_settings_form:
   path: '/admin/config/development/performance/purge'
   defaults:
     _title: 'Purge'
-    _form: 'Drupal\purge_ui\Form\PurgeUiMainConfigForm'
+    _form: 'Drupal\purge_ui\Form\PurgeUiConfigForm'
   requirements:
     _permission: 'administer site configuration'

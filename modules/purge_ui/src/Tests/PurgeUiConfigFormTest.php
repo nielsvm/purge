@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\PurgeUiMainConfigFormTest.
+ * Contains \Drupal\purge_ui\Tests\PurgeUiConfigFormTest.
  */
 
 namespace Drupal\purge_ui\Tests;
@@ -17,7 +17,7 @@ use Drupal\simpletest\WebTestBase;
  * @see \Drupal\purge\Purger\ServiceInterface
  * @see \Drupal\purge\Queue\ServiceInterface
  */
-class PurgeUiMainConfigFormTest extends WebTestBase {
+class PurgeUiConfigFormTest extends WebTestBase {
 
   /**
    * Stores the configuration factory.

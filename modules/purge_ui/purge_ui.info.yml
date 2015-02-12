@@ -4,6 +4,6 @@ description: 'Administrative interface for Purge.'
 package: Purge
 version: VERSION
 core: 8.x
+configure: purge_ui.core_settings_form
 dependencies:
   - purge
-configure: purge_ui.core_settings_form

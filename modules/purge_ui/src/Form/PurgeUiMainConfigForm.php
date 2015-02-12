@@ -9,7 +9,6 @@ namespace Drupal\purge_ui\Form;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\Purger\ServiceInterface as PurgerServiceInterface;
 use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 
@@ -17,13 +16,6 @@ use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
  * Configure settings for the Purge core APIs.
  */
 class PurgeUiMainConfigForm extends ConfigFormBase {
-
-  /**
-   * Stores the configuration factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected $configFactory;
 
   /**
    * @var \Drupal\purge\Purger\ServiceInterface
@@ -38,18 +30,15 @@ class PurgeUiMainConfigForm extends ConfigFormBase {
   /**
    * Constructs a PurgeUiMainConfigForm object.
    *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
    * @param \Drupal\purge\Purger\ServiceInterface $purge_purger
    *   The purger service.
    * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
    *   The purge queue service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, PurgerServiceInterface $purge_purger, QueueServiceInterface $purge_queue) {
-    $this->configFactory = $config_factory;
+  public function __construct(PurgerServiceInterface $purge_purger, QueueServiceInterface $purge_queue) {
     $this->purgePurger = $purge_purger;
     $this->purgeQueue = $purge_queue;
-    parent::__construct($config_factory);
+    parent::__construct($this->configFactory());
   }
 
   /**
@@ -57,10 +46,19 @@ class PurgeUiMainConfigForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('config.factory'),
       $container->get('purge.purger'),
       $container->get('purge.queue')
     );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEditableConfigNames() {
+    return [
+      'purge.purger',
+      'purge.queue',
+    ];
   }
 
   /**
@@ -81,7 +79,7 @@ class PurgeUiMainConfigForm extends ConfigFormBase {
     ];
 
     // Settings related to the purge.purger service.
-    $plugins = $this->configFactory->get('purge.purger')->get('plugins');
+    $plugins = $this->config('purge.purger')->get('plugins');
     $purgers = $this->purgePurger->getPlugins(TRUE);
     $form['purger'] = [
       '#type' => 'details',
@@ -127,7 +125,7 @@ class PurgeUiMainConfigForm extends ConfigFormBase {
       '#open' => TRUE,
     ];
     $form['queue']['queue_plugin'] = [
-      '#default_value' => $this->configFactory->get('purge.queue')->get('plugin'),
+      '#default_value' => $this->config('purge.queue')->get('plugin'),
       '#options' => $this->purgeQueue->getPlugins(TRUE),
       '#type' => 'radios',
       '#description' => $this->t('The queue service is backed by a queue plugin
@@ -146,7 +144,7 @@ class PurgeUiMainConfigForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     if ($form_state->hasValue('purger_plugins')) {
       if ($form_state->getValue('purger_detection') == 'automatic_detection') {
-        $this->configFactory->get('purge.purger')
+        $this->config('purge.purger')
           ->set('plugins', 'automatic_detection')
           ->save();
       }
@@ -157,13 +155,13 @@ class PurgeUiMainConfigForm extends ConfigFormBase {
             $purgers[] = $option;
           }
         }
-        $this->configFactory->get('purge.purger')
+        $this->config('purge.purger')
           ->set('plugins', implode(',', $purgers))
           ->save();
       }
     }
     if ($form_state->hasValue('queue_plugin')) {
-      $this->configFactory->get('purge.queue')
+      $this->config('purge.queue')
         ->set('plugin', $form_state->getValue('queue_plugin'))
         ->save();
     }

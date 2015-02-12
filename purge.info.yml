@@ -4,5 +4,3 @@ description: 'Provides a generic external cache invalidation API and queue servi
 package: Purge
 version: VERSION
 core: 8.x
-dependencies:
-  - system

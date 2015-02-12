@@ -7,6 +7,7 @@
 
 namespace Drupal\purge_ui\Tests;
 
+use Drupal\Core\Url;
 use Drupal\simpletest\WebTestBase;
 
 /**
@@ -41,16 +42,18 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
   protected $admin_user;
 
   /**
+   * The route providing purge's configuration form.
+   *
    * @var string
    */
-  protected $path = 'admin/config/development/performance/purge';
+  protected $route = 'purge_ui.core_settings_form';
 
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = ['purge_ui', 'purge_test'];
+  public static $modules = ['purge_ui', 'purge_testplugins'];
 
   /**
    * Setup the test.
@@ -71,19 +74,20 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
    *
    * @see \Drupal\system\Tests\Menu\LocalTasksTest.
    */
-  protected function assertLocalTasks(array $hrefs, $level = 0) {
-    $elements = $this->xpath('//*[contains(@class, :class)]//a', [
+  protected function assertLocalTasks(array $routes, $level = 0) {
+    $elements = $this->xpath('//*[contains(@class, :class)]//a', array(
       ':class' => $level == 0 ? 'tabs primary' : 'tabs secondary',
-    ]);
+    ));
     $this->assertTrue(count($elements), 'Local tasks found.');
-    foreach ($hrefs as $index => $element) {
-      $expected = _url($hrefs[$index]);
+    foreach ($routes as $index => $route_info) {
+      list($route_name, $route_parameters) = $route_info;
+      $expected = Url::fromRoute($route_name, $route_parameters)->toString();
       $method = ($elements[$index]['href'] == $expected ? 'pass' : 'fail');
-      $this->{$method}(format_string('Task @number href @value equals @expected.', [
+      $this->{$method}(format_string('Task @number href @value equals @expected.', array(
         '@number' => $index + 1,
         '@value' => (string) $elements[$index]['href'],
         '@expected' => $expected,
-      ]));
+      )));
     }
   }
 
@@ -91,14 +95,14 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
    * Test if the form is at its place and has the right permissions.
    */
   public function testFormAccess() {
-    $this->drupalGet($this->path);
+    $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(403);
     $this->drupalLogin($this->admin_user);
     $this->assertResponse(200);
-    $this->drupalGet('admin/config/development/performance');
+    $this->drupalGet(Url::fromRoute('system.performance_settings'));
     $this->assertLocalTasks([
-      'admin/config/development/performance',
-      $this->path,
+      ['system.performance_settings', []],
+      [$this->route, []],
     ]);
   }
 
@@ -109,8 +113,8 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
     $this->drupalLogin($this->admin_user);
 
     // Test that selecting purgers result in the right setting value.
-    $this->configFactory->get('purge.purger')->set('plugins', 'purger_a')->save();
-    $this->drupalGet($this->path);
+    $this->configFactory->getEditable('purge.purger')->set('plugins', 'purger_a')->save();
+    $this->drupalGet(Url::fromRoute($this->route));
     $this->assertFieldByName('purger_detection', 'manual');
     $this->assertNoFieldChecked('edit-purger-plugins-purger-b');
     $this->assertNoFieldChecked('edit-purger-plugins-purger-c');
@@ -118,16 +122,19 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
 
     // Test that putting purge.purger.plugins to 'automatic_detection' results
     // in the form selecting all purgers and the right mode.
-    $this->configFactory->get('purge.purger')->set('plugins', 'automatic_detection')->save();
-    $this->drupalGet($this->path);
+    $this->configFactory->getEditable('purge.purger')->set('plugins', 'automatic_detection')->save();
+    $this->drupalGet(Url::fromRoute($this->route));
     $this->assertFieldByName('purger_detection', 'automatic_detection');
     $this->assertFieldChecked('edit-purger-plugins-purger-a');
     $this->assertFieldChecked('edit-purger-plugins-purger-b');
     $this->assertFieldChecked('edit-purger-plugins-purger-c');
 
     // Test that just submitting the form, results in the exact same config.
-    $this->configFactory->get('purge.queue')->set('plugin', 'queue_a')->save();
-    $this->drupalPostForm($this->path, [], t('Save configuration'));
+    $this->configFactory->getEditable('purge.queue')->set('plugin', 'queue_a')->save();
+    $this->drupalPostForm(
+      Url::fromRoute($this->route),
+      [],
+      t('Save configuration'));
     $this->assertEqual('automatic_detection',
       $this->configFactory->get('purge.purger')->get('plugins'));
     $this->assertEqual('queue_a',
@@ -135,7 +142,10 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
 
     // Test that changing the queue plugin, gets reflected in the config.
     $edit = ['queue_plugin' => 'queue_b'];
-    $this->drupalPostForm($this->path, $edit, t('Save configuration'));
+    $this->drupalPostForm(
+      Url::fromRoute($this->route),
+      $edit,
+      t('Save configuration'));
     $this->assertEqual('queue_b',
       $this->configFactory->get('purge.queue')->get('plugin'));
 
@@ -146,13 +156,19 @@ class PurgeUiMainConfigFormTest extends WebTestBase {
       'purger_plugins[purger_a]' => TRUE,
       'purger_plugins[purger_c]' => FALSE,
     ];
-    $this->drupalPostForm($this->path, $edit, t('Save configuration'));
+    $this->drupalPostForm(
+      Url::fromRoute($this->route),
+      $edit,
+      t('Save configuration'));
     $this->assertEqual('automatic_detection',
       $this->configFactory->get('purge.purger')->get('plugins'));
 
     // Select two purgers manually and verify the settings.
     $edit['purger_detection'] = 'manual';
-    $this->drupalPostForm($this->path, $edit, t('Save configuration'));
+    $this->drupalPostForm(
+      Url::fromRoute($this->route),
+      $edit,
+      t('Save configuration'));
     $plugins = explode(',', $this->configFactory->get('purge.purger')->get('plugins'));
     $enabled = $this->purgePurger->getPluginsEnabled();
     $this->assertTrue(in_array('purger_a', $plugins), 'plugin_a configured');

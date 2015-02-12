@@ -34,7 +34,7 @@ class PurgeUiStatusReportTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_ui', 'purge_test'];
+  public static $modules = ['purge_ui', 'purge_testplugins'];
 
   /**
    * Setup the test.
@@ -53,11 +53,11 @@ class PurgeUiStatusReportTest extends WebTestBase {
     $this->assertResponse(200);
     $this->drupalGet($this->path);
 
-    // @see \Drupal\purge_test\Plugin\PurgeRuntimeTest\AlwaysWarningTest
+    // @see \Drupal\purge_testplugins\Plugin\PurgeRuntimeTest\AlwaysWarningTest
     $this->assertText('Purge - Always a warning');
     $this->assertText('This is a warning for unit testing.');
 
-    // @see \Drupal\purge_test\Plugin\PurgeRuntimeTest\AlwaysErrorTest
+    // @see \Drupal\purge_testplugins\Plugin\PurgeRuntimeTest\AlwaysErrorTest
     $this->assertText('Purge - Always an error');
     $this->assertText('This is an error for unit testing.');
   }

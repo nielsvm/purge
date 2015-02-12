@@ -78,7 +78,7 @@ abstract class TestBase extends KernelTestBase {
    */
   protected function initializePurgerService($plugin_id = NULL) {
     if (!is_null($plugin_id)) {
-      $this->configFactory->get('purge.purger')
+      $this->configFactory->getEditable('purge.purger')
         ->set('plugins', $plugin_id)->save();
     }
     if (is_null($this->purgePurger)) {
@@ -109,7 +109,7 @@ abstract class TestBase extends KernelTestBase {
    */
   protected function initializeQueueService($plugin_id = NULL) {
     if (!is_null($plugin_id)) {
-      $this->configFactory->get('purge.queue')
+      $this->configFactory->getEditable('purge.queue')
         ->set('plugin', $plugin_id)->save();
     }
     if (is_null($this->purgeQueue)) {

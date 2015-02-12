@@ -7,16 +7,18 @@
 
 namespace Drupal\purge_cachetags_queuer;
 
-use \Drupal\Core\Cache\CacheTagsInvalidatorInterface;
+use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 use Drupal\purge\Purgeable\ServiceInterface as PurgeableServiceInterface;
 
 /**
- * Catch cachetags Drupal invalidates, and feed them to the purge.queue service.
+ * Queues invalidated cache tags.
  */
 class CacheTagsInvalidationQueuer implements CacheTagsInvalidatorInterface {
 
   /**
+   * The purge queue service.
+   *
    * @var \Drupal\purge\Queue\ServiceInterface
    */
   protected $purgeQueue;
@@ -27,14 +29,16 @@ class CacheTagsInvalidationQueuer implements CacheTagsInvalidatorInterface {
   protected $purgePurgeables;
 
   /**
-   * Holds a breadcrumb of all queued tags during this request.
+   * A list of tags that have already been invalidated in this request.
    *
-   * @var array
+   * Used to prevent the invalidation of the same cache tag multiple times.
+   *
+   * @var string[]
    */
-  protected $breadcrumb = [];
+  protected $invalidatedTags = [];
 
   /**
-   * {@inheritdoc}
+   * Constructs a new CacheTagsInvalidationQueuer.
    *
    * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
    *   The purge queue service.
@@ -47,27 +51,25 @@ class CacheTagsInvalidationQueuer implements CacheTagsInvalidatorInterface {
   }
 
   /**
-   * Queue collected tags as tag purgeables using the '@purge.queue' service.
+   * {@inheritdoc}
+   *
+   * Queues invalidated cache tags as tag purgables.
    */
    public function invalidateTags(array $tags) {
     $purgeables = [];
-    foreach ($tags as $i => $tag) {
-      if (!is_int($i)) {
-        throw new \LogicException('$tags item key is not an integer: "' . $i
-        . '" => "' . $tag . '"');
-      }
-      if (!in_array($tag, $this->breadcrumb)) {
-        $purgeables[] = $this->purgePurgeables->fromRepresentation($tag);
-        $this->breadcrumb[] = $tag;
+    foreach ($tags as $tag) {
+      if (!in_array($tag, $this->invalidatedTags)) {
+        $purgeables[] = $this->purgePurgeables->fromNamedRepresentation('tag', $tag);
+        $this->invalidatedTags[] = $tag;
       }
     }
 
     if (count($purgeables)) {
-
       // Under the hood \Drupal\purge\Queue\Service will buffer all transactions
       // before writing to database/memory/disk, and only really do so bundled
       // together at the end of each request. This helps efficiency enormously.
       $this->purgeQueue->addMultiple($purgeables);
     }
   }
+
 }

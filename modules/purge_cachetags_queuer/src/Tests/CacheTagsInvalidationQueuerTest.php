@@ -21,14 +21,12 @@ use Drupal\purge\Plugin\PurgePurgeable\Tag;
 class CacheTagsInvalidationQueuerTest extends TestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   public static $modules = ['purge_cachetags_queuer'];
 
   /**
-   * Setup the test.
+   * {@inheritdoc}
    */
   function setUp() {
     parent::setUp();
@@ -38,7 +36,7 @@ class CacheTagsInvalidationQueuerTest extends TestBase {
   }
 
   /**
-   * Test whether the DIC service is registered.
+   * Tests whether the cache tags queuer works as expected.
    */
   public function testTagInvalidationsAddedToQueue() {
     $test_tags = [
@@ -51,27 +49,24 @@ class CacheTagsInvalidationQueuerTest extends TestBase {
     ];
 
     // Confirm that the queue is empty and that there's nothing to claim yet.
-    $this->assertFalse($this->purgeQueue->claim(), 'Queue starts empty');
+    $this->assertFalse($this->purgeQueue->claim());
 
-    // Create a couple of cache objects tagged with our tags.
+    // Create a couple of cache items tagged with our test tags.
     foreach ($test_tags as $i => $tag) {
-      \Drupal::cache()->set(
-        'cache_tag_test_' . $i, $tag, Cache::PERMANENT, [$tag]);
+      \Drupal::cache()->set('cache_tag_test_' . $i, $this->randomString(), Cache::PERMANENT, [$tag]);
     }
 
-    // The listener should not directly commit tags, test the queue is empty.
+    // The listener should not directly commit tags, test the queue is still empty.
     $this->assertFalse($this->purgeQueue->claim(), 'Cache objects created, queue still empty.');
 
     // Invalidate the tagged objects and claim an equal number from the queue.
     Cache::invalidateTags($test_tags);
     $claims = $this->purgeQueue->claimMultiple(count($test_tags));
-    $this->assertEqual(count($test_tags), count($claims),
-      'All invalidated tags can be claimed from the queue.');
+    $this->assertEqual(count($test_tags), count($claims), 'All invalidated tags can be claimed from the queue.');
     foreach($claims as $purgeable) {
-      $this->assertTrue($purgeable instanceof Tag,
-        (string)$purgeable . ' is a Tag-purgeable.');
-      $this->assertTrue(in_array((string)$purgeable, $test_tags),
-        (string)$purgeable . ' was one of the test tags.');
+      $this->assertTrue($purgeable instanceof Tag, (string)$purgeable . ' is a Tag-purgeable.');
+      $this->assertTrue(in_array((string)$purgeable, $test_tags), (string)$purgeable . ' was one of the test tags.');
     }
   }
+
 }

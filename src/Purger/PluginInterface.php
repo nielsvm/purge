@@ -16,5 +16,4 @@ use Drupal\purge\Purger\PurgerLookalikeInterface;
  */
 interface PluginInterface extends ContainerFactoryPluginInterface, PurgerLookalikeInterface {
 
-
 }

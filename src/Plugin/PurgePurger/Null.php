@@ -25,18 +25,6 @@ use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 class Null extends PluginBase implements Purger {
 
   /**
-   * @var int
-   */
-  protected $failures;
-
-  /**
-   * Instantiate the dummy purger.
-   */
-  function __construct() {
-    $this->failures = 0;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -47,7 +35,7 @@ class Null extends PluginBase implements Purger {
    * {@inheritdoc}
    */
   public function purge(Purgeable $purgeable) {
-    $this->failures += 1;
+    $this->numberFailed += 1;
     $purgeable->setState(Purgeable::STATE_PURGEFAILED);
     return FALSE;
   }
@@ -57,7 +45,7 @@ class Null extends PluginBase implements Purger {
    */
   public function purgeMultiple(array $purgeables) {
     foreach ($purgeables as $purgeable) {
-      $this->failures += 1;
+      $this->numberFailed += 1;
       $purgeable->setState(Purgeable::STATE_PURGEFAILED);
     }
     return FALSE;
@@ -75,20 +63,6 @@ class Null extends PluginBase implements Purger {
    */
   public function getClaimTimeHint() {
     return 1;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getNumberPurged() {
-    return 0;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getNumberFailed() {
-    return $this->failures;
   }
 
   /**

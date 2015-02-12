@@ -72,10 +72,23 @@ class PurgeUiConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['intro'] = [
-      '#type' => 'item',
-      '#description' => $this->t('The purge module provides a generic (external)
-        cache invalidation interface, technology agnostic.')
+
+    // Settings related to the purge.queue service.
+    $form['queue'] = [
+      '#type' => 'details',
+      '#title' => t('Queue'),
+      '#description' => $this->t('The queue is where purge instructions are getting stored in.'),
+      '#open' => TRUE,
+    ];
+    $form['queue']['queue_plugin'] = [
+      '#default_value' => $this->config('purge.queue')->get('plugin'),
+      '#options' => $this->purgeQueue->getPlugins(TRUE),
+      '#type' => 'radios',
+      '#description' => $this->t('The queue service is backed by a storage
+        mechanism of choice. Ordinary setups should use the database provider
+        as it scales up to a couple of thousand items and queries efficiently.
+        The file storage has a much heavier impact depending on the cost of IO
+        on your server and only makes sense in certain scenarios.')
     ];
 
     // Settings related to the purge.purger service.
@@ -116,24 +129,6 @@ class PurgeUiConfigForm extends ConfigFormBase {
         ],
       ];
     }
-
-    // Settings related to the purge.queue service.
-    $form['queue'] = [
-      '#type' => 'details',
-      '#title' => t('Queue'),
-      '#description' => $this->t('The queue is where purge instructions are getting stored in.'),
-      '#open' => TRUE,
-    ];
-    $form['queue']['queue_plugin'] = [
-      '#default_value' => $this->config('purge.queue')->get('plugin'),
-      '#options' => $this->purgeQueue->getPlugins(TRUE),
-      '#type' => 'radios',
-      '#description' => $this->t('The queue service is backed by a queue plugin
-        that stores the purge instructions. On most setups the database provider
-        scales best up to a couple of thousand items in the queue, whereas the
-        file queue plugin depends much more on the underlying IO performance
-        of your server.')
-    ];
 
     return parent::buildForm($form, $form_state);
   }

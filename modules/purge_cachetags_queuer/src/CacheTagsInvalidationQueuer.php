@@ -64,12 +64,8 @@ class CacheTagsInvalidationQueuer implements CacheTagsInvalidatorInterface {
       }
     }
 
-    if (count($purgeables)) {
-      // Under the hood \Drupal\purge\Queue\Service will buffer all transactions
-      // before writing to database/memory/disk, and only really do so bundled
-      // together at the end of each request. This helps efficiency enormously.
-      $this->purgeQueue->addMultiple($purgeables);
-    }
+    // The queue buffers purgeables, though we don't care about that here.
+    $this->purgeQueue->addMultiple($purgeables);
   }
 
 }

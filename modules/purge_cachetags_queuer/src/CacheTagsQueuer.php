@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_cachetags_queuer\CacheTagsInvalidationQueuer.
+ * Contains \Drupal\purge_cachetags_queuer\CacheTagsQueuer.
  */
 
 namespace Drupal\purge_cachetags_queuer;
@@ -14,7 +14,7 @@ use Drupal\purge\Purgeable\ServiceInterface as PurgeableServiceInterface;
 /**
  * Queues invalidated cache tags.
  */
-class CacheTagsInvalidationQueuer implements CacheTagsInvalidatorInterface {
+class CacheTagsQueuer implements CacheTagsInvalidatorInterface {
 
   /**
    * The purge queue service.
@@ -38,7 +38,7 @@ class CacheTagsInvalidationQueuer implements CacheTagsInvalidatorInterface {
   protected $invalidatedTags = [];
 
   /**
-   * Constructs a new CacheTagsInvalidationQueuer.
+   * Constructs a new CacheTagsQueuer.
    *
    * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
    *   The purge queue service.

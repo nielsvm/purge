@@ -1,6 +1,6 @@
 services:
   cache_tags.purge_cachetags_queuer:
-    class: Drupal\purge_cachetags_queuer\CacheTagsInvalidationQueuer
+    class: Drupal\purge_cachetags_queuer\CacheTagsQueuer
     arguments: ['@purge.queue', '@purge.purgeables']
     tags:
       - { name: cache_tags_invalidator}

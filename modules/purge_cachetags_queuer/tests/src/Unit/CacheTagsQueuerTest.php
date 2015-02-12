@@ -2,24 +2,24 @@
 
 /**
  * @file
- * Contains \Drupal\Tests\purge_cachetags_queuer\Unit\CacheTagsInvalidationQueuerTest.
+ * Contains \Drupal\Tests\purge_cachetags_queuer\Unit\CacheTagsQueuerTest.
  */
 
 namespace Drupal\Tests\purge_cachetags_queuer\Unit;
 
-use Drupal\purge_cachetags_queuer\CacheTagsInvalidationQueuer;
+use Drupal\purge_cachetags_queuer\CacheTagsQueuer;
 use Drupal\Tests\UnitTestCase;
 
 /**
- * @coversDefaultClass \Drupal\Core\Cache\CacheTagsInvalidationQueuer
+ * @coversDefaultClass \Drupal\Core\Cache\CacheTagsQueuer
  * @group purge
  */
-class CacheTagsInvalidationQueuerTest extends UnitTestCase {
+class CacheTagsQueuerTest extends UnitTestCase {
 
   /**
    * The tested cache tags queuer.
    *
-   * @var \Drupal\purge_cachetags_queuer\CacheTagsInvalidationQueuer
+   * @var \Drupal\purge_cachetags_queuer\CacheTagsQueuer
    */
   protected $cacheTagsQueuer;
 
@@ -43,7 +43,7 @@ class CacheTagsInvalidationQueuerTest extends UnitTestCase {
   protected function setUp() {
     $this->queue = $this->getMock('\Drupal\purge\Queue\ServiceInterface');
     $this->purgeableFactory = $this->getMock('\Drupal\purge\Purgeable\ServiceInterface');
-    $this->cacheTagsQueuer = new CacheTagsInvalidationQueuer($this->queue, $this->purgeableFactory);
+    $this->cacheTagsQueuer = new CacheTagsQueuer($this->queue, $this->purgeableFactory);
   }
 
   /**

@@ -48,7 +48,7 @@ class PurgerFormController extends ControllerBase {
    * @return string
    *   The page title.
    */
-  public function getTitle($p) {
+  public function getTitle() {
     return "TITLE TODO";
     // return Xss::filter($menu->label());
   }

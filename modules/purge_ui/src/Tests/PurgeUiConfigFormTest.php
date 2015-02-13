@@ -46,7 +46,7 @@ class PurgeUiConfigFormTest extends WebTestBase {
    *
    * @var string
    */
-  protected $route = 'purge_ui.core_settings_form';
+  protected $route = 'purge_ui.config_form';
 
   /**
    * Modules to enable.

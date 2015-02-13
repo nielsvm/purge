@@ -84,40 +84,27 @@ class Service extends ServiceBase implements ServiceInterface {
    */
   public function getPluginsEnabled() {
     if (empty($this->plugins_enabled)) {
-      $conf_plugins = $this->configFactory->get('purge.purger')->get('plugins');
+      $enabled = $this->configFactory->get('purge.purger')->get('plugins');
       $plugin_ids = array_keys($this->getPlugins());
 
-      // By default all available purgers are enabled when the 'plugins' setting
-      // in 'purge.purger.yml' is set to 'automatic_detection', else those
-      // plugins therein specified are enabled.
-      if ($conf_plugins == 'automatic_detection') {
-        foreach ($plugin_ids as $plugin_id) {
+      foreach ($enabled as $plugin_id) {
+        if ($plugin_id === SELF::FALLBACK_PLUGIN) {
+          continue;
+        }
+        elseif (!in_array($plugin_id, $plugin_ids)) {
+          // When a third-party provided purger was configured and its module
+          // got uninstalled, the configuration renders invalid. Instead of
+          // rewriting config or breaking hard, we ignore silently. The runtime
+          // tests take care of getting this visual to the user.
+          continue;
+        }
+        else {
           $this->plugins_enabled[] = $plugin_id;
         }
       }
 
-      // Now a comma separated string with plugin ID's is expected.
-      else {
-        foreach (explode(',', $conf_plugins) as $plugin_id) {
-          $plugin_id = trim($plugin_id);
-          if ($plugin_id === SELF::FALLBACK_PLUGIN) {
-            continue;
-          }
-          elseif (!in_array($plugin_id, $plugin_ids)) {
-            // When a third-party provided purger was configured and its module
-            // got uninstalled, the configuration renders invalid. Instead of
-            // rewriting config or breaking hard, we fall back gracefully. The
-            // runtime tests take care of getting this visual to the user.
-            continue;
-          }
-          else {
-            $this->plugins_enabled[] = $plugin_id;
-          }
-        }
-      }
-
-      // To guard trustworthyness as API, there always has to be a purger that
-      // behaves like one, therefore we utilize a NULL backend.
+      // The public API always has to be reliable and always requires a purger
+      // backend. Therefore we utilize the NULL backend in unfunctional setups.
       if (empty($this->plugins_enabled)) {
         $this->plugins_enabled[] = SELF::FALLBACK_PLUGIN;
       }

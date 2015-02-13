@@ -9,18 +9,19 @@ purge.queue:
     plugin:
       translatable: false
       type: text
-      label: 'Queue back-end'
+      label: 'Queue plugin'
 
 purge.purger:
   type: mapping
   label: 'Generic configuration options for the purger service.'
   mapping:
 
-    # Which plugins should execute external cache invalidations? The default
-    # value 'automatic_detection' will load all available purgers in parallel,
-    # any other value is assumed to be a comma-separated list of plugins to be
-    # loaded, e.g.: 'purgera,purgerb'.
+    # Which plugins should execute external cache invalidations? The value is a
+    # sequence/list of purger plugin_id's to be loaded. Multiple loaded purgers
+    # leads to multiple purgers doing remote cache invalidation.
     plugins:
       translatable: false
-      type: text
-      label: 'Purger back-end(s)'
+      type: sequence
+      label: 'Purger plugin(s)'
+      sequence:
+        - type: string

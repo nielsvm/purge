@@ -41,4 +41,12 @@ class PurgePurger extends Plugin {
    */
   public $description;
 
+  /**
+   * Full class name of the configuration form of your purger. The class must
+   * extend \Drupal\purge_ui\Form\PurgerConfigFormBase.
+   *
+   * @var string
+   */
+  public $configform;
+
 }

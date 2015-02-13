@@ -80,10 +80,7 @@ class PurgerAvailableTest extends PluginBase implements RuntimeTest {
 
     // Test for the 'null' purger, which only loads if nothing else exists.
     if (in_array('null', $purgers)) {
-      $this->value = $this->configFactory->get('purge.purger')->get('plugins');
-      if ($this->value == 'automatic_detection') {
-        $this->value = $this->t("n/a");
-      }
+      $this->value = $this->t("n/a");
       $this->recommendation = $this->t("There is no purger loaded which means ".
         "that you need a module enabled to provide a purger plugin to clear ".
         "your external cache or CDN.");
@@ -94,7 +91,7 @@ class PurgerAvailableTest extends PluginBase implements RuntimeTest {
       $this->recommendation = $this->t("You have more than 3 purgers active ".
         "on one system. This introduces the risk of congesting Drupal as ".
         "multiple purgers are clearing external caches. It is highly ".
-        "recommended is to simplify your caching architecture.");
+        "recommended is to simplify your caching architecture if possible.");
       return SELF::SEVERITY_WARNING;
     }
     else {

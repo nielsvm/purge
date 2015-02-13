@@ -2,7 +2,7 @@ system.performance_settings:
   title: 'Performance'
   route_name: system.performance_settings
   base_route: system.performance_settings
-purge_ui.core_settings_form:
+purge_ui.config_form:
   title: 'Purge'
-  route_name: purge_ui.core_settings_form
+  route_name: purge_ui.config_form
   base_route: system.performance_settings

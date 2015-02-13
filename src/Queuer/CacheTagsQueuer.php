@@ -5,7 +5,7 @@
  * Contains \Drupal\purge_cachetags_queuer\CacheTagsQueuer.
  */
 
-namespace Drupal\purge_cachetags_queuer;
+namespace Drupal\purge\Queuer;
 
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;

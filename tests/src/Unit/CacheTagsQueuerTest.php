@@ -5,13 +5,13 @@
  * Contains \Drupal\Tests\purge_cachetags_queuer\Unit\CacheTagsQueuerTest.
  */
 
-namespace Drupal\Tests\purge_cachetags_queuer\Unit;
+namespace Drupal\Tests\purge\Unit;
 
-use Drupal\purge_cachetags_queuer\CacheTagsQueuer;
+use Drupal\purge\Queuer\CacheTagsQueuer;
 use Drupal\Tests\UnitTestCase;
 
 /**
- * @coversDefaultClass \Drupal\Core\Cache\CacheTagsQueuer
+ * @coversDefaultClass \Drupal\purge\Queuer\CacheTagsQueuer
  * @group purge
  */
 class CacheTagsQueuerTest extends UnitTestCase {
@@ -19,7 +19,7 @@ class CacheTagsQueuerTest extends UnitTestCase {
   /**
    * The tested cache tags queuer.
    *
-   * @var \Drupal\purge_cachetags_queuer\CacheTagsQueuer
+   * @var \Drupal\purge\Queuer\CacheTagsQueuer
    */
   protected $cacheTagsQueuer;
 

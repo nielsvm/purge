@@ -10,7 +10,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Component\Utility\Xss;
 use Drupal\purge\Purger\PluginManager;
 
 /**
@@ -44,13 +43,35 @@ class PurgerFormController extends ControllerBase {
 
   /**
    * Route title callback.
-   * @todo
+   *
+   * @param string $purger
+   *   The plugin_id of the purger plugin to render its configuration form for.
+   * @return array|false
+   *   The definition or false when it didn't pass validation.
+   */
+  protected function getDefinition($purger) {
+    if ($this->pluginManager->hasDefinition($purger)) {
+      $definition = $this->pluginManager->getDefinition($purger);
+      if (isset($definition['configform'])) {
+        return $definition;
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * Route title callback.
+   *
+   * @param string $purger
+   *   The plugin_id of the purger plugin to render its configuration form for.
    * @return string
    *   The page title.
    */
-  public function getTitle() {
-    return "TITLE TODO";
-    // return Xss::filter($menu->label());
+  public function getTitle($purger) {
+    if ($definition = $this->getDefinition($purger)) {
+      return $this->t('Configure @label', ['@label' => $definition['label']]);
+    }
+    return $this->t('Configure');
   }
 
   /**
@@ -63,11 +84,8 @@ class PurgerFormController extends ControllerBase {
    *   The render array.
    */
   public function getForm($purger) {
-    if ($this->pluginManager->hasDefinition($purger)) {
-      $definition = $this->pluginManager->getDefinition($purger);
-      if (isset($definition['configform'])) {
-        return $this->formBuilder()->getForm($definition['configform']);
-      }
+    if ($definition = $this->getDefinition($purger)) {
+      return $this->formBuilder()->getForm($definition['configform']);
     }
     throw new AccessDeniedHttpException();
   }

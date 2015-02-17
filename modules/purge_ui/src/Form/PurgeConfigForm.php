@@ -15,7 +15,7 @@ use Drupal\purge\Purger\ServiceInterface as PurgerServiceInterface;
 use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 
 /**
- * Configure settings for the Purge core APIs.
+ * Configure the Purge pipeline for this site.
  */
 class PurgeConfigForm extends ConfigFormBase {
 
@@ -88,8 +88,12 @@ class PurgeConfigForm extends ConfigFormBase {
    *   The elements inside the queue fieldset.
    */
   protected function buildFormQueue(array &$form, FormStateInterface $form_state) {
+    $form['queuer'] = [
+      '#type' => 'item',
+      '#markup' => 'Changes made to content & configuration triggers cache tag invalidations, which cause purge instructions.',
+    ];
     $form['queue'] = [
-      '#description' => '<p>' . $this->t('The queue is where purge instructions are getting stored in.') . '</p>',
+      '#description' => '<p>' . $this->t('Purge instructions are stored in a queue.') . '</p>',
       '#type' => 'details',
       '#title' => t('Queue'),
       '#open' => TRUE,
@@ -130,7 +134,7 @@ class PurgeConfigForm extends ConfigFormBase {
   protected function buildFormPurger(array &$form, FormStateInterface $form_state) {
     $form['#attached']['library'][] = 'core/drupal.ajax';
     $form['purger'] = [
-      '#description' => '<p>' . $this->t('Purgers take care of invalidating external cache systems.<p/>') . '</p>',
+      '#description' => '<p>' . $this->t('Purgers invalidate external caches.<p/>') . '</p>',
       '#type' => 'details',
       '#title' => $this->t('Purger'),
       '#open' => TRUE,

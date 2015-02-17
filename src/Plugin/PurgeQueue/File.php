@@ -17,7 +17,7 @@ use Drupal\purge\Queue\PluginInterface;
  * @PurgeQueue(
  *   id = "file",
  *   label = @Translation("File"),
- *   description = @Translation("a file-based queue for fast I/O systems."),
+ *   description = @Translation("A file-based queue for fast I/O systems."),
  * )
  */
 class File extends Memory implements PluginInterface {

@@ -21,7 +21,7 @@ abstract class PurgerConfigFormBase extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, FilterFormat $filter_format = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
 
     // @see \Drupal\editor\Form\EditorLinkDialog for source example.
@@ -31,7 +31,6 @@ abstract class PurgerConfigFormBase extends ConfigFormBase {
     $form['#suffix'] = '</div>';
 
     // Override the normal handling of a config form.
-    $form['actions']['submit']['#submit'] = [];
     $form['actions']['submit']['#ajax'] = [
       'callback' => '::submitForm',
       'event' => 'click',
@@ -54,7 +53,6 @@ abstract class PurgerConfigFormBase extends ConfigFormBase {
       $response->addCommand(new HtmlCommand('#purger-config-dialog-form', $form));
     }
     else {
-      $response->addCommand(new EditorDialogSave($form_state->getValues()));
       $response->addCommand(new CloseModalDialogCommand());
     }
     return $response;

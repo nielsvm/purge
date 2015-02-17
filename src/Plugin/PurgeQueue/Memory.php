@@ -21,7 +21,7 @@ use Drupal\purge\Queue\PluginBase;
  * @PurgeQueue(
  *   id = "memory",
  *   label = @Translation("Memory"),
- *   description = @Translation("a non-persistent, per-request memory queue (not useful on production systems)."),
+ *   description = @Translation("A non-persistent, per-request memory queue (not useful on production systems)."),
  * )
  */
 class Memory extends PluginBase implements PluginInterface {

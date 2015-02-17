@@ -30,7 +30,7 @@ class PurgeConfigForm extends ConfigFormBase {
   protected $purgeQueue;
 
   /**
-   * Constructs a PurgeUiConfigForm object.
+   * Constructs a PurgeConfigForm object.
    *
    * @param \Drupal\purge\Purger\ServiceInterface $purge_purger
    *   The purger service.
@@ -57,10 +57,7 @@ class PurgeConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return [
-      'purge.purger',
-      'purge.queue',
-    ];
+    return ['purge.plugins'];
   }
 
   /**
@@ -99,7 +96,7 @@ class PurgeConfigForm extends ConfigFormBase {
     ];
     $form['queue']['queue_plugin'] = [
       '#type' => 'tableselect',
-      '#default_value' => $this->config('purge.queue')->get('plugin'),
+      '#default_value' => $this->config('purge.plugins')->get('queue'),
       '#responsive' => TRUE,
       '#multiple' => FALSE,
       '#options' => [],
@@ -216,8 +213,8 @@ class PurgeConfigForm extends ConfigFormBase {
    */
   protected function submitFormQueue(array &$form, FormStateInterface $form_state) {
     if ($form_state->hasValue('queue_plugin')) {
-      $this->config('purge.queue')
-        ->set('plugin', $form_state->getValue('queue_plugin'))
+      $this->config('purge.plugins')
+        ->set('queue', $form_state->getValue('queue_plugin'))
         ->save();
     }
   }
@@ -240,8 +237,8 @@ class PurgeConfigForm extends ConfigFormBase {
           $purgers[] = $plugin_id;
         }
       }
-      $this->config('purge.purger')
-        ->set('plugins', $purgers)
+      $this->config('purge.plugins')
+        ->set('purgers', $purgers)
         ->save();
     }
   }

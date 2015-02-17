@@ -70,7 +70,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
     $this->configFactory = $config_factory;
     $this->purgePurgeables = $purge_purgeables;
 
-    // Initialize the queue plugin as configured in purge.queue.yml.
+    // Initialize the queue plugin as configured.
     $this->initializeQueue();
 
     // Initialize the transaction buffer as empty.
@@ -103,12 +103,12 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
       // The queue service always interacts with just one underlying queue,
       // which is stored in configuration. Configuring a queue plugin that
       // does not exist, will cause a InvalidQueueConfiguredException thrown.
-      $plugin_id = $this->configFactory->get('purge.queue')->get('plugin');
+      $plugin_id = $this->configFactory->get('purge.plugins')->get('queue');
 
       // Test if the configuration returned is valid.
       if (is_null($plugin_id) || !is_scalar($plugin_id)) {
         throw new InvalidQueueConfiguredException(
-          "The purge.queue configuration key 'plugin' seems missing.");
+          "The purge.plugins->queue configuration key seems missing.");
       }
 
       // Test if the configured queue is a valid and existing queue plugin.

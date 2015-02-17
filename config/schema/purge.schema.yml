@@ -1,27 +1,17 @@
  # Schema for the configuration files of the Purge module.
 
-purge.queue:
+purge.plugins:
   type: mapping
-  label: 'Generic configuration options for the purge queue service.'
+  label: 'Purge plugins'
   mapping:
-
-    # Defines which plugin provides the Purge queue, must be a valid plugin ID.
-    plugin:
+    queue:
+      type: string
+      label: 'Queue plugin ID.'
       translatable: false
-      type: text
-      label: 'Queue plugin'
-
-purge.purger:
-  type: mapping
-  label: 'Generic configuration options for the purger service.'
-  mapping:
-
-    # Which plugins should execute external cache invalidations? The value is a
-    # sequence/list of purger plugin_id's to be loaded. Multiple loaded purgers
-    # leads to multiple purgers doing remote cache invalidation.
-    plugins:
-      translatable: false
+    purgers:
       type: sequence
-      label: 'Purger plugin(s)'
+      label: 'Enabled purgers.'
       sequence:
         - type: string
+          label: 'Plugin ID'
+      translatable: false

@@ -84,7 +84,7 @@ class Service extends ServiceBase implements ServiceInterface {
    */
   public function getPluginsEnabled() {
     if (empty($this->plugins_enabled)) {
-      $enabled = $this->configFactory->get('purge.purger')->get('plugins');
+      $enabled = $this->configFactory->get('purge.plugins')->get('purgers');
       $plugin_ids = array_keys($this->getPlugins());
 
       foreach ($enabled as $plugin_id) {

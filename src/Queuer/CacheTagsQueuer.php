@@ -29,6 +29,13 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface {
   protected $purgePurgeables;
 
   /**
+   * A list of tag prefixes that should not go into the queue.
+   *
+   * @var string[]
+   */
+  protected $blacklistedTagPrefixes = ['config:', 'configFindByPrefix'];
+
+  /**
    * A list of tags that have already been invalidated in this request.
    *
    * Used to prevent the invalidation of the same cache tag multiple times.
@@ -57,10 +64,22 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface {
    */
    public function invalidateTags(array $tags) {
     $purgeables = [];
+
+    // Iterate each given tag and only add those we didn't queue before.
     foreach ($tags as $tag) {
       if (!in_array($tag, $this->invalidatedTags)) {
-        $purgeables[] = $this->purgePurgeables->fromNamedRepresentation('tag', $tag);
-        $this->invalidatedTags[] = $tag;
+
+        // Check the tag against the blacklist and skip if it matches.
+        $blacklisted = FALSE;
+        foreach ($this->blacklistedTagPrefixes as $prefix) {
+          if (strpos($tag, $prefix) !== FALSE) {
+            $blacklisted = TRUE;
+          }
+        }
+        if (!$blacklisted) {
+          $purgeables[] = $this->purgePurgeables->fromNamedRepresentation('tag', $tag);
+          $this->invalidatedTags[] = $tag;
+        }
       }
     }
 

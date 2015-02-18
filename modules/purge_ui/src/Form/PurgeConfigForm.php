@@ -169,11 +169,15 @@ class PurgeConfigForm extends ConfigFormBase {
         return [
           'configure' => [
             'title' => $this->t("Configure"),
-            'url' => Url::fromRoute('purge_ui.purger_form', ['purger' => $definition['id']]),
+            'url' => Url::fromRoute(
+              'purge_ui.purger_form',
+              ['purger' => $definition['id']],
+              ['query' => ['dialog' => '1']]
+            ),
             'attributes' => [
               'class' => ['use-ajax'],
               'data-accepts' => 'application/vnd.drupal-modal',
-              'data-dialog-options' => Json::encode(['width' => 700]),
+              'data-dialog-options' => Json::encode(['width' => '70%']),
             ],
           ]
         ];

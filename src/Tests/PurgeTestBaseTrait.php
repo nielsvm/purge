@@ -45,13 +45,13 @@ trait PurgeTestBaseTrait {
   /**
    * Make $this->purgePurger available.
    *
-   * @param $plugin_id
-   *   The plugin ID of the purger to be configured.
+   * @param $plugin_ids
+   *   Array of plugin ids to be enabled.
    */
-  protected function initializePurgerService($plugin_id = NULL) {
-    if (!is_null($plugin_id)) {
+  protected function initializePurgerService($plugin_ids = []) {
+    if (!empty($plugin_id)) {
       $this->configFactory->getEditable('purge.plugins')
-        ->set('purgers', [$plugin_id])->save();
+        ->set('purgers', $plugin_ids)->save();
     }
     if (is_null($this->purgePurger)) {
       $this->purgePurger = $this->container->get('purge.purger');

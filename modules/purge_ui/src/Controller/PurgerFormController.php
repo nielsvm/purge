@@ -6,7 +6,7 @@
 
 namespace Drupal\purge_ui\Controller;
 
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Controller\ControllerBase;
@@ -87,7 +87,7 @@ class PurgerFormController extends ControllerBase {
     if ($definition = $this->getDefinition($purger)) {
       return $this->formBuilder()->getForm($definition['configform']);
     }
-    throw new AccessDeniedHttpException();
+    throw new NotFoundHttpException();
   }
 
 }

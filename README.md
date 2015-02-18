@@ -26,8 +26,9 @@ when that particular node (node/1) is changed.
 
 Purge ships with the ``CacheTagsQueuer``, a mechanism which puts Drupal's
 invalidated Cache-Tags into Purge's queue. So, when Drupal clears rendered
-items from its own page cache, Purge will add a _purgeable_ object to the
-queue, causing the external page to also be invalidated.
+items from its own page cache, Purge will add a _purgeable_ object to its queue
+so that it gets cleared remotely as well. When this is undesired behavior, take
+a look at ``tests/modules/purge_noqueuer_test/``.
 
 #### Queue
 Queueing is an inevitable and important part of Purge as it makes cache

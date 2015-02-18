@@ -15,7 +15,6 @@ use Drupal\purge\ServiceBase;
 use Drupal\purge\Purgeable\ServiceInterface as PurgeableService;
 use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 use Drupal\purge\Queue\Exception\UnexpectedServiceConditionException;
-use Drupal\purge\Queue\Exception\InvalidQueueConfiguredException;
 use Drupal\purge\Queue\PluginInterface;
 
 /**
@@ -53,6 +52,11 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   protected $buffer;
 
   /**
+   * The plugin ID of the fallback backend.
+   */
+  const FALLBACK_PLUGIN = 'null';
+
+  /**
    * Instantiate the queue service.
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
@@ -83,6 +87,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   public function getPlugins($simple = FALSE) {
     if (empty($this->plugins)) {
       $this->plugins = $this->pluginManager->getDefinitions();
+      unset($this->plugins[SELF::FALLBACK_PLUGIN]);
     }
     if (!$simple) {
       return $this->plugins;
@@ -99,25 +104,18 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    */
   public function getPluginsEnabled() {
     if (empty($this->plugins_enabled)) {
+      $plugin_ids = array_keys($this->getPlugins());
 
       // The queue service always interacts with just one underlying queue,
-      // which is stored in configuration. Configuring a queue plugin that
-      // does not exist, will cause a InvalidQueueConfiguredException thrown.
+      // which is stored in configuration. When configuration is invalid - which
+      // for instance occurs during module installation - we use the fallback.
       $plugin_id = $this->configFactory->get('purge.plugins')->get('queue');
-
-      // Test if the configuration returned is valid.
-      if (is_null($plugin_id) || !is_scalar($plugin_id)) {
-        throw new InvalidQueueConfiguredException(
-          "The purge.plugins->queue configuration key seems missing.");
+      if (is_null($plugin_id) || !in_array($plugin_id, $plugin_ids)) {
+        $this->plugins_enabled[] = SELF::FALLBACK_PLUGIN;
       }
-
-      // Test if the configured queue is a valid and existing queue plugin.
-      if (is_null($this->pluginManager->getDefinition($plugin_id))) {
-        throw new InvalidQueueConfiguredException(
-          "The queue plugin '$plugin_id' does not exist.");
+      else {
+        $this->plugins_enabled[] = $plugin_id;
       }
-
-      $this->plugins_enabled[] = $plugin_id;
     }
     return $this->plugins_enabled;
   }

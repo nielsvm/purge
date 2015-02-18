@@ -2,27 +2,30 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgePurger\Dummy.
+ * Contains \Drupal\purge\Plugin\PurgePurger\Null.
  */
 
 namespace Drupal\purge\Plugin\PurgePurger;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Purger\PluginBase;
-use Drupal\purge\Purger\PluginInterface as Purger;
+use Drupal\purge\Purger\PluginInterface;
 use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 
 /**
- * A \Drupal\purge\Purger\PluginInterface compliant dummy purger. This purger is
- * only loaded when no other purgers exist and serves as fall back plugin.
+ * API-compliant null purger back-end.
+ *
+ * This plugin is not intended for usage but gets loaded during module
+ * installation, when configuration rendered invalid or when no other plugins
+ * are available. Because its API compliant, Drupal won't crash visibly.
  *
  * @PurgePurger(
  *   id = "null",
- *   label = @Translation("Null backup"),
- *   description = @Translation("A purger that doesn't do anything."),
+ *   label = @Translation("Null"),
+ *   description = @Translation("API-compliant null purger back-end."),
  * )
  */
-class Null extends PluginBase implements Purger {
+class Null extends PluginBase implements PluginInterface {
 
   /**
    * {@inheritdoc}

@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge_testplugins\Plugin\PurgeRuntimeTest\QueueSpecificWarningTest.
+ * Contains \Drupal\purge_plugins_test\Plugin\PurgeRuntimeTest\QueueSpecificWarningTest.
  */
 
-namespace Drupal\purge_testplugins\Plugin\PurgeRuntimeTest;
+namespace Drupal\purge_plugins_test\Plugin\PurgeRuntimeTest;
 
 use Drupal\purge\RuntimeTest\PluginInterface;
 use Drupal\purge\RuntimeTest\PluginBase;

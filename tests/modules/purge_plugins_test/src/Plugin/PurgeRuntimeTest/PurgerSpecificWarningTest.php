@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge_testplugins\Plugin\PurgeRuntimeTest\PurgerSpecificWarningTest.
+ * Contains \Drupal\purge_plugins_test\Plugin\PurgeRuntimeTest\PurgerSpecificWarningTest.
  */
 
-namespace Drupal\purge_testplugins\Plugin\PurgeRuntimeTest;
+namespace Drupal\purge_plugins_test\Plugin\PurgeRuntimeTest;
 
 use Drupal\purge\RuntimeTest\PluginInterface;
 use Drupal\purge\RuntimeTest\PluginBase;

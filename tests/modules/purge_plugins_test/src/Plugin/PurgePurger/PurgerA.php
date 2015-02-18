@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge_testplugins\Plugin\PurgePurger\PurgerA.
+ * Contains \Drupal\purge_plugins_test\Plugin\PurgePurger\PurgerA.
  */
 
-namespace Drupal\purge_testplugins\Plugin\PurgePurger;
+namespace Drupal\purge_plugins_test\Plugin\PurgePurger;
 
 use Drupal\purge\Plugin\PurgePurger\Null;
 

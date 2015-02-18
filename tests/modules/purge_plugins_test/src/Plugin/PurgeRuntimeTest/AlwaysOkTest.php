@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge_testplugins\Plugin\PurgeRuntimeTest\AlwaysInfoTest.
+ * Contains \Drupal\purge_plugins_test\Plugin\PurgeRuntimeTest\AlwaysOkTest.
  */
 
-namespace Drupal\purge_testplugins\Plugin\PurgeRuntimeTest;
+namespace Drupal\purge_plugins_test\Plugin\PurgeRuntimeTest;
 
 use Drupal\purge\RuntimeTest\PluginInterface;
 use Drupal\purge\RuntimeTest\PluginBase;
@@ -14,20 +14,20 @@ use Drupal\purge\RuntimeTest\PluginBase;
  * Tests if there is a purger plugin that invalidates an external cache.
  *
  * @PurgeRuntimeTest(
- *   id = "alwaysinfo",
- *   title = @Translation("Always informational"),
+ *   id = "alwaysok",
+ *   title = @Translation("Always ok"),
  *   description = @Translation("A fake test to test the runtime tests api."),
  *   dependent_queue_plugins = {},
  *   dependent_purger_plugins = {}
  * )
  */
-class AlwaysInfoTest extends PluginBase implements PluginInterface {
+class AlwaysOkTest extends PluginBase implements PluginInterface {
 
   /**
    * {@inheritdoc}
    */
   public function run() {
-    $this->recommendation = "This is info for unit testing.";
-    return SELF::SEVERITY_INFO;
+    $this->recommendation = "This is an ok for unit testing.";
+    return SELF::SEVERITY_OK;
   }
 }

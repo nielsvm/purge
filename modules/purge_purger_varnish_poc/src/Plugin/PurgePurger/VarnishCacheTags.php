@@ -19,7 +19,7 @@ use Drupal\purge\Purgeable\PluginInterface as PurgeableInterface;
 /**
  * Varnish cache tags purger.
  *
- * Requires the associated Varnish servers to have a VCL configured to accept
+ * Requires the associated Varnish server to have a VCL configured to accept
  * BAN requests with a X-Drupal-Cache-Tags-Banned header.
  * See the README for details on the required VCL configuration.
  *
@@ -30,7 +30,7 @@ use Drupal\purge\Purgeable\PluginInterface as PurgeableInterface;
  *
  * @PurgePurger(
  *   id = "varnish_cache_tags",
- *   label = @Translation("Varnish cache tags"),
+ *   label = @Translation("Varnish (cache tags)"),
  *   description = @Translation("Cache tags purger for Varnish, recommended for most sites."),
  *   configform = "Drupal\purge_purger_varnish_poc\Form\VarnishCacheTagsConfigForm",
  * )
@@ -74,9 +74,11 @@ class VarnishCacheTags extends PluginBase implements PurgerInterface {
     // @todo Until Purge doesn't only send us the Purgeables we support (Tag
     //    Purgeables), we'll have to just return FALSE when we encounter others.
     if (!$purgeable instanceof Tag) {
+      $purgeable->setState(PurgeableInterface::STATE_PURGEFAILED);
       return FALSE;
     }
 
+    // @todo: don't rely on settings but on CMI.
     if ($varnish_url = Settings::get('varnish_url')) {
       $options = [
         'timeout' => 1,

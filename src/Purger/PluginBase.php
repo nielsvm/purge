@@ -22,6 +22,13 @@ abstract class PluginBase implements PluginInterface {
   protected $numberPurged = 0;
 
   /**
+   * The number of actively on-going purges.
+   *
+   * @var int
+   */
+  protected $numberPurging = 0;
+
+  /**
    * The number of failed purgeables for this instance.
    *
    * @var int
@@ -33,6 +40,13 @@ abstract class PluginBase implements PluginInterface {
    */
   public function getNumberPurged() {
     return $this->numberPurged;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getNumberPurging() {
+    return $this->numberPurging;
   }
 
   /**

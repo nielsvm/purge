@@ -4,7 +4,7 @@ Purge
 The Purge module for Drupal 8 enables invalidation of content from external
 caches, reverse proxies and CDN platforms. The technology-agnostic plugin
 architecture allows for different server configurations and use cases. Last but
-not least, it enforces a separation of concerns and can be seen as a
+not least, it enforces a separation of concerns and should be seen as a
 **middleware** solution.
 
 Terminology overview

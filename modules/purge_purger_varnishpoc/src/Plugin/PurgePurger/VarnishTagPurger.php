@@ -2,19 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge_purger_varnishpoc\Plugin\PurgePurger\VarnishCacheTags.
+ * Contains \Drupal\purge_purger_varnishpoc\Plugin\PurgePurger\VarnishTagPurger.
  */
 
 namespace Drupal\purge_purger_varnishpoc\Plugin\PurgePurger;
 
-use Drupal\purge\Plugin\PurgePurgeable\Tag;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\purge\Plugin\PurgePurgeable\Tag;
 use Drupal\purge\Purger\PluginBase;
-use Drupal\purge\Purger\PluginInterface as PurgerInterface;
-use Drupal\purge\Purgeable\PluginInterface as PurgeableInterface;
+use Drupal\purge\Purger\PluginInterface;
+use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 
 /**
  * Varnish cache tags purger.
@@ -29,13 +30,13 @@ use Drupal\purge\Purgeable\PluginInterface as PurgeableInterface;
  * instances to invalidate the responses with those cache tags.
  *
  * @PurgePurger(
- *   id = "varnish_cache_tags",
+ *   id = "varnish_tag",
  *   label = @Translation("Varnish (cache tags)"),
- *   description = @Translation("Cache tags purger for Varnish, recommended for most sites."),
- *   configform = "Drupal\purge_purger_varnishpoc\Form\VarnishCacheTagsConfigForm",
+ *   description = @Translation("Cache tags purger for Varnish."),
+ *   configform = "Drupal\purge_purger_varnishpoc\Form\VarnishTagConfigForm",
  * )
  */
-class VarnishCacheTags extends PluginBase implements PurgerInterface {
+class VarnishTagPurger extends PluginBase implements PluginInterface {
 
   /**
    * @var \GuzzleHttp\ClientInterface
@@ -43,12 +44,21 @@ class VarnishCacheTags extends PluginBase implements PurgerInterface {
   protected $client;
 
   /**
+   * The configuration factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
    * Constructs the HTTP purger.
    *
    * @param \GuzzleHttp\ClientInterface $http_client
    *   An HTTP client that can perform remote requests.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The configuration factory.
    */
-  function __construct(ClientInterface $http_client) {
+  function __construct(ClientInterface $http_client, ConfigFactoryInterface $config_factory) {
     $this->client = $http_client;
   }
 
@@ -57,7 +67,8 @@ class VarnishCacheTags extends PluginBase implements PurgerInterface {
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
-      $container->get('http_client')
+      $container->get('http_client'),
+      $container->get('config.factory')
     );
   }
 
@@ -70,39 +81,47 @@ class VarnishCacheTags extends PluginBase implements PurgerInterface {
    * @see https://github.com/guzzle/guzzle/blob/5.0.0/src/Exception/RequestException.php
    * @see http://stackoverflow.com/questions/25661591/php-how-to-check-for-timeout-exception-in-guzzle-4
    */
-  public function purge(PurgeableInterface $purgeable) {
-    // @todo Until Purge doesn't only send us the Purgeables we support (Tag
-    //    Purgeables), we'll have to just return FALSE when we encounter others.
+  public function purge(Purgeable $purgeable) {
+    $config = $this->configFactory->get('purge_purger_varnishpoc.conf');
+
+    // For now - until Purge only sends supported purgeables - mark anything
+    // besides a tag as immediately failed.
     if (!$purgeable instanceof Tag) {
-      $purgeable->setState(PurgeableInterface::STATE_PURGEFAILED);
+      $purgeable->setState(Purgeable::STATE_PURGEFAILED);
+      $this->numberFailed += 1;
       return FALSE;
     }
 
-    // @todo: don't rely on settings but on CMI.
-    if ($varnish_url = Settings::get('varnish_url')) {
-      $options = [
-        'timeout' => 1,
-        'connect_timeout' => 0.5,
-      ];
-      $request = $this->client->createRequest('BAN', $varnish_url, $options)
-        ->addHeader('X-Drupal-Cache-Tags-Banned', static::toClearRegex($purgeable));
-
-      // Purge.
-      $purgeable->setState(PurgeableInterface::STATE_PURGING);
-      try {
-        $this->client->send($request);
-      }
-      catch (RequestException $e) {
-        $purgeable->setState(PurgeableInterface::STATE_PURGEFAILED);
-        return FALSE;
-      }
-
-      $purgeable->setState(PurgeableInterface::STATE_PURGED);
-
-      return TRUE;
+    // When the URL setting is still empty, we also fail.
+    if (empty($config->get('url'))) {
+      $purgeable->setState(Purgeable::STATE_PURGEFAILED);
+      $this->numberFailed += 1;
+      return FALSE;
     }
 
-    return FALSE;
+    // Construct a Guzzle request.
+    $options = [
+      'timeout' => $config->get('timeout'),
+      'connect_timeout' => $config->get('connect_timeout'),
+    ];
+    $request = $this->client->createRequest('BAN', $config->get('url'), $options)
+      ->addHeader($config->get('header'), static::toClearRegex($purgeable));
+
+    // Purge.
+    $purgeable->setState(Purgeable::STATE_PURGING);
+    try {
+      $this->numberPurging++;
+      $this->client->send($request);
+      $purgeable->setState(Purgeable::STATE_PURGED);
+      $this->numberPurging--;
+      $this->numberPurged += 1;
+      return TRUE;
+    }
+    catch (RequestException $e) {
+      $purgeable->setState(Purgeable::STATE_PURGEFAILED);
+      $this->numberFailed += 1;
+      return FALSE;
+    }
   }
 
   /**
@@ -124,9 +143,18 @@ class VarnishCacheTags extends PluginBase implements PurgerInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @todo this is a expensive and non-efficient cheat-implementation.
    */
   public function purgeMultiple(array $purgeables) {
-    throw new \Exception("Sorry, Not yet implemented!");
+    $results = [];
+    foreach ($purgeables as $purgeable) {
+      $results[] = $this->purge($purgeable);
+    }
+    if (in_array(FALSE, $results)) {
+      return FALSE;
+    }
+    return TRUE;
   }
 
   /**
@@ -142,12 +170,4 @@ class VarnishCacheTags extends PluginBase implements PurgerInterface {
   public function getClaimTimeHint() {
     throw new \Exception("Sorry, Not yet implemented!");
   }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getNumberPurging() {
-    throw new \Exception("Sorry, Not yet implemented!");
-  }
-
 }

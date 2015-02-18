@@ -1,0 +1,18 @@
+purge_purger_varnishpoc.conf:
+  type: mapping
+  label: 'Varnish PoC Purger'
+  mapping:
+    url:
+      type: uri
+      label: 'The URL of the Varnish instance to send BAN requests to.'
+      translatable: false
+    header:
+      type: string
+      label: 'The outbound HTTP header that identifies the tag to be purged.'
+      translatable: false
+    timeout:
+      type: float
+      translatable: false
+    connect_timeout:
+      type: float
+      translatable: false

@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge_purger_varnish_poc\Form\VarnishCacheTagsConfigForm.
+ * Contains \Drupal\purge_purger_varnishpoc\Form\VarnishCacheTagsConfigForm.
  */
 
-namespace Drupal\purge_purger_varnish_poc\Form;
+namespace Drupal\purge_purger_varnishpoc\Form;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\purge_ui\Form\PurgerConfigFormBase;
@@ -26,7 +26,7 @@ class VarnishCacheTagsConfigForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormID() {
-    return 'purge_purger_varnish_poc.configuration_form';
+    return 'purge_purger_varnishpoc.configuration_form';
   }
 
   /**

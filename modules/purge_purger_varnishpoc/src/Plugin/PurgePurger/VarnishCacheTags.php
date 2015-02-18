@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge_purger_varnish\Plugin\PurgePurger\VarnishCacheTags.
+ * Contains \Drupal\purge_purger_varnishpoc\Plugin\PurgePurger\VarnishCacheTags.
  */
 
-namespace Drupal\purge_purger_varnish_poc\Plugin\PurgePurger;
+namespace Drupal\purge_purger_varnishpoc\Plugin\PurgePurger;
 
 use Drupal\purge\Plugin\PurgePurgeable\Tag;
 use GuzzleHttp\Client;
@@ -32,7 +32,7 @@ use Drupal\purge\Purgeable\PluginInterface as PurgeableInterface;
  *   id = "varnish_cache_tags",
  *   label = @Translation("Varnish (cache tags)"),
  *   description = @Translation("Cache tags purger for Varnish, recommended for most sites."),
- *   configform = "Drupal\purge_purger_varnish_poc\Form\VarnishCacheTagsConfigForm",
+ *   configform = "Drupal\purge_purger_varnishpoc\Form\VarnishCacheTagsConfigForm",
  * )
  */
 class VarnishCacheTags extends PluginBase implements PurgerInterface {

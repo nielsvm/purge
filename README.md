@@ -2,47 +2,51 @@ Purge
 ------------------------------------------------------------------------------
 
 The Purge module for Drupal 8 enables invalidation of content from external
-caches, reverse proxies and CDN platforms. The technology agnostic plugin
-architecture enables different server configurations, use cases, enforces a
-separation of concerns and can be seen as **middleware** solution.
+caches, reverse proxies and CDN platforms. The technology-agnostic plugin
+architecture allows for different server configurations and use cases. Last but
+not least, it enforces a separation of concerns and can be seen as a
+**middleware** solution.
 
 Terminology overview
 ------------------------------------------------------------------------------
 
 #### Queuer
-With Purge, end users can manually invalidate a page with a Drush command or
-theoretically even with the convenience of a "clear this page"-button. Caches
-are however meant to be transparent to end users and to only invalidate when
-something actually changed - and thus requires external caches also to be
+With Purge, end users can manually invalidate a page with a Drush command or,
+theoretically, via a "clear this page" button in the GUI. Caches
+are however meant to be transparent to end users and to only be invalidated
+when something actually changed - and thus requires external caches to also be
 transparent.
 
-When editing content of any sort, Drupal will transparently invalidate cached
-pages in Drupal's own **anonymous page cache** and does this efficiently. When
-Drupal renders a page, it lists all the things on the page in a special HTTP
+When editing content of any kind, Drupal will transparently and efficiently
+invalidate cached pages in Drupal's own **anonymous page cache**. When Drupal
+renders a page, it lists all the elements on the page in a special HTTP
 response header named ``X-Drupal-Cache-Tags``. This allows all cached pages
-that show ``node:1`` on them, to be invalidated, when that node changed.
+with the ``node:1`` Cache-Tag in their headers to be invalidated, when that
+particular node (node/1) is changed.
 
-Purge ships with the ``CacheTagsQueuer`` enabled by default. So when Drupal
-clears things from its own page cache, Purge will add a purgeable to the queue
-causing the external page also to be invalidated.
+Purge ships with the ``CacheTagsQueuer`` enabled by default. This is the
+mechanism which puts core's invalidated Cache-Tags into Purge's queue. So,
+when Drupal clears elements from its own page cache, Purge will add a
+_purgeable_ item to the queue, causing the external page to also be
+invalidated.
 
 #### Queue
 Queueing is an inevitable and important part of Purge as it makes cache
-invalidation resilient, stable and accurate. Some reverse cache systems can
-clear thousands of items under a second, yet others - for instance CDN's - can
-demand multi-step purges that can easily take up 30 minnutes. Although the
+invalidation resilient, stable and accurate. Certain reverse cache systems can
+clear thousands of items under a second, yet others - for instance CDNs - can
+demand multi-step purges that can easily take up 30 minutes. Although the
 queue can technically be left out of the process entirely, it will be required
 in the majority of use cases.
 
 #### Purgeables
-Purgeables are little value objects that **decribe and track invalidations**
+Purgeables are small value objects that **decribe and track invalidations**
 on one or more external caching systems within the Purge pipeline. These
 objects float freely between **queue** and **purgers** but can also be created
 on the fly and in third-party code.
 
 ##### Purgeable types
 To properly allow purgers and external cache systems to invalidate content, it
-has to be crystal clear what *thing* needs to be *purged*. Although not every
+has to be crystal clear what *element* needs to be *purged*. Although not every
 purger supports every type, the most important one is ``tag`` since Drupal's
 own architecture and anonymous page cache is cleared using the same concept.
 
@@ -56,20 +60,21 @@ Purgers do all the hard work of telling external systems what to invalidate
 and do this in the technically required way, for instance with external API
 calls, through telnet commands or with specially crafted HTTP requests.
 
-Purge **doesn't ship any** purger, as this is context specific. You could for
+Purge **doesn't ship any purger**, as this is context specific. You could for
 instance have multiple purgers enabled to both clean a local proxy and a CDN
 at the same time.
 
 #### Processing Policies
 Although editing content leads to ``tag`` purgeables automatically getting
 queued, this doesn't mean they get processed automatically. It is up to you
-to select configure a stable situation for your needs.
+to select a stable configuration for your needs.
 
 Policy possibilities:
 
-* **none** tags get queued, but nothing clears automatically.
-* **``cron``** claims from the queue & purges during cron.
-* **``ajaxui``** after editing content, an AJAX-based progressbar works the queue.
+* **``none``** tags get queued, but nothing gets cleared automatically.
+* **``cron``** claims items from the queue & purges during cron.
+* **``ajaxui``** AJAX-based progress bar working the queue after a piece of
+content has been updated.
 * **``runtime``** purges (just-queued) items during the same request (**SLOW**).
 
 API examples

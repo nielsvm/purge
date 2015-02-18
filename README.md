@@ -19,16 +19,15 @@ transparent.
 
 When editing content of any kind, Drupal will transparently and efficiently
 invalidate cached pages in Drupal's own **anonymous page cache**. When Drupal
-renders a page, it lists all the elements on the page in a special HTTP
-response header named ``X-Drupal-Cache-Tags``. This allows all cached pages
-with the ``node:1`` Cache-Tag in their headers to be invalidated, when that
-particular node (node/1) is changed.
+renders a page, it lists all the rendered items on the page in a special HTTP
+response header named ``X-Drupal-Cache-Tags``. For example, this allows all
+cached pages with the ``node:1`` Cache-Tag in their headers to be invalidated,
+when that particular node (node/1) is changed.
 
-Purge ships with the ``CacheTagsQueuer`` enabled by default. This is the
-mechanism which puts core's invalidated Cache-Tags into Purge's queue. So,
-when Drupal clears elements from its own page cache, Purge will add a
-_purgeable_ item to the queue, causing the external page to also be
-invalidated.
+Purge ships with the ``CacheTagsQueuer``, a mechanism which puts Drupal's
+invalidated Cache-Tags into Purge's queue. So, when Drupal clears rendered
+items from its own page cache, Purge will add a _purgeable_ object to the
+queue, causing the external page to also be invalidated.
 
 #### Queue
 Queueing is an inevitable and important part of Purge as it makes cache
@@ -46,7 +45,7 @@ on the fly and in third-party code.
 
 ##### Purgeable types
 To properly allow purgers and external cache systems to invalidate content, it
-has to be crystal clear what *element* needs to be *purged*. Although not every
+has to be crystal clear what *purgeable* needs to be *purged*. Although not every
 purger supports every type, the most important one is ``tag`` since Drupal's
 own architecture and anonymous page cache is cleared using the same concept.
 
@@ -71,7 +70,7 @@ to select a stable configuration for your needs.
 
 Policy possibilities:
 
-* **``none``** tags get queued, but nothing gets cleared automatically.
+* **none** tags get queued, but nothing gets cleared automatically.
 * **``cron``** claims items from the queue & purges during cron.
 * **``ajaxui``** AJAX-based progress bar working the queue after a piece of
 content has been updated.

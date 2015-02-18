@@ -2,27 +2,18 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\TestBase.
+ * Contains \Drupal\purge\Tests\PurgeTestBaseTrait.
  */
 
 namespace Drupal\purge\Tests;
 
-use Drupal\simpletest\KernelTestBase;
-
 /**
- * Thin and generic test base for purge tests.
+ * Several helper properties and methods for purge tests.
  *
- * @group purge
- * @see \Drupal\simpletest\KernelTestBase
+ * @see \Drupal\purge\Tests\KernelTestBase
+ * @see \Drupal\purge\Tests\WebTestBase
  */
-abstract class TestBase extends KernelTestBase {
-
-  /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  public static $modules = ['purge'];
+trait PurgeTestBaseTrait {
 
   /**
    * Stores the configuration factory.
@@ -50,25 +41,6 @@ abstract class TestBase extends KernelTestBase {
    * @var \Drupal\purge\RuntimeTest\ServiceInterface
    */
   protected $purgeDiagnostics;
-
-  /**
-   * Set up the test object.
-   */
-  function setUp() {
-    parent::setUp();
-    $this->installConfig(['purge']);
-    $this->configFactory = $this->container->get('config.factory');
-  }
-
-  /**
-   * Make all purge services available.
-   */
-  protected function initializeAllServices() {
-    $this->initializePurgerService();
-    $this->initializePurgeablesService();
-    $this->initializeQueueService();
-    $this->initializeDiagnosticsService();
-  }
 
   /**
    * Make $this->purgePurger available.
@@ -134,4 +106,5 @@ abstract class TestBase extends KernelTestBase {
       $this->purgeDiagnostics->reload();
     }
   }
+
 }

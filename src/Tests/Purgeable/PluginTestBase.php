@@ -12,15 +12,14 @@ use Drupal\purge\Purgeable\PluginBase;
 use Drupal\purge\Purgeable\Exception\InvalidPropertyException;
 use Drupal\purge\Purgeable\Exception\InvalidRepresentationException;
 use Drupal\purge\Purgeable\Exception\InvalidStateException;
-use Drupal\purge\Tests\TestBase;
+use Drupal\purge\Tests\KernelTestBase;
 
 /**
  * Provides an abstract test class to thoroughly test Purgeable plugins.
  *
- * @group purge
  * @see \Drupal\purge\Purgeable\PluginInterface
  */
-abstract class PluginTestBase extends TestBase {
+abstract class PluginTestBase extends KernelTestBase {
 
   /**
    * The plugin ID of the purgeable plugin being tested.
@@ -35,13 +34,6 @@ abstract class PluginTestBase extends TestBase {
    * @var array
    */
   protected $properties = ['data', 'item_id', 'created'];
-
-  /**
-   * The service that generates purgeable objects on-demand.
-   *
-   * @var \Drupal\purge\Purgeable\ServiceInterface
-   */
-  protected $purgePurgeables;
 
   /**
    * String representations valid to the purgeable plugin being tested.
@@ -69,7 +61,7 @@ abstract class PluginTestBase extends TestBase {
    */
   function setUp() {
     parent::setUp();
-    $this->purgePurgeables = $this->container->get('purge.purgeables');
+    $this->initializePurgeablesService();
   }
 
   /**

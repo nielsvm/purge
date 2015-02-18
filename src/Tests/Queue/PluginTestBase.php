@@ -7,15 +7,14 @@
 
 namespace Drupal\purge\Tests\Queue;
 
-use Drupal\purge\Tests\TestBase;
+use Drupal\purge\Tests\KernelTestBase;
 
 /**
  * Provides a abstract test class to aid thorough tests for queue plugins.
  *
- * @group purge
  * @see \Drupal\purge\Queue\PluginInterface
  */
-abstract class PluginTestBase extends TestBase {
+abstract class PluginTestBase extends KernelTestBase {
 
   /**
    * The plugin ID of the queue plugin being tested.

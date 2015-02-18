@@ -1,0 +1,8 @@
+name: Varnish Purger PoC
+type: module
+description: 'Varnish cache tags purger.'
+package: Purge
+version: VERSION
+core: 8.x
+dependencies:
+  - purge

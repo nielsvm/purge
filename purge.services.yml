@@ -34,9 +34,9 @@ services:
     class:  Drupal\purge\RuntimeTest\PluginManager
     parent: default_plugin_manager
 
-  # PURGE.QUEUER.CACHE_TAGS: non-public API, queues invalidated cache tags.
-  purge.queuer.cache_tags:
-    class: Drupal\purge\Queuer\CacheTagsQueuer
-    arguments: ['@purge.queue', '@purge.purgeables']
-    tags:
-      - { name: cache_tags_invalidator }
+  # # PURGE.QUEUER.CACHE_TAGS: non-public API, queues invalidated cache tags.
+  # purge.queuer.cache_tags:
+  #   class: Drupal\purge\Queuer\CacheTagsQueuer
+  #   arguments: ['@purge.queue', '@purge.purgeables']
+  #   tags:
+  #     - { name: cache_tags_invalidator }

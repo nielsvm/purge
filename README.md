@@ -63,7 +63,7 @@ at the same time.
 #### Processing Policies
 Although editing content leads to ``tag`` purgeables automatically getting
 queued, this doesn't mean they get processed automatically. It is up to you
-to select configure a stable situation for your needs.
+to configure a stable situation for your needs.
 
 Policy possibilities:
 

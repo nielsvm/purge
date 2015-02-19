@@ -35,7 +35,7 @@ interface ServiceInterface extends PurgeServiceInterface {
    *   String that describes what is being purged, specific format
    *   characteristics determine the Purgeable object type requested. Each
    *   plugin providing a type tests the string on validity and will throw a
-   *   \Drupal\purge\Purgeable\Exception\InvalidRepresentationException
+   *   \Drupal\purge\Purgeable\Exception\InvalidExpressionException
    *   for representations it does not support.
    *
    *   Representation examples:
@@ -59,7 +59,7 @@ interface ServiceInterface extends PurgeServiceInterface {
    *   String that describes what is being purged, specific format
    *   characteristics determine the Purgeable object type requested. Each
    *   plugin providing a type tests the string on validity and will throw a
-   *   \Drupal\purge\Purgeable\Exception\InvalidRepresentationException
+   *   \Drupal\purge\Purgeable\Exception\InvalidExpressionException
    *   for representations it does not support.
    *
    *   Representation examples:

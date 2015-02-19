@@ -10,7 +10,7 @@ namespace Drupal\purge\Tests\Purgeable;
 use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 use Drupal\purge\Purgeable\PluginBase;
 use Drupal\purge\Purgeable\Exception\InvalidPropertyException;
-use Drupal\purge\Purgeable\Exception\InvalidRepresentationException;
+use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
 use Drupal\purge\Purgeable\Exception\InvalidStateException;
 use Drupal\purge\Tests\KernelTestBase;
 
@@ -173,12 +173,12 @@ abstract class PluginTestBase extends KernelTestBase {
         try {
           $purgeable = $this->purgePurgeableFactory->fromNamedRepresentation($this->plugin_id, $r);
         }
-        catch (InvalidRepresentationException $e) {
+        catch (InvalidExpressionException $e) {
           $thrown = $e;
         }
         $this->assertTrue($thrown,
           sprintf("fromNamedRepresentation(%s) threw a "
-            ." InvalidRepresentationException.", var_export($r, TRUE)));
+            ." InvalidExpressionException.", var_export($r, TRUE)));
 
         // Assure that fromRepresentation doesn't return our plugin.
         try {
@@ -187,7 +187,7 @@ abstract class PluginTestBase extends KernelTestBase {
             sprintf("fromRepresentation(%s) returned not a %s purgeable.",
               var_export($r, TRUE), $this->plugin_id));
         }
-        catch (InvalidRepresentationException $e) {
+        catch (InvalidExpressionException $e) {
           // Its okay if this exception gets thrown, since that's not what we
           // are testing here.
         }

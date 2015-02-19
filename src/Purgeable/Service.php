@@ -10,7 +10,7 @@ namespace Drupal\purge\Purgeable;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\purge\ServiceBase;
-use Drupal\purge\Purgeable\Exception\InvalidRepresentationException;
+use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
 use Drupal\purge\Purgeable\PluginInterface;
 use Drupal\purge\Purgeable\ServiceInterface;
 
@@ -57,7 +57,7 @@ class Service extends ServiceBase implements ServiceInterface {
       try {
         $match = $this->fromNamedRepresentation($id, $representation);
       }
-      catch (InvalidRepresentationException $e) {
+      catch (InvalidExpressionException $e) {
         $match = NULL;
       }
       if ((!is_null($match)) && ($match instanceof PluginInterface)) {
@@ -65,7 +65,7 @@ class Service extends ServiceBase implements ServiceInterface {
       }
     }
     if (is_null($match)) {
-      throw new InvalidRepresentationException(
+      throw new InvalidExpressionException(
         sprintf("The argument %s is not supported",
           var_export($representation, TRUE)));
     }

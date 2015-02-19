@@ -18,6 +18,7 @@ use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
  *   id = "domain",
  *   label = @Translation("Domain"),
  *   description = @Translation("Invalidates an entire domain name."),
+ *   examples = {"www.site.com", "site.com"},
  *   expression_required = TRUE,
  *   expression_can_be_empty = FALSE
  * )

@@ -18,7 +18,8 @@ use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
  * @PurgePurgeable(
  *   id = "url",
  *   label = @Translation("Url"),
- *   description = @Translation("Invalidates by URL, e.g. 'http://site.com/node/1'."),
+ *   description = @Translation("Invalidates by URL."),
+ *   examples = {"http://site.com/node/1"},
  *   expression_required = TRUE,
  *   expression_can_be_empty = FALSE
  * )

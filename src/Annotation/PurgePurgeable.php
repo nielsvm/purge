@@ -42,6 +42,15 @@ class PurgePurgeable extends Plugin {
   public $description;
 
   /**
+   * Example expression strings that this type supports, shown to the user in
+   * user interfaces as usability hints. Leave empty for types that don't
+   * need expressions for instantiation, see $expression_required.
+   *
+   * @var string[]
+   */
+  public $examples = [];
+
+  /**
    * Whether purgeable objects of this type require a string expression that
    * describes what needs to be purged. If put to FALSE, the fact this type is
    * instantiated is deemed enough information for purgers to execute it.

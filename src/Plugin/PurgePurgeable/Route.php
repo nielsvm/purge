@@ -17,7 +17,8 @@ use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
  * @PurgePurgeable(
  *   id = "route",
  *   label = @Translation("Route"),
- *   description = @Translation("Invalidates by Drupal route, e.g.: '<front>'."),
+ *   description = @Translation("Invalidates by Drupal route."),
+ *   examples = {"user.page", "<front>"},
  *   expression_required = TRUE,
  *   expression_can_be_empty = FALSE
  * )

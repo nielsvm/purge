@@ -16,7 +16,8 @@ use Drupal\purge\Purgeable\PluginBase;
  * @PurgePurgeable(
  *   id = "tag",
  *   label = @Translation("Tag"),
- *   description = @Translation("Invalidates by Drupal cache tag, e.g.: 'menu:footer'."),
+ *   description = @Translation("Invalidates by Drupal cache tag."),
+ *   examples = {"node:1", "menu:footer"},
  *   expression_required = TRUE,
  *   expression_can_be_empty = FALSE
  * )

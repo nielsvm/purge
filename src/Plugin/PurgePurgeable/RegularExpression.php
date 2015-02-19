@@ -17,7 +17,8 @@ use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
  * @PurgePurgeable(
  *   id = "regex",
  *   label = @Translation("Regular Expression"),
- *   description = @Translation("Invalidates by regular expression, e.g.: '\.(jpg|jpeg|css|js)$'."),
+ *   description = @Translation("Invalidates by regular expression."),
+ *   examples = {"\.(jpg|jpeg|css|js)$"},
  *   expression_required = TRUE,
  *   expression_can_be_empty = FALSE
  * )

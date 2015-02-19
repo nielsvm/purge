@@ -18,7 +18,8 @@ use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
  * @PurgePurgeable(
  *   id = "wildcardurl",
  *   label = @Translation("Url with wildcard"),
- *   description = @Translation("Invalidates by URL, e.g. 'http://site.com/node/*'."),
+ *   description = @Translation("Invalidates by URL."),
+ *   examples = {"http://site.com/node/*"},
  *   expression_required = TRUE,
  *   expression_can_be_empty = FALSE
  * )

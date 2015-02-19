@@ -17,7 +17,8 @@ use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
  * @PurgePurgeable(
  *   id = "path",
  *   label = @Translation("Path"),
- *   description = @Translation("Invalidates by path, e.g. 'news/article-1'."),
+ *   description = @Translation("Invalidates by path."),
+ *   examples = {"news/article-1"},
  *   expression_required = TRUE,
  *   expression_can_be_empty = TRUE
  * )

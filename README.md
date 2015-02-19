@@ -97,32 +97,30 @@ API examples
 
 #### Direct invalidation
 ```
-$p = \Drupal::service('purge.purgeable.factory')->fromNamedRepresentation('tag', 'node:1');
+$p = \Drupal::service('purge.purgeable.factory')->get('tag', 'node:1');
 \Drupal::service('purge.purgers')->purge($p);
 ```
 
 ```
-$factory = \Drupal::service('purge.purgeable.factory');
 $p = [
-  $factory->fromNamedRepresentation('tag', 'node:1'),
-  $factory->fromNamedRepresentation('tag', 'node:2'),
-  $factory->fromNamedRepresentation('path', 'contact'),
-  $factory->fromNamedRepresentation('wildcardpath', 'news/*'),
+  \Drupal::service('purge.purgeable.factory')->get('tag', 'node:1'),
+  \Drupal::service('purge.purgeable.factory')->get('tag', 'node:2'),
+  \Drupal::service('purge.purgeable.factory')->get('path', 'contact'),
+  \Drupal::service('purge.purgeable.factory')->get('wildcardpath', 'news/*'),
 ];
 \Drupal::service('purge.purgers')->purgeMultiple($p);
 ```
 
 #### Queuing
 ```
-$p = \Drupal::service('purge.purgeable.factory')->fromNamedRepresentation('path', 'news/');
+$p = \Drupal::service('purge.purgeable.factory')->get('path', 'news/');
 \Drupal::service('purge.queue')->add($p);
 ```
 
 ```
-$factory = \Drupal::service('purge.purgeable.factory');
 $p = [
-  $factory->fromNamedRepresentation('tag', 'node:1'),
-  $factory->fromNamedRepresentation('tag', 'node:2'),
+  \Drupal::service('purge.purgeable.factory')->get('tag', 'node:1'),
+  \Drupal::service('purge.purgeable.factory')->get('tag', 'node:2'),
 ];
 \Drupal::service('purge.queue')->addMultiple($p);
 ```

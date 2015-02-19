@@ -77,7 +77,7 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface {
           }
         }
         if (!$blacklisted) {
-          $purgeables[] = $this->purgePurgeableFactory->fromNamedRepresentation('tag', $tag);
+          $purgeables[] = $this->purgePurgeableFactory->get('tag', $tag);
           $this->invalidatedTags[] = $tag;
         }
       }

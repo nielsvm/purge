@@ -68,7 +68,7 @@ abstract class PluginTestBase extends KernelTestBase {
    * Retrieve a purgeable object provided by the plugin.
    */
   function getInstance() {
-    return $this->purgePurgeableFactory->fromNamedRepresentation(
+    return $this->purgePurgeableFactory->get(
       $this->plugin_id,
       $this->representations[0]);
   }
@@ -171,13 +171,13 @@ abstract class PluginTestBase extends KernelTestBase {
         // Test the expected exception on the purgeable plugin directly.
         $thrown = FALSE;
         try {
-          $purgeable = $this->purgePurgeableFactory->fromNamedRepresentation($this->plugin_id, $r);
+          $purgeable = $this->purgePurgeableFactory->get($this->plugin_id, $r);
         }
         catch (InvalidExpressionException $e) {
           $thrown = $e;
         }
         $this->assertTrue($thrown,
-          sprintf("fromNamedRepresentation(%s) threw a "
+          sprintf("get(%s) threw a "
             ." InvalidExpressionException.", var_export($r, TRUE)));
 
         // Assure that fromRepresentation doesn't return our plugin.

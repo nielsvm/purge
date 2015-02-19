@@ -55,7 +55,7 @@ class CacheTagsQueuerTest extends UnitTestCase {
     $tag_purgeable = $this->getMockBuilder('\Drupal\purge\Plugin\PurgePurgeable\Tag')
       ->disableOriginalConstructor();
     $this->purgeableFactory->expects($this->exactly($purgeable_instantiations))
-      ->method('fromNamedRepresentation')
+      ->method('get')
       ->with('tag')
       ->willReturn($tag_purgeable);
 

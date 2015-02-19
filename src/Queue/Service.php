@@ -210,7 +210,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
 
     // If the item was not locally buffered (usually), instantiate one.
     else {
-      $purgeable = $this->purgePurgeableFactory->fromQueueItemData($item->data);
+      $purgeable = $this->purgePurgeableFactory->getFromQueueData($item->data);
       $purgeable->setState(Purgeable::STATE_CLAIMED);
       $purgeable->setQueueItemInfo($item->item_id, $item->created);
       $this->buffer[] = $purgeable;
@@ -251,7 +251,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
 
       // If the item was not locally buffered (usually), instantiate one.
       else {
-        $purgeable = $this->purgePurgeableFactory->fromQueueItemData($item->data);
+        $purgeable = $this->purgePurgeableFactory->getFromQueueData($item->data);
         $purgeable->setState(Purgeable::STATE_CLAIMED);
         $purgeable->setQueueItemInfo($item->item_id, $item->created);
         $this->buffer[] = $purgeable;

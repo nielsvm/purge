@@ -33,10 +33,63 @@ class ConfigurationForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['test'] = [
+    $form['http_settings'] = [
+      '#title' => $this->t('HTTP Settings'),
+      '#description' => $this->t('Configure how custom outbound HTTP requests should
+      be formed.'),
+      '#type' => 'details',
+      '#open' => TRUE,
+
+    ];
+    $form['http_settings']['hostname'] = [
+      '#title' => $this->t('Hostname'),
       '#type' => 'textfield',
-      '#title' => t('Test'),
       '#required' => FALSE,
+    ];
+    $form['http_settings']['hostname'] = [
+      '#title' => $this->t('Hostname'),
+      '#type' => 'textfield',
+      '#required' => FALSE,
+    ];
+    $form['http_settings']['port'] = [
+      '#title' => $this->t('Port'),
+      '#type' => 'textfield',
+      '#required' => FALSE,
+    ];
+    /*
+     * @todo We should get token support in the future.
+     */
+    $form['http_settings']['path'] = [
+      '#title' => $this->t('Path'),
+      '#type' => 'textfield',
+      '#required' => FALSE,
+    ];
+    /*
+     * @todo Confirm all relevant HTTP requests are covered.
+     * http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+     */
+    $options = ['GET', 'POST', 'HEAD', 'PUT', 'OPTIONS', 'PURGE', 'BAN',
+      'DELETE', 'TRACE', 'CONNECT'];
+    $form['http_settings']['request_method'] = [
+      '#title' => $this->t('Request Method'),
+      '#type' => 'select',
+      '#required' => FALSE,
+      '#options' => $options,
+    ];
+
+    /*
+     * @todo Implement repeatable rows with two text fields for HEADER -> VALUE
+     */
+    $form['headers'] = [
+      '#title' => $this->t('Headers'),
+      '#type' => 'details',
+      '#open' => TRUE,
+    ];
+
+    $form['ssl'] = [
+      '#title' => $this->t('SSL'),
+      '#type' => 'details',
+      '#open' => TRUE,
     ];
     return parent::buildForm($form, $form_state);
   }
@@ -45,7 +98,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $form_state->setError($form['test'], $this->t('Not yet implemented yet.'));
+    $form_state->setError($form['http_settings'], $this->t('Not yet implemented.'));
   }
 
   /**

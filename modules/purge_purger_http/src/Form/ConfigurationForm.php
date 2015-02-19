@@ -19,7 +19,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return [];
+    return ['purge_purger_http.settings'];
   }
 
   /**
@@ -33,6 +33,9 @@ class ConfigurationForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+
+    $purge_purger_http_config = $this->config('purge_purger_http.settings');
+
     $form['http_settings'] = [
       '#title' => $this->t('HTTP Settings'),
       '#description' => $this->t('Configure how custom outbound HTTP requests should
@@ -44,16 +47,13 @@ class ConfigurationForm extends PurgerConfigFormBase {
     $form['http_settings']['hostname'] = [
       '#title' => $this->t('Hostname'),
       '#type' => 'textfield',
-      '#required' => FALSE,
-    ];
-    $form['http_settings']['hostname'] = [
-      '#title' => $this->t('Hostname'),
-      '#type' => 'textfield',
+      '#default_value' => $purge_purger_http_config->get('hostname'),
       '#required' => FALSE,
     ];
     $form['http_settings']['port'] = [
       '#title' => $this->t('Port'),
       '#type' => 'textfield',
+      '#default_value' => $purge_purger_http_config->get('port'),
       '#required' => FALSE,
     ];
     /*
@@ -62,19 +62,20 @@ class ConfigurationForm extends PurgerConfigFormBase {
     $form['http_settings']['path'] = [
       '#title' => $this->t('Path'),
       '#type' => 'textfield',
+      '#default_value' => $purge_purger_http_config->get('path'),
       '#required' => FALSE,
     ];
     /*
      * @todo Confirm all relevant HTTP requests are covered.
      * http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
      */
-    $options = ['GET', 'POST', 'HEAD', 'PUT', 'OPTIONS', 'PURGE', 'BAN',
-      'DELETE', 'TRACE', 'CONNECT'];
+    $options = ['GET', 'POST', 'HEAD', 'PUT', 'OPTIONS', 'PURGE', 'BAN', 'DELETE', 'TRACE', 'CONNECT'];
     $form['http_settings']['request_method'] = [
       '#title' => $this->t('Request Method'),
       '#type' => 'select',
-      '#required' => FALSE,
       '#options' => $options,
+      '#default_value' => $purge_purger_http_config->get('request_method'),
+      '#required' => FALSE,
     ];
 
     /*
@@ -97,14 +98,15 @@ class ConfigurationForm extends PurgerConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
+/*  public function validateForm(array &$form, FormStateInterface $form_state) {
     $form_state->setError($form['http_settings'], $this->t('Not yet implemented.'));
-  }
+  }*/
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+
     return parent::submitForm($form, $form_state);
   }
 }

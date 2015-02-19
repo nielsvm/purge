@@ -26,7 +26,7 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface {
   /**
    * @var \Drupal\purge\Purgeable\ServiceInterface
    */
-  protected $purgePurgeables;
+  protected $purgePurgeableFactory;
 
   /**
    * A list of tag prefixes that should not go into the queue.
@@ -49,12 +49,12 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface {
    *
    * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
    *   The purge queue service.
-   * @param \Drupal\purge\Purgeable\ServiceInterface $purge_purgeables
-   *   The purgeables factory service.
+   * @param \Drupal\purge\Purgeable\ServiceInterface $purge_purgeable_factory
+   *   The purgeable factory service.
    */
-  public function __construct(QueueServiceInterface $purge_queue, PurgeableServiceInterface $purge_purgeables) {
+  public function __construct(QueueServiceInterface $purge_queue, PurgeableServiceInterface $purge_purgeable_factory) {
     $this->purgeQueue = $purge_queue;
-    $this->purgePurgeables = $purge_purgeables;
+    $this->purgePurgeableFactory = $purge_purgeable_factory;
   }
 
   /**
@@ -77,7 +77,7 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface {
           }
         }
         if (!$blacklisted) {
-          $purgeables[] = $this->purgePurgeables->fromNamedRepresentation('tag', $tag);
+          $purgeables[] = $this->purgePurgeableFactory->fromNamedRepresentation('tag', $tag);
           $this->invalidatedTags[] = $tag;
         }
       }

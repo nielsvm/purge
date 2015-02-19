@@ -30,7 +30,7 @@ trait PurgeTestBaseTrait {
   /**
    * @var \Drupal\purge\Purgeable\ServiceInterface
    */
-  protected $purgePurgeables;
+  protected $purgePurgeableFactory;
 
   /**
    * @var \Drupal\purge\Queue\ServiceInterface
@@ -48,7 +48,7 @@ trait PurgeTestBaseTrait {
    * @param $plugin_ids
    *   Array of plugin ids to be enabled.
    */
-  protected function initializePurgerService($plugin_ids = []) {
+  protected function initializePurgersService($plugin_ids = []) {
     if (!empty($plugin_id)) {
       $this->configFactory->getEditable('purge.plugins')
         ->set('purgers', $plugin_ids)->save();
@@ -65,11 +65,11 @@ trait PurgeTestBaseTrait {
   }
 
   /**
-   * Make $this->purgePurgeables available.
+   * Make $this->purgePurgeableFactory available.
    */
   protected function initializePurgeablesService() {
-    if (is_null($this->purgePurgeables)) {
-      $this->purgePurgeables = $this->container->get('purge.purgeables');
+    if (is_null($this->purgePurgeableFactory)) {
+      $this->purgePurgeableFactory = $this->container->get('purge.purgeable.factory');
     }
   }
 

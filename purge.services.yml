@@ -8,18 +8,18 @@ services:
     class: Drupal\purge\Purger\PluginManager
     parent: default_plugin_manager
 
-  # PURGE.PURGEABLES: The purgeable object factory.
-  purge.purgeables:
+  # PURGE.PURGEABLE.FACTORY: The purgeable object factory.
+  purge.purgeable.factory:
     class: Drupal\purge\Purgeable\Service
-    arguments: ['@plugin.manager.purge.purgeables']
-  plugin.manager.purge.purgeables:
+    arguments: ['@plugin.manager.purge.purgeable']
+  plugin.manager.purge.purgeable:
     class: Drupal\purge\Purgeable\PluginManager
     parent: default_plugin_manager
 
   # PURGE.QUEUE: The queue in which to store, claim and release purgeable objects from.
   purge.queue:
     class: Drupal\purge\Queue\Service
-    arguments: ['@plugin.manager.purge.queue', '@service_container', '@config.factory', '@purge.purgeables']
+    arguments: ['@plugin.manager.purge.queue', '@service_container', '@config.factory', '@purge.purgeable.factory']
     tags:
       - { name: needs_destruction }
   plugin.manager.purge.queue:
@@ -37,6 +37,6 @@ services:
   # PURGE.QUEUER.CACHE_TAGS: non-public API, queues invalidated cache tags.
   purge.queuer.cache_tags:
     class: Drupal\purge\Queuer\CacheTagsQueuer
-    arguments: ['@purge.queue', '@purge.purgeables']
+    arguments: ['@purge.queue', '@purge.purgeable.factory']
     tags:
       - { name: cache_tags_invalidator }

@@ -68,7 +68,7 @@ abstract class PluginTestBase extends KernelTestBase {
    * Retrieve a purgeable object provided by the plugin.
    */
   function getInstance() {
-    return $this->purgePurgeables->fromNamedRepresentation(
+    return $this->purgePurgeableFactory->fromNamedRepresentation(
       $this->plugin_id,
       $this->representations[0]);
   }
@@ -148,7 +148,7 @@ abstract class PluginTestBase extends KernelTestBase {
    */
   function testStringValidRepresentations() {
     foreach ($this->representations as $r) {
-      $purgeable = $this->purgePurgeables->fromRepresentation($r);
+      $purgeable = $this->purgePurgeableFactory->fromRepresentation($r);
       $this->assertEqual($this->plugin_id, $purgeable->getPluginId(),
         sprintf("fromRepresentation(%s) returned a %s, expected %s purgeable.",
           var_export($r, TRUE), $purgeable->getPluginId(), $this->plugin_id));
@@ -171,7 +171,7 @@ abstract class PluginTestBase extends KernelTestBase {
         // Test the expected exception on the purgeable plugin directly.
         $thrown = FALSE;
         try {
-          $purgeable = $this->purgePurgeables->fromNamedRepresentation($this->plugin_id, $r);
+          $purgeable = $this->purgePurgeableFactory->fromNamedRepresentation($this->plugin_id, $r);
         }
         catch (InvalidRepresentationException $e) {
           $thrown = $e;
@@ -182,7 +182,7 @@ abstract class PluginTestBase extends KernelTestBase {
 
         // Assure that fromRepresentation doesn't return our plugin.
         try {
-          $purgeable = $this->purgePurgeables->fromRepresentation($r);
+          $purgeable = $this->purgePurgeableFactory->fromRepresentation($r);
           $this->assertNotEqual($this->plugin_id, $purgeable->getPluginId(),
             sprintf("fromRepresentation(%s) returned not a %s purgeable.",
               var_export($r, TRUE), $this->plugin_id));

@@ -37,7 +37,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    *
    * @var \Drupal\purge\Purgeable\ServiceInterface
    */
-  protected $purgePurgeables;
+  protected $purgePurgeableFactory;
 
   /**
    * The Queue (plugin) object in which all items are stored.
@@ -65,14 +65,14 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    *   The service container.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\purge\Purgeable\ServiceInterface $purge_purgeables
+   * @param \Drupal\purge\Purgeable\ServiceInterface $purge_purgeable_factory
    *   The service that instantiates purgeable objects for claimed queue items.
    */
-  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, ConfigFactoryInterface $config_factory, PurgeableService $purge_purgeables) {
+  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, ConfigFactoryInterface $config_factory, PurgeableService $purge_purgeable_factory) {
     $this->pluginManager = $pluginManager;
     $this->serviceContainer = $service_container;
     $this->configFactory = $config_factory;
-    $this->purgePurgeables = $purge_purgeables;
+    $this->purgePurgeableFactory = $purge_purgeable_factory;
 
     // Initialize the queue plugin as configured.
     $this->initializeQueue();
@@ -210,7 +210,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
 
     // If the item was not locally buffered (usually), instantiate one.
     else {
-      $purgeable = $this->purgePurgeables->fromQueueItemData($item->data);
+      $purgeable = $this->purgePurgeableFactory->fromQueueItemData($item->data);
       $purgeable->setState(Purgeable::STATE_CLAIMED);
       $purgeable->setQueueItemInfo($item->item_id, $item->created);
       $this->buffer[] = $purgeable;
@@ -251,7 +251,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
 
       // If the item was not locally buffered (usually), instantiate one.
       else {
-        $purgeable = $this->purgePurgeables->fromQueueItemData($item->data);
+        $purgeable = $this->purgePurgeableFactory->fromQueueItemData($item->data);
         $purgeable->setState(Purgeable::STATE_CLAIMED);
         $purgeable->setQueueItemInfo($item->item_id, $item->created);
         $this->buffer[] = $purgeable;

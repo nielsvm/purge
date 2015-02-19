@@ -91,12 +91,12 @@ API examples
 
 #### Direct invalidation
 ```
-$p = \Drupal::service('purge.purgeables')->fromNamedRepresentation('tag', 'node:1');
+$p = \Drupal::service('purge.purgeable.factory')->fromNamedRepresentation('tag', 'node:1');
 \Drupal::service('purge.purgers')->purge($p);
 ```
 
 ```
-$factory = \Drupal::service('purge.purgeables');
+$factory = \Drupal::service('purge.purgeable.factory');
 $p = [
   $factory->fromNamedRepresentation('tag', 'node:1'),
   $factory->fromNamedRepresentation('tag', 'node:2'),
@@ -108,12 +108,12 @@ $p = [
 
 #### Queuing
 ```
-$p = \Drupal::service('purge.purgeables')->fromNamedRepresentation('path', 'news/');
+$p = \Drupal::service('purge.purgeable.factory')->fromNamedRepresentation('path', 'news/');
 \Drupal::service('purge.queue')->add($p);
 ```
 
 ```
-$factory = \Drupal::service('purge.purgeables');
+$factory = \Drupal::service('purge.purgeable.factory');
 $p = [
   $factory->fromNamedRepresentation('tag', 'node:1'),
   $factory->fromNamedRepresentation('tag', 'node:2'),

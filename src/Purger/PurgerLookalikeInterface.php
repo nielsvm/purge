@@ -20,7 +20,8 @@ interface PurgerLookalikeInterface {
    *
    * @param \Drupal\purge\Purgeable\PluginInterface $purgeable
    *   A purgeable describes a single item to be purged and can be created using
-   *   the 'purge.purgeables' service, either directly or through a queue claim.
+   *   the 'purge.purgeable.factory' service, either directly or through a queue
+   *   claim.
    *
    * @warning
    *   Some purgers can set the purgeable's state to STATE_PURGING and return
@@ -40,7 +41,7 @@ interface PurgerLookalikeInterface {
    * @param array $purgeables
    *   Non-associative array with purgeable object instances compliant with
    *   \Drupal\purge\Purgeable\PluginInterface, either directly generated
-   *   through the 'purge.purgeables' service or claimed from 'purge.queue'.
+   *   through the 'purge.purgeable.factory' service or claimed from the queue.
    *
    * @return
    *   Returns TRUE if all were successfully purged but FALSE if just one of

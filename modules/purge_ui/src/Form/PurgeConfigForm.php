@@ -72,12 +72,12 @@ class PurgeConfigForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $this->buildFormQueue($form, $form_state);
-    $this->buildFormPurger($form, $form_state);
+    $this->buildFormPurgers($form, $form_state);
     return parent::buildForm($form, $form_state);
   }
 
   /**
-   * Build the queue part of the form.
+   * Add configuration elements for selecting the queue backend.
    *
    * @param array &$form
    *   An associative array containing the structure of the form.
@@ -121,7 +121,7 @@ class PurgeConfigForm extends ConfigFormBase {
   }
 
   /**
-   * Build the purger part of the form.
+   * Add configuration elements for configuring the enabled purgers.
    *
    * @param array &$form
    *   An associative array containing the structure of the form.
@@ -131,7 +131,7 @@ class PurgeConfigForm extends ConfigFormBase {
    * @return array
    *   The elements inside the purger fieldset.
    */
-  protected function buildFormPurger(array &$form, FormStateInterface $form_state) {
+  protected function buildFormPurgers(array &$form, FormStateInterface $form_state) {
     $form['#attached']['library'][] = 'core/drupal.ajax';
     $form['purger'] = [
       '#description' => '<p>' . $this->t('Purgers invalidate external caches.<p/>') . '</p>',
@@ -203,6 +203,57 @@ class PurgeConfigForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $this->validateFormQueue($form, $form_state);
+    $this->validateFormPurgers($form, $form_state);
+    parent::validateForm($form, $form_state);
+  }
+
+  /**
+   * Validate the queue form values.
+   *
+   * @param array &$form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return void
+   */
+  protected function validateFormQueue(array &$form, FormStateInterface $form_state) {
+    if (!$form_state->hasValue('queue_plugin')) {
+      $form_state->setError($form['queue']['queue_plugin'], $this->t('Value missing.'));
+    }
+    $plugins = array_keys($this->purgeQueue->getPlugins());
+    if (!in_array($form_state->getValue('queue_plugin'), $plugins)) {
+      $form_state->setError($form['queue']['queue_plugin'], $this->t('Invalid input.'));
+    }
+  }
+
+  /**
+   * Validate the purgers form values.
+   *
+   * @param array &$form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return void
+   */
+  protected function validateFormPurgers(array &$form, FormStateInterface $form_state) {
+    if (!$form_state->hasValue('purger_plugins')) {
+      $form_state->setError($form['purger']['purger_plugins'], $this->t('Value missing.'));
+    }
+    $plugins = array_keys($this->purgePurger->getPlugins());
+    foreach ($form_state->getValue('purger_plugins') as $plugin_id => $checked) {
+      if (!in_array($plugin_id, $plugins)) {
+        $form_state->setError($form['purger']['purger_plugins'], $this->t('Invalid input.'));
+      }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->submitFormQueue($form, $form_state);
     $this->submitFormPurgers($form, $form_state);
@@ -220,15 +271,13 @@ class PurgeConfigForm extends ConfigFormBase {
    * @return void
    */
   protected function submitFormQueue(array &$form, FormStateInterface $form_state) {
-    if ($form_state->hasValue('queue_plugin')) {
-      $this->config('purge.plugins')
-        ->set('queue', $form_state->getValue('queue_plugin'))
-        ->save();
-    }
+    $this->config('purge.plugins')
+      ->set('queue', $form_state->getValue('queue_plugin'))
+      ->save();
   }
 
   /**
-   * Store the queue form submission values into configuration.
+   * Store the purgers form submission values into configuration.
    *
    * @param array &$form
    *   An associative array containing the structure of the form.
@@ -238,16 +287,14 @@ class PurgeConfigForm extends ConfigFormBase {
    * @return void
    */
   protected function submitFormPurgers(array &$form, FormStateInterface $form_state) {
-    if ($form_state->hasValue('purger_plugins')) {
-      $purgers = [];
-      foreach ($form_state->getValue('purger_plugins') as $plugin_id => $checked) {
-        if ($checked) {
-          $purgers[] = $plugin_id;
-        }
+    $purgers = [];
+    foreach ($form_state->getValue('purger_plugins') as $plugin_id => $checked) {
+      if ($checked) {
+        $purgers[] = $plugin_id;
       }
-      $this->config('purge.plugins')
-        ->set('purgers', $purgers)
-        ->save();
     }
+    $this->config('purge.plugins')
+      ->set('purgers', $purgers)
+      ->save();
   }
 }

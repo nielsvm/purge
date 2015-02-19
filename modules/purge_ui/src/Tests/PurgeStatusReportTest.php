@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\PurgeUiStatusReportTest.
+ * Contains \Drupal\purge_ui\Tests\PurgeStatusReportTest.
  */
 
 namespace Drupal\purge_ui\Tests;
@@ -17,7 +17,7 @@ use Drupal\simpletest\WebTestBase;
  * @see purge_ui_requirements()
  * @see \Drupal\purge\RuntimeTest\ServiceInterface
  */
-class PurgeUiStatusReportTest extends WebTestBase {
+class PurgeStatusReportTest extends WebTestBase {
 
   /**
    * @var \Drupal\purge\RuntimeTest\ServiceInterface
@@ -34,7 +34,7 @@ class PurgeUiStatusReportTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_ui', 'purge_testplugins'];
+  public static $modules = ['purge_ui', 'purge_plugins_test'];
 
   /**
    * Setup the test.
@@ -53,11 +53,11 @@ class PurgeUiStatusReportTest extends WebTestBase {
     $this->assertResponse(200);
     $this->drupalGet($this->path);
 
-    // @see \Drupal\purge_testplugins\Plugin\PurgeRuntimeTest\AlwaysWarningTest
+    // @see \Drupal\purge_plugins_test\Plugin\PurgeRuntimeTest\AlwaysWarningTest
     $this->assertText('Purge - Always a warning');
     $this->assertText('This is a warning for unit testing.');
 
-    // @see \Drupal\purge_testplugins\Plugin\PurgeRuntimeTest\AlwaysErrorTest
+    // @see \Drupal\purge_plugins_test\Plugin\PurgeRuntimeTest\AlwaysErrorTest
     $this->assertText('Purge - Always an error');
     $this->assertText('This is an error for unit testing.');
   }

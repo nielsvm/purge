@@ -2,27 +2,28 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgePurgeable\WildcardPath.
+ * Contains \Drupal\purge\Plugin\PurgePurgeable\WildcardUrl.
  */
 
 namespace Drupal\purge\Plugin\PurgePurgeable;
 
-use Drupal\purge\Plugin\PurgePurgeable\Path;
+use Drupal\purge\Plugin\PurgePurgeable\Url;
 use Drupal\purge\Purgeable\PluginInterface;
+use Drupal\purge\Purgeable\PluginBase;
 use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
 
 /**
- * Describes wildcardpath based invalidation, e.g. "news/*".
+ * Describes wildcard URL based invalidation, e.g. "http://site.com/node/*".
  *
  * @PurgePurgeable(
- *   id = "wildcardpath",
- *   label = @Translation("Path with wildcard"),
- *   description = @Translation("Invalidates by path, e.g. 'news/*'."),
+ *   id = "wildcardurl",
+ *   label = @Translation("Url with wildcard"),
+ *   description = @Translation("Invalidates by URL, e.g. 'http://site.com/node/*'."),
  *   expression_required = TRUE,
- *   expression_can_be_empty = TRUE
+ *   expression_can_be_empty = FALSE
  * )
  */
-class WildcardPath extends Path implements PluginInterface {
+class WildcardUrl extends Url implements PluginInterface {
 
   /**
    * {@inheritdoc}

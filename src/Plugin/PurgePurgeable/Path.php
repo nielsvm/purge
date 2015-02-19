@@ -7,41 +7,37 @@
 
 namespace Drupal\purge\Plugin\PurgePurgeable;
 
-use Drupal\purge\Purgeable\PluginInterface as Purgeable;
+use Drupal\purge\Purgeable\PluginInterface;
 use Drupal\purge\Purgeable\PluginBase;
-use Drupal\purge\Purgeable\Exception\InvalidRepresentationException;
+use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
 
 /**
- * Describes a path based cache wipe, e.g. "/news/article-1".
+ * Describes path based invalidation, e.g. "news/article-1".
  *
  * @PurgePurgeable(
  *   id = "path",
- *   label = @Translation("Path Purgeable")
+ *   label = @Translation("Path"),
+ *   description = @Translation("Invalidates by path, e.g. 'news/article-1'."),
+ *   expression_required = TRUE,
+ *   expression_can_be_empty = TRUE
  * )
  */
-class Path extends PluginBase implements Purgeable {
+class Path extends PluginBase implements PluginInterface {
 
   /**
    * {@inheritdoc}
    */
-  public function __construct($representation, $wildcard_check = TRUE) {
-    parent::__construct($representation);
-    if ($wildcard_check && (strpos($representation, '*') !== FALSE)) {
-      throw new InvalidRepresentationException(
-      'HTTP path purgeables should not contain asterisks, wildcard paths '
-      .' should use \Drupal\purge\Plugin\PurgePurgeable\WildcardPath.');
+  protected function validateExpression($wildcard_check = TRUE) {
+    parent::validateExpression();
+    if ($wildcard_check && (strpos($this->expression, '*') !== FALSE)) {
+      throw new InvalidExpressionException('Path invalidations should not contain asterisks, use "wildcardpath"!');
     }
-    if ($representation === '*') {
-      throw new InvalidRepresentationException(
-        'HTTP path purgeables cannot be "*".');
+    if ($this->expression === '*') {
+      throw new InvalidExpressionException('Path invalidations cannot be "*", use "wildcardpath".');
     }
-    if (($representation[0] !== '/') || (strpos($representation, '/') === FALSE)) {
-      throw new InvalidRepresentationException(
-        'HTTP path purgeables should always start with /, e.g.: "/node/1".');
-    }
-    if (strpos($representation, ' ') !== FALSE) {
-      throw new InvalidRepresentationException(
-      'HTTP path and wildcard purgeables cannot contain spaces, use %20.');
+    if (strpos($this->expression, ' ') !== FALSE) {
+      throw new InvalidExpressionException(
+      'Path invalidations cannot contain spaces, use %20 instead.');
     }
   }
 }

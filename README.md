@@ -45,15 +45,21 @@ objects float freely between **queue** and **purgers** but can also be created
 on the fly and in third-party code.
 
 ##### Purgeable types
-To properly allow purgers and external cache systems to invalidate content, it
-has to be crystal clear what *purgeable* needs to be *purged*. Although not every
-purger supports every type, the most important one is ``tag`` since Drupal's
-own architecture and anonymous page cache is cleared using the same concept.
+Purge has to be crystal clear about what needs invalidation towards its purgers,
+and therefore has the concept of validation types. Individual purgers declare
+which types they support and can even declare their own types when that makes
+sense. Since Drupal invalidates its own caches using cache tags, the ``tag``
+type is the most important one to support in your architecture.
 
-* ``\Drupal\purge\Plugin\PurgePurgeable\FullDomain``
-* ``\Drupal\purge\Plugin\PurgePurgeable\Path``
-* ``\Drupal\purge\Plugin\PurgePurgeable\WildcardPath``
-* ``\Drupal\purge\Plugin\PurgePurgeable\Tag``
+* **``domain``** Invalidates an entire domain name.
+* **``everything``** Invalidates everything.
+* **``path``** Invalidates by path, e.g. ``news/article-1``.
+* **``regex``** Invalidates by regular expression, e.g.: ``\.(jpg|jpeg|css|js)$``.
+* **``route``** Invalidates by Drupal route, e.g.: ``<front>`` or ``user.page``.
+* **``tag``** Invalidates by Drupal cache tag, e.g.: ``menu:footer``.
+* **``url``** Invalidates by URL, e.g. ``http://site.com/node/1``.
+* **``wildcardpath``** Invalidates by path, e.g. ``news/*``.
+* **``wildcardurl``** Invalidates by URL, e.g. ``http://site.com/node/*``.
 
 #### Purgers
 Purgers do all the hard work of telling external systems what to invalidate

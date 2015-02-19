@@ -7,32 +7,18 @@
 
 namespace Drupal\purge\Plugin\PurgePurgeable;
 
-use Drupal\purge\Purgeable\PluginInterface as Purgeable;
+use Drupal\purge\Purgeable\PluginInterface;
 use Drupal\purge\Purgeable\PluginBase;
-use Drupal\purge\Purgeable\Exception\InvalidRepresentationException;
 
 /**
- * Describes a cache wipe by Drupal cache tag, e.g.: 'user:1', 'menu:footer'.
+ * Describes invalidation by Drupal cache tag, e.g.: 'user:1', 'menu:footer'.
  *
  * @PurgePurgeable(
  *   id = "tag",
- *   label = @Translation("Tag Purgeable")
+ *   label = @Translation("Tag"),
+ *   description = @Translation("Invalidates by Drupal cache tag, e.g.: 'menu:footer'."),
+ *   expression_required = TRUE,
+ *   expression_can_be_empty = FALSE
  * )
  */
-class Tag extends PluginBase implements Purgeable {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct($representation) {
-    parent::__construct($representation);
-    if (strpos($representation, '/') !== FALSE) {
-      throw new InvalidRepresentationException(
-      'Tag purgeables cannot contain slashes.');
-    }
-    if (strpos($representation, '*') !== FALSE) {
-      throw new InvalidRepresentationException(
-        'Tag purgeables do not contain asterisks.');
-    }
-  }
-}
+class Tag extends PluginBase implements PluginInterface {}

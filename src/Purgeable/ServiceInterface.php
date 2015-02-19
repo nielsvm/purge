@@ -15,64 +15,42 @@ use Drupal\purge\ServiceInterface as PurgeServiceInterface;
 interface ServiceInterface extends PurgeServiceInterface {
 
   /**
-   * Replicate a purgeable object from serialized queue item data.
-   *
-   * @param string $data
-   *   Arbitrary PHP data structured that was stored into the queue.
-   *
-   * @see \Drupal\purge\Purgeable\PluginBase::toQueueItemData()
-   *
-   * @return \Drupal\purge\Purgeable\PluginInterface
-   */
-  public function fromQueueItemData($data);
-
-  /**
-   * Instantiate a purgeable object based upon a plugin ID and representation.
+   * Create a new purgeable object of the given type.
    *
    * @param string $plugin_id
    *   The id of the purgeable plugin being instantiated.
-   * @param string $representation
-   *   String that describes what is being purged, specific format
-   *   characteristics determine the Purgeable object type requested. Each
-   *   plugin providing a type tests the string on validity and will throw a
-   *   \Drupal\purge\Purgeable\Exception\InvalidExpressionException
-   *   for representations it does not support.
+   * @param string|null $expression
+   *   String that describes what needs to be invalidated, or NULL when the
+   *   requested type of purgeable doesn't require one. Purgeable types often
+   *   validate if the given expression makes sense and throw exceptions in case
+   *   of bad input.
    *
-   *   Representation examples:
-   *    - Full domain: *
-   *    - Drupal cache tags: user:1, menu:footer, rendered
-   *    - HTTP paths: /, /<front>, /news, /news?page=0
-   *    - HTTP wildcard paths: /*, /news/*
-   *
-   *   Since purgeable objects are 'messages', it will also depend on the purger
-   *   executing your requests whether they're supported, as not every platform
-   *   supports universally everything.
+   * @throws \Drupal\purge\Purgeable\Exception\MissingExpressionException
+   *   Thrown when plugin defined expression_required = TRUE and when it is
+   *   instantiated without expression (NULL).
+   * @throws \Drupal\purge\Purgeable\Exception\InvalidExpressionException
+   *   Exception thrown when plugin got instantiated with an expression that is
+   *   not deemed valid for the type of purgeable.
    *
    * @return \Drupal\purge\Purgeable\PurgeableInterface
    */
-  public function fromNamedRepresentation($plugin_id, $representation);
+  public function get($plugin_id, $expression = NULL);
 
   /**
-   * Probes all purgeable object types and returns the first matching instance.
+   * Replicate a purgeable object from serialized queue item data.
    *
-   * @param string $representation
-   *   String that describes what is being purged, specific format
-   *   characteristics determine the Purgeable object type requested. Each
-   *   plugin providing a type tests the string on validity and will throw a
-   *   \Drupal\purge\Purgeable\Exception\InvalidExpressionException
-   *   for representations it does not support.
+   * @param string $item_data
+   *   Arbitrary PHP data structured that was stored into the queue.
    *
-   *   Representation examples:
-   *    - Full domain: *
-   *    - Drupal cache tags: user:1, menu:footer, rendered
-   *    - HTTP paths: /, /<front>, /news, /news?page=0
-   *    - HTTP wildcard paths: /*, /news/*
+   * @throws \Drupal\purge\Purgeable\Exception\MissingExpressionException
+   *   Thrown when plugin defined expression_required = TRUE and when it is
+   *   instantiated without expression (NULL).
+   * @throws \Drupal\purge\Purgeable\Exception\InvalidExpressionException
+   *   Exception thrown when plugin got instantiated with an expression that is
+   *   not deemed valid for the type of purgeable.
    *
-   *   Since purgeable objects are 'messages', it will also depend on the purger
-   *   executing your requests whether they're supported, as not every platform
-   *   supports universally everything.
-   *
-   * @return \Drupal\purge\Purgeable\PluginInterface
+   * @return \Drupal\purge\Purgeable\PurgeableInterface
    */
-  public function fromRepresentation($representation);
+  public function getFromQueueData($item_data);
+
 }

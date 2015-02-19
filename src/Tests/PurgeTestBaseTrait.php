@@ -38,7 +38,7 @@ trait PurgeTestBaseTrait {
   protected $purgeQueue;
 
   /**
-   * @var \Drupal\purge\RuntimeTest\ServiceInterface
+   * @var \Drupal\purge\DiagnosticCheck\ServiceInterface
    */
   protected $purgeDiagnostics;
 

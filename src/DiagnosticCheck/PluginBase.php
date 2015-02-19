@@ -2,18 +2,18 @@
 
 /**
  * @file
- * Contains \Drupal\purge\RuntimeTest\PluginBase.
+ * Contains \Drupal\purge\DiagnosticCheck\PluginBase.
  */
 
-namespace Drupal\purge\RuntimeTest;
+namespace Drupal\purge\DiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\PluginBase as CorePluginBase;
-use Drupal\purge\RuntimeTest\Exception\TestNotImplementedCorrectly;
-use Drupal\purge\RuntimeTest\PluginInterface;
+use Drupal\purge\DiagnosticCheck\Exception\TestNotImplementedCorrectly;
+use Drupal\purge\DiagnosticCheck\PluginInterface;
 
 /**
- * Describes a runtime test that tests a specific purging requirement.
+ * Describes a diagnostic check that tests a specific purging requirement.
  */
 abstract class PluginBase extends CorePluginBase implements PluginInterface {
 
@@ -33,10 +33,10 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
 
   /**
    * The severity of the outcome of this test, maps to any of these constants:
-   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_INFO
-   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_OK
-   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_WARNING
-   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_ERROR
+   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO
+   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_OK
+   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING
+   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR
    *
    * @var int
    */
@@ -68,7 +68,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   }
 
   /**
-   * Assures that \Drupal\purge\RuntimeTest\PluginInterface::run() is executed
+   * Assures that \Drupal\purge\DiagnosticCheck\PluginInterface::run() is executed
    * and that the severity gets set on the object. Tests for invalid responses.
    */
   protected function runTest() {
@@ -154,8 +154,8 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
       include_once DRUPAL_ROOT . '/core/includes/install.inc';
 
       // Currently, our constants hold the exact same values as core's
-      // requirement constants. However, as our runtime test API is more than
-      // just a fancy objectification of hook_requirements we need to assure
+      // requirement constants. However, as our diagnostic checks API is more
+      // than just a objectification of hook_requirements we need to assure
       // that this lasts over time, and thus map the constants.
       $mapping = [
         SELF::SEVERITY_INFO      => REQUIREMENT_INFO,

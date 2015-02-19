@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\RuntimeTest\Service.
+ * Contains \Drupal\purge\DiagnosticCheck\Service.
  */
 
-namespace Drupal\purge\RuntimeTest;
+namespace Drupal\purge\DiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
@@ -13,11 +13,11 @@ use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Purger\ServiceInterface as PurgerServiceInterface;
 use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
-use Drupal\purge\RuntimeTest\ServiceInterface;
-use Drupal\purge\RuntimeTest\PluginInterface;
+use Drupal\purge\DiagnosticCheck\ServiceInterface;
+use Drupal\purge\DiagnosticCheck\PluginInterface;
 
 /**
- * Provides a service that interacts with runtime tests.
+ * Provides a service that interacts with diagnostic checks.
  */
 class Service extends ServiceBase implements ServiceInterface {
 
@@ -159,11 +159,11 @@ class Service extends ServiceBase implements ServiceInterface {
    * Checks whether one of the diagnostic tests reports full failure.
    *
    * This method provides a simple - boolean evaluable - way to determine if
-   * a \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_ERROR severity
+   * a \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR severity
    * was reported by one of the tests. If SEVERITY_ERROR was reported, purging
    * cannot continue and should happen once all problems are resolved.
    *
-   * @return FALSE or a \Drupal\purge\RuntimeTest\PluginInterface test object.
+   * @return FALSE or a \Drupal\purge\DiagnosticCheck\PluginInterface test object.
    *   If everything is fine, this returns FALSE. But, if a blocking problem
    *   exists, the first failing test object is returned holding a UI applicable
    *   recommendation message.

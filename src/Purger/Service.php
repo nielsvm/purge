@@ -94,8 +94,8 @@ class Service extends ServiceBase implements ServiceInterface {
         elseif (!in_array($plugin_id, $plugin_ids)) {
           // When a third-party provided purger was configured and its module
           // got uninstalled, the configuration renders invalid. Instead of
-          // rewriting config or breaking hard, we ignore silently. The runtime
-          // tests take care of getting this visual to the user.
+          // rewriting config or breaking hard, we ignore silently. The
+          // diagnostic checks take care of getting this visualized to the user.
           continue;
         }
         else {

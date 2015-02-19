@@ -2,22 +2,22 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgeRuntimeTest\PurgersAvailableTest.
+ * Contains \Drupal\purge\Plugin\PurgeDiagnosticCheck\PurgersAvailableCheck.
  */
 
-namespace Drupal\purge\Plugin\PurgeRuntimeTest;
+namespace Drupal\purge\Plugin\PurgeDiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\Queue\PluginInterface as Queue;
 use Drupal\purge\Purger\ServiceInterface as PurgerService;
-use Drupal\purge\RuntimeTest\PluginInterface as RuntimeTest;
-use Drupal\purge\RuntimeTest\PluginBase;
+use Drupal\purge\DiagnosticCheck\PluginInterface;
+use Drupal\purge\DiagnosticCheck\PluginBase;
 
 /**
  * Tests if there is a purger plugin that invalidates an external cache.
  *
- * @PurgeRuntimeTest(
+ * @PurgeDiagnosticCheck(
  *   id = "purgersavailable",
  *   title = @Translation("Purger(s) configured"),
  *   description = @Translation("Tests if there is a purger plugin available."),
@@ -25,7 +25,7 @@ use Drupal\purge\RuntimeTest\PluginBase;
  *   dependent_purger_plugins = {}
  * )
  */
-class PurgersAvailableTest extends PluginBase implements RuntimeTest {
+class PurgersAvailableCheck extends PluginBase implements PluginInterface {
 
   /**
    * @var \Drupal\Core\Config\ConfigFactoryInterface
@@ -40,7 +40,7 @@ class PurgersAvailableTest extends PluginBase implements RuntimeTest {
   protected $purgePurgers;
 
   /**
-   * Constructs a \Drupal\purge\Plugin\PurgeRuntimeTest\PurgerAvailableTest object.
+   * Constructs a \Drupal\purge\Plugin\PurgeDiagnosticCheck\PurgerAvailableCheck object.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.

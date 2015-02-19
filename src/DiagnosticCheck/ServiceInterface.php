@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\RuntimeTest\ServiceInterface.
+ * Contains \Drupal\purge\DiagnosticCheck\ServiceInterface.
  */
 
-namespace Drupal\purge\RuntimeTest;
+namespace Drupal\purge\DiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
@@ -14,7 +14,7 @@ use Drupal\purge\Purger\ServiceInterface as PurgerServiceInterface;
 use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 
 /**
- * Describes a service that interacts with runtime tests.
+ * Describes a service that interacts with diagnostic checks.
  */
 interface ServiceInterface extends PurgeServiceInterface, \Iterator, \Countable {
 
@@ -37,7 +37,7 @@ interface ServiceInterface extends PurgeServiceInterface, \Iterator, \Countable 
    *
    * @warning
    *   Although it shares the same name, this method doesn't return a individual
-   *   item array as \Drupal\purge\RuntimeTest\PluginInterface::
+   *   item array as \Drupal\purge\DiagnosticCheck\PluginInterface::
    *     getHookRequirementsArray() does. It returns a full array (as
    *   hook_requirements() expects) for all tests.
    *
@@ -60,11 +60,11 @@ interface ServiceInterface extends PurgeServiceInterface, \Iterator, \Countable 
    * Checks whether one of the diagnostic tests reports full failure.
    *
    * This method provides a simple - boolean evaluable - way to determine if
-   * a \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_ERROR severity
+   * a \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR severity
    * was reported by one of the tests. If SEVERITY_ERROR was reported, purging
    * cannot continue and should happen once all problems are resolved.
    *
-   * @return FALSE or \Drupal\purge\RuntimeTest\PluginInterface.
+   * @return FALSE or \Drupal\purge\DiagnosticCheck\PluginInterface.
    *   If everything is fine, this returns FALSE. But, if a blocking problem
    *   exists, the first failing test object is returned holding a UI applicable
    *   recommendation message.

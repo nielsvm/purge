@@ -64,6 +64,15 @@ Purge **doesn't ship any purger**, as this is context specific. You could for
 instance have multiple purgers enabled to both clean a local proxy and a CDN
 at the same time.
 
+#### Diagnostic checks
+External cache invalidation usually depends on many parameters, for instance
+configuration settings such as hostname or CDN API keys. In order to prevent
+hard crashes during runtime that affect end-user workflow, Purge allows plugins
+to write preventive diagnostic checks that can check their configurations and
+anything else that affects runtime execution. These checks can block all purging
+but also raise warnings and other diagnostic information. End-users can rely on
+Drupal's status report page where these checks bubble up.
+
 #### Processing Policies
 Although editing content leads to ``tag`` purgeables automatically getting
 queued, this doesn't mean they get processed automatically. It is up to you

@@ -26,12 +26,12 @@ services:
     class: Drupal\purge\Queue\PluginManager
     parent: default_plugin_manager
 
-  # PURGE.DIAGNOSTICS: The tests service which warns and monitors for issues.
+  # PURGE.DIAGNOSTICS: The diagnostic service which warns and monitors for issues.
   purge.diagnostics:
-    class: Drupal\purge\RuntimeTest\Service
+    class: Drupal\purge\DiagnosticCheck\Service
     arguments: ['@plugin.manager.purge.diagnostics', '@service_container', '@purge.purgers', '@purge.queue']
   plugin.manager.purge.diagnostics:
-    class:  Drupal\purge\RuntimeTest\PluginManager
+    class:  Drupal\purge\DiagnosticCheck\PluginManager
     parent: default_plugin_manager
 
   # PURGE.QUEUER.CACHE_TAGS: non-public API, queues invalidated cache tags.

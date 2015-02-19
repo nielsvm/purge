@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Annotation\PurgeRuntimeTest.
+ * Contains \Drupal\purge\Annotation\PurgeDiagnosticCheck.
  */
 
 namespace Drupal\purge\Annotation;
@@ -10,21 +10,21 @@ namespace Drupal\purge\Annotation;
 use Drupal\Component\Annotation\Plugin;
 
 /**
- * Defines a PurgeRuntimeTest annotation object.
+ * Defines a PurgeDiagnosticCheck annotation object.
  *
  * @Annotation
  */
-class PurgeRuntimeTest extends Plugin {
+class PurgeDiagnosticCheck extends Plugin {
 
   /**
-   * The plugin ID of the runtime test.
+   * The plugin ID of the diagnostic check.
    *
    * @var string
    */
   public $id;
 
   /**
-   * The title of the test.
+   * The title of the check.
    *
    * @var \Drupal\Core\Annotation\Translation
    *
@@ -33,7 +33,7 @@ class PurgeRuntimeTest extends Plugin {
   public $title;
 
   /**
-   * The description of what the test does.
+   * The description of what the check does.
    *
    * @ingroup plugin_translatable
    *
@@ -42,9 +42,9 @@ class PurgeRuntimeTest extends Plugin {
   public $description;
 
   /**
-   * If your runtime test performs checks necessary for a specific queue plugin
-   * to work, you can bind this test to the queues with this setting. If any of
-   * the listed queues aren't loaded, your test won't run either.
+   * When your diagnostic check is specific for a certain queue plugin(s) you
+   * can bind it to these plugins. This check will then only get loaded when
+   * any of these specified queues are in active use.
    *
    * @code
    * dependent_queue_plugins = {"memory", "file"}
@@ -55,9 +55,9 @@ class PurgeRuntimeTest extends Plugin {
   public $dependent_queue_plugins = [];
 
   /**
-   * If your runtime test performs checks necessary for a specific purger plugin
-   * to work, you can bind this test to your purger with this setting. If any of
-   * the listed purger isn't enabled, your test won't run either.
+   * When your diagnostic check is specific for a certain purger plugin(s) you
+   * can bind it to these plugins. This check will then only get loaded when
+   * any of these specified purgers are in active use.
    *
    * @code
    * dependent_purger_plugins = {"mypurger"}

@@ -2,18 +2,18 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgeRuntimeTest\MemoryQueueWarning.
+ * Contains \Drupal\purge\Plugin\PurgeDiagnosticCheck\MemoryQueueCheck.
  */
 
-namespace Drupal\purge\Plugin\PurgeRuntimeTest;
+namespace Drupal\purge\Plugin\PurgeDiagnosticCheck;
 
-use Drupal\purge\RuntimeTest\PluginInterface as RuntimeTest;
-use Drupal\purge\RuntimeTest\PluginBase;
+use Drupal\purge\DiagnosticCheck\PluginInterface;
+use Drupal\purge\DiagnosticCheck\PluginBase;
 
 /**
  * Issues a warning on how unreliable the memory queue is for day-day use.
  *
- * @PurgeRuntimeTest(
+ * @PurgeDiagnosticCheck(
  *   id = "memoryqueuewarning",
  *   title = @Translation("Memory queue"),
  *   description = @Translation("Warns when the memory queue is in use."),
@@ -21,14 +21,14 @@ use Drupal\purge\RuntimeTest\PluginBase;
  *   dependent_purger_plugins = {}
  * )
  */
-class MemoryQueueWarning extends PluginBase implements RuntimeTest {
+class MemoryQueueCheck extends PluginBase implements PluginInterface {
 
   /**
    * {@inheritdoc}
    */
   public function run() {
 
-    // There's nothing to test for here, as this test only gets loaded when
+    // There's nothing to test for here, as this check only gets loaded when
     // the memory queue is active, so we can jump straight to conclusions.
     $this->recommendation = $this->t("You are using the memory queue, which ".
       "is not recommend for day to day use. Items stored in its queue will ".

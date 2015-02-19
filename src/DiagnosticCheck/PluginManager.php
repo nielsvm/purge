@@ -2,17 +2,17 @@
 
 /**
  * @file
- * Contains \Drupal\purge\RuntimeTest\PluginManager.
+ * Contains \Drupal\purge\DiagnosticCheck\PluginManager.
  */
 
-namespace Drupal\purge\RuntimeTest;
+namespace Drupal\purge\DiagnosticCheck;
 
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * The runtime test plugin manager.
+ * The diagnostic checks plugin manager.
  */
 class PluginManager extends DefaultPluginManager {
 
@@ -29,11 +29,11 @@ class PluginManager extends DefaultPluginManager {
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct(
-      'Plugin/PurgeRuntimeTest',
+      'Plugin/PurgeDiagnosticCheck',
       $namespaces,
       $module_handler,
-      'Drupal\purge\RuntimeTest\PluginInterface',
-      'Drupal\purge\Annotation\PurgeRuntimeTest');
-    $this->setCacheBackend($cache_backend, 'purge_runtimetest_plugins');
+      'Drupal\purge\DiagnosticCheck\PluginInterface',
+      'Drupal\purge\Annotation\PurgeDiagnosticCheck');
+    $this->setCacheBackend($cache_backend, 'purge_diagnosticcheck_plugins');
   }
 }

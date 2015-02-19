@@ -2,16 +2,16 @@
 
 /**
  * @file
- * Contains \Drupal\purge\RuntimeTest\PluginInterface.
+ * Contains \Drupal\purge\DiagnosticCheck\PluginInterface.
  */
 
-namespace Drupal\purge\RuntimeTest;
+namespace Drupal\purge\DiagnosticCheck;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 
 /**
- * Describes a runtime test that tests a specific purging requirement.
+ * Describes a diagnostic check that checks a specific purging requirement.
  */
 interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPluginInterface {
 
@@ -21,7 +21,7 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
   const SEVERITY_INFO = -1;
 
   /**
-   * Non-blocking severity -- test successfully passed.
+   * Non-blocking severity -- check successfully passed.
    */
   const SEVERITY_OK = 0;
 
@@ -36,18 +36,18 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
   const SEVERITY_ERROR = 2;
 
   /**
-   * Perform the test and determine the severity level.
+   * Perform the check and determine the severity level.
    *
-   * Runtime tests determine whether something you are checking for is in shape,
-   * for instance CMI settings on which your plugin depends. Any test reporting
-   * SELF::SEVERITY_ERROR in its run() method, will cause purging to stop
-   * working. Any other severity level will let the purger proceed operating
-   * but you may report any warning through getRecommendation() to be shown
-   * on Drupal's status report or any other diagnostic listing.
+   * Diagnostic checks determine whether something you are checking for is in
+   * shape, for instance CMI settings on which your plugin depends. Any check
+   * reporting SELF::SEVERITY_ERROR in their run() methods, will cause purge to
+   * stop working. Any other severity level will let the purgers proceed
+   * operating but you may report any warning through getRecommendation() to be
+   * shown on Drupal's status report, purge_ui or any other diagnostic listing.
    *
    * @code
    * public function run() {
-   *   if (...test..) {
+   *   if (...check..) {
    *     return SELF::SEVERITY_OK;
    *   }
    *   return SELF::SEVERITY_WARNING;
@@ -55,29 +55,29 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    * @endcode
    *
    * @warning
-   *   As runtime tests can be expensive, this method is called as rarely as
-   *   possible. Tests derived from \Drupal\purge\RuntimeTest\RuntimeTestBase
-   *   will only see the test getting executed when any of the get* methods are
+   *   As diagnostic checks can be expensive, this method is called as rarely as
+   *   possible. Checks derived from \Drupal\purge\DiagnosticCheck\PluginBase
+   *   will only see the check getting executed when any of the get* methods are
    *   called.
    *
    * @return int
    *   Integer, matching either of the following constants:
-   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_INFO
-   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_OK
-   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_WARNING
-   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_ERROR
+   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO
+   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_OK
+   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING
+   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR
    */
   public function run();
 
   /**
-   * Gets the title of the test.
+   * Gets the title of the check.
    *
    * @return \Drupal\Core\StringTranslation\TranslationWrapper
    */
   public function getTitle();
 
   /**
-   * Gets the description of the test.
+   * Gets the description of the check.
    *
    * @return \Drupal\Core\StringTranslation\TranslationWrapper
    */
@@ -88,10 +88,10 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    *
    * @return int
    *   Integer, matching either of the following constants:
-   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_INFO
-   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_OK
-   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_WARNING
-   *    - \Drupal\purge\RuntimeTest\PluginInterface::SEVERITY_ERROR
+   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO
+   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_OK
+   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING
+   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR
    */
   public function getSeverity();
 
@@ -111,7 +111,7 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
   public function getRecommendation();
 
   /**
-   * Get an optional value for the test output, may return NULL.
+   * Get an optional value for the check output, may return NULL.
    *
    * @return NULL or \Drupal\Core\StringTranslation\TranslationWrapper
    */
@@ -134,11 +134,11 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    *
    * @return array
    *   An associative array with the following elements:
-   *   - title: The name of this test.
+   *   - title: The name of this check.
    *   - value: The current value (e.g., version, time, level, etc), will not
    *     be set if not applicable.
-   *   - description: The description of the test.
-   *   - severity: The test's result/severity level, one of:
+   *   - description: The description of the check.
+   *   - severity: The check's result/severity level, one of:
    *     - REQUIREMENT_INFO: For info only.
    *     - REQUIREMENT_OK: The requirement is satisfied.
    *     - REQUIREMENT_WARNING: The requirement failed with a warning.

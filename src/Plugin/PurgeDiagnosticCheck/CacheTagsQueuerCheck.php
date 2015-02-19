@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgeRuntimeTest\CacheTagsQueuerTest.
+ * Contains \Drupal\purge\Plugin\PurgeDiagnosticCheck\CacheTagsQueuerCheck.
  */
 
-namespace Drupal\purge\Plugin\PurgeRuntimeTest;
+namespace Drupal\purge\Plugin\PurgeDiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\purge\RuntimeTest\PluginInterface;
-use Drupal\purge\RuntimeTest\PluginBase;
+use Drupal\purge\DiagnosticCheck\PluginInterface;
+use Drupal\purge\DiagnosticCheck\PluginBase;
 
 /**
  * Simply checks if "purge.queuer.cache_tags" is defined and queues cache tags.
@@ -20,7 +20,7 @@ use Drupal\purge\RuntimeTest\PluginBase;
  * which will break the end-user experience. This test therefore serves as
  * UX helper to notify users in the form of a diagnostic warning.
  *
- * @PurgeRuntimeTest(
+ * @PurgeDiagnosticCheck(
  *   id = "cachetagsqueuerexists",
  *   title = @Translation("Tags queuer"),
  *   description = @Translation("Tests if invalidated core tags get queued."),
@@ -28,7 +28,7 @@ use Drupal\purge\RuntimeTest\PluginBase;
  *   dependent_purger_plugins = {}
  * )
  */
-class CacheTagsQueuerTest extends PluginBase implements PluginInterface {
+class CacheTagsQueuerCheck extends PluginBase implements PluginInterface {
 
   /**
    * @var \Symfony\Component\DependencyInjection\ContainerInterface.
@@ -36,7 +36,7 @@ class CacheTagsQueuerTest extends PluginBase implements PluginInterface {
   protected $container;
 
   /**
-   * Constructs a \Drupal\purge\Plugin\PurgeRuntimeTest\PurgerAvailableTest object.
+   * Constructs a \Drupal\purge\Plugin\PurgeDiagnosticCheck\PurgerAvailableCheck object.
    *
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $container.
    *   The service container.

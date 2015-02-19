@@ -43,7 +43,7 @@ class Service extends ServiceBase implements ServiceInterface {
   const FALLBACK_PLUGIN = 'null';
 
   /**
-   * Instantiate the purger service.
+   * Instantiate the purgers service.
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
    *   The plugin manager for this service.

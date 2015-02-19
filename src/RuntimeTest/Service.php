@@ -31,7 +31,7 @@ class Service extends ServiceBase implements ServiceInterface {
    *
    * @var \Drupal\purge\Purger\ServiceInterface
    */
-  protected $purgePurger;
+  protected $purgePurgers;
 
   /**
    * The queue in which to store, claim and release purgeable objects from.
@@ -57,10 +57,10 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * {@inheritdoc}
    */
-  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, PurgerServiceInterface $purge_purger, QueueServiceInterface $purge_queue) {
+  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, PurgerServiceInterface $purge_purgers, QueueServiceInterface $purge_queue) {
     $this->pluginManager = $pluginManager;
     $this->serviceContainer = $service_container;
-    $this->purgePurger = $purge_purger;
+    $this->purgePurgers = $purge_purgers;
     $this->purgeQueue = $purge_queue;
 
     // Set $this->position to 0, as this object is iterable.
@@ -93,7 +93,7 @@ class Service extends ServiceBase implements ServiceInterface {
   public function getPluginsEnabled() {
     if (empty($this->plugins_enabled)) {
       $enabled_queues = $this->purgeQueue->getPluginsEnabled();
-      $enabled_purgers = $this->purgePurger->getPluginsEnabled();
+      $enabled_purgers = $this->purgePurgers->getPluginsEnabled();
 
       // Define a lambda that tests whether a plugin should be loaded.
       $load = function($needles, $haystack) {

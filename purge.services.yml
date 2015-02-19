@@ -1,10 +1,10 @@
 services:
 
-  # PURGE.PURGER: The executive service, which processes purgeable objects.
-  purge.purger:
+  # PURGE.PURGERS: The executive service, which processes purgeable objects.
+  purge.purgers:
     class: Drupal\purge\Purger\Service
-    arguments: ['@plugin.manager.purge.purger', '@service_container', '@config.factory']
-  plugin.manager.purge.purger:
+    arguments: ['@plugin.manager.purge.purgers', '@service_container', '@config.factory']
+  plugin.manager.purge.purgers:
     class: Drupal\purge\Purger\PluginManager
     parent: default_plugin_manager
 
@@ -29,7 +29,7 @@ services:
   # PURGE.DIAGNOSTICS: The tests service which warns and monitors for issues.
   purge.diagnostics:
     class: Drupal\purge\RuntimeTest\Service
-    arguments: ['@plugin.manager.purge.diagnostics', '@service_container', '@purge.purger', '@purge.queue']
+    arguments: ['@plugin.manager.purge.diagnostics', '@service_container', '@purge.purgers', '@purge.queue']
   plugin.manager.purge.diagnostics:
     class:  Drupal\purge\RuntimeTest\PluginManager
     parent: default_plugin_manager

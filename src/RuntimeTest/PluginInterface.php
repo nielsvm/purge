@@ -31,7 +31,7 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
   const SEVERITY_WARNING = 1;
 
   /**
-   * BLOCKING severity -- Error condition; purge.purger service cannot operate.
+   * BLOCKING severity -- Error condition; purge.purgers service cannot operate.
    */
   const SEVERITY_ERROR = 2;
 

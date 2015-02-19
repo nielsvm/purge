@@ -25,12 +25,12 @@ interface ServiceInterface extends PurgeServiceInterface, \Iterator, \Countable 
    *   The plugin manager for this service.
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $service_container
    *   The service container.
-   * @param \Drupal\purge\Purger\ServiceInterface $purge_purger
+   * @param \Drupal\purge\Purger\ServiceInterface $purge_purgers
    *   The purge executive service, which wipes content from external caches.
    * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
    *   The queue in which to store, claim and release purgeable objects from.
    */
-  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, PurgerServiceInterface $purge_purger, QueueServiceInterface $purge_queue);
+  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, PurgerServiceInterface $purge_purgers, QueueServiceInterface $purge_queue);
 
   /**
    * Generates a hook_requirements() compatible array.

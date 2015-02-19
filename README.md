@@ -83,7 +83,7 @@ API examples
 #### Direct invalidation
 ```
 $p = \Drupal::service('purge.purgeables')->fromNamedRepresentation('tag', 'node:1');
-\Drupal::service('purge.purger')->purge($p);
+\Drupal::service('purge.purgers')->purge($p);
 ```
 
 ```
@@ -94,7 +94,7 @@ $p = [
   $factory->fromNamedRepresentation('path', 'contact'),
   $factory->fromNamedRepresentation('wildcardpath', 'news/*'),
 ];
-\Drupal::service('purge.purger')->purgeMultiple($p);
+\Drupal::service('purge.purgers')->purgeMultiple($p);
 ```
 
 #### Queuing
@@ -117,7 +117,7 @@ $p = [
 // Processing must occur within 10 seconds.
 $queue = \Drupal::service('purge.queue');
 if ($p = $queue->claim(10)) {
-  $success = \Drupal::service('purge.purger')->purge($p);
+  $success = \Drupal::service('purge.purgers')->purge($p);
   if ($success) {
     $queue->delete($p);
   }

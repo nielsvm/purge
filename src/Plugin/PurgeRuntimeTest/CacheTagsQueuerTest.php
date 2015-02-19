@@ -46,7 +46,7 @@ class CacheTagsQueuerTest extends PluginBase implements PluginInterface {
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\purge\Purger\PurgerServiceInterface $purge_purger
+   * @param \Drupal\purge\Purger\PurgerServiceInterface $purge_purgers
    *   The purge executive service, which wipes content from external caches.
    */
   public function __construct(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {

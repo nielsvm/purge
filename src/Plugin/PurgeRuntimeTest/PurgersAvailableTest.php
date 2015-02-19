@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgeRuntimeTest\PurgerAvailableTest.
+ * Contains \Drupal\purge\Plugin\PurgeRuntimeTest\PurgersAvailableTest.
  */
 
 namespace Drupal\purge\Plugin\PurgeRuntimeTest;
@@ -18,14 +18,14 @@ use Drupal\purge\RuntimeTest\PluginBase;
  * Tests if there is a purger plugin that invalidates an external cache.
  *
  * @PurgeRuntimeTest(
- *   id = "purgeravailable",
+ *   id = "purgersavailable",
  *   title = @Translation("Purger(s) configured"),
  *   description = @Translation("Tests if there is a purger plugin available."),
  *   dependent_queue_plugins = {},
  *   dependent_purger_plugins = {}
  * )
  */
-class PurgerAvailableTest extends PluginBase implements RuntimeTest {
+class PurgersAvailableTest extends PluginBase implements RuntimeTest {
 
   /**
    * @var \Drupal\Core\Config\ConfigFactoryInterface
@@ -37,7 +37,7 @@ class PurgerAvailableTest extends PluginBase implements RuntimeTest {
    *
    * @var \Drupal\purge\Purger\ServiceInterface
    */
-  protected $purgePurger;
+  protected $purgePurgers;
 
   /**
    * Constructs a \Drupal\purge\Plugin\PurgeRuntimeTest\PurgerAvailableTest object.
@@ -50,13 +50,13 @@ class PurgerAvailableTest extends PluginBase implements RuntimeTest {
    *   The plugin implementation definition.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\purge\Purger\PurgerServiceInterface $purge_purger
+   * @param \Drupal\purge\Purger\PurgerServiceInterface $purge_purgers
    *   The purge executive service, which wipes content from external caches.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, PurgerService $purge_purger) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, PurgerService $purge_purgers) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
-    $this->purgePurger = $purge_purger;
+    $this->purgePurgers = $purge_purgers;
   }
 
   /**
@@ -68,7 +68,7 @@ class PurgerAvailableTest extends PluginBase implements RuntimeTest {
       $plugin_id,
       $plugin_definition,
       $container->get('config.factory'),
-      $container->get('purge.purger')
+      $container->get('purge.purgers')
     );
   }
 
@@ -76,7 +76,7 @@ class PurgerAvailableTest extends PluginBase implements RuntimeTest {
    * {@inheritdoc}
    */
   public function run() {
-    $purgers = $this->purgePurger->getPluginsEnabled();
+    $purgers = $this->purgePurgers->getPluginsEnabled();
 
     // Test for the 'null' purger, which only loads if nothing else exists.
     if (in_array('null', $purgers)) {

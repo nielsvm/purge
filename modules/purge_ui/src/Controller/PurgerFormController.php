@@ -18,7 +18,7 @@ use Drupal\purge\Purger\PluginManager;
 class PurgerFormController extends ControllerBase {
 
   /**
-   * The plugin manager for purgers ('plugin.manager.purge.purger').
+   * The plugin manager for purgers ('plugin.manager.purge.purgers').
    *
    * @var \Drupal\purge\Purger\PluginManager.
    */
@@ -38,7 +38,7 @@ class PurgerFormController extends ControllerBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('plugin.manager.purge.purger'));
+    return new static($container->get('plugin.manager.purge.purgers'));
   }
 
   /**

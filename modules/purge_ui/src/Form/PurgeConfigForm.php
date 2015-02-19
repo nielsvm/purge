@@ -22,7 +22,7 @@ class PurgeConfigForm extends ConfigFormBase {
   /**
    * @var \Drupal\purge\Purger\ServiceInterface
    */
-  protected $purgePurger;
+  protected $purgePurgers;
 
   /**
    * @var \Drupal\purge\Queue\ServiceInterface
@@ -32,13 +32,13 @@ class PurgeConfigForm extends ConfigFormBase {
   /**
    * Constructs a PurgeConfigForm object.
    *
-   * @param \Drupal\purge\Purger\ServiceInterface $purge_purger
+   * @param \Drupal\purge\Purger\ServiceInterface $purge_purgers
    *   The purger service.
    * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
    *   The purge queue service.
    */
-  public function __construct(PurgerServiceInterface $purge_purger, QueueServiceInterface $purge_queue) {
-    $this->purgePurger = $purge_purger;
+  public function __construct(PurgerServiceInterface $purge_purgers, QueueServiceInterface $purge_queue) {
+    $this->purgePurgers = $purge_purgers;
     $this->purgeQueue = $purge_queue;
     parent::__construct($this->configFactory());
   }
@@ -48,7 +48,7 @@ class PurgeConfigForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('purge.purger'),
+      $container->get('purge.purgers'),
       $container->get('purge.queue')
     );
   }
@@ -159,7 +159,7 @@ class PurgeConfigForm extends ConfigFormBase {
     ];
 
     // Check the purgers that are already enabled.
-    foreach($this->purgePurger->getPluginsEnabled() as $plugin_id) {
+    foreach($this->purgePurgers->getPluginsEnabled() as $plugin_id) {
       $form['purger']['purger_plugins']['#default_value'][$plugin_id] = TRUE;
     }
 
@@ -186,7 +186,7 @@ class PurgeConfigForm extends ConfigFormBase {
     };
 
     // Define a row for each purger and add the other columns.
-    foreach ($this->purgePurger->getPlugins() as $plugin_id => $definition) {
+    foreach ($this->purgePurgers->getPlugins() as $plugin_id => $definition) {
       $form['purger']['purger_plugins']['#options'][$plugin_id] = [
         'label' => $definition['label'],
         'description' => $definition['description'],
@@ -243,7 +243,7 @@ class PurgeConfigForm extends ConfigFormBase {
     if (!$form_state->hasValue('purger_plugins')) {
       $form_state->setError($form['purger']['purger_plugins'], $this->t('Value missing.'));
     }
-    $plugins = array_keys($this->purgePurger->getPlugins());
+    $plugins = array_keys($this->purgePurgers->getPlugins());
     foreach ($form_state->getValue('purger_plugins') as $plugin_id => $checked) {
       if (!in_array($plugin_id, $plugins)) {
         $form_state->setError($form['purger']['purger_plugins'], $this->t('Invalid input.'));

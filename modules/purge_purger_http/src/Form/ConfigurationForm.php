@@ -99,6 +99,12 @@ class ConfigurationForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $this->config('purge_purger_http.settings')
+      ->set('hostname', $form_state->getValue('hostname'))
+      ->set('port', $form_state->getValue('port'))
+      ->set('path', $form_state->getValue('path'))
+      ->set('request_method', $form_state->getValue('request_method'))
+      ->save();
 
     return parent::submitForm($form, $form_state);
   }

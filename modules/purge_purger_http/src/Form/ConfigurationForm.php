@@ -40,7 +40,6 @@ class ConfigurationForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-
     $config = $this->config('purge_purger_http.settings');
 
     $form['http_settings'] = [
@@ -63,15 +62,15 @@ class ConfigurationForm extends PurgerConfigFormBase {
       '#default_value' => $config->get('port'),
       '#required' => FALSE,
     ];
-    /*
-     * @todo We should get token support in the future.
-     */
+
+    // @todo We should get token support in the future.
     $form['http_settings']['path'] = [
       '#title' => $this->t('Path'),
       '#type' => 'textfield',
       '#default_value' => $config->get('path'),
       '#required' => FALSE,
     ];
+
     /*
      * @todo Confirm all relevant HTTP requests are covered.
      * http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
@@ -84,9 +83,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
       '#required' => FALSE,
     ];
 
-    /*
-     * @todo Implement repeatable rows with two text fields for HEADER -> VALUE
-     */
+    // @todo Implement repeatable rows with two text fields for HEADER -> VALUE
     $form['headers'] = [
       '#title' => $this->t('Headers'),
       '#type' => 'details',
@@ -115,4 +112,5 @@ class ConfigurationForm extends PurgerConfigFormBase {
 
     return parent::submitForm($form, $form_state);
   }
+
 }

@@ -1,4 +1,4 @@
-purge_purger_varnishpoc.conf:
+purge_purger_varnishpoc.settings:
   type: mapping
   label: 'Varnish PoC Purger'
   mapping:

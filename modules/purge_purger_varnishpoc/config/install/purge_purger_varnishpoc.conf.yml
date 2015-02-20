@@ -1,4 +1,0 @@
-url: ''
-header: 'X-Drupal-Cache-Tags-Banned'
-timeout: 1.0
-connect_timeout: 0.5

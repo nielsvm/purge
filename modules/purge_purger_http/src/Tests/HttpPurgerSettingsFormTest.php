@@ -27,7 +27,7 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('purge_ui', 'purge_purger_http');
+  public static $modules = array('purge', 'purge_ui', 'purge_purger_http');
 
   /**
    * The installation profile to use with this test.
@@ -55,21 +55,16 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
     $this->assertTitle(t('Configure HTTP Purger | Drupal'), 'The title on the page is "Configure HTTP Purger".');
 
     // Verify every field exists.
-    $this->assertField('edit-hostname', 'edit-hostname field exists');
-    $this->assertField('edit-port', 'edit-port field exists');
-    $this->assertField('edit-path', 'edit-path field exists');
-    $this->assertField('edit-request-method', 'edit-request-method field exists');
+    $this->assertField('edit-hostname', 'The hostname field exists');
+    $this->assertField('edit-port', 'The port field exists');
+    $this->assertField('edit-path', 'The path field exists');
+    $this->assertField('edit-request-method', 'The request method select list exists');
 
     // Validate default form values.
-    $this->assertFieldById('edit-hostname', 'localhost', 'The edit-hostname field has the value "localhost".');
-    $this->assertFieldById('edit-port', '80', 'The edit-port field has the value "80".');
-    //$this->assertFieldChecked('edit-compact-forms-descriptions');
-    //$this->assertNoFieldChecked('edit-compact-forms-stars-0');
-    //$this->assertNoFieldChecked('edit-compact-forms-stars-1');
-    //$this->assertFieldChecked('edit-compact-forms-stars-2');
-
-    //$this->pass('Field edit-compact-forms-field-size always passes with empty string.', 'Debug');
-    //$this->assertFieldById('edit-compact-forms-field-size', '', 'The edit-compact-forms-field-size field is empty.');
+    $this->assertFieldById('edit-hostname', 'localhost', 'The hostname field has the value "localhost".');
+    $this->assertFieldById('edit-port', '80', 'The port field has the value "80".');
+    $this->assertFieldById('edit-path', '', 'The path field is empty.');
+    $this->assertOptionSelected('edit-request-method', 0, 'The request method selected is "BAN" .');
 
     // Verify that there's no access bypass.
     $this->drupalLogout();
@@ -80,7 +75,7 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
   /**
    * Test posting data to the purge_purger_http settings form.
    */
-  public function testHttpPurgerFormPost() {
+/*  public function testHttpPurgerFormPost() {
     // Post form with new values.
     $edit = array(
       'edit-hostname' => 'example.com',
@@ -94,11 +89,11 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
     $this->drupalGet('admin/config/development/performance/purge/http');
     $this->assertFieldById('edit-hostname', $edit['edit-hostname'],
       format_string('The edit-hostname field has the value %val.', array('%val' => $edit['edit-hostname'])));
-    //$this->assertNoFieldChecked('edit-compact-forms-descriptions');
-    //$this->assertFieldChecked('edit-compact-forms-stars-0');
-    //$this->assertNoFieldChecked('edit-compact-forms-stars-1');
-    //$this->assertNoFieldChecked('edit-compact-forms-stars-2');
-    //$this->assertFieldById('edit-compact-forms-field-size', $edit['compact_forms_field_size'],
-    // format_string('The edit-compact-forms-field-size field has the value %val.', array('%val' => $edit['compact_forms_field_size'])));
-  }
+    $this->assertNoFieldChecked('edit-compact-forms-descriptions');
+    $this->assertFieldChecked('edit-compact-forms-stars-0');
+    $this->assertNoFieldChecked('edit-compact-forms-stars-1');
+    $this->assertNoFieldChecked('edit-compact-forms-stars-2');
+    $this->assertFieldById('edit-compact-forms-field-size', $edit['compact_forms_field_size'],
+     format_string('The edit-compact-forms-field-size field has the value %val.', array('%val' => $edit['compact_forms_field_size'])));
+  }*/
 }

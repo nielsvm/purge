@@ -32,7 +32,7 @@ class Domain extends PluginBase implements PluginInterface {
    *   Find out if there's a - Drupal level - way to determine if the given
    *   name is valid or not.
    */
-  protected function validateExpression() {
+  public function validateExpression() {
     parent::validateExpression();
   }
 }

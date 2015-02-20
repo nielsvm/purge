@@ -28,12 +28,12 @@ class Path extends PluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
-  protected function validateExpression($wildcard_check = TRUE) {
+  public function validateExpression($wildcard_check = TRUE) {
     parent::validateExpression();
     if ($wildcard_check && (strpos($this->expression, '*') !== FALSE)) {
       throw new InvalidExpressionException('Path invalidations should not contain asterisks, use "wildcardpath"!');
     }
-    if ($this->expression === '*') {
+    if ($wildcard_check && $this->expression === '*') {
       throw new InvalidExpressionException('Path invalidations cannot be "*", use "wildcardpath".');
     }
     if (strpos($this->expression, ' ') !== FALSE) {

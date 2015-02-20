@@ -176,7 +176,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
     elseif(is_string($this->expression) && !$d['expression_required']) {
       throw new InvalidExpressionException("Invalidating by $plugin_id requires no expression.");
     }
-    if (!$d['expression_can_be_empty'] && empty($this->expression)) {
+    if (!$d['expression_can_be_empty'] && $d['expression_required'] && empty($this->expression)) {
       throw new InvalidExpressionException("Invalidating by $plugin_id cannot with an empty expression.");
     }
   }

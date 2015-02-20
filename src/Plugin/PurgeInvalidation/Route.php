@@ -31,7 +31,7 @@ class Route extends PluginBase implements PluginInterface {
    * @todo
    *   Validate the route or else throw InvalidExpressionException.
    */
-  protected function validateExpression() {
+  public function validateExpression() {
     parent::validateExpression();
   }
 }

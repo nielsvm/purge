@@ -29,7 +29,7 @@ class Url extends PluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
-  protected function validateExpression($wildcard_check = TRUE) {
+  public function validateExpression($wildcard_check = TRUE) {
     parent::validateExpression();
     if (!UrlHelper::isValid($this->expression, TRUE)) {
       throw new InvalidExpressionException('The URL is not valid.');

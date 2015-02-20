@@ -20,7 +20,7 @@ use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
  *   description = @Translation("Invalidates by path."),
  *   examples = {"news/*"},
  *   expression_required = TRUE,
- *   expression_can_be_empty = TRUE
+ *   expression_can_be_empty = FALSE
  * )
  */
 class WildcardPath extends Path implements PluginInterface {
@@ -28,7 +28,7 @@ class WildcardPath extends Path implements PluginInterface {
   /**
    * {@inheritdoc}
    */
-  protected function validateExpression() {
+  public function validateExpression() {
     parent::validateExpression(FALSE);
     if (strpos($this->expression, '*') === FALSE) {
       throw new InvalidExpressionException('Wildcard invalidations should contain an asterisk.');

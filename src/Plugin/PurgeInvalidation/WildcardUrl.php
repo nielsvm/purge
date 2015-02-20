@@ -29,7 +29,7 @@ class WildcardUrl extends Url implements PluginInterface {
   /**
    * {@inheritdoc}
    */
-  protected function validateExpression() {
+  public function validateExpression() {
     parent::validateExpression(FALSE);
     if (strpos($this->expression, '*') === FALSE) {
       throw new InvalidExpressionException('Wildcard invalidations should contain an asterisk.');

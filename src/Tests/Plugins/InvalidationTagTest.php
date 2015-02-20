@@ -10,19 +10,21 @@ namespace Drupal\purge\Tests\Plugins;
 use Drupal\purge\Tests\Invalidation\PluginTestBase;
 
 /**
- * Tests the 'tag' invalidation type.
+ * Tests \Drupal\purge\Plugin\PurgeInvalidation\Tag.
  *
  * @group purge
  * @see \Drupal\purge\Invalidation\PluginInterface
  */
 class InvalidationTagTest extends PluginTestBase {
   protected $plugin_id = 'tag';
-  protected $representations = [
+  protected $expressions = [
     'tag',
     'user:1',
     'menu:footer'
   ];
-  protected $representationsInvalid = [
+  protected $expressionsInvalid = [
+    NULL,
+    '',
     ['node', '1'],
     'wildtag:*',
     '/path:notation'

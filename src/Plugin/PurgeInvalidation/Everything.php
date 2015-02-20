@@ -17,8 +17,7 @@ use Drupal\purge\Invalidation\PluginBase;
  *   id = "everything",
  *   label = @Translation("Everything"),
  *   description = @Translation("Invalidates everything."),
- *   expression_required = FALSE,
- *   expression_can_be_empty = FALSE
+ *   expression_required = FALSE
  * )
  */
 class Everything extends PluginBase implements PluginInterface {}

@@ -7,10 +7,12 @@
 
 namespace Drupal\purge\Purgeable;
 
+use Drupal\Component\Plugin\PluginInspectionInterface;
+
 /**
  * Describes the purgeable: which instructs the purger what to wipe.
  */
-interface PluginInterface {
+interface PluginInterface extends PluginInspectionInterface {
 
   /**
    * Purgeable state: the purgeable object is just instantiated.
@@ -68,34 +70,7 @@ interface PluginInterface {
   const STATE_DELETED = 10;
 
   /**
-   * Instantiate a new purgeable.
-   *
-   * @param string $representation
-   *   String that describes what is being purged, specific format
-   *   characteristics determine the Purgeable object type requested. Each
-   *   plugin providing a type tests the string on validity and will throw a
-   *   \Drupal\purge\Purgeable\Exception\InvalidRepresentationException
-   *   for representations it does not support.
-   *
-   *   Representation examples:
-   *    - Full domain: *
-   *    - Drupal cache tags: user:1, menu:footer, rendered
-   *    - HTTP paths: /, /<front>, /news, /news?page=0
-   *    - HTTP wildcard paths: /*, /news/*
-   *
-   *   Since purgeable objects are 'messages', it will also depend on the purger
-   *   executing your requests whether they're supported, as not every platform
-   *   supports universally everything.
-   * @warning
-   *   Will throw a InvalidRepresentationException when the given string
-   *   does not match the format for this type of purgeable. For instance when
-   *   a path with wildcard ('news/*') is given to the PathPurgeable, it will
-   *   not instantiate.
-   */
-  function __construct($representation);
-
-  /**
-   * Return the serialized string representation of the purgeable.
+   * Return the string expression of the purgeable.
    *
    * @return string
    *   Returns the string serialization, e.g. "node/1".
@@ -127,22 +102,6 @@ interface PluginInterface {
    *   it will throw \Drupal\purge\Purgeable\Exception\InvalidPropertyException.
    */
   public function __get($name);
-
-  /**
-   * Get the plugin ID of this purgeable object.
-   *
-   * @return
-   *   The plugin ID of the purgeable plugin responsible for this object.
-   */
-  public function getPluginId();
-
-  /**
-   * Set the plugin ID of this purgeable object, done by the Purgeable Factory.
-   *
-   * @param $plugin_id
-   *   The unique ID of this purgeable as found in the plugin's main class doc.
-   */
-  public function setPluginId($plugin_id);
 
   /**
    * Set all Queue API properties on the purgeable, in one call.
@@ -193,4 +152,21 @@ interface PluginInterface {
    *   The string comes without the 'STATE_' prefix as on the constants.
    */
   public function getStateString();
+
+  /**
+   * Validate the expression given to the purgeable during instantiation.
+   *
+   * @throws \Drupal\purge\Purgeable\Exception\MissingExpressionException
+   *   Thrown when plugin defined expression_required = TRUE and when it is
+   *   instantiated without expression (NULL).
+   * @throws \Drupal\purge\Purgeable\Exception\InvalidExpressionException
+   *   Exception thrown when plugin got instantiated with an expression that is
+   *   not deemed valid for the type of purgeable.
+   *
+   * @see \Drupal\purge\Annotation\PurgePurgeable::$expression_required
+   * @see \Drupal\purge\Annotation\PurgePurgeable::$expression_can_be_empty
+   *
+   * @return void
+   */
+  public function validateExpression();
 }

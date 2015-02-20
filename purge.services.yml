@@ -3,34 +3,34 @@ services:
   # PURGE.QUEUER.CACHE_TAGS
   #
   # Captures Drupals own internal cache invalidations and automatically adds
-  # tag purgeables to 'purge.queue', which is why its a 'queuer'. If this
-  # service is undesirable, see tests/modules/purge_noqueuer_test as example.
+  # tag invalidation objects to 'purge.queue', which is why its a 'queuer'. If
+  # this service is undesirable, see tests/modules/purge_noqueuer_test.
   purge.queuer.cache_tags:
     class: Drupal\purge\Queuer\CacheTagsQueuer
-    arguments: ['@purge.queue', '@purge.purgeable.factory']
+    arguments: ['@purge.queue', '@purge.invalidation.factory']
     tags:
       - { name: cache_tags_invalidator }
 
-  # PURGE.PURGEABLE.FACTORY
+  # PURGE.INVALIDATION.FACTORY
   #
-  # The purgeable object factory, generating 'purge instruction' value objects
-  # on demand. Purgeables have state and flow freely between queue and purgers,
-  # but can also be instantiated through the factory and get fed to the purger
-  # straight away.
-  purge.purgeable.factory:
-    class: Drupal\purge\Purgeable\Service
-    arguments: ['@plugin.manager.purge.purgeable']
-  plugin.manager.purge.purgeable:
-    class: Drupal\purge\Purgeable\PluginManager
+  # The invalidation object factory, generates 'purge instruction' value objects
+  # on demand. Invalidations have state and flow freely between queue and
+  # purgers, but can also be instantiated through the factory and get fed to the
+  # purger straight away.
+  purge.invalidation.factory:
+    class: Drupal\purge\Invalidation\Service
+    arguments: ['@plugin.manager.purge.invalidation']
+  plugin.manager.purge.invalidation:
+    class: Drupal\purge\Invalidation\PluginManager
     parent: default_plugin_manager
 
   # PURGE.QUEUE:
   #
-  # The queue service which stores, claims, releases and accepts purgeable
+  # The queue service which stores, claims, releases and accepts invalidation
   # objects returning from 'purge.purgers'.
   purge.queue:
     class: Drupal\purge\Queue\Service
-    arguments: ['@plugin.manager.purge.queue', '@service_container', '@config.factory', '@purge.purgeable.factory']
+    arguments: ['@plugin.manager.purge.queue', '@service_container', '@config.factory', '@purge.invalidation.factory']
     tags:
       - { name: needs_destruction }
   plugin.manager.purge.queue:

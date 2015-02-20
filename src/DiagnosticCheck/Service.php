@@ -34,7 +34,7 @@ class Service extends ServiceBase implements ServiceInterface {
   protected $purgePurgers;
 
   /**
-   * The queue in which to store, claim and release purgeable objects from.
+   * The queue in which to store, claim and release invalidation objects from.
    *
    * @var \Drupal\purge\Queue\ServiceInterface
    */

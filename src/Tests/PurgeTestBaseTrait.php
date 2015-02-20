@@ -28,9 +28,9 @@ trait PurgeTestBaseTrait {
   protected $purgePurgers;
 
   /**
-   * @var \Drupal\purge\Purgeable\ServiceInterface
+   * @var \Drupal\purge\Invalidation\ServiceInterface
    */
-  protected $purgePurgeableFactory;
+  protected $purgeInvalidationFactory;
 
   /**
    * @var \Drupal\purge\Queue\ServiceInterface
@@ -65,11 +65,11 @@ trait PurgeTestBaseTrait {
   }
 
   /**
-   * Make $this->purgePurgeableFactory available.
+   * Make $this->purgeInvalidationFactory available.
    */
-  protected function initializePurgeablesService() {
-    if (is_null($this->purgePurgeableFactory)) {
-      $this->purgePurgeableFactory = $this->container->get('purge.purgeable.factory');
+  protected function initializeInvalidationFactoryService() {
+    if (is_null($this->purgeInvalidationFactory)) {
+      $this->purgeInvalidationFactory = $this->container->get('purge.invalidation.factory');
     }
   }
 

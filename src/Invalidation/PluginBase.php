@@ -2,37 +2,32 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purgeable\PluginBase.
+ * Contains \Drupal\purge\Invalidation\PluginBase.
  */
 
-namespace Drupal\purge\Purgeable;
+namespace Drupal\purge\Invalidation;
 
-use Drupal\purge\Purgeable\PluginInterface;
-use Drupal\purge\Purgeable\Exception\InvalidPropertyException;
-use Drupal\purge\Purgeable\Exception\InvalidRepresentationException;
-use Drupal\purge\Purgeable\Exception\InvalidStateException;
+use Drupal\Core\Plugin\PluginBase as CorePluginBase;
+use Drupal\purge\Invalidation\PluginInterface;
+use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
+use Drupal\purge\Invalidation\Exception\MissingExpressionException;
+use Drupal\purge\Invalidation\Exception\InvalidPropertyException;
+use Drupal\purge\Invalidation\Exception\InvalidStateException;
 
 /**
- * Base purgeable: which instructs the purger what to wipe.
+ * Base invalidation type: which instructs the purger what to invalidate.
  */
-abstract class PluginBase implements PluginInterface {
+abstract class PluginBase extends CorePluginBase implements PluginInterface {
 
   /**
-   * Arbitrary string representing the thing that needs to be purged.
+   * String expression (or NULL) that describes what needs to be invalidated.
    *
-   * @var string
+   * @var string|null
    */
-  protected $representation;
+  protected $expression;
 
   /**
-   * The plugin @id found by the annotation scanner.
-   *
-   * @var string
-   */
-  protected $pluginId;
-
-  /**
-   * A enumerator that describes the current state of this purgeable.
+   * A enumerator that describes the current state of this invalidation.
    */
   private $state = NULL;
 
@@ -44,23 +39,19 @@ abstract class PluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function __construct($representation) {
-    $this->representation = $representation;
-    if (!is_string($representation)) {
-      throw new InvalidRepresentationException(
-      'The representation of the thing you want to purge is not a string.');
-    }
-    if (empty(trim($representation))) {
-      throw new InvalidRepresentationException(
-        'The representation cannot be empty.');
-    }
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct([], $plugin_id, $plugin_definition);
+
+    // Store the given expression key (can be NULL) and validate it thereafter.
+    $this->expression = $configuration['expression'];
+    $this->validateExpression();
   }
 
   /**
    * {@inheritdoc}
    */
   public function __toString() {
-    return $this->representation;
+    return is_null($this->expression) ? '' : $this->expression;
   }
 
   /**
@@ -92,25 +83,11 @@ abstract class PluginBase implements PluginInterface {
    */
   private function initializeQueueItemArray() {
     $this->queueItemInfo = [
-      'data' => sprintf('%s>%s', $this->pluginId, $this->representation),
+      'data' => sprintf('%s>%s', $this->pluginId, $this->expression),
       'item_id' => NULL,
       'created' => NULL,
     ];
     $this->queueItemInfo['keys'] = array_keys($this->queueItemInfo);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getPluginId() {
-    return $this->pluginId;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setPluginId($plugin_id) {
-    $this->pluginId = $plugin_id;
   }
 
   /**
@@ -185,5 +162,22 @@ abstract class PluginBase implements PluginInterface {
       SELF::STATE_DELETED       => 'DELETED',
     ];
     return $mapping[$this->getState()];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateExpression() {
+    $plugin_id = $this->getPluginId();
+    $d = $this->getPluginDefinition();
+    if ($d['expression_required'] && is_null($this->expression)) {
+      throw new MissingExpressionException("Invalidating by $plugin_id requires an expression.");
+    }
+    elseif(is_string($this->expression) && !$d['expression_required']) {
+      throw new InvalidExpressionException("Invalidating by $plugin_id requires no expression.");
+    }
+    if (!$d['expression_can_be_empty'] && $d['expression_required'] && empty($this->expression)) {
+      throw new InvalidExpressionException("Invalidating by $plugin_id cannot with an empty expression.");
+    }
   }
 }

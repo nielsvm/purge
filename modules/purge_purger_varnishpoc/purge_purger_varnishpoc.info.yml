@@ -1,7 +1,7 @@
 name: Varnish Purger PoC
 type: module
 description: 'Varnish cache tags purger.'
-package: "Purge - reverse proxies & CDN's"
+package: "Purge - reverse proxies & CDNs"
 version: VERSION
 core: 8.x
 dependencies:

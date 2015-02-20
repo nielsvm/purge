@@ -10,12 +10,12 @@ namespace Drupal\purge\Purger;
 use Drupal\purge\Purger\PluginInterface;
 
 /**
- * Base class for all purgers.
+ * Provides a base class for all purgers - the cache invalidation executors.
  */
 abstract class PluginBase implements PluginInterface {
 
   /**
-   * The number of successfully processed purgeables for this instance.
+   * The number of successfully processed invalidations for this instance.
    *
    * @var int
    */
@@ -29,7 +29,7 @@ abstract class PluginBase implements PluginInterface {
   protected $numberPurging = 0;
 
   /**
-   * The number of failed purgeables for this instance.
+   * The number of failed invalidations for this instance.
    *
    * @var int
    */

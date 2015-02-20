@@ -26,9 +26,9 @@ when that particular node (node/1) is changed.
 
 Purge ships with the ``CacheTagsQueuer``, a mechanism which puts Drupal's
 invalidated Cache-Tags into Purge's queue. So, when Drupal clears rendered
-items from its own page cache, Purge will add a _purgeable_ object to its queue
-so that it gets cleared remotely as well. When this is undesired behavior, take
-a look at ``tests/modules/purge_noqueuer_test/``.
+items from its own page cache, Purge will add a _invalidation_ object to its
+queue so that it gets cleared remotely as well. When this is undesired behavior,
+take a look at ``tests/modules/purge_noqueuer_test/``.
 
 #### Queue
 Queueing is an inevitable and important part of Purge as it makes cache
@@ -38,22 +38,28 @@ demand multi-step purges that can easily take up 30 minutes. Although the
 queue can technically be left out of the process entirely, it will be required
 in the majority of use cases.
 
-#### Purgeables
-Purgeables are small value objects that **decribe and track invalidations**
+#### Invalidations
+Invalidations are small value objects that **decribe and track invalidations**
 on one or more external caching systems within the Purge pipeline. These
 objects float freely between **queue** and **purgers** but can also be created
 on the fly and in third-party code.
 
-##### Purgeable types
-To properly allow purgers and external cache systems to invalidate content, it
-has to be crystal clear what *purgeable* needs to be *purged*. Although not every
-purger supports every type, the most important one is ``tag`` since Drupal's
-own architecture and anonymous page cache is cleared using the same concept.
+##### Invalidation types
+Purge has to be crystal clear about what needs invalidation towards its purgers,
+and therefore has the concept of invalidation types. Individual purgers declare
+which types they support and can even declare their own types when that makes
+sense. Since Drupal invalidates its own caches using cache tags, the ``tag``
+type is the most important one to support in your architecture.
 
-* ``\Drupal\purge\Plugin\PurgePurgeable\FullDomain``
-* ``\Drupal\purge\Plugin\PurgePurgeable\Path``
-* ``\Drupal\purge\Plugin\PurgePurgeable\WildcardPath``
-* ``\Drupal\purge\Plugin\PurgePurgeable\Tag``
+* **``domain``** Invalidates an entire domain name.
+* **``everything``** Invalidates everything.
+* **``path``** Invalidates by path, e.g. ``news/article-1``.
+* **``regex``** Invalidates by regular expression, e.g.: ``\.(jpg|jpeg|css|js)$``.
+* **``route``** Invalidates by Drupal route, e.g.: ``<front>`` or ``user.page``.
+* **``tag``** Invalidates by Drupal cache tag, e.g.: ``menu:footer``.
+* **``url``** Invalidates by URL, e.g. ``http://site.com/node/1``.
+* **``wildcardpath``** Invalidates by path, e.g. ``news/*``.
+* **``wildcardurl``** Invalidates by URL, e.g. ``http://site.com/node/*``.
 
 #### Purgers
 Purgers do all the hard work of telling external systems what to invalidate
@@ -74,9 +80,9 @@ but also raise warnings and other diagnostic information. End-users can rely on
 Drupal's status report page where these checks bubble up.
 
 #### Processing Policies
-Although editing content leads to ``tag`` purgeables automatically getting
-queued, this doesn't mean they get processed automatically. It is up to you
-to select a stable configuration for your needs.
+Although editing content leads to ``tag`` invalidation objects automatically
+getting queued, this doesn't mean they get processed automatically. It is up to
+you to select a stable configuration for your needs.
 
 Policy possibilities:
 
@@ -91,47 +97,45 @@ API examples
 
 #### Direct invalidation
 ```
-$p = \Drupal::service('purge.purgeable.factory')->fromNamedRepresentation('tag', 'node:1');
-\Drupal::service('purge.purgers')->purge($p);
+$i = \Drupal::service('purge.invalidation.factory')->get('tag', 'node:1');
+\Drupal::service('purge.purgers')->invalidate($i);
 ```
 
 ```
-$factory = \Drupal::service('purge.purgeable.factory');
-$p = [
-  $factory->fromNamedRepresentation('tag', 'node:1'),
-  $factory->fromNamedRepresentation('tag', 'node:2'),
-  $factory->fromNamedRepresentation('path', 'contact'),
-  $factory->fromNamedRepresentation('wildcardpath', 'news/*'),
+$i = [
+  \Drupal::service('purge.invalidation.factory')->get('tag', 'node:1'),
+  \Drupal::service('purge.invalidation.factory')->get('tag', 'node:2'),
+  \Drupal::service('purge.invalidation.factory')->get('path', 'contact'),
+  \Drupal::service('purge.invalidation.factory')->get('wildcardpath', 'news/*'),
 ];
-\Drupal::service('purge.purgers')->purgeMultiple($p);
+\Drupal::service('purge.purgers')->invalidateMultiple($i);
 ```
 
 #### Queuing
 ```
-$p = \Drupal::service('purge.purgeable.factory')->fromNamedRepresentation('path', 'news/');
-\Drupal::service('purge.queue')->add($p);
+$i = \Drupal::service('purge.invalidation.factory')->get('path', 'news/');
+\Drupal::service('purge.queue')->add($i);
 ```
 
 ```
-$factory = \Drupal::service('purge.purgeable.factory');
-$p = [
-  $factory->fromNamedRepresentation('tag', 'node:1'),
-  $factory->fromNamedRepresentation('tag', 'node:2'),
+$i = [
+  \Drupal::service('purge.invalidation.factory')->get('tag', 'node:1'),
+  \Drupal::service('purge.invalidation.factory')->get('tag', 'node:2'),
 ];
-\Drupal::service('purge.queue')->addMultiple($p);
+\Drupal::service('purge.queue')->addMultiple($i);
 ```
 
 #### Queue processing
 ```
 // Processing must occur within 10 seconds.
 $queue = \Drupal::service('purge.queue');
-if ($p = $queue->claim(10)) {
-  $success = \Drupal::service('purge.purgers')->purge($p);
-  if ($success) {
-    $queue->delete($p);
+if ($i = $queue->claim(10)) {
+  $success = \Drupal::service('purge.purgers')->invalidate($i);
+  if ($success) { // @ TODO - this no longer works
+    $queue->delete($i);
   }
   else {
-    $queue->release($p);
+    $queue->release($i);
   }
 }
 ```

@@ -11,12 +11,12 @@ use GuzzleHttp\Client;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Purger\PluginBase;
 use Drupal\purge\Purger\PluginInterface;
-use Drupal\purge\Purgeable\PluginInterface as Purgeable;
+use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 
 /**
  * Generic and highly configurable purger making HTTP requests.
  *
- * This purger best suits custom situations where reverse proxies or CDN's are
+ * This purger best suits custom situations where reverse proxies or CDNs are
  * not supported by any other purger, or situations requiring very specific
  * HTTP request based actions to remotely wipe objects.
  *
@@ -56,14 +56,14 @@ class Http extends PluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function purge(Purgeable $purgeable) {
+  public function invalidate(Invalidation $invalidation) {
     throw new \Exception("Sorry, Not yet implemented!");
   }
 
   /**
    * {@inheritdoc}
    */
-  public function purgeMultiple(array $purgeables) {
+  public function invalidateMultiple(array $invalidations) {
     throw new \Exception("Sorry, Not yet implemented!");
   }
 

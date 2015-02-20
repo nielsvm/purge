@@ -9,7 +9,7 @@ namespace Drupal\purge\Queuer;
 
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
-use Drupal\purge\Purgeable\ServiceInterface as PurgeableServiceInterface;
+use Drupal\purge\Invalidation\ServiceInterface as InvalidationServiceInterface;
 
 /**
  * Queues invalidated cache tags.
@@ -24,9 +24,9 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface {
   protected $purgeQueue;
 
   /**
-   * @var \Drupal\purge\Purgeable\ServiceInterface
+   * @var \Drupal\purge\Invalidation\ServiceInterface
    */
-  protected $purgePurgeableFactory;
+  protected $purgeInvalidationFactory;
 
   /**
    * A list of tag prefixes that should not go into the queue.
@@ -49,12 +49,12 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface {
    *
    * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
    *   The purge queue service.
-   * @param \Drupal\purge\Purgeable\ServiceInterface $purge_purgeable_factory
-   *   The purgeable factory service.
+   * @param \Drupal\purge\Invalidation\ServiceInterface $purge_invalidation_factory
+   *   The invalidation objects factory service.
    */
-  public function __construct(QueueServiceInterface $purge_queue, PurgeableServiceInterface $purge_purgeable_factory) {
+  public function __construct(QueueServiceInterface $purge_queue, InvalidationServiceInterface $purge_invalidation_factory) {
     $this->purgeQueue = $purge_queue;
-    $this->purgePurgeableFactory = $purge_purgeable_factory;
+    $this->purgeInvalidationFactory = $purge_invalidation_factory;
   }
 
   /**
@@ -63,7 +63,7 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface {
    * Queues invalidated cache tags as tag purgables.
    */
    public function invalidateTags(array $tags) {
-    $purgeables = [];
+    $invalidations = [];
 
     // Iterate each given tag and only add those we didn't queue before.
     foreach ($tags as $tag) {
@@ -77,14 +77,14 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface {
           }
         }
         if (!$blacklisted) {
-          $purgeables[] = $this->purgePurgeableFactory->fromNamedRepresentation('tag', $tag);
+          $invalidations[] = $this->purgeInvalidationFactory->get('tag', $tag);
           $this->invalidatedTags[] = $tag;
         }
       }
     }
 
-    // The queue buffers purgeables, though we don't care about that here.
-    $this->purgeQueue->addMultiple($purgeables);
+    // The queue buffers invalidations, though we don't care about that here.
+    $this->purgeQueue->addMultiple($invalidations);
   }
 
 }

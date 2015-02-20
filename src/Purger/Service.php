@@ -12,11 +12,11 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Purger\ServiceInterface;
-use Drupal\purge\Purger\Exception\InvalidPurgerBehaviorException;
-use Drupal\purge\Purgeable\PluginInterface as Purgeable;
+use Drupal\purge\Invalidation\Exception\InvalidStateException;
+use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 
 /**
- * Provides the service that allows transparent access to one or more purgers.
+ * Provides the service that distributes access to one or more purgers.
  */
 class Service extends ServiceBase implements ServiceInterface {
 
@@ -41,6 +41,28 @@ class Service extends ServiceBase implements ServiceInterface {
    * The plugin ID of the fallback backend.
    */
   const FALLBACK_PLUGIN = 'null';
+
+  /**
+   * Valid Invalidation object states that can be fed to the purger service.
+   *
+   * @var int[]
+   */
+  protected $states_inbound = [
+    Invalidation::STATE_NEW,
+    Invalidation::STATE_PURGING,
+    Invalidation::STATE_PURGEFAILED
+  ];
+
+  /**
+   * Valid Invalidation object states that return from purger plugins.
+   *
+   * @var int[]
+   */
+  protected $states_outbound = [
+    Invalidation::STATE_PURGED,
+    Invalidation::STATE_PURGING,
+    Invalidation::STATE_PURGEFAILED
+  ];
 
   /**
    * Instantiate the purgers service.
@@ -139,103 +161,98 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function purge(Purgeable $purgeable) {
+  public function invalidate(Invalidation $invalidation) {
+    $results = [];
 
-    // When there is just one enabled purger, we can directly call \Drupal\purge
-    // \Purger\PluginInterface::purge(). As both Service and the enabled plugin
-    // are sharing the same interface, the behavior has to be exactly identical.
-    if (count($this->purgers) === 1) {
-      if (current($this->purgers)->purge($purgeable)) {
-        if ($purgeable->getState() !== Purgeable::STATE_PURGED) {
-          throw new InvalidPurgerBehaviorException(
-            "The purger '" . key($this->purgers) . "' returned TRUE without setting state to STATE_PURGED.");
-        }
-        return TRUE;
-      }
-      return FALSE;
+    // Test $invalidation's inbound object state.
+    $initialstate = $invalidation->getState();
+    if (!in_array($initialstate, $this->states_inbound)) {
+      throw new InvalidStateException('Inbound state of $invalidation does not make any sense.');
     }
 
-    // When multiple purgers are loaded, the situation becomes complexer. One
-    // purger can fail (or require a two-step call), while the other succeeds
-    // when processing a purgeable. For that reason, a single failing purger
-    // will cause this call to return FALSE even if that means that - when
-    // being reattempted - the good purger will purge something twice. This
-    // approach might cause double purging, but prevents unnecessary complexity.
+    // Request each purger to execute the invalidation.
     foreach ($this->purgers as $plugin_id => $purger) {
+      $invalidation->setState($initialstate);
+      $purger->purge($invalidation);
 
-      // For every purger that attempts to purge this purgeable, reset its state.
-      $purgeable->setState(Purgeable::STATE_CLAIMED);
+      // Test the returning state of the object we just gave to the purger.
+      if (!in_array($invalidation->getState(), $this->states_outbound)) {
+        throw new InvalidStateException("$plugin_id left \$invalidation in a state that does not make any sense.");
+      }
 
-      // Let this purger; purge the given purgeable and collect the result.
-      if ($results[] = $purger->purge($purgeable)) {
-        if ($purgeable->getState() !== Purgeable::STATE_PURGED) {
-          throw new InvalidPurgerBehaviorException(
-            "The purger '$plugin_id' returned TRUE without setting state to STATE_PURGED.");
-        }
+      $results[] = $invalidation->getState();
+    }
+
+    // When multiple purgers processed $invalidation, we have more then one
+    // conclusion which has to become just one conclusion. This is because the
+    // Purge queue API and other public API consumers outside of this service,
+    // have no concept of 'multiple purgers'. This has the small cost that one
+    // failure will lead to all purgers redoing the invalidation next time, or
+    // that a multistep invalidation can be fed to the wrong purger next time (@todo).
+    if (!count($results) == 1) {
+      if (in_array(Invalidation::STATE_PURGEFAILED, $results)) {
+        $invalidation->setState(Invalidation::STATE_PURGEFAILED);
+      }
+      elseif (in_array(Invalidation::STATE_PURGING, $results)) {
+        $invalidation->setState(Invalidation::STATE_PURGING);
       }
       else {
-        $state = $purgeable->getState();
-        if (!(($state === Purgeable::STATE_PURGEFAILED) || ($state === Purgeable::STATE_PURGING))) {
-          throw new InvalidPurgerBehaviorException(
-            "The purger '$plugin_id' returned FALSE without setting state to PURGING or PURGEFAILED.");
-        }
-
-        // Since this purger claims that it failed, we assume the entire set of
-        // purgers to have failed. Working purgers might have to repeat purger
-        // this object for no reason, but at least we can assure that this
-        // purgeable was not entirely purged.
-        $purgeable->setState(Purgeable::STATE_PURGEFAILED);
-        return FALSE;
+        $invalidation->setState(Invalidation::STATE_PURGED);
       }
     }
-
-    // No purgers failed and therefore the state certainly is STATE_PURGED, as
-    // the logic above would have caused exceptions to be thrown otherwise.
-    return TRUE;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function purgeMultiple(array $purgeables) {
+  public function invalidateMultiple(array $invalidations) {
+    $initialstates = [];
+    $results = [];
 
-    foreach ($this->purgers as $plugin_id => $purger) {
-
-      // Set the state of each purgeable object to STATE_CLAIMED.
-      foreach ($purgeables as $purgeable) {
-        $purgeable->setState(Purgeable::STATE_CLAIMED);
-      }
-
-      // Attempt to purge all purgeable objects with this purger.
-      if ($purger->purgeMultiple($purgeables)) {
-
-        // As it succeeded, assure all purgeable objects to be in STATE_PURGED.
-        foreach ($purgeables as $purgeable) {
-          if ($purgeable->getState() !== Purgeable::STATE_PURGED) {
-            throw new InvalidPurgerBehaviorException(
-              "The purger '$plugin_id' returned TRUE without setting state to STATE_PURGED.");
-          }
-        }
-      }
-
-      // Handle failure and assume the full call to have failed.
-      else {
-
-        // When the call failed, check if all purgeables have the right state.
-        foreach ($purgeables as $purgeable) {
-          $state = $purgeable->getState();
-          if (!(($state === Purgeable::STATE_PURGEFAILED) || ($state === Purgeable::STATE_PURGING))) {
-            throw new InvalidPurgerBehaviorException(
-              "The purger '$plugin_id' returned FALSE without setting state to PURGING or PURGEFAILED.");
-          }
-        }
-
-        // Since this purger failed, the entire call fails and returns FALSE.
-        return FALSE;
+    // Test each invalidation object to see if its in a valid inbound state.
+    foreach ($invalidations as $i => $invalidation) {
+      $initialstates[$i] = $invalidation->getState();
+      if (!in_array($initialstates[$i], $this->states_inbound)) {
+        throw new InvalidStateException("Inbound state of \$invalidations[$i] does not make any sense.");
       }
     }
 
-    return TRUE;
+    // Request each purger to execute the list of invalidations.
+    foreach ($this->purgers as $plugin_id => $purger) {
+      foreach ($invalidations as $i => $invalidation) {
+        $invalidation->setState($initialstates[$i]);
+      }
+      $purger->invalidateMultiple($invalidations);
+
+      // Test all touched objects to see if any of them as an invalid state.
+      foreach ($invalidations as $i => $invalidation) {
+        $results[$i] = $invalidation->getState();
+        if (!in_array($results[$i], $this->states_outbound)) {
+          throw new InvalidStateException("$plugin_id left \$invalidations[$id] in a state that does not make any sense.");
+        }
+      }
+    }
+
+    // When multiple purgers processed $invalidations, we have more then one
+    // conclusion per invalidation objects, which has to become just one
+    // each time. This is because the Purge queue API and other public API
+    // consumers outside of this service, have no concept of 'multiple
+    // purgers'. This has the small cost that one failure will lead to all
+    // purgers redoing the invalidation next time, or that a multistep purge can
+    // be fed to the wrong purger next time (@todo).
+    if (count($this->purgers) > 1) {
+      foreach ($invalidations as $i => $invalidation) {
+        if (in_array(Invalidation::STATE_PURGEFAILED, $results[$i])) {
+          $invalidation->setState(Invalidation::STATE_PURGEFAILED);
+        }
+        elseif (in_array(Invalidation::STATE_PURGING, $results[$i])) {
+          $invalidation->setState(Invalidation::STATE_PURGING);
+        }
+        else {
+          $invalidation->setState(Invalidation::STATE_PURGED);
+        }
+      }
+    }
   }
 
   /**
@@ -248,7 +265,7 @@ class Service extends ServiceBase implements ServiceInterface {
     if (is_null($limit)) {
       $limit = 0;
 
-      // Ask each to report how many purgeable's it thinks it can purge.
+      // Ask all purgers to estimate how many invalidations they can process.
       foreach ($this->purgers as $purger) {
         $purger_limit = $purger->getCapacityLimit();
         if (!is_int($purger_limit)) {

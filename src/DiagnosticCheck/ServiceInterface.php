@@ -28,7 +28,7 @@ interface ServiceInterface extends PurgeServiceInterface, \Iterator, \Countable 
    * @param \Drupal\purge\Purger\ServiceInterface $purge_purgers
    *   The purge executive service, which wipes content from external caches.
    * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
-   *   The queue in which to store, claim and release purgeable objects from.
+   *   The queue in which to store, claim and release invalidation objects from.
    */
   function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, PurgerServiceInterface $purge_purgers, QueueServiceInterface $purge_queue);
 

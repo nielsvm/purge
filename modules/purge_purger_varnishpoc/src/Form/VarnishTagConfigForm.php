@@ -33,18 +33,19 @@ class VarnishTagConfigForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $config = $this->config('purge_purger_varnishpoc.settings');
     // @TODO: url needs to be split out into hostname, port, path, etc.
     $form['url'] = [
       '#type' => 'url',
       '#title' => $this->t('Varnish URL'),
-      '#default_value' => $this->config('purge_purger_varnishpoc.settings')->get('url'),
+      '#default_value' => $config->get('url'),
       '#required' => TRUE,
       '#description' => $this->t('The URL of the Varnish instance to send <code>BAN</code> requests to.')
     ];
     $form['header'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Header'),
-      '#default_value' => $this->config('purge_purger_varnishpoc.settings')->get('header'),
+      '#default_value' => $config->get('header'),
       '#required' => TRUE,
       '#description' => $this->t('The outbound HTTP header that identifies the tag to be purged.')
     ];
@@ -53,7 +54,7 @@ class VarnishTagConfigForm extends PurgerConfigFormBase {
       '#step' => 0.1,
       '#min' => 0,
       '#title' => $this->t('Timeout'),
-      '#default_value' => $this->config('purge_purger_varnishpoc.settings')->get('timeout'),
+      '#default_value' => $config->get('timeout'),
       '#required' => TRUE,
     ];
     $form['connect_timeout'] = [
@@ -61,7 +62,7 @@ class VarnishTagConfigForm extends PurgerConfigFormBase {
       '#step' => 0.1,
       '#min' => 0,
       '#title' => $this->t('Connection timeout'),
-      '#default_value' => $this->config('purge_purger_varnishpoc.settings')->get('connect_timeout'),
+      '#default_value' => $config->get('connect_timeout'),
       '#required' => TRUE,
     ];
     return parent::buildForm($form, $form_state);

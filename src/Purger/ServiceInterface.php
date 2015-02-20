@@ -11,8 +11,6 @@ use Drupal\purge\ServiceInterface as PurgeServiceInterface;
 use Drupal\purge\Purger\PurgerLookalikeInterface;
 
 /**
- * Describes a service that allows transparent access to one or more purgers.
+ * Describes a service that distributes access to one or more purgers.
  */
-interface ServiceInterface extends PurgeServiceInterface, PurgerLookalikeInterface {
-  
-}
+interface ServiceInterface extends PurgeServiceInterface, PurgerLookalikeInterface {}

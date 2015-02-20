@@ -12,10 +12,10 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\purge\Plugin\PurgePurgeable\Tag;
+use Drupal\purge\Plugin\PurgeInvalidation\Tag;
 use Drupal\purge\Purger\PluginBase;
 use Drupal\purge\Purger\PluginInterface;
-use Drupal\purge\Purgeable\PluginInterface as Purgeable;
+use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 
 /**
  * Varnish cache tags purger.
@@ -81,22 +81,22 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
    * @see https://github.com/guzzle/guzzle/blob/5.0.0/src/Exception/RequestException.php
    * @see http://stackoverflow.com/questions/25661591/php-how-to-check-for-timeout-exception-in-guzzle-4
    */
-  public function purge(Purgeable $purgeable) {
+  public function invalidate(Invalidation $invalidation) {
     $config = $this->configFactory->get('purge_purger_varnishpoc.conf');
 
-    // For now - until Purge only sends supported purgeables - mark anything
-    // besides a tag as immediately failed.
-    if (!$purgeable instanceof Tag) {
-      $purgeable->setState(Purgeable::STATE_PURGEFAILED);
+    // For now - until Purge only sends supported invalidation objects - mark
+    // anything besides a tag as immediately failed.
+    if (!$invalidation instanceof Tag) {
+      $invalidation->setState(Invalidation::STATE_PURGEFAILED);
       $this->numberFailed += 1;
-      return FALSE;
+      return;
     }
 
     // When the URL setting is still empty, we also fail.
     if (empty($config->get('url'))) {
-      $purgeable->setState(Purgeable::STATE_PURGEFAILED);
+      $invalidation->setState(Invalidation::STATE_PURGEFAILED);
       $this->numberFailed += 1;
-      return FALSE;
+      return;
     }
 
     // Construct a Guzzle request.
@@ -105,22 +105,20 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
       'connect_timeout' => $config->get('connect_timeout'),
     ];
     $request = $this->client->createRequest('BAN', $config->get('url'), $options)
-      ->addHeader($config->get('header'), static::toClearRegex($purgeable));
+      ->addHeader($config->get('header'), static::toClearRegex($invalidation));
 
     // Purge.
-    $purgeable->setState(Purgeable::STATE_PURGING);
+    $invalidation->setState(Invalidation::STATE_PURGING);
     try {
       $this->numberPurging++;
       $this->client->send($request);
-      $purgeable->setState(Purgeable::STATE_PURGED);
+      $invalidation->setState(Invalidation::STATE_PURGED);
       $this->numberPurging--;
       $this->numberPurged += 1;
-      return TRUE;
     }
     catch (RequestException $e) {
-      $purgeable->setState(Purgeable::STATE_PURGEFAILED);
+      $invalidation->setState(Invalidation::STATE_PURGEFAILED);
       $this->numberFailed += 1;
-      return FALSE;
     }
   }
 
@@ -146,10 +144,10 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
    *
    * @todo this is a expensive and non-efficient cheat-implementation.
    */
-  public function purgeMultiple(array $purgeables) {
+  public function invalidateMultiple(array $invalidations) {
     $results = [];
-    foreach ($purgeables as $purgeable) {
-      $results[] = $this->purge($purgeable);
+    foreach ($invalidations as $invalidation) {
+      $results[] = $this->invalidate($invalidation);
     }
     if (in_array(FALSE, $results)) {
       return FALSE;

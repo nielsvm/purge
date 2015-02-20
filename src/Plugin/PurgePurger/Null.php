@@ -10,7 +10,7 @@ namespace Drupal\purge\Plugin\PurgePurger;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Purger\PluginBase;
 use Drupal\purge\Purger\PluginInterface;
-use Drupal\purge\Purgeable\PluginInterface as Purgeable;
+use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 
 /**
  * API-compliant null purger back-end.
@@ -37,19 +37,19 @@ class Null extends PluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function purge(Purgeable $purgeable) {
+  public function invalidate(Invalidation $invalidation) {
     $this->numberFailed += 1;
-    $purgeable->setState(Purgeable::STATE_PURGEFAILED);
+    $invalidation->setState(Invalidation::STATE_PURGEFAILED);
     return FALSE;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function purgeMultiple(array $purgeables) {
-    foreach ($purgeables as $purgeable) {
+  public function invalidateMultiple(array $invalidations) {
+    foreach ($invalidations as $invalidation) {
       $this->numberFailed += 1;
-      $purgeable->setState(Purgeable::STATE_PURGEFAILED);
+      $invalidation->setState(Invalidation::STATE_PURGEFAILED);
     }
     return FALSE;
   }

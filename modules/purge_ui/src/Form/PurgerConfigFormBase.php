@@ -65,7 +65,6 @@ abstract class PurgerConfigFormBase extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
-    $form['#tree'] = TRUE;
 
     // If we're being rendered as AJAX modal dialog, change the form.
     if ($this->isDialog($form, $form_state)) {

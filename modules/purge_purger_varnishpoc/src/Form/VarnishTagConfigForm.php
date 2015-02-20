@@ -72,11 +72,12 @@ class VarnishTagConfigForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $c = $this->config('purge_purger_varnishpoc.settings');
-    $c->set('url', $form_state->getValue('url'))->save();
-    $c->set('header', $form_state->getValue('header'))->save();
-    $c->set('timeout', $form_state->getValue('timeout'))->save();
-    $c->set('connect_timeout', $form_state->getValue('connect_timeout'))->save();
+    $this->config('purge_purger_varnishpoc.settings')
+      ->set('url', $form_state->getValue('url'))
+      ->set('header', $form_state->getValue('header'))
+      ->set('timeout', $form_state->getValue('timeout'))
+      ->set('connect_timeout', $form_state->getValue('connect_timeout'))
+      ->save();
     return parent::submitForm($form, $form_state);
   }
 

@@ -102,8 +102,8 @@ class PurgerConfigFormTest extends WebTestBase {
   public function testValidForm() {
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->urlValid);
-    $this->assertNoFieldById('edit-actions-cancel');
-    $this->assertFieldById('edit-actions-submit');
+    $this->assertNoFieldById('edit-cancel');
+    $this->assertFieldById('edit-submit');
     $this->assertFieldByName('textfield');
   }
 
@@ -116,8 +116,8 @@ class PurgerConfigFormTest extends WebTestBase {
   public function testValidDialogForm() {
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->urlValidDialog);
-    $this->assertFieldById('edit-actions-cancel');
-    $this->assertFieldById('edit-actions-submit');
+    $this->assertFieldById('edit-cancel');
+    $this->assertFieldById('edit-submit');
     $this->assertFieldByName('textfield');
   }
 

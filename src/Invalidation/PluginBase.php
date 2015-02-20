@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purgeable\PluginBase.
+ * Contains \Drupal\purge\Invalidation\PluginBase.
  */
 
-namespace Drupal\purge\Purgeable;
+namespace Drupal\purge\Invalidation;
 
 use Drupal\Core\Plugin\PluginBase as CorePluginBase;
-use Drupal\purge\Purgeable\PluginInterface;
-use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
-use Drupal\purge\Purgeable\Exception\MissingExpressionException;
-use Drupal\purge\Purgeable\Exception\InvalidPropertyException;
-use Drupal\purge\Purgeable\Exception\InvalidStateException;
+use Drupal\purge\Invalidation\PluginInterface;
+use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
+use Drupal\purge\Invalidation\Exception\MissingExpressionException;
+use Drupal\purge\Invalidation\Exception\InvalidPropertyException;
+use Drupal\purge\Invalidation\Exception\InvalidStateException;
 
 /**
- * Base purgeable: which instructs the purger what to wipe.
+ * Base invalidation type: which instructs the purger what to invalidate.
  */
 abstract class PluginBase extends CorePluginBase implements PluginInterface {
 
@@ -27,7 +27,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   protected $expression;
 
   /**
-   * A enumerator that describes the current state of this purgeable.
+   * A enumerator that describes the current state of this invalidation.
    */
   private $state = NULL;
 

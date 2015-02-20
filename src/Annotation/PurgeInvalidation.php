@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Annotation\PurgePurgeable.
+ * Contains \Drupal\purge\Annotation\PurgeInvalidation.
  */
 
 namespace Drupal\purge\Annotation;
@@ -10,21 +10,21 @@ namespace Drupal\purge\Annotation;
 use Drupal\Component\Annotation\Plugin;
 
 /**
- * Defines a PurgePurgeable annotation object.
+ * Defines a PurgeInvalidation annotation object.
  *
  * @Annotation
  */
-class PurgePurgeable extends Plugin {
+class PurgeInvalidation extends Plugin {
 
   /**
-   * The plugin ID of the purgeable plugin.
+   * The plugin ID of the invalidation type.
    *
    * @var string
    */
   public $id;
 
   /**
-   * The human-readable name of the purgeable plugin.
+   * The human-readable name of the invalidation type.
    *
    * @ingroup plugin_translatable
    *
@@ -33,7 +33,7 @@ class PurgePurgeable extends Plugin {
   public $label;
 
   /**
-   * The description of the purgeable plugin.
+   * The description of the invalidation type.
    *
    * @ingroup plugin_translatable
    *
@@ -51,7 +51,7 @@ class PurgePurgeable extends Plugin {
   public $examples = [];
 
   /**
-   * Whether purgeable objects of this type require a string expression that
+   * Whether invalidation objects of this type require a string expression that
    * describes what needs to be purged. If put to FALSE, the fact this type is
    * instantiated is deemed enough information for purgers to execute it.
    *
@@ -61,8 +61,8 @@ class PurgePurgeable extends Plugin {
 
   /**
    * When expression_required = TRUE, this determines whether a string
-   * expression can be equal to "" (empty string). If FALSE, this purgeable type
-   * can not be instantiated with empty expression strings.
+   * expression can be equal to "" (empty string). If FALSE, this invalidation
+   * type can not be instantiated with empty expression strings.
    *
    * @var bool
    */

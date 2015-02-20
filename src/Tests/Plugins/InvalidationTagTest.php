@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\Plugins\PurgeableTagTest.
+ * Contains \Drupal\purge\Tests\Plugins\InvalidationTagTest.
  */
 
 namespace Drupal\purge\Tests\Plugins;
 
-use Drupal\purge\Tests\Purgeable\PluginTestBase;
+use Drupal\purge\Tests\Invalidation\PluginTestBase;
 
 /**
- * Tests the 'tag' purgeable plugin.
+ * Tests the 'tag' invalidation type.
  *
  * @group purge
- * @see \Drupal\purge\Purgeable\PluginInterface
+ * @see \Drupal\purge\Invalidation\PluginInterface
  */
-class PurgeableTagTest extends PluginTestBase {
+class InvalidationTagTest extends PluginTestBase {
   protected $plugin_id = 'tag';
   protected $representations = [
     'tag',

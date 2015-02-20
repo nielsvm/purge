@@ -2,18 +2,18 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgePurgeable\Tag.
+ * Contains \Drupal\purge\Plugin\PurgeInvalidation\Tag.
  */
 
-namespace Drupal\purge\Plugin\PurgePurgeable;
+namespace Drupal\purge\Plugin\PurgeInvalidation;
 
-use Drupal\purge\Purgeable\PluginInterface;
-use Drupal\purge\Purgeable\PluginBase;
+use Drupal\purge\Invalidation\PluginInterface;
+use Drupal\purge\Invalidation\PluginBase;
 
 /**
  * Describes invalidation by Drupal cache tag, e.g.: 'user:1', 'menu:footer'.
  *
- * @PurgePurgeable(
+ * @PurgeInvalidation(
  *   id = "tag",
  *   label = @Translation("Tag"),
  *   description = @Translation("Invalidates by Drupal cache tag."),

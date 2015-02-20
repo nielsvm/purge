@@ -8,7 +8,7 @@
 namespace Drupal\purge\Purger;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\purge\Purgeable\PluginInterface as Purgeable;
+use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 
 /**
  * Describes a purger or service transparently acting as one.
@@ -16,43 +16,90 @@ use Drupal\purge\Purgeable\PluginInterface as Purgeable;
 interface PurgerLookalikeInterface {
 
   /**
-   * Wipe the given purgeable from the external cache system.
+   * Invalidate $invalidation from the external cache and update its state.
    *
-   * @param \Drupal\purge\Purgeable\PluginInterface $purgeable
-   *   A purgeable describes a single item to be purged and can be created using
-   *   the 'purge.purgeable.factory' service, either directly or through a queue
-   *   claim.
+   * Implementations of this method have the responsibility of invalidating the
+   * given $invalidation object from the external cache. In addition to the work
+   * itself, it also has to call $invalidation->setState() and set it to the
+   * situation that applies after its attempt. In the case the purge succeeded,
+   * this has to be STATE_PURGED and if it failed, its STATE_PURGEFAILED.
    *
-   * @warning
-   *   Some purgers can set the purgeable's state to STATE_PURGING and return
-   *   FALSE here, indicating that the item needs to be fed to the purger once
-   *   again later.
+   * Some external caching platforms - think CDNs - need more time to finish
+   * invalidations and require later confirmation. In these cases, the state has
+   * to be set to STATE_PURGING so that it gets fed to this method again in the
+   * future (via the queue presumably). That means that incoming $invalidation
+   * objects have to be checked for the STATE_PURGING in these cases as well.
    *
-   * @return
-   *   Returns TRUE on full success and FALSE in any other case. In addition it
-   *   always calls \Drupal\purge\Purgeable\PluginInterface::setState() on
-   *   the $purgeable instance, setting it to STATE_PURGED or STATE_PURGEFAILED.
+   * @param \Drupal\purge\Invalidation\PluginInterface $invalidation
+   *   The invalidation object describes what needs to be invalidated from the
+   *   external caching system, and gets instantiated by the service
+   *   'purge.invalidation.factory', either directly or through a queue claim.
+   *
+   * @throws \Drupal\purge\Purger\Exception\InvalidStateException
+   *   Exception thrown by \Drupal\purge\Purger\ServiceInterface::invalidate
+   *   when the incoming $invalidation object's state is not any of these:
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_NEW
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGING
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGEFAILED
+   *
+   * @throws \Drupal\purge\Purger\Exception\InvalidStateException
+   *   Exception thrown by \Drupal\purge\Purger\ServiceInterface::invalidate
+   *   when the invalidation object processed by the purger plugin, is not in
+   *   any of the following states:
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGED
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGING
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGEFAILED
+   *
+   * @see \Drupal\purge\Invalidation\PluginInterface::setState()
+   * @see \Drupal\purge\Invalidation\PluginInterface::getState()
+   *
+   * @return void
    */
-  public function purge(Purgeable $purgeable);
+  public function invalidate(Invalidation $invalidation);
 
   /**
-   * Wipe all given purgeables from the external cache system.
+   * Invalidate all $invalidations from the external cache and update states.
    *
-   * @param array $purgeables
-   *   Non-associative array with purgeable object instances compliant with
-   *   \Drupal\purge\Purgeable\PluginInterface, either directly generated
-   *   through the 'purge.purgeable.factory' service or claimed from the queue.
+   * Implementations of this method have the responsibility of invalidating the
+   * given list of invalidation objects from the external cache. In addition to
+   * the work itself, it also has to call $invalidation->setState() on each one
+   * of them and set it to the situation that applies for each object. In the
+   * case an individual invalidation succeeded, its state becomes STATE_PURGED
+   * or STATE_PURGEFAILED when it failed.
    *
-   * @return
-   *   Returns TRUE if all were successfully purged but FALSE if just one of
-   *   them failed. The \Drupal\purge\Purgeable\PluginInterface::setState()
-   *   method is being called on each of them and states are set to either
-   *   STATE_PURGED, STATE_PURGING or STATE_PURGEFAILED. Both failed purges as
-   *   active purges will result in a FALSE and its being assumed that they
-   *   will be fed to the purger again later, e.g. by releasing back to the
-   *   queue service.
+   * Some external caching platforms - think CDNs - need more time to finish
+   * invalidations and require later confirmation. In these cases, the state has
+   * to be set to STATE_PURGING so that it gets fed to this method again in the
+   * future (via the queue presumably). That means that incoming $invalidation
+   * objects have to be checked for the STATE_PURGING in these cases as well.
+   *
+   * @param \Drupal\purge\Invalidation\PluginInterface[] $invalidations
+   *   Non-associative array of invalidation objects that each describe what
+   *   needs to be invalidated by the external caching system. These objects can
+   *   come from the queue or from the 'purge.invalidation.factory' service.
+   *
+   * @throws \Drupal\purge\Purger\Exception\InvalidStateException
+   *   Thrown by \Drupal\purge\Purger\ServiceInterface::invalidateMultiple when
+   *   any of the incoming invalidation objects does not have any of the
+   *   following states:
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_NEW
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGING
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGEFAILED
+   *
+   * @throws \Drupal\purge\Purger\Exception\InvalidStateException
+   *   Thrown by \Drupal\purge\Purger\ServiceInterface::invalidateMultiple when
+   *   any of the invalidation objects returning from the purger plugin are not
+   *   in one of these states:
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGED
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGING
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGEFAILED
+   *
+   * @see \Drupal\purge\Invalidation\PluginInterface::setState()
+   * @see \Drupal\purge\Invalidation\PluginInterface::getState()
+   *
+   * @return void
    */
-  public function purgeMultiple(array $purgeables);
+  public function invalidateMultiple(array $invalidations);
 
   /**
    * Calculate how many purges this purger thinks it can process.
@@ -73,7 +120,7 @@ interface PurgerLookalikeInterface {
    *   are the only active purger.
    *
    * @return int
-   *   Integer, the number of purgeable objects it can process during runtime.
+   *   The number of invalidation objects it can process during runtime.
    */
   public function getCapacityLimit();
 
@@ -81,14 +128,14 @@ interface PurgerLookalikeInterface {
    * Gets a reasonable number of seconds that this purger thinks it needs per purge.
    *
    * The 'purge.queue' service accepts a expiry time in seconds when one or more
-   * purgeables are being claimed for immediate purging. This method is supposed
-   * to give a indication of how many seconds this purger thinks it will need
-   * for the execution of one single purge. This estimation is then multiplied
-   * for every claimed queue item: so if this method returns 5 (int) and 4 items
-   * are claimed from the queue at once, the total lease expiry time is 20
-   * seconds. If the purger fails to execute all 4 within those 20 seconds, the
-   * queue will release the claimed items and another purger instance may get in
-   * and try them again.
+   * invalidations are being claimed for immediate purging. This method is
+   * supposed to give a indication of how many seconds this purger thinks it
+   * will need for the execution of one single purge. This estimation is then
+   * multiplied for every claimed queue item: so if this method returns 5 (int)
+   * and 4 items are claimed from the queue at once, the total lease expiry time
+   * is 20 seconds. If the purger fails to execute all 4 within those 20
+   * seconds, the queue could release the claimed items to another purger
+   * instance that might be running.
    *
    * @warning
    *   Every implemented purger should implement this method and take it very
@@ -108,7 +155,7 @@ interface PurgerLookalikeInterface {
    *   automatically add up all estimations returned by each individual purger.
    *
    * @return int
-   *   Integer, a safe number of seconds where in which one purgeable could be processed.
+   *   A safe number of seconds in which one invalidation could be processed.
    */
   public function getClaimTimeHint();
 
@@ -133,16 +180,15 @@ interface PurgerLookalikeInterface {
    *
    * @warning
    *   This method will - for most transactional purgers - return 0 and is
-   *   intended for complex external cache systems (e.g. CDN's) that process
+   *   intended for complex external cache systems (e.g. CDNs) that process
    *   wipe-requests on thousands of servers and therefore take longer than a
-   *   few seconds to process each. The purger can change the state of a
-   *   purgeable to STATE_PURGING, return FALSE on them and cause them to be
-   *   released back to the queue. During the next processing iteration these
-   *   purgers can mark these as STATE_PURGED with a resulting TRUE. Purgers can
-   *   for instance use Drupal's state API to track this kind of information.
+   *   few seconds to process each. The purger changes the state of the
+   *   invalidation object to STATE_PURGING and cause them to be released back
+   *   to the queue. During the next processing iteration these purgers can mark
+   *   these as STATE_PURGED.
    *
    * @return int
-   *   Integer, the current number of purgeables being processed.
+   *   The current number of invalidation objects being processed.
    */
   public function getNumberPurging();
 

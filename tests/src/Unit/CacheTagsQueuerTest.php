@@ -31,19 +31,19 @@ class CacheTagsQueuerTest extends UnitTestCase {
   protected $queue;
 
   /**
-   * The mocked purgeable factory.
+   * The mocked invalidation object factory.
    *
-   * @var \PHPUnit_Framework_MockObject_MockObject|\Drupal\purge\Purgeable\ServiceInterface
+   * @var \PHPUnit_Framework_MockObject_MockObject|\Drupal\purge\Invalidation\ServiceInterface
    */
-  protected $purgeableFactory;
+  protected $invalidationFactory;
 
   /**
    * {@inheritdoc}
    */
   protected function setUp() {
     $this->queue = $this->getMock('\Drupal\purge\Queue\ServiceInterface');
-    $this->purgeableFactory = $this->getMock('\Drupal\purge\Purgeable\ServiceInterface');
-    $this->cacheTagsQueuer = new CacheTagsQueuer($this->queue, $this->purgeableFactory);
+    $this->invalidationFactory = $this->getMock('\Drupal\purge\Invalidation\ServiceInterface');
+    $this->cacheTagsQueuer = new CacheTagsQueuer($this->queue, $this->invalidationFactory);
   }
 
   /**
@@ -51,22 +51,22 @@ class CacheTagsQueuerTest extends UnitTestCase {
    *
    * @dataProvider providerTestInvalidateTags()
    */
-  public function testInvalidateTags(array $tag_invalidations, $purgeable_instantiations, array $queue_additions) {
-    $tag_purgeable = $this->getMockBuilder('\Drupal\purge\Plugin\PurgePurgeable\Tag')
+  public function testInvalidateTags(array $tag_invalidations, $invalidation_instantiations, array $queue_additions) {
+    $tag_invalidation = $this->getMockBuilder('\Drupal\purge\Plugin\PurgeInvalidation\Tag')
       ->disableOriginalConstructor();
-    $this->purgeableFactory->expects($this->exactly($purgeable_instantiations))
+    $this->invalidationFactory->expects($this->exactly($invalidation_instantiations))
       ->method('get')
       ->with('tag')
-      ->willReturn($tag_purgeable);
+      ->willReturn($tag_invalidation);
 
     $this->queue->expects($this->exactly(count($tag_invalidations)))
       ->method('addMultiple');
     for ($i = 0; $i < count($tag_invalidations); $i++) {
       $this->queue->expects($this->at($i))
         ->method('addMultiple')
-        ->with($this->callback(function($purgeables) use ($queue_additions, $i) {
-          // Ensure we have an array of purgeables of the right size.
-          return is_array($purgeables) && count($purgeables) == $queue_additions[$i];
+        ->with($this->callback(function($invalidations) use ($queue_additions, $i) {
+          // Ensure we have an array of invalidations of the right size.
+          return is_array($invalidations) && count($invalidations) == $queue_additions[$i];
         }));
     }
 

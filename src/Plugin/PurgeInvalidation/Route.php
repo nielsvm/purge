@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgePurgeable\Route.
+ * Contains \Drupal\purge\Plugin\PurgeInvalidation\Route.
  */
 
-namespace Drupal\purge\Plugin\PurgePurgeable;
+namespace Drupal\purge\Plugin\PurgeInvalidation;
 
-use Drupal\purge\Purgeable\PluginInterface;
-use Drupal\purge\Purgeable\PluginBase;
-use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
+use Drupal\purge\Invalidation\PluginInterface;
+use Drupal\purge\Invalidation\PluginBase;
+use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
  * Describes invalidation by Drupal route, e.g.: '<front>', 'user.page'.
  *
- * @PurgePurgeable(
+ * @PurgeInvalidation(
  *   id = "route",
  *   label = @Translation("Route"),
  *   description = @Translation("Invalidates by Drupal route."),

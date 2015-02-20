@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\Plugins\PurgeableWildcardPathTest.
+ * Contains \Drupal\purge\Tests\Plugins\InvalidationWildcardPathTest.
  */
 
 namespace Drupal\purge\Tests\Plugins;
 
-use Drupal\purge\Tests\Purgeable\PluginTestBase;
+use Drupal\purge\Tests\Invalidation\PluginTestBase;
 
 /**
- * Tests the 'wildcardpath' purgeable plugin.
+ * Tests the 'wildcardpath' invalidation type.
  *
  * @group purge
- * @see \Drupal\purge\Purgeable\PluginInterface
+ * @see \Drupal\purge\Invalidation\PluginInterface
  */
-class PurgeableWildcardPathTest extends PluginTestBase {
+class InvalidationWildcardPathTest extends PluginTestBase {
   protected $plugin_id = 'wildcardpath';
   protected $representations = [
     '/*',

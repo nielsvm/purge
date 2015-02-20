@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgePurgeable\Path.
+ * Contains \Drupal\purge\Plugin\PurgeInvalidation\Path.
  */
 
-namespace Drupal\purge\Plugin\PurgePurgeable;
+namespace Drupal\purge\Plugin\PurgeInvalidation;
 
-use Drupal\purge\Purgeable\PluginInterface;
-use Drupal\purge\Purgeable\PluginBase;
-use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
+use Drupal\purge\Invalidation\PluginInterface;
+use Drupal\purge\Invalidation\PluginBase;
+use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
  * Describes path based invalidation, e.g. "news/article-1".
  *
- * @PurgePurgeable(
+ * @PurgeInvalidation(
  *   id = "path",
  *   label = @Translation("Path"),
  *   description = @Translation("Invalidates by path."),

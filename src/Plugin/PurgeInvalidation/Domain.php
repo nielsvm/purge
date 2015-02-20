@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgePurgeable\Domain.
+ * Contains \Drupal\purge\Plugin\PurgeInvalidation\Domain.
  */
 
-namespace Drupal\purge\Plugin\PurgePurgeable;
+namespace Drupal\purge\Plugin\PurgeInvalidation;
 
-use Drupal\purge\Purgeable\PluginInterface;
-use Drupal\purge\Purgeable\PluginBase;
-use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
+use Drupal\purge\Invalidation\PluginInterface;
+use Drupal\purge\Invalidation\PluginBase;
+use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
  * Describes an entire domain to be invalidated.
  *
- * @PurgePurgeable(
+ * @PurgeInvalidation(
  *   id = "domain",
  *   label = @Translation("Domain"),
  *   description = @Translation("Invalidates an entire domain name."),

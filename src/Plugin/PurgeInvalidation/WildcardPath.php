@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgePurgeable\WildcardPath.
+ * Contains \Drupal\purge\Plugin\PurgeInvalidation\WildcardPath.
  */
 
-namespace Drupal\purge\Plugin\PurgePurgeable;
+namespace Drupal\purge\Plugin\PurgeInvalidation;
 
-use Drupal\purge\Plugin\PurgePurgeable\Path;
-use Drupal\purge\Purgeable\PluginInterface;
-use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
+use Drupal\purge\Plugin\PurgeInvalidation\Path;
+use Drupal\purge\Invalidation\PluginInterface;
+use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
  * Describes wildcardpath based invalidation, e.g. "news/*".
  *
- * @PurgePurgeable(
+ * @PurgeInvalidation(
  *   id = "wildcardpath",
  *   label = @Translation("Path with wildcard"),
  *   description = @Translation("Invalidates by path."),

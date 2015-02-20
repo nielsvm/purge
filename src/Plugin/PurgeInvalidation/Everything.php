@@ -2,18 +2,18 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgePurgeable\Everything.
+ * Contains \Drupal\purge\Plugin\PurgeInvalidation\Everything.
  */
 
-namespace Drupal\purge\Plugin\PurgePurgeable;
+namespace Drupal\purge\Plugin\PurgeInvalidation;
 
-use Drupal\purge\Purgeable\PluginInterface;
-use Drupal\purge\Purgeable\PluginBase;
+use Drupal\purge\Invalidation\PluginInterface;
+use Drupal\purge\Invalidation\PluginBase;
 
 /**
  * Describes that everything is to be invalidated.
  *
- * @PurgePurgeable(
+ * @PurgeInvalidation(
  *   id = "everything",
  *   label = @Translation("Everything"),
  *   description = @Translation("Invalidates everything."),

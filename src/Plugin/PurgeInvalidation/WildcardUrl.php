@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgePurgeable\WildcardUrl.
+ * Contains \Drupal\purge\Plugin\PurgeInvalidation\WildcardUrl.
  */
 
-namespace Drupal\purge\Plugin\PurgePurgeable;
+namespace Drupal\purge\Plugin\PurgeInvalidation;
 
-use Drupal\purge\Plugin\PurgePurgeable\Url;
-use Drupal\purge\Purgeable\PluginInterface;
-use Drupal\purge\Purgeable\PluginBase;
-use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
+use Drupal\purge\Plugin\PurgeInvalidation\Url;
+use Drupal\purge\Invalidation\PluginInterface;
+use Drupal\purge\Invalidation\PluginBase;
+use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
  * Describes wildcard URL based invalidation, e.g. "http://site.com/node/*".
  *
- * @PurgePurgeable(
+ * @PurgeInvalidation(
  *   id = "wildcardurl",
  *   label = @Translation("Url with wildcard"),
  *   description = @Translation("Invalidates by URL."),

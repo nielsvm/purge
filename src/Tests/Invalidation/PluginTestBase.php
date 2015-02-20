@@ -2,55 +2,55 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\Purgeable\PluginTestBase.
+ * Contains \Drupal\purge\Tests\Invalidation\PluginTestBase.
  */
 
-namespace Drupal\purge\Tests\Purgeable;
+namespace Drupal\purge\Tests\Invalidation;
 
-use Drupal\purge\Purgeable\PluginInterface as Purgeable;
-use Drupal\purge\Purgeable\PluginBase;
-use Drupal\purge\Purgeable\Exception\InvalidPropertyException;
-use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
-use Drupal\purge\Purgeable\Exception\InvalidStateException;
+use Drupal\purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Invalidation\PluginBase;
+use Drupal\purge\Invalidation\Exception\InvalidPropertyException;
+use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
+use Drupal\purge\Invalidation\Exception\InvalidStateException;
 use Drupal\purge\Tests\KernelTestBase;
 
 /**
- * Provides an abstract test class to thoroughly test Purgeable plugins.
+ * Provides an abstract test class to thoroughly test invalidation types.
  *
- * @see \Drupal\purge\Purgeable\PluginInterface
+ * @see \Drupal\purge\Invalidation\PluginInterface
  */
 abstract class PluginTestBase extends KernelTestBase {
 
   /**
-   * The plugin ID of the purgeable plugin being tested.
+   * The plugin ID of the invalidation type being tested.
    *
    * @var string
    */
   protected $plugin_id;
 
   /**
-   * List of - read only - allowed data properties on purgeable objects.
+   * List of - read only - allowed data properties on invalidation types.
    *
    * @var array
    */
   protected $properties = ['data', 'item_id', 'created'];
 
   /**
-   * String representations valid to the purgeable plugin being tested.
+   * String representations valid to the invalidation type being tested.
    *
    * @var string
    */
   protected $representations;
 
   /**
-   * String representations INvalid to the purgeable plugin being tested.
+   * String representations INvalid to the invalidation type being tested.
    *
    * @var string
    */
   protected $representationsInvalid;
 
   /**
-   * String representations INvalid to all purgeable plugins being tested.
+   * String representations INvalid to all invalidation types being tested.
    *
    * @var string
    */
@@ -61,53 +61,53 @@ abstract class PluginTestBase extends KernelTestBase {
    */
   function setUp() {
     parent::setUp();
-    $this->initializePurgeablesService();
+    $this->initializeInvalidationFactoryService();
   }
 
   /**
-   * Retrieve a purgeable object provided by the plugin.
+   * Retrieve an invalidation object provided by the plugin.
    */
   function getInstance() {
-    return $this->purgePurgeableFactory->get(
+    return $this->purgeInvalidationFactory->get(
       $this->plugin_id,
       $this->representations[0]);
   }
 
   /**
-   * Tests the code contract strictly enforced on purgeable plugins.
+   * Tests the code contract strictly enforced on invalidation type plugins.
    */
   function testCodeContract() {
-    $this->assertTrue($this->getInstance() instanceof Purgeable,
-      'Uses \Drupal\purge\Purgeable\PluginInterface');
+    $this->assertTrue($this->getInstance() instanceof Invalidation,
+      'Uses \Drupal\purge\Invalidation\PluginInterface');
     $this->assertTrue($this->getInstance() instanceof PluginBase,
-      'Uses \Drupal\purge\Purgeable\PluginBase');
+      'Uses \Drupal\purge\Invalidation\PluginBase');
   }
 
   /**
    * Test if setting and getting the object state goes well.
    *
-   * @see \Drupal\purge\Purgeable\PluginInterface::setState
-   * @see \Drupal\purge\Purgeable\PluginInterface::getState
-   * @see \Drupal\purge\Purgeable\PluginInterface::getStateString
+   * @see \Drupal\purge\Invalidation\PluginInterface::setState
+   * @see \Drupal\purge\Invalidation\PluginInterface::getState
+   * @see \Drupal\purge\Invalidation\PluginInterface::getStateString
    */
   function testState() {
     $p = $this->getInstance();
     $test_states = [
-      Purgeable::STATE_NEW           => 'NEW',
-      Purgeable::STATE_ADDING        => 'ADDING',
-      Purgeable::STATE_ADDED         => 'ADDED',
-      Purgeable::STATE_CLAIMED       => 'CLAIMED',
-      Purgeable::STATE_PURGING       => 'PURGING',
-      Purgeable::STATE_PURGED        => 'PURGED',
-      Purgeable::STATE_PURGEFAILED   => 'PURGEFAILED',
-      Purgeable::STATE_RELEASING     => 'RELEASING',
-      Purgeable::STATE_RELEASED      => 'RELEASED',
-      Purgeable::STATE_DELETING      => 'DELETING',
-      Purgeable::STATE_DELETED       => 'DELETED',
+      Invalidation::STATE_NEW           => 'NEW',
+      Invalidation::STATE_ADDING        => 'ADDING',
+      Invalidation::STATE_ADDED         => 'ADDED',
+      Invalidation::STATE_CLAIMED       => 'CLAIMED',
+      Invalidation::STATE_PURGING       => 'PURGING',
+      Invalidation::STATE_PURGED        => 'PURGED',
+      Invalidation::STATE_PURGEFAILED   => 'PURGEFAILED',
+      Invalidation::STATE_RELEASING     => 'RELEASING',
+      Invalidation::STATE_RELEASED      => 'RELEASED',
+      Invalidation::STATE_DELETING      => 'DELETING',
+      Invalidation::STATE_DELETED       => 'DELETED',
     ];
 
-    // Test the initial state of the purgeable object.
-    $this->assertEqual($p->getState(), Purgeable::STATE_NEW, 'getState: STATE_NEW');
+    // Test the initial state of the invalidation object.
+    $this->assertEqual($p->getState(), Invalidation::STATE_NEW, 'getState: STATE_NEW');
     $this->assertEqual($p->getStateString(), 'NEW', 'getStateString: NEW');
 
     // Test setting, getting and getting the string version of each state.
@@ -117,7 +117,7 @@ abstract class PluginTestBase extends KernelTestBase {
       $this->assertEqual($p->getStateString(), $string, "getStateString(): $string");
     }
 
-    // Test \Drupal\purge\Purgeable\PluginInterface::setState catches bad input.
+    // Test \Drupal\purge\Invalidation\PluginInterface::setState catches bad input.
     foreach(['2', 'NEW', -1, 11, 100] as $badstate) {
       $thrown = FALSE;
       try {
@@ -132,9 +132,9 @@ abstract class PluginTestBase extends KernelTestBase {
   }
 
   /**
-   * Test if typecasting a purgeable to a string gets us input representation.
+   * Test if typecasting invalidation objects to strings gets us input representation.
    *
-   * @see \Drupal\purge\Purgeable\PluginInterface::__toString
+   * @see \Drupal\purge\Invalidation\PluginInterface::__toString
    */
   function testStringRepresentation() {
     $this->assertEqual( (string)$this->getInstance(), $this->representations[0],
@@ -142,23 +142,23 @@ abstract class PluginTestBase extends KernelTestBase {
   }
 
   /**
-   * Test if all valid string representations create the desired purgeable.
+   * Test if all valid string expressions create the desired invalidation.
    *
-   * @see \Drupal\purge\Purgeable\PluginInterface::__construct
+   * @see \Drupal\purge\Invalidation\PluginInterface::__construct
    */
   function testStringValidRepresentations() {
     foreach ($this->representations as $r) {
-      $purgeable = $this->purgePurgeableFactory->fromRepresentation($r);
-      $this->assertEqual($this->plugin_id, $purgeable->getPluginId(),
-        sprintf("fromRepresentation(%s) returned a %s, expected %s purgeable.",
-          var_export($r, TRUE), $purgeable->getPluginId(), $this->plugin_id));
+      $invalidation = $this->purgeInvalidationFactory->fromRepresentation($r);
+      $this->assertEqual($this->plugin_id, $invalidation->getPluginId(),
+        sprintf("fromRepresentation(%s) returned a %s, expected %s invalidation.",
+          var_export($r, TRUE), $invalidation->getPluginId(), $this->plugin_id));
     }
   }
 
   /**
-   * Test if all invalid string representations create the desired purgeable.
+   * Test if all invalid string representations create the desired invalidation.
    *
-   * @see \Drupal\purge\Purgeable\PluginInterface::__construct
+   * @see \Drupal\purge\Invalidation\PluginInterface::__construct
    */
   function testStringInvalidRepresentations($representations = NULL) {
     if (is_null($representations)) {
@@ -168,10 +168,10 @@ abstract class PluginTestBase extends KernelTestBase {
     else {
       foreach ($representations as $r) {
 
-        // Test the expected exception on the purgeable plugin directly.
+        // Test the expected exception on the invalidation type directly.
         $thrown = FALSE;
         try {
-          $purgeable = $this->purgePurgeableFactory->get($this->plugin_id, $r);
+          $invalidation = $this->purgeInvalidationFactory->get($this->plugin_id, $r);
         }
         catch (InvalidExpressionException $e) {
           $thrown = $e;
@@ -182,9 +182,9 @@ abstract class PluginTestBase extends KernelTestBase {
 
         // Assure that fromRepresentation doesn't return our plugin.
         try {
-          $purgeable = $this->purgePurgeableFactory->fromRepresentation($r);
-          $this->assertNotEqual($this->plugin_id, $purgeable->getPluginId(),
-            sprintf("fromRepresentation(%s) returned not a %s purgeable.",
+          $invalidation = $this->purgeInvalidationFactory->fromRepresentation($r);
+          $this->assertNotEqual($this->plugin_id, $invalidation->getPluginId(),
+            sprintf("fromRepresentation(%s) returned not a %s invalidation.",
               var_export($r, TRUE), $this->plugin_id));
         }
         catch (InvalidExpressionException $e) {
@@ -198,8 +198,8 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Test setting and getting the plugin ID.
    *
-   * @see \Drupal\purge\Purgeable\PluginInterface::__getPluginId
-   * @see \Drupal\purge\Purgeable\PluginInterface::__setPluginId
+   * @see \Drupal\purge\Invalidation\PluginInterface::__getPluginId
+   * @see \Drupal\purge\Invalidation\PluginInterface::__setPluginId
    */
   function testPluginIdSettingAndGetting() {
     $p = $this->getInstance();
@@ -211,7 +211,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Test whether certain variables can be read.
    *
-   * @see \Drupal\purge\Purgeable\PluginInterface::__get
+   * @see \Drupal\purge\Invalidation\PluginInterface::__get
    */
   function testVariableGettingValidOnes() {
     $p = $this->getInstance();
@@ -230,7 +230,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Test whether random variables cannot be read.
    *
-   * @see \Drupal\purge\Purgeable\PluginInterface::__get
+   * @see \Drupal\purge\Invalidation\PluginInterface::__get
    */
   function testVariableGettingInvalidOnes() {
     $properties = ['a', 'b', 'c', 'd'];
@@ -251,7 +251,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Test whether setting variables is dissalowed.
    *
-   * @see \Drupal\purge\Purgeable\PluginInterface::__set
+   * @see \Drupal\purge\Invalidation\PluginInterface::__set
    */
   function testVariableSettingProhibition() {
     $p = $this->getInstance();
@@ -268,11 +268,11 @@ abstract class PluginTestBase extends KernelTestBase {
   }
 
   /**
-   * Test the methods dealing with the Queue Item data properties of purgeables.
+   * Test the methods dealing with the Queue data properties of invalidations.
    *
-   * @see \Drupal\purge\Purgeable\PluginInterface::setQueueItemInfo
-   * @see \Drupal\purge\Purgeable\PluginInterface::setQueueItemId
-   * @see \Drupal\purge\Purgeable\PluginInterface::setQueueItemCreated
+   * @see \Drupal\purge\Invalidation\PluginInterface::setQueueItemInfo
+   * @see \Drupal\purge\Invalidation\PluginInterface::setQueueItemId
+   * @see \Drupal\purge\Invalidation\PluginInterface::setQueueItemCreated
    */
   function testQueueItemData() {
     $p = $this->getInstance();

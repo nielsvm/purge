@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgePurgeable\Url.
+ * Contains \Drupal\purge\Plugin\PurgeInvalidation\Url.
  */
 
-namespace Drupal\purge\Plugin\PurgePurgeable;
+namespace Drupal\purge\Plugin\PurgeInvalidation;
 
 use Drupal\Component\Utility\UrlHelper;
-use Drupal\purge\Purgeable\PluginInterface;
-use Drupal\purge\Purgeable\PluginBase;
-use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
+use Drupal\purge\Invalidation\PluginInterface;
+use Drupal\purge\Invalidation\PluginBase;
+use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
  * Describes URL based invalidation, e.g. "http://site.com/node/1".
  *
- * @PurgePurgeable(
+ * @PurgeInvalidation(
  *   id = "url",
  *   label = @Translation("Url"),
  *   description = @Translation("Invalidates by URL."),

@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgePurgeable\RegularExpression.
+ * Contains \Drupal\purge\Plugin\PurgeInvalidation\RegularExpression.
  */
 
-namespace Drupal\purge\Plugin\PurgePurgeable;
+namespace Drupal\purge\Plugin\PurgeInvalidation;
 
-use Drupal\purge\Purgeable\PluginInterface;
-use Drupal\purge\Purgeable\PluginBase;
-use Drupal\purge\Purgeable\Exception\InvalidExpressionException;
+use Drupal\purge\Invalidation\PluginInterface;
+use Drupal\purge\Invalidation\PluginBase;
+use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
  * Describes invalidation by regular expression, e.g.: '\.(jpg|jpeg|css|js)$'.
  *
- * @PurgePurgeable(
+ * @PurgeInvalidation(
  *   id = "regex",
  *   label = @Translation("Regular Expression"),
  *   description = @Translation("Invalidates by regular expression."),

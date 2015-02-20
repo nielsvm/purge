@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\Plugins\PurgeablePathTest.
+ * Contains \Drupal\purge\Tests\Plugins\InvalidationPathTest.
  */
 
 namespace Drupal\purge\Tests\Plugins;
 
-use Drupal\purge\Tests\Purgeable\PluginTestBase;
+use Drupal\purge\Tests\Invalidation\PluginTestBase;
 
 /**
- * Tests the 'path' purgeable plugin.
+ * Tests the 'path' invalidation type.
  *
  * @group purge
- * @see \Drupal\purge\Purgeable\PluginInterface
+ * @see \Drupal\purge\Invalidation\PluginInterface
  */
-class PurgeablePathTest extends PluginTestBase {
+class InvalidationPathTest extends PluginTestBase {
   protected $plugin_id = 'path';
   protected $representations = [
     '/',

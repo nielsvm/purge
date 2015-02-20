@@ -1,0 +1,20 @@
+purge_purger_http.settings:
+  type: mapping
+  label: 'HTTP Purger'
+  mapping:
+    hostname:
+      type: string
+      label: 'The hostname to connect to for the custom outbound HTTP request.'
+      translatable: false
+    port:
+      type: integer
+      label: 'The port to connect to for the custom outbound HTTP request.'
+      translatable: false
+    path:
+      type: string
+      label: 'The path to trigger a cache invalidation for.'
+      translatable: false
+    request_method:
+      type: string
+      label: 'The HTTP request method to use for the HTTP Purger.'
+      translatable: false

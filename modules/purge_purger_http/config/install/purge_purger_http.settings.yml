@@ -1,0 +1,4 @@
+hostname: 'localhost'
+port: 80
+path: ''
+request_method: 'BAN'

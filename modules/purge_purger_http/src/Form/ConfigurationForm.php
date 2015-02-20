@@ -16,6 +16,13 @@ use Drupal\purge_ui\Form\PurgerConfigFormBase;
 class ConfigurationForm extends PurgerConfigFormBase {
 
   /**
+   * Static listing of all possible requests methods.
+   *
+   * @var array
+   */
+  protected $request_methods = ['BAN', 'GET', 'POST', 'HEAD', 'PUT', 'OPTIONS', 'PURGE', 'DELETE', 'TRACE', 'CONNECT'];
+
+  /**
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
@@ -34,7 +41,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $purge_purger_http_config = $this->config('purge_purger_http.settings');
+    $config = $this->config('purge_purger_http.settings');
 
     $form['http_settings'] = [
       '#title' => $this->t('HTTP Settings'),
@@ -47,13 +54,13 @@ class ConfigurationForm extends PurgerConfigFormBase {
     $form['http_settings']['hostname'] = [
       '#title' => $this->t('Hostname'),
       '#type' => 'textfield',
-      '#default_value' => $purge_purger_http_config->get('hostname'),
+      '#default_value' => $config->get('hostname'),
       '#required' => FALSE,
     ];
     $form['http_settings']['port'] = [
       '#title' => $this->t('Port'),
       '#type' => 'textfield',
-      '#default_value' => $purge_purger_http_config->get('port'),
+      '#default_value' => $config->get('port'),
       '#required' => FALSE,
     ];
     /*
@@ -62,19 +69,18 @@ class ConfigurationForm extends PurgerConfigFormBase {
     $form['http_settings']['path'] = [
       '#title' => $this->t('Path'),
       '#type' => 'textfield',
-      '#default_value' => $purge_purger_http_config->get('path'),
+      '#default_value' => $config->get('path'),
       '#required' => FALSE,
     ];
     /*
      * @todo Confirm all relevant HTTP requests are covered.
      * http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
      */
-    $options = ['GET', 'POST', 'HEAD', 'PUT', 'OPTIONS', 'PURGE', 'BAN', 'DELETE', 'TRACE', 'CONNECT'];
     $form['http_settings']['request_method'] = [
       '#title' => $this->t('Request Method'),
       '#type' => 'select',
-      '#options' => $options,
-      '#default_value' => $purge_purger_http_config->get('request_method'),
+      '#default_value' => array_search($config->get('request_method'), $this->request_methods),
+      '#options' => $this->request_methods,
       '#required' => FALSE,
     ];
 
@@ -92,6 +98,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
       '#type' => 'details',
       '#open' => TRUE,
     ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -103,7 +110,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
       ->set('hostname', $form_state->getValue('hostname'))
       ->set('port', $form_state->getValue('port'))
       ->set('path', $form_state->getValue('path'))
-      ->set('request_method', $form_state->getValue('request_method'))
+      ->set('request_method', $this->request_methods[$form_state->getValue('request_method')])
       ->save();
 
     return parent::submitForm($form, $form_state);

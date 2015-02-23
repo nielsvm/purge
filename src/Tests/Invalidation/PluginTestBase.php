@@ -28,7 +28,7 @@ abstract class PluginTestBase extends KernelTestBase {
    *
    * @var string
    */
-  protected $ilugin_id;
+  protected $plugin_id;
 
   /**
    * List of - read only - allowed data properties on invalidation types.
@@ -189,12 +189,14 @@ abstract class PluginTestBase extends KernelTestBase {
     $this->assertEqual($this->plugin_id, $i->getPluginId());
     $d = $i->getPluginDefinition();
     $this->assertTrue(is_array($d));
-    $this->assertEqual(count($d), 8);
     $this->assertTrue(is_array($d['examples']));
     $this->assertTrue($d['label'] instanceof TranslationWrapper);
     $this->assertFalse(empty((string) $d['label']));
     $this->assertTrue($d['description'] instanceof TranslationWrapper);
     $this->assertFalse(empty((string) $d['description']));
+    $this->assertTrue(isset($d['expression_required']));
+    $this->assertTrue(isset($d['expression_can_be_empty']));
+    $this->assertTrue(isset($d['expression_must_be_string']));
     if (!$d["expression_required"]) {
       $this->assertFalse($d["expression_can_be_empty"]);
     }

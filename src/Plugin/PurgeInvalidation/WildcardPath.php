@@ -20,7 +20,8 @@ use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
  *   description = @Translation("Invalidates by path."),
  *   examples = {"news/*"},
  *   expression_required = TRUE,
- *   expression_can_be_empty = FALSE
+ *   expression_can_be_empty = FALSE,
+ *   expression_must_be_string = TRUE
  * )
  */
 class WildcardPath extends Path implements PluginInterface {

@@ -19,11 +19,10 @@ interface ServiceInterface extends PurgeServiceInterface {
    *
    * @param string $plugin_id
    *   The id of the invalidation type being instantiated.
-   * @param string|null $expression
-   *   String that describes what needs to be invalidated, or NULL when the
-   *   requested type of invalidation doesn't require one. Invalidation types
-   *   often validate if the given expression makes sense and throw exceptions
-   *   in case of bad input.
+   * @param mixed|null $expression
+   *   Value - usually string - that describes the kind of invalidation, NULL
+   *   when the type of invalidation doesn't require $expression. Types usually
+   *   validate the given expression and throw exceptions for bad input.
    *
    * @throws \Drupal\purge\Invalidation\Exception\MissingExpressionException
    *   Thrown when plugin defined expression_required = TRUE and when it is

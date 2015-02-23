@@ -26,7 +26,6 @@ class InvalidationTagTest extends PluginTestBase {
     NULL,
     '',
     ['node', '1'],
-    'wildtag:*',
-    '/path:notation'
+    'wildtag:*'
   ];
 }

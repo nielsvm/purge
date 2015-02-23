@@ -29,7 +29,6 @@ class InvalidationPathTest extends PluginTestBase {
   protected $expressionsInvalid = [
     NULL,
     '/news',
-    'news?page=0',
     'news/*',
     '/news/*',
     '*'

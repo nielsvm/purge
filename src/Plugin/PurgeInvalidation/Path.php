@@ -20,7 +20,8 @@ use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
  *   description = @Translation("Invalidates by path."),
  *   examples = {"news/article-1"},
  *   expression_required = TRUE,
- *   expression_can_be_empty = TRUE
+ *   expression_can_be_empty = TRUE,
+ *   expression_must_be_string = TRUE
  * )
  */
 class Path extends PluginBase implements PluginInterface {
@@ -37,8 +38,11 @@ class Path extends PluginBase implements PluginInterface {
       throw new InvalidExpressionException('Path invalidations cannot be "*", use "wildcardpath".');
     }
     if (strpos($this->expression, ' ') !== FALSE) {
-      throw new InvalidExpressionException(
-      'Path invalidations cannot contain spaces, use %20 instead.');
+      throw new InvalidExpressionException('Path invalidations cannot contain spaces, use %20 instead.');
+    }
+    if (strpos($this->expression, '/') === 0) {
+      throw new InvalidExpressionException('Path invalidations cannot start with slashes, must be relative!');
     }
   }
+  
 }

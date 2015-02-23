@@ -17,5 +17,6 @@ use Drupal\purge\Tests\Invalidation\PluginTestBase;
  */
 class InvalidationEverythingTest extends PluginTestBase {
   protected $plugin_id = 'everything';
-  protected $expressionsInvalid = [NULL, '', 'foobar'];
+  protected $expressions = [NULL];
+  protected $expressionsInvalid = ['', 'foobar'];
 }

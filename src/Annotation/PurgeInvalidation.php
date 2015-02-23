@@ -68,4 +68,12 @@ class PurgeInvalidation extends Plugin {
    */
   public $expression_can_be_empty = FALSE;
 
+  /**
+   * When expression got passed but when it is not a string, this will result in
+   * an error when its set to TRUE.
+   *
+   * @var bool
+   */
+  public $expression_must_be_string = FALSE;
+
 }

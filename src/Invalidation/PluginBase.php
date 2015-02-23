@@ -20,9 +20,9 @@ use Drupal\purge\Invalidation\Exception\InvalidStateException;
 abstract class PluginBase extends CorePluginBase implements PluginInterface {
 
   /**
-   * String expression (or NULL) that describes what needs to be invalidated.
+   * Mixed expression (or NULL) that describes what needs to be invalidated.
    *
-   * @var string|null
+   * @var mixed|null
    */
   protected $expression;
 
@@ -173,11 +173,14 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
     if ($d['expression_required'] && is_null($this->expression)) {
       throw new MissingExpressionException("Invalidating by $plugin_id requires an expression.");
     }
-    elseif(is_string($this->expression) && !$d['expression_required']) {
+    elseif ($d['expression_required'] && empty($this->expression) && !$d['expression_can_be_empty']) {
+      throw new InvalidExpressionException("Cannot invalidate by $plugin_id with empty expression.");
+    }
+    elseif (!$d['expression_required'] && !is_null($this->expression)) {
       throw new InvalidExpressionException("Invalidating by $plugin_id requires no expression.");
     }
-    if (!$d['expression_can_be_empty'] && $d['expression_required'] && empty($this->expression)) {
-      throw new InvalidExpressionException("Invalidating by $plugin_id cannot with an empty expression.");
+    elseif (!is_null($this->expression) && !is_string($this->expression) && $d['expression_must_be_string']) {
+      throw new InvalidExpressionException("Cannot invalidate by $plugin_id without string expression.");
     }
   }
 }

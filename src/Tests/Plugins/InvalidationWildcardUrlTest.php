@@ -22,7 +22,6 @@ class InvalidationWildcardUrlTest extends PluginTestBase {
     NULL,
     '',
     'http:// /aa',
-    'ftp://test.com/path',
     'http://www.test.com',
     'https://domain/path'
   ];

@@ -55,7 +55,6 @@ type is the most important one to support in your architecture.
 * **``everything``** Invalidates everything.
 * **``path``** Invalidates by path, e.g. ``news/article-1``.
 * **``regex``** Invalidates by regular expression, e.g.: ``\.(jpg|jpeg|css|js)$``.
-* **``route``** Invalidates by Drupal route, e.g.: ``<front>`` or ``user.page``.
 * **``tag``** Invalidates by Drupal cache tag, e.g.: ``menu:footer``.
 * **``url``** Invalidates by URL, e.g. ``http://site.com/node/1``.
 * **``wildcardpath``** Invalidates by path, e.g. ``news/*``.

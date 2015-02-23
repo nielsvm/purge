@@ -20,19 +20,8 @@ use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
  *   description = @Translation("Invalidates an entire domain name."),
  *   examples = {"www.site.com", "site.com"},
  *   expression_required = TRUE,
- *   expression_can_be_empty = FALSE
+ *   expression_can_be_empty = FALSE,
+ *   expression_must_be_string = TRUE
  * )
  */
-class Domain extends PluginBase implements PluginInterface {
-
-  /**
-   * {@inheritdoc}
-   *
-   * @todo
-   *   Find out if there's a - Drupal level - way to determine if the given
-   *   name is valid or not.
-   */
-  public function validateExpression() {
-    parent::validateExpression();
-  }
-}
+class Domain extends PluginBase implements PluginInterface {}

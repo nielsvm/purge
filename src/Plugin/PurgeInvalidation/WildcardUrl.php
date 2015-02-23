@@ -35,4 +35,5 @@ class WildcardUrl extends Url implements PluginInterface {
       throw new InvalidExpressionException($this->t('Wildcard invalidations should contain an asterisk.'));
     }
   }
+  
 }

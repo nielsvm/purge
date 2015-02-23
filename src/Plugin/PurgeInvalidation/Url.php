@@ -92,4 +92,5 @@ class Url extends PluginBase implements PluginInterface {
     // @see \Drupal\purge\Plugin\PurgeInvalidation\WildcardUrl
     return $url;
   }
+  
 }

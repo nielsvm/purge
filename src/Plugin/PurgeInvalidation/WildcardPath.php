@@ -32,7 +32,7 @@ class WildcardPath extends Path implements PluginInterface {
   public function validateExpression() {
     parent::validateExpression(FALSE);
     if (strpos($this->expression, '*') === FALSE) {
-      throw new InvalidExpressionException('Wildcard invalidations should contain an asterisk.');
+      throw new InvalidExpressionException($this->t('Wildcard invalidations should contain an asterisk.'));
     }
   }
 }

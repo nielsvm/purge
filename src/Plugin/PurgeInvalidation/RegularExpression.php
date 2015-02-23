@@ -16,7 +16,7 @@ use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
  *
  * @PurgeInvalidation(
  *   id = "regex",
- *   label = @Translation("Regular Expression"),
+ *   label = @Translation("Regular expression"),
  *   description = @Translation("Invalidates by regular expression."),
  *   examples = {"\.(jpg|jpeg|css|js)$"},
  *   expression_required = TRUE,

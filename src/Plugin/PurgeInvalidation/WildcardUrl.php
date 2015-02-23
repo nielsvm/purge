@@ -32,7 +32,7 @@ class WildcardUrl extends Url implements PluginInterface {
   public function validateExpression() {
     $url = parent::validateExpression(FALSE);
     if (strpos($url, '*') === FALSE) {
-      throw new InvalidExpressionException('Wildcard invalidations should contain an asterisk.');
+      throw new InvalidExpressionException($this->t('Wildcard invalidations should contain an asterisk.'));
     }
   }
 }

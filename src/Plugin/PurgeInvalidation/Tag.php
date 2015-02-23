@@ -32,7 +32,7 @@ class Tag extends PluginBase implements PluginInterface {
   public function validateExpression() {
     parent::validateExpression();
     if (strpos($this->expression, '*') !== FALSE) {
-      throw new InvalidExpressionException('Tags cannot contain asterisks.');
+      throw new InvalidExpressionException($this->t('Tag invalidations cannot contain asterisks.'));
     }
   }
 

@@ -63,7 +63,7 @@ class Url extends PluginBase implements PluginInterface {
       $this->url->setAbsolute();
     }
     else {
-      throw new InvalidExpressionException('Url invalidations require either a full URL string or a \Drupal\Core\Url object.');
+      throw new InvalidExpressionException($this->t('Url invalidations require either a full URL string or a \Drupal\Core\Url object.'));
     }
     return $this->url;
   }
@@ -77,17 +77,16 @@ class Url extends PluginBase implements PluginInterface {
     // Set $this->url by calling getUrl and do some more validation.
     $url = $this->getUrl()->toString();
     if ((strpos($url, 'http') === FALSE) && (strpos($url, 'https') === FALSE)) {
-      throw new InvalidExpressionException('Scheme unsupported!');
+      throw new InvalidExpressionException($this->t('Scheme unsupported!'));
     }
     if (!UrlHelper::isValid($url, TRUE)) {
-      throw new InvalidExpressionException('The URL is not valid.');
+      throw new InvalidExpressionException($this->t('The URL is invalid.'));
     }
     if ($wildcard_check && (strpos($url, '*') !== FALSE)) {
-      throw new InvalidExpressionException('URL invalidations should not contain asterisks, use "wildcardurl"!');
+      throw new InvalidExpressionException($this->t('URL invalidations should not contain asterisks!'));
     }
     if (strpos($url, ' ') !== FALSE) {
-      throw new InvalidExpressionException(
-      'URL invalidations cannot contain spaces, use %20 instead.');
+      throw new InvalidExpressionException($this->t('URL invalidations cannot contain spaces, use %20 instead.'));
     }
 
     // @see \Drupal\purge\Plugin\PurgeInvalidation\WildcardUrl

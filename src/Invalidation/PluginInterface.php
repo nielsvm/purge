@@ -7,12 +7,13 @@
 
 namespace Drupal\purge\Invalidation;
 
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 
 /**
  * Describes the invalidation: which instructs the purger what to invalidate.
  */
-interface PluginInterface extends PluginInspectionInterface {
+interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPluginInterface {
 
   /**
    * Invalidation state: the invalidation is just instantiated.

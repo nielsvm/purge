@@ -7,6 +7,7 @@
 
 namespace Drupal\purge\Invalidation;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\PluginBase as CorePluginBase;
 use Drupal\purge\Invalidation\PluginInterface;
 use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
@@ -36,11 +37,21 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    */
   private $queueItemInfo = NULL;
 
-  /**
-   * {@inheritdoc}
+   /**
+   * Constructs a \Drupal\purge\Invalidation\PluginBase object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation.
+   *   The string translation service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, $string_translation) {
     parent::__construct([], $plugin_id, $plugin_definition);
+    $this->stringTranslation = $string_translation;
 
     // Store the given expression key (can be NULL) and validate it thereafter.
     $this->expression = $configuration['expression'];
@@ -76,6 +87,18 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
     else {
       return $this->queueItemInfo[$name];
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('string_translation')
+    );
   }
 
   /**
@@ -170,17 +193,18 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   public function validateExpression() {
     $plugin_id = $this->getPluginId();
     $d = $this->getPluginDefinition();
+    $topt = ['@type' => strtolower($d['label'])];
     if ($d['expression_required'] && is_null($this->expression)) {
-      throw new MissingExpressionException("Invalidating by $plugin_id requires an expression.");
+      throw new MissingExpressionException($this->t("Argument required for @type invalidation.", $topt));
     }
     elseif ($d['expression_required'] && empty($this->expression) && !$d['expression_can_be_empty']) {
-      throw new InvalidExpressionException("Cannot invalidate by $plugin_id with empty expression.");
+      throw new InvalidExpressionException($this->t("Argument required for @type invalidation.", $topt));
     }
     elseif (!$d['expression_required'] && !is_null($this->expression)) {
-      throw new InvalidExpressionException("Invalidating by $plugin_id requires no expression.");
+      throw new InvalidExpressionException($this->t("Argument given for @type invalidation.", $topt));
     }
     elseif (!is_null($this->expression) && !is_string($this->expression) && $d['expression_must_be_string']) {
-      throw new InvalidExpressionException("Cannot invalidate by $plugin_id without string expression.");
+      throw new InvalidExpressionException($this->t("String argument required for @type invalidation.", $topt));
     }
   }
 }

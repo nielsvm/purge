@@ -7,7 +7,6 @@
 
 namespace Drupal\purge\Plugin\PurgeQueue;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Queue\PluginInterface;
 use Drupal\purge\Queue\PluginBase;
 
@@ -42,13 +41,6 @@ class Memory extends PluginBase implements PluginInterface {
   const DATA = 0;
   const EXPIRE = 1;
   const CREATED = 2;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static();
-  }
 
   /**
    * Initialize the buffer.

@@ -7,12 +7,14 @@
 
 namespace Drupal\purge\Purger;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Plugin\PluginBase as CorePluginBase;
 use Drupal\purge\Purger\PluginInterface;
 
 /**
  * Provides a base class for all purgers - the cache invalidation executors.
  */
-abstract class PluginBase implements PluginInterface {
+abstract class PluginBase extends CorePluginBase implements PluginInterface {
 
   /**
    * The number of successfully processed invalidations for this instance.
@@ -34,6 +36,17 @@ abstract class PluginBase implements PluginInterface {
    * @var int
    */
   protected $numberFailed = 0;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition
+    );
+  }
 
   /**
    * {@inheritdoc}

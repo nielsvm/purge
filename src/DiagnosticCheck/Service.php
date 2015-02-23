@@ -7,7 +7,6 @@
 
 namespace Drupal\purge\DiagnosticCheck;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\purge\ServiceBase;
@@ -20,11 +19,6 @@ use Drupal\purge\DiagnosticCheck\PluginInterface;
  * Provides a service that interacts with diagnostic checks.
  */
 class Service extends ServiceBase implements ServiceInterface {
-
-  /**
-   * @var \Symfony\Component\DependencyInjection\ContainerInterface
-   */
-  protected $serviceContainer;
 
   /**
    * The purge executive service, which wipes content from external caches.
@@ -57,9 +51,8 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * {@inheritdoc}
    */
-  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, PurgerServiceInterface $purge_purgers, QueueServiceInterface $purge_queue) {
+  function __construct(PluginManagerInterface $pluginManager, PurgerServiceInterface $purge_purgers, QueueServiceInterface $purge_queue) {
     $this->pluginManager = $pluginManager;
-    $this->serviceContainer = $service_container;
     $this->purgePurgers = $purge_purgers;
     $this->purgeQueue = $purge_queue;
 

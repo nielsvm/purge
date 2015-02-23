@@ -33,9 +33,17 @@ class File extends Memory implements PluginInterface {
   const SEPARATOR = '|';
 
   /**
-   * The queue constructor.
+   * Constructs a \Drupal\purge\Plugin\PurgeQueue\File object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
    */
-  function __construct() {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->file = str_replace('public:/', PublicStream::basePath(), $this->file);
   }
 

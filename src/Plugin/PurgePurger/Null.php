@@ -7,7 +7,6 @@
 
 namespace Drupal\purge\Plugin\PurgePurger;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Purger\PluginBase;
 use Drupal\purge\Purger\PluginInterface;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
@@ -26,13 +25,6 @@ use Drupal\purge\Invalidation\PluginInterface as Invalidation;
  * )
  */
 class Null extends PluginBase implements PluginInterface {
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static();
-  }
 
   /**
    * {@inheritdoc}

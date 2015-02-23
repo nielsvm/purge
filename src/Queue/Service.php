@@ -7,7 +7,6 @@
 
 namespace Drupal\purge\Queue;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\DestructableInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
@@ -21,11 +20,6 @@ use Drupal\purge\Queue\PluginInterface;
  * Provides the service that lets invalidations interact with a queue backend.
  */
 class Service extends ServiceBase implements ServiceInterface, DestructableInterface {
-
-  /**
-   * @var \Symfony\Component\DependencyInjection\ContainerInterface
-   */
-  protected $serviceContainer;
 
   /**
    * @var \Drupal\Core\Config\ConfigFactoryInterface
@@ -61,16 +55,13 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
    *   The plugin manager for this service.
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $service_container
-   *   The service container.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
    * @param \Drupal\purge\Invalidation\ServiceInterface $purge_invalidation_factory
    *   The service that instantiates invalidation objects for queue items.
    */
-  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, ConfigFactoryInterface $config_factory, InvalidationService $purge_invalidation_factory) {
+  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory, InvalidationService $purge_invalidation_factory) {
     $this->pluginManager = $pluginManager;
-    $this->serviceContainer = $service_container;
     $this->configFactory = $config_factory;
     $this->purgeInvalidationFactory = $purge_invalidation_factory;
 

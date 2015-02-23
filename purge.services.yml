@@ -30,7 +30,7 @@ services:
   # objects returning from 'purge.purgers'.
   purge.queue:
     class: Drupal\purge\Queue\Service
-    arguments: ['@plugin.manager.purge.queue', '@service_container', '@config.factory', '@purge.invalidation.factory']
+    arguments: ['@plugin.manager.purge.queue', '@config.factory', '@purge.invalidation.factory']
     tags:
       - { name: needs_destruction }
   plugin.manager.purge.queue:
@@ -44,7 +44,7 @@ services:
   # prevent all purges in the first place.
   purge.diagnostics:
     class: Drupal\purge\DiagnosticCheck\Service
-    arguments: ['@plugin.manager.purge.diagnostics', '@service_container', '@purge.purgers', '@purge.queue']
+    arguments: ['@plugin.manager.purge.diagnostics', '@purge.purgers', '@purge.queue']
   plugin.manager.purge.diagnostics:
     class:  Drupal\purge\DiagnosticCheck\PluginManager
     parent: default_plugin_manager
@@ -54,7 +54,7 @@ services:
   # The executive service which lets enabled purgers invalidate external caches.
   purge.purgers:
     class: Drupal\purge\Purger\Service
-    arguments: ['@plugin.manager.purge.purgers', '@service_container', '@config.factory']
+    arguments: ['@plugin.manager.purge.purgers', '@config.factory']
   plugin.manager.purge.purgers:
     class: Drupal\purge\Purger\PluginManager
     parent: default_plugin_manager

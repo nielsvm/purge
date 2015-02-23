@@ -8,18 +8,30 @@
 namespace Drupal\purge\Queue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Plugin\PluginBase as CorePluginBase;
 use Drupal\purge\Queue\PluginInterface;
 
 /**
  * Provides a ReliableQueueInterface compliant queue that holds queue items.
  */
-abstract class PluginBase implements PluginInterface {
+abstract class PluginBase extends CorePluginBase implements PluginInterface {
 
   /**
    * {@inheritdoc}
    */
   public function getPluginName() {
     return basename(str_replace('\\', '/', get_class($this)));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition
+    );
   }
 
   /**

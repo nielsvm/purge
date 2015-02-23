@@ -7,7 +7,6 @@
 
 namespace Drupal\purge\Purger;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\ServiceBase;
@@ -19,11 +18,6 @@ use Drupal\purge\Invalidation\PluginInterface as Invalidation;
  * Provides the service that distributes access to one or more purgers.
  */
 class Service extends ServiceBase implements ServiceInterface {
-
-  /**
-   * @var \Symfony\Component\DependencyInjection\ContainerInterface
-   */
-  protected $serviceContainer;
 
   /**
    * @var \Drupal\Core\Config\ConfigFactoryInterface
@@ -69,14 +63,11 @@ class Service extends ServiceBase implements ServiceInterface {
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
    *   The plugin manager for this service.
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $service_container
-   *   The service container.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
    */
-  function __construct(PluginManagerInterface $pluginManager, ContainerInterface $service_container, ConfigFactoryInterface $config_factory) {
+  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory) {
     $this->pluginManager = $pluginManager;
-    $this->serviceContainer = $service_container;
     $this->configFactory = $config_factory;
 
     // Instantiate all the purgers and let them configure themselves.

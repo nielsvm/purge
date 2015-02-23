@@ -47,13 +47,21 @@ class Database extends PluginBase implements Queue {
   protected $name;
 
   /**
-   * Setup a database backed queue.
+   * Constructs a \Drupal\purge\Plugin\PurgeQueue\Database object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
    * @param \Drupal\Core\Database\Connection $database
    *   The active database connection.
    * @param \Drupal\Core\Queue\QueueDatabaseFactory $queue_database
    *   The 'queue.database' service creating database queue objects.
    */
-  function __construct(Connection $database, QueueDatabaseFactory $queue_database) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database, QueueDatabaseFactory $queue_database) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->database = $database;
     $this->queueDatabase = $queue_database;
 
@@ -69,6 +77,9 @@ class Database extends PluginBase implements Queue {
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
       $container->get('database'),
       $container->get('queue.database')
     );

@@ -126,15 +126,16 @@ $i = [
 
 #### Queue processing
 ```
-// Processing must occur within 10 seconds.
+$purgers = \Drupal::service('purge.purgers');
 $queue = \Drupal::service('purge.queue');
-if ($i = $queue->claim(10)) {
-  $success = \Drupal::service('purge.purgers')->invalidate($i);
-  if ($success) { // @ TODO - this no longer works
-    $queue->delete($i);
-  }
-  else {
-    $queue->release($i);
-  }
-}
+
+// Claim one item, process and let the queue handle the result.
+$i = $queue->claim();
+$purgers->invalidate($i);
+$queue->deleteOrRelease($i);
+
+// Claim a bunch, process and let the queue handle the resulting objects.
+$i = $queue->claimMultiple(30);
+$purgers->invalidateMultiple($i);
+$queue->deleteOrReleaseMultiple($i);
 ```

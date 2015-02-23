@@ -284,6 +284,36 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   /**
    * {@inheritdoc}
    */
+  public function deleteOrRelease(Invalidation $invalidation) {
+    $this->deleteOrReleaseMultiple([$invalidation]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteOrReleaseMultiple(array $invalidations) {
+    $release = [];
+    $delete = [];
+    foreach($invalidations as $invalidation) {
+      switch ($invalidation->getState()) {
+        case Invalidation::STATE_PURGED:
+          $delete[] = $invalidation;
+          break;
+        case Invalidation::STATE_PURGING:
+        case Invalidation::STATE_PURGEFAILED:
+          $release[] = $invalidation;
+          break;
+        default:
+          throw new UnexpectedServiceConditionException("Unexpected state.");
+      }
+    }
+    $this->bufferSetState(Invalidation::STATE_DELETING, $delete);
+    $this->bufferSetState(Invalidation::STATE_RELEASING, $release);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   function emptyQueue() {
     $this->bufferSetState(Invalidation::STATE_DELETED, $this->buffer);
     $this->queue->deleteQueue();

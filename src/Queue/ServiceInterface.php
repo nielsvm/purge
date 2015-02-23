@@ -29,7 +29,7 @@ interface ServiceInterface extends PurgeServiceInterface {
   /**
    * Add multiple invalidation objects to the queue, schedule for later purging.
    *
-   * @param array $invalidations
+   * @param \Drupal\purge\Invalidation\PluginInterface[] $invalidations
    *   A non-associative array with \Drupal\purge\Invalidation\PluginInterface
    *   objects to be added to the queue. The invalidations can later be claimed
    *   from the queue and fed to the 'purge.purgers' executor.
@@ -70,7 +70,7 @@ interface ServiceInterface extends PurgeServiceInterface {
    *   parallel processes, due this inefficiency the one-hour default is
    *   recommended for most purgers.
    *
-   * @return array
+   * @return \Drupal\purge\Invalidation\PluginInterface[]
    *   Returned will be a non-associative array with the given amount of
    *   \Drupal\purge\Invalidation\PluginInterface objects as claimed. Be aware
    *   that its expected that the claimed invalidations will need to be
@@ -92,7 +92,7 @@ interface ServiceInterface extends PurgeServiceInterface {
   /**
    * Release invalidations that couldn't be purged, back to the queue.
    *
-   * @param array $invalidations
+   * @param \Drupal\purge\Invalidation\PluginInterface[] $invalidations
    *   A non-associative array with \Drupal\purge\Invalidation\PluginInterface
    *   objects to released and marked as available in the queue. Once released,
    *   other consumers can claim them again and attempt purging them.
@@ -112,13 +112,41 @@ interface ServiceInterface extends PurgeServiceInterface {
   /**
    * Delete multiple invalidations from the queue at once.
    *
-   * @param array $invalidations
+   * @param \Drupal\purge\Invalidation\PluginInterface[] $invalidations
    *   A non-associative array with \Drupal\purge\Invalidation\PluginInterface
    *   objects to be removed from the queue. Once called, the instance might
    *   still exists but should not be accessed anymore, cleanup might occur
    *   later during runtime.
    */
   public function deleteMultiple(array $invalidations);
+
+  /**
+   * Release the item to, or delete it from the queue depending its state.
+   *
+   * @param \Drupal\purge\Invalidation\PluginInterface $invalidation
+   *   The invalidation object after the 'purge.purgers' service attempted
+   *   invalidation.
+   *
+   * @see \Drupal\purge\Purger\Service::invalidate
+   * @see \Drupal\purge\Purger\Service::invalidateMultiple
+   *
+   * @return void
+   */
+  public function deleteOrRelease(Invalidation $invalidation);
+
+  /**
+   * Release the items to, or delete them from the queue depending their state.
+   *
+   * @param \Drupal\purge\Invalidation\PluginInterface[] $invalidations
+   *   The invalidation objects after the 'purge.purgers' service attempted
+   *   their invalidation.
+   *
+   * @see \Drupal\purge\Purger\Service::invalidate
+   * @see \Drupal\purge\Purger\Service::invalidateMultiple
+   *
+   * @return void
+   */
+  public function deleteOrReleaseMultiple(array $invalidations);
 
   /**
    * Empty the entire queue and reset all statistics.

@@ -16,6 +16,7 @@ use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 use Drupal\purge\Queue\Exception\UnexpectedServiceConditionException;
 use Drupal\purge\Queue\PluginInterface;
 use Drupal\purge\Queue\TxBuffer;
+use Drupal\purge\Queue\ProxyItem;
 
 /**
  * Provides the service that lets invalidations interact with a queue backend.
@@ -118,8 +119,8 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   public function reload() {
     $this->commit();
     parent::reload();
-    $this->buffer = [];
     $this->queue = NULL;
+    $this->buffer->deleteEverything();
     $this->initializeQueue();
   }
 
@@ -168,29 +169,16 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
       return FALSE;
     }
 
-    // Lookup if this item is accidentally in our local buffer.
-    $match = NULL;
-    foreach ($this->buffer as $invalidation) {
-      if ($invalidation->item_id === $item->item_id) {
-        $match = $invalidation;
-        break;
-      }
+    // See if the invalidation object is still buffered locally, or instantiate.
+    if (!($i = $this->buffer->getByProperty('item_id', $item->item_id))) {
+      $i = $this->purgeInvalidationFactory->getFromQueueData($item->data);
     }
 
-    // If a locally buffered invalidation object was found, update & return it.
-    if ($match) {
-      $this->buffer->set($match, TxBuffer::CLAIMED);
-      $match->setQueueItemInfo($item->item_id, $item->created);
-      return $match;
-    }
-
-    // If the item was not locally buffered (usually), instantiate one.
-    else {
-      $invalidation = $this->purgeInvalidationFactory->getFromQueueData($item->data);
-      $invalidation->setQueueItemInfo($item->item_id, $item->created);
-      $this->buffer->set($match, TxBuffer::CLAIMED);
-      return $invalidation;
-    }
+    // Ensure it is buffered, has the right state and properties, then return.
+    $this->buffer->set($i, TxBuffer::CLAIMED);
+    $this->buffer->setProperty($i, 'item_id', $item->item_id);
+    $this->buffer->setProperty($i, 'created', $item->created);
+    return $i;
   }
 
   /**
@@ -208,29 +196,16 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
     // Iterate the $items array and replace each with full instances.
     foreach ($items as $i => $item) {
 
-      // See if this claimed item is locally available as invalidation object.
-      $match = NULL;
-      foreach ($this->buffer as $invalidation) {
-        if ($invalidation->item_id === $item->item_id) {
-          $match = $invalidation;
-          break;
-        }
+      // See if the invalidation object is still buffered locally, or instantiate.
+      if (!($inv = $this->buffer->getByProperty('item_id', $item->item_id))) {
+        $inv = $this->purgeInvalidationFactory->getFromQueueData($item->data);
       }
 
-      // If a match was found, update and overwrite the object in $items.
-      if ($match) {
-        $this->buffer->set($match, TxBuffer::CLAIMED);
-        $match->setQueueItemInfo($item->item_id, $item->created);
-        $items[$i] = $match;
-      }
-
-      // If the item was not locally buffered (usually), instantiate one.
-      else {
-        $invalidation = $this->purgeInvalidationFactory->getFromQueueData($item->data);
-        $invalidation->setQueueItemInfo($item->item_id, $item->created);
-        $this->buffer->set($invalidation, TxBuffer::CLAIMED);
-        $items[$i] = $invalidation;
-      }
+      // Ensure it is buffered, has the right state and properties, then add it.
+      $this->buffer->set($inv, TxBuffer::CLAIMED);
+      $this->buffer->setProperty($inv, 'item_id', $item->item_id);
+      $this->buffer->setProperty($inv, 'created', $item->created);
+      $items[$i] = $inv;
     }
 
     return $items;
@@ -320,16 +295,23 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
       return;
     }
 
+    // Small anonymous function that fetches the 'data' field for createItem()
+    // and createItemMultiple() - keeps queue plugins out of Purge specifics.
+    $getProxiedData = function($invalidation) {
+      $proxy = new ProxyItem($invalidation, $this->buffer);
+      return $proxy->data;
+    };
+
     // Add just one item to the queue using createItem() on the queue.
     if (count($items) === 1) {
       $invalidation = current($items);
-      if (!($id = $this->queue->createItem($invalidation->data))) {
+      if (!($id = $this->queue->createItem($getProxiedData($invalidation)))) {
         throw new UnexpectedServiceConditionException("The queue returned FALSE on createItem().");
       }
       else {
-        $invalidation->setQueueItemId($id);
-        $invalidation->setQueueItemCreated(time());
         $this->buffer->set($invalidation, TxBuffer::RELEASED);
+        $this->buffer->setProperty($invalidation, 'item_id', $id);
+        $this->buffer->setProperty($invalidation, 'created', time());
       }
     }
 
@@ -337,7 +319,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
     else {
       $data_items = [];
       foreach ($items as $invalidation) {
-        $data_items[] = $invalidation->data;
+        $data_items[] = $getProxiedData($invalidation);
       }
       if (!($ids = $this->queue->createItemMultiple($data_items))) {
         throw new UnexpectedServiceConditionException(
@@ -350,10 +332,10 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
         else {
           $i++;
         }
-        $invalidation->setQueueItemId($ids[$i]);
-        $invalidation->setQueueItemCreated(time());
+        $this->buffer->set($invalidation, TxBuffer::ADDED);
+        $this->buffer->setProperty($invalidation, 'item_id', $ids[$i]);
+        $this->buffer->setProperty($invalidation, 'created', time());
       }
-      $this->buffer->set($items, TxBuffer::ADDED);
     }
   }
 

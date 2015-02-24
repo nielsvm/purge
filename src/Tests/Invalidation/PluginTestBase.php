@@ -31,13 +31,6 @@ abstract class PluginTestBase extends KernelTestBase {
   protected $plugin_id;
 
   /**
-   * List of - read only - allowed data properties on invalidation types.
-   *
-   * @var array
-   */
-  protected $properties = ['data', 'item_id', 'created'];
-
-  /**
    * String expressions valid to the invalidation type being tested.
    *
    * @var string[]|null
@@ -50,13 +43,6 @@ abstract class PluginTestBase extends KernelTestBase {
    * @var string[]|null
    */
   protected $expressionsInvalid;
-
-  // /**
-  //  * String expressions INvalid to all invalidation types being tested.
-  //  *
-  //  * @var string
-  //  */
-  // protected $expressionsInvalidGlobal = ['', '   ', []];
 
   /**
    * Set up the test.
@@ -95,6 +81,7 @@ abstract class PluginTestBase extends KernelTestBase {
       Invalidation::STATE_PURGING       => 'PURGING',
       Invalidation::STATE_PURGED        => 'PURGED',
       Invalidation::STATE_FAILED        => 'FAILED',
+      Invalidation::STATE_UNSUPPORTED   => 'UNSUPPORTED',
     ];
 
     // Test the initial state of the invalidation object.
@@ -109,7 +96,7 @@ abstract class PluginTestBase extends KernelTestBase {
     }
 
     // Test \Drupal\purge\Invalidation\PluginInterface::setState catches bad input.
-    foreach(['2', 'NEW', -1, 4, 100] as $badstate) {
+    foreach(['2', 'NEW', -1, 5, 100] as $badstate) {
       $thrown = FALSE;
       try {
         $i->setState($badstate);
@@ -195,86 +182,4 @@ abstract class PluginTestBase extends KernelTestBase {
     }
   }
 
-  /**
-   * Test whether certain variables can be read.
-   *
-   * @see \Drupal\purge\Invalidation\PluginInterface::__get
-   */
-  function testVariableGettingValidOnes() {
-    $i = $this->getInstance();
-    foreach($this->properties as $property) {
-      $thrown = FALSE;
-      try {
-        $i->$property;
-      }
-      catch (InvalidPropertyException $e) {
-        $thrown = TRUE;
-      }
-      $this->assertFalse($thrown, "Can read property '$property' from object.");
-    }
-  }
-
-  /**
-   * Test whether random variables cannot be read.
-   *
-   * @see \Drupal\purge\Invalidation\PluginInterface::__get
-   */
-  function testVariableGettingInvalidOnes() {
-    $properties = ['a', 'b', 'c', 'd'];
-    $i = $this->getInstance();
-    foreach($properties as $property) {
-      $thrown = FALSE;
-      try {
-        $i->$property;
-      }
-      catch (InvalidPropertyException $e) {
-        $thrown = TRUE;
-      }
-      $this->assertTrue($thrown,
-        "Cannot read property '$property' from object.");
-    }
-  }
-
-  /**
-   * Test whether setting variables is dissalowed.
-   *
-   * @see \Drupal\purge\Invalidation\PluginInterface::__set
-   */
-  function testVariableSettingProhibition() {
-    $i = $this->getInstance();
-    foreach($this->properties as $property) {
-      $thrown = FALSE;
-      try {
-        $i->$property = 0;
-      }
-      catch (InvalidPropertyException $e) {
-        $thrown = TRUE;
-      }
-      $this->assertTrue($thrown, "Cannot set property '$property' on object.");
-    }
-  }
-
-  /**
-   * Test the methods dealing with the Queue data properties of invalidations.
-   *
-   * @see \Drupal\purge\Invalidation\PluginInterface::setQueueItemInfo
-   * @see \Drupal\purge\Invalidation\PluginInterface::setQueueItemId
-   * @see \Drupal\purge\Invalidation\PluginInterface::setQueueItemCreated
-   */
-  function testQueueItemData() {
-    $i = $this->getInstance();
-    $this->assertTrue(is_string($i->data), '"data" property is a string.');
-    $this->assertTrue(strlen($i->data), '"data" property is not empty.');
-    $this->assertNull($i->item_id, '"item_id" property is initially NULL.');
-    $this->assertNull($i->created, '"item_id" property is initially NULL.');
-
-    $i->setQueueItemId('foo');
-    $this->assertEqual($i->item_id, 'foo', 'setQueueItemId sets "item_id".');
-    $i->setQueueItemCreated('123');
-    $this->assertEqual($i->created, '123', 'setQueueItemCreated sets "created".');
-
-    $i->setQueueItemInfo('a', 'b');
-    $this->assertEqual($i->item_id, 'a', 'setQueueItemInfo sets "item_id".');
-    $this->assertEqual($i->created, 'b', 'setQueueItemInfo sets "created".');
-  }
 }

@@ -107,4 +107,20 @@ trait PurgeTestBaseTrait {
     }
   }
 
+  /**
+   * Create $number requested invalidation objects.
+   *
+   * @param int $number
+   *   The number of objects to generate.
+   *
+   * @return \Drupal\purge\Invalidation\PluginInterface[]
+   */
+  public function getInvalidations($number) {
+    $set = [];
+    for ($i = 0; $i < $number; $i++) {
+      $set[] = $this->purgeInvalidationFactory->get('everything');
+    }
+    return $set;
+  }
+
 }

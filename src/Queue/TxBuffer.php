@@ -67,9 +67,9 @@ class TxBuffer implements TxBufferInterface {
       $invalidations = [$invalidations];
     }
     foreach ($invalidations as $i) {
-      unset($this->instances[$i->instance_id]);
-      unset($this->states[$i->instance_id]);
-      unset($this->properties[$i->instance_id]);
+      unset($this->instances[$i->getId()]);
+      unset($this->states[$i->getId()]);
+      unset($this->properties[$i->getId()]);
     }
   }
 
@@ -85,14 +85,28 @@ class TxBuffer implements TxBufferInterface {
   /**
    * {@inheritdoc}
    */
+  public function getByProperty($property, $value) {
+    foreach ($this->properties as $id => $properties) {
+      if (isset($properties[$property])) {
+        if ($properties[$property] === $value) {
+          return $this->instances[$id];
+        }
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getFiltered($states) {
     if (!is_array($states)) {
       $states = [$states];
     }
     $results = [];
-    foreach ($this->states as $instance_id => $state) {
+    foreach ($this->states as $id => $state) {
       if (in_array($state, $states)) {
-        $results[] = $this->instances[$instance_id];
+        $results[] = $this->instances[$id];
       }
     }
     return $results;
@@ -105,24 +119,24 @@ class TxBuffer implements TxBufferInterface {
     if (!$this->has($invalidation)) {
       return NULL;
     }
-    return $this->states[$invalidation->instance_id];
+    return $this->states[$invalidation->getId()];
   }
 
   /**
    * {@inheritdoc}
    */
   public function getProperty(Invalidation $invalidation, $property, $default = NULL) {
-    if (!isset($this->properties[$invalidation->instance_id][$property])) {
+    if (!isset($this->properties[$invalidation->getId()][$property])) {
       return $default;
     }
-    return $this->properties[$invalidation->instance_id][$property];
+    return $this->properties[$invalidation->getId()][$property];
   }
 
   /**
    * {@inheritdoc}
    */
   public function has(Invalidation $invalidation) {
-    return isset($this->instances[$invalidation->instance_id]);
+    return isset($this->instances[$invalidation->getId()]);
   }
 
   /**
@@ -161,9 +175,9 @@ class TxBuffer implements TxBufferInterface {
     }
     foreach ($invalidations as $i) {
       if (!$this->has($i)) {
-        $this->instances[$i->instance_id] = $i;
+        $this->instances[$i->getId()] = $i;
       }
-      $this->states[$i->instance_id] = $state;
+      $this->states[$i->getId()] = $state;
     }
   }
 
@@ -172,7 +186,7 @@ class TxBuffer implements TxBufferInterface {
    */
   public function setProperty(Invalidation $invalidation, $property, $value) {
     if ($this->has($invalidation)) {
-      $this->properties[$invalidation->instance_id][$property] = $value;
+      $this->properties[$invalidation->getId()][$property] = $value;
     }
   }
 

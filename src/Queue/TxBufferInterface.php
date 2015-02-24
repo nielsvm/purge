@@ -73,6 +73,21 @@ interface TxBufferInterface extends \Countable, \Iterator {
   public function deleteEverything();
 
   /**
+   * Retrieve a buffered object by property=value combination.
+   *
+   * @param string $property
+   *   The name of the property you want to look for.
+   * @param mixed $value
+   *   The (unique) value of the property that has to be stored in the buffer
+   *   in order to return the object.
+   *
+   * @return \Drupal\purge\Invalidation\PluginInterface|false
+   *   The matched invalidation object or FALSE when there was no combination
+   *   found of the property and value.
+   */
+  public function getByProperty($property, $value);
+
+  /**
    * Only retrieve items from the buffer in a particular given state(s).
    *
    * @param int|array $states

@@ -71,7 +71,7 @@ class TxBufferTest extends KernelTestBase {
     $this->buffer->set($objects, TxBufferInterface::CLAIMED);
     $c = $this->buffer->current();
     $this->assertTrue($c instanceof Invalidation);
-    $this->assertEqual($objects[0]->instance_id, $c->instance_id);
+    $this->assertEqual($objects[0]->getId(), $c->getId());
   }
 
   /**
@@ -101,6 +101,20 @@ class TxBufferTest extends KernelTestBase {
     $this->buffer->set($this->getInvalidations(5), TxBufferInterface::CLAIMED);
     $this->buffer->deleteEverything();
     $this->assertEqual(0, count($this->buffer));
+  }
+
+  /**
+   * Tests \Drupal\purge\Queue\TxBuffer::getByProperty
+   */
+  public function testGetByProperty() {
+    $i = current($this->getInvalidations(1));
+    $this->buffer->set($i, TxBufferInterface::CLAIMED);
+    $this->buffer->setProperty($i, 'find', 'me');
+    $this->assertFalse($this->buffer->getByProperty('find', 'you'));
+    $this->assertFalse($this->buffer->getByProperty('find', 0));
+    $match = $this->buffer->getByProperty('find', 'me');
+    $this->assertTrue($match instanceof Invalidation);
+    $this->assertEqual($i->getId(), $match->getId());
   }
 
   /**
@@ -161,16 +175,6 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getProperty(Invalidation $invalidation, $property, $default = NULL) {
-    if (!isset($this->properties[$invalidation->instance_id][$property])) {
-      return $default;
-    }
-    return $this->properties[$invalidation->instance_id][$property];
-  }
-
-  /**
    * Tests \Drupal\purge\Queue\TxBuffer::has
    */
   public function testHas() {
@@ -192,7 +196,7 @@ class TxBufferTest extends KernelTestBase {
 
     // Test that objects got added to the buffer in equal order as offered.
     foreach ($objects as $i) {
-      $this->assertEqual($i->instance_id, $this->buffer->key());
+      $this->assertEqual($i->getId(), $this->buffer->key());
       $this->buffer->next();
     }
 
@@ -201,7 +205,7 @@ class TxBufferTest extends KernelTestBase {
       $this->assertTrue($i instanceof Invalidation);
       $found = FALSE;
       foreach ($objects as $i) {
-        if ($i->instance_id === $id) {
+        if ($i->getId() === $id) {
           $found = TRUE;
           break;
         }
@@ -219,12 +223,12 @@ class TxBufferTest extends KernelTestBase {
     $this->assertFalse($this->buffer->rewind());
     $this->assertNull($this->buffer->key());
     $this->buffer->set($objects, TxBufferInterface::CLAIMED);
-    $this->assertEqual($objects[0]->instance_id, $this->buffer->key());
+    $this->assertEqual($objects[0]->getId(), $this->buffer->key());
     foreach ($this->buffer as $id => $i) {
       // Just iterate, to advance the internal pointer.
     }
     $this->buffer->rewind();
-    $this->assertEqual($objects[0]->instance_id, $this->buffer->key());
+    $this->assertEqual($objects[0]->getId(), $this->buffer->key());
   }
 
   /**
@@ -238,7 +242,7 @@ class TxBufferTest extends KernelTestBase {
     foreach ($objects as $i) {
       $found = FALSE;
       foreach ($this->buffer as $id => $i) {
-        if ($id == $i->instance_id) {
+        if ($id == $i->getId()) {
           $found = TRUE;
           break;
         }

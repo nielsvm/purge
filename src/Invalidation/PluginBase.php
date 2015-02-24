@@ -12,7 +12,6 @@ use Drupal\Core\Plugin\PluginBase as CorePluginBase;
 use Drupal\purge\Invalidation\PluginInterface;
 use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
 use Drupal\purge\Invalidation\Exception\MissingExpressionException;
-use Drupal\purge\Invalidation\Exception\InvalidPropertyException;
 use Drupal\purge\Invalidation\Exception\InvalidStateException;
 
 /**
@@ -25,12 +24,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    *
    * @var int
    */
-  protected $instance_id;
-
-  /**
-   * Holds the virtual Queue API properties 'item_id', 'data', 'created'.
-   */
-  private $queue_info = NULL;
+  protected $id;
 
   /**
    * Mixed expression (or NULL) that describes what needs to be invalidated.
@@ -42,7 +36,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   /**
    * A enumerator that describes the current state of this invalidation.
    */
-  private $state = NULL;
+  protected $state = NULL;
 
   /**
    * Constructs a \Drupal\purge\Invalidation\PluginBase object.
@@ -53,16 +47,16 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param int $instance_id
+   * @param int $id
    *   Unique integer ID for this object instance (during runtime).
    * @param mixed|null $expression
    *   Value - usually string - that describes the kind of invalidation, NULL
    *   when the type of invalidation doesn't require $expression. Types usually
    *   validate the given expression and throw exceptions for bad input.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, $instance_id, $expression) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, $id, $expression) {
     parent::__construct([], $plugin_id, $plugin_definition);
-    $this->instance_id = $instance_id;
+    $this->id = $id;
     $this->expression = $expression;
     $this->validateExpression();
   }
@@ -77,97 +71,28 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function __set($name, $value) {
-    throw new InvalidPropertyException(
-      "You can not set '$name', use the setter methods.");
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __get($name) {
-    if (is_null($this->queue_info)) {
-      $this->initializeQueueItemArray();
-    }
-    if ($name === 'instance_id') {
-      return $this->instance_id;
-    }
-    if (!in_array($name, $this->queue_info['keys'])) {
-      throw new InvalidPropertyException(
-        "The property '$name' does not exist.");
-    }
-    else {
-      return $this->queue_info[$name];
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       [],
       $plugin_id,
       $plugin_definition,
-      $configuration['instance_id'],
+      $configuration['id'],
       $configuration['expression']
     );
   }
 
   /**
-   * Initialize $this->queue_info with its standard data.
+   * {@inheritdoc}
    */
-  private function initializeQueueItemArray() {
-    $this->queue_info = [
-      'data' => sprintf('%s>%s', $this->pluginId, $this->expression),
-      'item_id' => NULL,
-      'created' => NULL,
-    ];
-    $this->queue_info['keys'] = array_keys($this->queue_info);
+  public function getExpression() {
+    return $this->expression;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setQueueItemInfo($item_id, $created) {
-    if (is_null($this->queue_info)) {
-      $this->initializeQueueItemArray();
-    }
-    $this->queue_info['item_id'] = $item_id;
-    $this->queue_info['created'] = $created;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setQueueItemId($item_id) {
-    if (is_null($this->queue_info)) {
-      $this->initializeQueueItemArray();
-    }
-    $this->queue_info['item_id'] = $item_id;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setQueueItemCreated($created) {
-    if (is_null($this->queue_info)) {
-      $this->initializeQueueItemArray();
-    }
-    $this->queue_info['created'] = $created;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setState($state) {
-    if (!is_int($state)) {
-      throw new InvalidStateException('$state not an integer!');
-    }
-    if (($state < 0) || ($state > 3)) {
-      throw new InvalidStateException('$state is out of range!');
-    }
-    $this->state = $state;
+  public function getId() {
+    return $this->id;
   }
 
   /**
@@ -189,8 +114,22 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
       SELF::STATE_PURGING       => 'PURGING',
       SELF::STATE_PURGED        => 'PURGED',
       SELF::STATE_FAILED        => 'FAILED',
+      SELF::STATE_UNSUPPORTED   => 'UNSUPPORTED',
     ];
     return $mapping[$this->getState()];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setState($state) {
+    if (!is_int($state)) {
+      throw new InvalidStateException('$state not an integer!');
+    }
+    if (($state < 0) || ($state > 4)) {
+      throw new InvalidStateException('$state is out of range!');
+    }
+    $this->state = $state;
   }
 
   /**

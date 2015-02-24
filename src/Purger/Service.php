@@ -132,6 +132,7 @@ class Service extends ServiceBase implements ServiceInterface {
   public function reload() {
     parent::reload();
     $this->purgers = NULL;
+    $this->configFactory = \Drupal::configFactory();
     $this->initializePurgers();
   }
 

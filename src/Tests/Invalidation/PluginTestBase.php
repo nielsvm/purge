@@ -92,16 +92,9 @@ abstract class PluginTestBase extends KernelTestBase {
     $i = $this->getInstance();
     $test_states = [
       Invalidation::STATE_NEW           => 'NEW',
-      Invalidation::STATE_ADDING        => 'ADDING',
-      Invalidation::STATE_ADDED         => 'ADDED',
-      Invalidation::STATE_CLAIMED       => 'CLAIMED',
       Invalidation::STATE_PURGING       => 'PURGING',
       Invalidation::STATE_PURGED        => 'PURGED',
-      Invalidation::STATE_PURGEFAILED   => 'PURGEFAILED',
-      Invalidation::STATE_RELEASING     => 'RELEASING',
-      Invalidation::STATE_RELEASED      => 'RELEASED',
-      Invalidation::STATE_DELETING      => 'DELETING',
-      Invalidation::STATE_DELETED       => 'DELETED',
+      Invalidation::STATE_FAILED        => 'FAILED',
     ];
 
     // Test the initial state of the invalidation object.
@@ -116,7 +109,7 @@ abstract class PluginTestBase extends KernelTestBase {
     }
 
     // Test \Drupal\purge\Invalidation\PluginInterface::setState catches bad input.
-    foreach(['2', 'NEW', -1, 11, 100] as $badstate) {
+    foreach(['2', 'NEW', -1, 4, 100] as $badstate) {
       $thrown = FALSE;
       try {
         $i->setState($badstate);

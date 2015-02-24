@@ -17,6 +17,13 @@ use Drupal\purge\Invalidation\ServiceInterface;
 class Service extends ServiceBase implements ServiceInterface {
 
   /**
+   * Incremental ID counter for handing out unique instance_id's.
+   *
+   * @var int
+   */
+  protected $instance_counter = 0;
+
+  /**
    * Instantiates a \Drupal\purge\Invalidation\Service.
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
@@ -30,7 +37,12 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function get($plugin_id, $expression = NULL) {
-    return $this->pluginManager->createInstance($plugin_id, ['expression' => $expression]);
+    return $this->pluginManager->createInstance(
+      $plugin_id, [
+        'instance_id' => $this->instance_counter++,
+        'expression' => $expression
+      ]
+    );
   }
 
   /**
@@ -38,7 +50,7 @@ class Service extends ServiceBase implements ServiceInterface {
    */
   public function getFromQueueData($item_data) {
     $item_data = explode('>', $item_data);
-    return $this->new($item_data[0], $item_data[1]);
+    return $this->get($item_data[0], $item_data[1]);
   }
 
 }

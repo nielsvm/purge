@@ -44,7 +44,7 @@ class Service extends ServiceBase implements ServiceInterface {
   protected $states_inbound = [
     Invalidation::STATE_NEW,
     Invalidation::STATE_PURGING,
-    Invalidation::STATE_PURGEFAILED
+    Invalidation::STATE_FAILED
   ];
 
   /**
@@ -55,7 +55,7 @@ class Service extends ServiceBase implements ServiceInterface {
   protected $states_outbound = [
     Invalidation::STATE_PURGED,
     Invalidation::STATE_PURGING,
-    Invalidation::STATE_PURGEFAILED
+    Invalidation::STATE_FAILED
   ];
 
   /**
@@ -181,8 +181,8 @@ class Service extends ServiceBase implements ServiceInterface {
     // failure will lead to all purgers redoing the invalidation next time, or
     // that a multistep invalidation can be fed to the wrong purger next time (@todo).
     if (!count($results) == 1) {
-      if (in_array(Invalidation::STATE_PURGEFAILED, $results)) {
-        $invalidation->setState(Invalidation::STATE_PURGEFAILED);
+      if (in_array(Invalidation::STATE_FAILED, $results)) {
+        $invalidation->setState(Invalidation::STATE_FAILED);
       }
       elseif (in_array(Invalidation::STATE_PURGING, $results)) {
         $invalidation->setState(Invalidation::STATE_PURGING);
@@ -233,8 +233,8 @@ class Service extends ServiceBase implements ServiceInterface {
     // be fed to the wrong purger next time (@todo).
     if (count($this->purgers) > 1) {
       foreach ($invalidations as $i => $invalidation) {
-        if (in_array(Invalidation::STATE_PURGEFAILED, $results[$i])) {
-          $invalidation->setState(Invalidation::STATE_PURGEFAILED);
+        if (in_array(Invalidation::STATE_FAILED, $results[$i])) {
+          $invalidation->setState(Invalidation::STATE_FAILED);
         }
         elseif (in_array(Invalidation::STATE_PURGING, $results[$i])) {
           $invalidation->setState(Invalidation::STATE_PURGING);

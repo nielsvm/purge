@@ -31,7 +31,7 @@ class Null extends PluginBase implements PluginInterface {
    */
   public function invalidate(Invalidation $invalidation) {
     $this->numberFailed += 1;
-    $invalidation->setState(Invalidation::STATE_PURGEFAILED);
+    $invalidation->setState(Invalidation::STATE_FAILED);
     return FALSE;
   }
 
@@ -41,7 +41,7 @@ class Null extends PluginBase implements PluginInterface {
   public function invalidateMultiple(array $invalidations) {
     foreach ($invalidations as $invalidation) {
       $this->numberFailed += 1;
-      $invalidation->setState(Invalidation::STATE_PURGEFAILED);
+      $invalidation->setState(Invalidation::STATE_FAILED);
     }
     return FALSE;
   }

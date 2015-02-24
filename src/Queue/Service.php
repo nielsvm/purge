@@ -15,6 +15,7 @@ use Drupal\purge\Invalidation\ServiceInterface as InvalidationService;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 use Drupal\purge\Queue\Exception\UnexpectedServiceConditionException;
 use Drupal\purge\Queue\PluginInterface;
+use Drupal\purge\Queue\TxBuffer;
 
 /**
  * Provides the service that lets invalidations interact with a queue backend.
@@ -41,7 +42,9 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   protected $queue;
 
   /**
-   * The transaction buffer used to temporarily park invalidation objects.
+   * The transaction buffer in which invalidation objects temporarily stay.
+   *
+   * @var \Drupal\purge\Queue\TxBuffer
    */
   protected $buffer;
 
@@ -65,11 +68,9 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
     $this->configFactory = $config_factory;
     $this->purgeInvalidationFactory = $purge_invalidation_factory;
 
-    // Initialize the queue plugin as configured.
+    // Initialize the queue plugin and transaction buffer.
     $this->initializeQueue();
-
-    // Initialize the transaction buffer as empty.
-    $this->buffer = [];
+    $this->buffer = new TxBuffer();
   }
 
   /**
@@ -139,16 +140,8 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * {@inheritdoc}
    */
   public function add(Invalidation $invalidation) {
-    $duplicate = FALSE;
-    foreach ($this->buffer as $bufferedInvalidation) {
-      if ($invalidation->data === $bufferedInvalidation->data) {
-        $duplicate = TRUE;
-        break;
-      }
-    }
-    if (!$duplicate) {
-      $invalidation->setState(Invalidation::STATE_ADDING);
-      $this->buffer[] = $invalidation;
+    if (!$this->buffer->has($invalidation)) {
+      $this->buffer->set($invalidation, TxBuffer::ADDING);
     }
   }
 
@@ -157,16 +150,8 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    */
   public function addMultiple(array $invalidations) {
     foreach ($invalidations as $invalidation) {
-      $duplicate = FALSE;
-      foreach ($this->buffer as $bufferedInvalidation) {
-        if ($invalidation->data === $bufferedInvalidation->data) {
-          $duplicate = TRUE;
-          break;
-        }
-      }
-      if (!$duplicate) {
-        $invalidation->setState(Invalidation::STATE_ADDING);
-        $this->buffer[] = $invalidation;
+      if (!$this->buffer->has($invalidation)) {
+        $this->buffer->set($invalidation, TxBuffer::ADDING);
       }
     }
   }
@@ -194,7 +179,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
 
     // If a locally buffered invalidation object was found, update & return it.
     if ($match) {
-      $match->setState(Invalidation::STATE_CLAIMED);
+      $this->buffer->set($match, TxBuffer::CLAIMED);
       $match->setQueueItemInfo($item->item_id, $item->created);
       return $match;
     }
@@ -202,9 +187,8 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
     // If the item was not locally buffered (usually), instantiate one.
     else {
       $invalidation = $this->purgeInvalidationFactory->getFromQueueData($item->data);
-      $invalidation->setState(Invalidation::STATE_CLAIMED);
       $invalidation->setQueueItemInfo($item->item_id, $item->created);
-      $this->buffer[] = $invalidation;
+      $this->buffer->set($match, TxBuffer::CLAIMED);
       return $invalidation;
     }
   }
@@ -235,7 +219,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
 
       // If a match was found, update and overwrite the object in $items.
       if ($match) {
-        $match->setState(Invalidation::STATE_CLAIMED);
+        $this->buffer->set($match, TxBuffer::CLAIMED);
         $match->setQueueItemInfo($item->item_id, $item->created);
         $items[$i] = $match;
       }
@@ -243,9 +227,8 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
       // If the item was not locally buffered (usually), instantiate one.
       else {
         $invalidation = $this->purgeInvalidationFactory->getFromQueueData($item->data);
-        $invalidation->setState(Invalidation::STATE_CLAIMED);
         $invalidation->setQueueItemInfo($item->item_id, $item->created);
-        $this->buffer[] = $invalidation;
+        $this->buffer->set($invalidation, TxBuffer::CLAIMED);
         $items[$i] = $invalidation;
       }
     }
@@ -257,28 +240,28 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * {@inheritdoc}
    */
   public function release(Invalidation $invalidation) {
-    $this->bufferSetState(Invalidation::STATE_RELEASING, [$invalidation]);
+    $this->buffer->set($invalidation, TxBuffer::RELEASING);
   }
 
   /**
    * {@inheritdoc}
    */
   public function releaseMultiple(array $invalidations) {
-    $this->bufferSetState(Invalidation::STATE_RELEASING, $invalidations);
+    $this->buffer->set($invalidations, TxBuffer::RELEASING);
   }
 
   /**
    * {@inheritdoc}
    */
   public function delete(Invalidation $invalidation) {
-    $this->bufferSetState(Invalidation::STATE_DELETING, [$invalidation]);
+    $this->buffer->set($invalidation, TxBuffer::DELETING);
   }
 
   /**
    * {@inheritdoc}
    */
   public function deleteMultiple(array $invalidations) {
-    $this->bufferSetState(Invalidation::STATE_DELETING, $invalidations);
+    $this->buffer->set($invalidations, TxBuffer::DELETING);
   }
 
   /**
@@ -292,91 +275,35 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * {@inheritdoc}
    */
   public function deleteOrReleaseMultiple(array $invalidations) {
-    $release = [];
-    $delete = [];
     foreach($invalidations as $invalidation) {
       switch ($invalidation->getState()) {
         case Invalidation::STATE_PURGED:
-          $delete[] = $invalidation;
+          $this->buffer->set($invalidation, TxBuffer::DELETING);
           break;
         case Invalidation::STATE_PURGING:
-        case Invalidation::STATE_PURGEFAILED:
-          $release[] = $invalidation;
+        case Invalidation::STATE_FAILED:
+          $this->buffer->set($invalidation, TxBuffer::RELEASING);
           break;
         default:
           throw new UnexpectedServiceConditionException("Unexpected state.");
       }
     }
-    $this->bufferSetState(Invalidation::STATE_DELETING, $delete);
-    $this->bufferSetState(Invalidation::STATE_RELEASING, $release);
   }
 
   /**
    * {@inheritdoc}
    */
   function emptyQueue() {
-    $this->bufferSetState(Invalidation::STATE_DELETED, $this->buffer);
+    $this->buffer->deleteEverything();
     $this->queue->deleteQueue();
     $this->buffer = [];
-  }
-
-  /**
-   * Only retrieve items from the buffer in a particular given state.
-   *
-   * @param array $states
-   *   A non-associative array containing one or more state constants as
-   *   found under \Drupal\purge\Invalidation\PluginInterface::STATE_*.
-   *
-   * @return
-   *   Returns a non-associative array with invalidation objects, but only those
-   *   that matched the given states requested.
-   */
-  private function bufferGetFiltered(array $states) {
-    $results = [];
-    foreach ($this->buffer as $invalidation) {
-      if (in_array($invalidation->getState(), $states)) {
-        $results[] = $invalidation;
-      }
-    }
-    return $results;
-  }
-
-  /**
-   * Set a certain state on each invalidation in the given array.
-   *
-   * @param $state
-   *   Integer matching to any of the \Drupal\purge\Invalidation
-   *   \PluginInterface::STATE_* constants.
-   * @param array $invalidations
-   *   A non-associative array with \Drupal\purge\Invalidation\PluginInterface
-   *   objects that need the given state applied.
-   * @param bool $checkid
-   *   If TRUE, only change the state on objects that have a non-NULL item_id.
-   */
-  private function bufferSetState($state, array $invalidations, $checkid = TRUE) {
-    foreach ($invalidations as $invalidation) {
-      if ($checkid && is_null($invalidation->item_id)) {
-        continue;
-      }
-      $buffered = FALSE;
-      foreach ($this->buffer as $bufferedInvalidation) {
-        if ($invalidation->item_id === $bufferedInvalidation->item_id) {
-          $buffered = TRUE;
-          break;
-        }
-      }
-      if (!$buffered) {
-        $this->buffer[] = $invalidation;
-      }
-      $invalidation->setState($state);
-    }
   }
 
   /**
    * Commit all actions in the internal buffer to the queue.
    */
   public function commit() {
-    if (empty($this->buffer)) {
+    if (!count($this->buffer)) {
       return;
     }
     $this->commitAdding();
@@ -388,48 +315,45 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * Commit all adding invalidations in the buffer to the queue.
    */
   private function commitAdding() {
-    $items = $this->bufferGetFiltered([Invalidation::STATE_ADDING]);
+    $items = $this->buffer->getFiltered(TxBuffer::ADDING);
     if (empty($items)) {
       return;
     }
-    else {
 
-      // Add just one item to the queue using createItem() on the queue.
-      if (count($items) === 1) {
-        $invalidation = current($items);
-        if (!($id = $this->queue->createItem($invalidation->data))) {
-          throw new UnexpectedServiceConditionException(
-            "The queue returned FALSE on createItem().");
+    // Add just one item to the queue using createItem() on the queue.
+    if (count($items) === 1) {
+      $invalidation = current($items);
+      if (!($id = $this->queue->createItem($invalidation->data))) {
+        throw new UnexpectedServiceConditionException("The queue returned FALSE on createItem().");
+      }
+      else {
+        $invalidation->setQueueItemId($id);
+        $invalidation->setQueueItemCreated(time());
+        $this->buffer->set($invalidation, TxBuffer::RELEASED);
+      }
+    }
+
+    // Add multiple at once to the queue using createItemMultiple() on the queue.
+    else {
+      $data_items = [];
+      foreach ($items as $invalidation) {
+        $data_items[] = $invalidation->data;
+      }
+      if (!($ids = $this->queue->createItemMultiple($data_items))) {
+        throw new UnexpectedServiceConditionException(
+          "The queue returned FALSE on createItemMultiple().");
+      }
+      foreach ($items as $invalidation) {
+        if (!isset($i)) {
+          $i = 0;
         }
         else {
-          $invalidation->setQueueItemId($id);
-          $invalidation->setQueueItemCreated(time());
-          $invalidation->setState(Invalidation::STATE_ADDED);
+          $i++;
         }
+        $invalidation->setQueueItemId($ids[$i]);
+        $invalidation->setQueueItemCreated(time());
       }
-
-      // Add multiple at once to the queue using createItemMultiple() on the queue.
-      else {
-        $data_items = [];
-        foreach ($items as $invalidation) {
-          $data_items[] = $invalidation->data;
-        }
-        if (!($ids = $this->queue->createItemMultiple($data_items))) {
-          throw new UnexpectedServiceConditionException(
-            "The queue returned FALSE on createItemMultiple().");
-        }
-        foreach ($items as $invalidation) {
-          if (!isset($i)) {
-            $i = 0;
-          }
-          else {
-            $i++;
-          }
-          $invalidation->setQueueItemId($ids[$i]);
-          $invalidation->setQueueItemCreated(time());
-          $invalidation->setState(Invalidation::STATE_ADDED);
-        }
-      }
+      $this->buffer->set($items, TxBuffer::ADDED);
     }
   }
 
@@ -437,26 +361,18 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * Commit all releasing invalidations in the buffer to the queue.
    */
   private function commitReleasing() {
-    $items = $this->bufferGetFiltered([Invalidation::STATE_RELEASING]);
+    $items = $this->buffer->getFiltered(TxBuffer::RELEASING);
     if (empty($items)) {
       return;
     }
+    if (count($items) === 1) {
+      $invalidation = current($items);
+      $this->queue->releaseItem($invalidation);
+      $this->buffer->set($invalidation, TxBuffer::RELEASED);
+    }
     else {
-
-      // Release just one item back to the queue.
-      if (count($items) === 1) {
-        $invalidation = current($items);
-        $this->queue->releaseItem($invalidation);
-        $invalidation->setState(Invalidation::STATE_RELEASED);
-      }
-
-      // Release multiple items at once back to the queue.
-      else {
-        $this->queue->releaseItemMultiple($items);
-        foreach ($items as $invalidation) {
-          $invalidation->setState(Invalidation::STATE_RELEASED);
-        }
-      }
+      $this->queue->releaseItemMultiple($items);
+      $this->buffer->set($items, TxBuffer::RELEASED);
     }
   }
 
@@ -464,36 +380,18 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * Commit all deleting invalidations in the buffer to the queue.
    */
   private function commitDeleting() {
-    $items = $this->bufferGetFiltered([Invalidation::STATE_DELETING]);
+    $items = $this->buffer->getFiltered(TxBuffer::DELETING);
     if (empty($items)) {
       return;
     }
+    if (count($items) === 1) {
+      $invalidation = current($items);
+      $this->queue->deleteItem($invalidation);
+      $this->buffer->delete($invalidation);
+    }
     else {
-
-      // Delete only one item from the queue.
-      if (count($items) === 1) {
-        $invalidation = current($items);
-        $this->queue->deleteItem($invalidation);
-        $invalidation->setState(Invalidation::STATE_DELETED);
-        foreach ($this->buffer as $i => $bufferedInvalidation) {
-          if ($invalidation->item_id === $bufferedInvalidation->item_id) {
-            unset($this->buffer[$i]);
-          }
-        }
-      }
-
-      // Delete multiple items at once from the queue.
-      else {
-        $this->queue->deleteItemMultiple($items);
-        foreach ($items as $invalidation) {
-          $invalidation->setState(Invalidation::STATE_DELETED);
-          foreach ($this->buffer as $i => $bufferedInvalidation) {
-            if ($invalidation->item_id === $bufferedInvalidation->item_id) {
-              unset($this->buffer[$i]);
-            }
-          }
-        }
-      }
+      $this->queue->deleteItemMultiple($items);
+      $this->buffer->delete($items);
     }
   }
 

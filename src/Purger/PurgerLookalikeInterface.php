@@ -22,7 +22,7 @@ interface PurgerLookalikeInterface {
    * given $invalidation object from the external cache. In addition to the work
    * itself, it also has to call $invalidation->setState() and set it to the
    * situation that applies after its attempt. In the case the purge succeeded,
-   * this has to be STATE_PURGED and if it failed, its STATE_PURGEFAILED.
+   * this has to be STATE_PURGED and if it failed, its STATE_FAILED.
    *
    * Some external caching platforms - think CDNs - need more time to finish
    * invalidations and require later confirmation. In these cases, the state has
@@ -40,7 +40,7 @@ interface PurgerLookalikeInterface {
    *   when the incoming $invalidation object's state is not any of these:
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_NEW
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGING
-   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGEFAILED
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_FAILED
    *
    * @throws \Drupal\purge\Purger\Exception\InvalidStateException
    *   Exception thrown by \Drupal\purge\Purger\ServiceInterface::invalidate
@@ -48,7 +48,7 @@ interface PurgerLookalikeInterface {
    *   any of the following states:
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGED
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGING
-   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGEFAILED
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_FAILED
    *
    * @see \Drupal\purge\Invalidation\PluginInterface::setState()
    * @see \Drupal\purge\Invalidation\PluginInterface::getState()
@@ -65,7 +65,7 @@ interface PurgerLookalikeInterface {
    * the work itself, it also has to call $invalidation->setState() on each one
    * of them and set it to the situation that applies for each object. In the
    * case an individual invalidation succeeded, its state becomes STATE_PURGED
-   * or STATE_PURGEFAILED when it failed.
+   * or STATE_FAILED when it failed.
    *
    * Some external caching platforms - think CDNs - need more time to finish
    * invalidations and require later confirmation. In these cases, the state has
@@ -84,7 +84,7 @@ interface PurgerLookalikeInterface {
    *   following states:
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_NEW
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGING
-   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGEFAILED
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_FAILED
    *
    * @throws \Drupal\purge\Purger\Exception\InvalidStateException
    *   Thrown by \Drupal\purge\Purger\ServiceInterface::invalidateMultiple when
@@ -92,7 +92,7 @@ interface PurgerLookalikeInterface {
    *   in one of these states:
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGED
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGING
-   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGEFAILED
+   *    - \Drupal\purge\Invalidation\PluginInterface::STATE_FAILED
    *
    * @see \Drupal\purge\Invalidation\PluginInterface::setState()
    * @see \Drupal\purge\Invalidation\PluginInterface::getState()

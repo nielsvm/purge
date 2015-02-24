@@ -87,14 +87,14 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
     // For now - until Purge only sends supported invalidation objects - mark
     // anything besides a tag as immediately failed.
     if (!$invalidation instanceof Tag) {
-      $invalidation->setState(Invalidation::STATE_PURGEFAILED);
+      $invalidation->setState(Invalidation::STATE_FAILED);
       $this->numberFailed += 1;
       return;
     }
 
     // When the URL setting is still empty, we also fail.
     if (empty($config->get('url'))) {
-      $invalidation->setState(Invalidation::STATE_PURGEFAILED);
+      $invalidation->setState(Invalidation::STATE_FAILED);
       $this->numberFailed += 1;
       return;
     }
@@ -117,7 +117,7 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
       $this->numberPurged += 1;
     }
     catch (RequestException $e) {
-      $invalidation->setState(Invalidation::STATE_PURGEFAILED);
+      $invalidation->setState(Invalidation::STATE_FAILED);
       $this->numberFailed += 1;
     }
   }

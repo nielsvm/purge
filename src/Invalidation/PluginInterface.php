@@ -16,59 +16,25 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
 interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPluginInterface {
 
   /**
-   * Invalidation state: the invalidation is just instantiated.
+   * Invalidation object just got instantiated.
    */
   const STATE_NEW = 0;
 
   /**
-   * Invalidation state: the invalidation is being added to the queue.
+   * Invalidation is on-going and requires later confirmation by the purger
+   * whether it is finished or not, turns into STATE_PURGED.
    */
-  const STATE_ADDING = 1;
+  const STATE_PURGING = 1;
 
   /**
-   * Invalidation state: the invalidation is added to the queue.
+   * The invalidation succeeded.
    */
-  const STATE_ADDED = 2;
+  const STATE_PURGED = 2;
 
   /**
-   * Invalidation state: the invalidation is claimed.
+   * The invalidation failed.
    */
-  const STATE_CLAIMED = 3;
-
-  /**
-   * Invalidation state: the invalidation is being purged by the purger.
-   */
-  const STATE_PURGING = 4;
-
-  /**
-   * Invalidation state: the invalidation has been purged successfully.
-   */
-  const STATE_PURGED = 5;
-
-  /**
-   * Invalidation state: the invalidation failed purging, needs to be released.
-   */
-  const STATE_PURGEFAILED = 6;
-
-  /**
-   * Invalidation state: the invalidation is releasing back to the queue.
-   */
-  const STATE_RELEASING = 7;
-
-  /**
-   * Invalidation state: the invalidation is released back to the queue.
-   */
-  const STATE_RELEASED = 8;
-
-  /**
-   * Invalidation state: the invalidation is being deleted from the queue.
-   */
-  const STATE_DELETING = 9;
-
-  /**
-   * Invalidation state: the invalidation is deleted and should be unset.
-   */
-  const STATE_DELETED = 10;
+  const STATE_FAILED = 3;
 
   /**
    * Return the string expression of the invalidation.

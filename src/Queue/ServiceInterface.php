@@ -127,6 +127,9 @@ interface ServiceInterface extends PurgeServiceInterface {
    *   The invalidation object after the 'purge.purgers' service attempted
    *   invalidation.
    *
+   * @throws \Drupal\purge\Queue\Exception\UnexpectedServiceConditionException
+   *   Exception thrown when the object state doesn't make any sense.
+   *
    * @see \Drupal\purge\Purger\Service::invalidate
    * @see \Drupal\purge\Purger\Service::invalidateMultiple
    *

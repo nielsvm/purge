@@ -164,6 +164,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   public function claim($lease_time = 3600) {
     $this->commitAdding();
     $this->commitReleasing();
+    $this->commitDeleting();
 
     // Claim the raw item from the queue, or cancel the call.
     if (!($item = $this->queue->claimItem($lease_time))) {
@@ -188,6 +189,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   public function claimMultiple($claims = 10, $lease_time = 3600) {
     $this->commitAdding();
     $this->commitReleasing();
+    $this->commitDeleting();
 
     // Claim multiple (raw) items from the queue, return if its empty.
     if (!($items = $this->queue->claimItemMultiple($claims, $lease_time))) {
@@ -256,9 +258,16 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
         case Invalidation::STATE_PURGED:
           $this->buffer->set($invalidation, TxBuffer::DELETING);
           break;
+        case Invalidation::STATE_NEW:
         case Invalidation::STATE_PURGING:
         case Invalidation::STATE_FAILED:
-          $this->buffer->set($invalidation, TxBuffer::RELEASING);
+        case Invalidation::STATE_UNSUPPORTED:
+          if (!$this->buffer->has($invalidation)) {
+            $this->buffer->set($invalidation, TxBuffer::ADDING);
+          }
+          else {
+            $this->buffer->set($invalidation, TxBuffer::RELEASING);
+          }
           break;
         default:
           throw new UnexpectedServiceConditionException("Unexpected state.");
@@ -350,11 +359,15 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
     }
     if (count($items) === 1) {
       $invalidation = current($items);
-      $this->queue->releaseItem($invalidation);
+      $this->queue->releaseItem(new ProxyItem($invalidation, $this->buffer));
       $this->buffer->set($invalidation, TxBuffer::RELEASED);
     }
     else {
-      $this->queue->releaseItemMultiple($items);
+      $proxyitems = [];
+      foreach ($items as $item) {
+        $proxyitems[] = new ProxyItem($item, $this->buffer);
+      }
+      $this->queue->releaseItemMultiple($proxyitems);
       $this->buffer->set($items, TxBuffer::RELEASED);
     }
   }
@@ -369,11 +382,15 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
     }
     if (count($items) === 1) {
       $invalidation = current($items);
-      $this->queue->deleteItem($invalidation);
+      $this->queue->deleteItem(new ProxyItem($invalidation, $this->buffer));
       $this->buffer->delete($invalidation);
     }
     else {
-      $this->queue->deleteItemMultiple($items);
+      $proxyitems = [];
+      foreach ($items as $item) {
+        $proxyitems[] = new ProxyItem($item, $this->buffer);
+      }
+      $this->queue->deleteItemMultiple($proxyitems);
       $this->buffer->delete($items);
     }
   }

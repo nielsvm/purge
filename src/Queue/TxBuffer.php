@@ -25,9 +25,16 @@ class TxBuffer implements TxBufferInterface {
   /**
    * Instance<->state map of each object in the buffer.
    *
-   * @var \Drupal\purge\Invalidation\PluginInterface[]
+   * @var int[int]
    */
   private $states = [];
+
+  /**
+   * Instance<->property map of each object in the buffer.
+   *
+   * @var array[int]
+   */
+  private $properties = [];
 
   /**
    * {@inheritdoc}
@@ -62,6 +69,7 @@ class TxBuffer implements TxBufferInterface {
     foreach ($invalidations as $i) {
       unset($this->instances[$i->instance_id]);
       unset($this->states[$i->instance_id]);
+      unset($this->properties[$i->instance_id]);
     }
   }
 
@@ -71,6 +79,7 @@ class TxBuffer implements TxBufferInterface {
   public function deleteEverything() {
     $this->instances = [];
     $this->states = [];
+    $this->properties = [];
   }
 
   /**
@@ -97,6 +106,16 @@ class TxBuffer implements TxBufferInterface {
       return NULL;
     }
     return $this->states[$invalidation->instance_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getProperty(Invalidation $invalidation, $property, $default = NULL) {
+    if (!isset($this->properties[$invalidation->instance_id][$property])) {
+      return $default;
+    }
+    return $this->properties[$invalidation->instance_id][$property];
   }
 
   /**
@@ -145,6 +164,15 @@ class TxBuffer implements TxBufferInterface {
         $this->instances[$i->instance_id] = $i;
       }
       $this->states[$i->instance_id] = $state;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setProperty(Invalidation $invalidation, $property, $value) {
+    if ($this->has($invalidation)) {
+      $this->properties[$invalidation->instance_id][$property] = $value;
     }
   }
 

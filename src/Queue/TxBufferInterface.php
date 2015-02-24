@@ -49,9 +49,9 @@ interface TxBufferInterface extends \Countable, \Iterator {
    *
    * The transaction buffer is used internally by \Drupal\purge\Queue\Service
    * and holds \Drupal\purge\Invalidation\PluginInterface objects. For each
-   * object, it maintains state information about the object in relation to the
-   * queue. This helps \Drupal\purge\Queue\Service to commit objects as rarely
-   * and efficiently as possible to its underlying back-end.
+   * object, it maintains state and properties about the object in relation to
+   * the queue. This helps \Drupal\purge\Queue\Service to commit objects as
+   * rarely and efficiently as possible to its underlying back-end.
    */
   public function __construct();
 
@@ -106,6 +106,21 @@ interface TxBufferInterface extends \Countable, \Iterator {
   public function getState(Invalidation $invalidation);
 
   /**
+   * Retrieve a stored property for the given invalidation object.
+   *
+   * @param \Drupal\purge\Invalidation\PluginInterface $invalidation
+   *   Invalidation object.
+   * @param string $property
+   *   The string key of the stored property you want to receive.
+   * @param mixed $default
+   *   The return value for when the property is not found.
+   *
+   * @return mixed|null
+   *   The stored property value or the value of the $default argument.
+   */
+  public function getProperty(Invalidation $invalidation, $property, $default = NULL);
+
+  /**
    * Check if the given object is already in buffer our not.
    *
    * @param \Drupal\purge\Invalidation\PluginInterface $invalidation
@@ -132,5 +147,19 @@ interface TxBufferInterface extends \Countable, \Iterator {
    * @return void
    */
   public function set($invalidations, $state);
+
+  /**
+   * Store a named property for the given invalidation object.
+   *
+   * @param \Drupal\purge\Invalidation\PluginInterface $invalidation
+   *   Invalidation object.
+   * @param string $property
+   *   The string key of the property you want to store.
+   * @param mixed $value
+   *   The value of the property you want to set.
+   *
+   * @return void
+   */
+  public function setProperty(Invalidation $invalidation, $property, $value);
 
 }

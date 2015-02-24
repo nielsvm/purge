@@ -133,6 +133,44 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
+   * Tests:
+   *   - \Drupal\purge\Queue\TxBuffer::setProperty
+   *   - \Drupal\purge\Queue\TxBuffer::getProperty
+   */
+  public function testSetAndGetProperty() {
+    $i = current($this->getInvalidations(1));
+
+    // Assert that setting/getting properties on unbuffered objects won't work.
+    $this->assertNull($this->buffer->getProperty($i, 'prop'));
+    $this->assertFalse($this->buffer->getProperty($i, 'prop', FALSE));
+    $this->buffer->setProperty($i, 'prop', 'value');
+    $this->assertNull($this->buffer->getProperty($i, 'prop'));
+
+    // Assert that once buffered, it all does work.
+    $this->buffer->set($i, TxBufferInterface::CLAIMED);
+    $this->assertNull($this->buffer->getProperty($i, 'prop'));
+    $this->assertFalse($this->buffer->getProperty($i, 'prop', FALSE));
+    $this->buffer->setProperty($i, 'prop', 'value');
+    $this->assertEqual('value', $this->buffer->getProperty($i, 'prop'));
+    $this->buffer->setProperty($i, 'prop', 5.5);
+    $this->assertEqual(5.5, $this->buffer->getProperty($i, 'prop'));
+    $this->buffer->setProperty($i, 'prop', [1]);
+    $this->assertEqual([1], $this->buffer->getProperty($i, 'prop'));
+    $this->buffer->delete($i);
+    $this->assertNull($this->buffer->getProperty($i, 'prop'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getProperty(Invalidation $invalidation, $property, $default = NULL) {
+    if (!isset($this->properties[$invalidation->instance_id][$property])) {
+      return $default;
+    }
+    return $this->properties[$invalidation->instance_id][$property];
+  }
+
+  /**
    * Tests \Drupal\purge\Queue\TxBuffer::has
    */
   public function testHas() {

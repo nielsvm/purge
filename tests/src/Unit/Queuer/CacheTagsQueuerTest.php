@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\Tests\purge_cachetags_queuer\Unit\CacheTagsQueuerTest.
+ * Contains \Drupal\Tests\purge\Unit\Queuer\CacheTagsQueuerTest.
  */
 
-namespace Drupal\Tests\purge\Unit;
+namespace Drupal\Tests\purge\Unit\Queuer;
 
 use Drupal\purge\Queuer\CacheTagsQueuer;
 use Drupal\Tests\UnitTestCase;

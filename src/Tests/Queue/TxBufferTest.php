@@ -35,7 +35,6 @@ class TxBufferTest extends KernelTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $this->initializeInvalidationFactoryService();
     $this->buffer = new TxBuffer();
   }
 
@@ -82,7 +81,7 @@ class TxBufferTest extends KernelTestBase {
     $this->buffer->set($objects, TxBufferInterface::CLAIMED);
 
     // Test that deleting foreign objects, doesn't affect the buffer at all.
-    $this->buffer->delete(current($this->getInvalidations(1)));
+    $this->buffer->delete($this->getInvalidations(1));
     $this->assertEqual(5, count($this->buffer));
     $this->buffer->delete($this->getInvalidations(2));
     $this->assertEqual(5, count($this->buffer));
@@ -107,7 +106,7 @@ class TxBufferTest extends KernelTestBase {
    * Tests \Drupal\purge\Queue\TxBuffer::getByProperty
    */
   public function testGetByProperty() {
-    $i = current($this->getInvalidations(1));
+    $i = $this->getInvalidations(1);
     $this->buffer->set($i, TxBufferInterface::CLAIMED);
     $this->buffer->setProperty($i, 'find', 'me');
     $this->assertFalse($this->buffer->getByProperty('find', 'you'));
@@ -136,7 +135,7 @@ class TxBufferTest extends KernelTestBase {
    * Tests \Drupal\purge\Queue\TxBuffer::getState
    */
   public function testGetState() {
-    $i = current($this->getInvalidations(1));
+    $i = $this->getInvalidations(1);
     $this->assertNull($this->buffer->getState($i));
     $this->buffer->set($i, TxBufferInterface::CLAIMED);
     $this->assertEqual(TxBufferInterface::CLAIMED, $this->buffer->getState($i));
@@ -152,7 +151,7 @@ class TxBufferTest extends KernelTestBase {
    *   - \Drupal\purge\Queue\TxBuffer::getProperty
    */
   public function testSetAndGetProperty() {
-    $i = current($this->getInvalidations(1));
+    $i = $this->getInvalidations(1);
 
     // Assert that setting/getting properties on unbuffered objects won't work.
     $this->assertNull($this->buffer->getProperty($i, 'prop'));
@@ -178,7 +177,7 @@ class TxBufferTest extends KernelTestBase {
    * Tests \Drupal\purge\Queue\TxBuffer::has
    */
   public function testHas() {
-    $i = current($this->getInvalidations(1));
+    $i = $this->getInvalidations(1);
     $this->assertFalse($this->buffer->has($i));
     $this->buffer->set($i, TxBufferInterface::CLAIMED);
     $this->assertTrue($this->buffer->has($i));
@@ -268,26 +267,6 @@ class TxBufferTest extends KernelTestBase {
     $this->assertTrue($this->buffer->valid());
     $this->buffer->next();
     $this->assertFalse($this->buffer->valid());
-  }
-
-  /**
-   * Create $number requested invalidation objects.
-   *
-   * @param int $number
-   *   The number of objects to generate.
-   *
-   * @todo
-   *   Find out and understand a way to stub/mock invalidation objects. Not sure
-   *   if directly instantiating one of the plugins is the best way.
-   *
-   * @return \Drupal\purge\Invalidation\PluginInterface[]
-   */
-  public function getInvalidations($number) {
-    $set = [];
-    for ($i = 0; $i < $number; $i++) {
-      $set[] = $this->purgeInvalidationFactory->get('everything');
-    }
-    return $set;
   }
 
 }

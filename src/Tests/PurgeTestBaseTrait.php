@@ -81,8 +81,7 @@ trait PurgeTestBaseTrait {
    */
   protected function initializeQueueService($plugin_id = NULL) {
     if (!is_null($plugin_id)) {
-      $this->configFactory->getEditable('purge.plugins')
-        ->set('queue', $plugin_id)->save();
+      $this->configFactory->getEditable('purge.plugins')->set('queue', $plugin_id)->save();
     }
     if (is_null($this->purgeQueue)) {
       $this->purgeQueue = $this->container->get('purge.queue');
@@ -113,14 +112,15 @@ trait PurgeTestBaseTrait {
    * @param int $number
    *   The number of objects to generate.
    *
-   * @return \Drupal\purge\Invalidation\PluginInterface[]
+   * @return array|\Drupal\purge\Invalidation\PluginInterface
    */
   public function getInvalidations($number) {
+    $this->initializeInvalidationFactoryService();
     $set = [];
     for ($i = 0; $i < $number; $i++) {
       $set[] = $this->purgeInvalidationFactory->get('everything');
     }
-    return $set;
+    return ($number === 1) ? $set[0] : $set;
   }
 
 }

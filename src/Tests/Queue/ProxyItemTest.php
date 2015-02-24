@@ -32,7 +32,6 @@ class ProxyItemTest extends KernelTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $this->initializeInvalidationFactoryService();
     $this->buffer = new TxBuffer();
   }
 
@@ -40,7 +39,7 @@ class ProxyItemTest extends KernelTestBase {
    * Tests \Drupal\purge\Queue\ProxyItem::__get
    */
   public function testGet() {
-    $i = current($this->getInvalidations(1));
+    $i = $this->getInvalidations(1);
     $p = new ProxyItem($i, $this->buffer);
     $this->buffer->set($i, TxBuffer::CLAIMED);
 
@@ -83,7 +82,7 @@ class ProxyItemTest extends KernelTestBase {
    * Tests \Drupal\purge\Queue\ProxyItem::__set
    */
   public function testSet() {
-    $i = current($this->getInvalidations(1));
+    $i = $this->getInvalidations(1);
     $p = new ProxyItem($i, $this->buffer);
     $this->buffer->set($i, TxBuffer::CLAIMED);
 

@@ -117,10 +117,19 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * {@inheritdoc}
    */
   public function reload() {
+
+    // First commit all work and destruct the plugin if it needs destruction.
     $this->commit();
+    if ($this->queue instanceof DestructableInterface) {
+      $this->queue->destruct();
+    }
+
+    // Reset all properties and empty the buffer.
     parent::reload();
     $this->queue = NULL;
     $this->buffer->deleteEverything();
+
+    // Refetch the configFactory - needed in tests - and reinitialize.
     $this->configFactory = \Drupal::configFactory();
     $this->initializeQueue();
   }
@@ -281,10 +290,9 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   /**
    * {@inheritdoc}
    */
-  function emptyQueue() {
+  public function emptyQueue() {
     $this->buffer->deleteEverything();
     $this->queue->deleteQueue();
-    $this->buffer = [];
   }
 
   /**

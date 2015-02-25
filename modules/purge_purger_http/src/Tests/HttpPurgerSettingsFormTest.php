@@ -15,6 +15,7 @@ use Drupal\purge\Tests\WebTestBase;
  * @group purge_purger_http
  */
 class HttpPurgerSettingsFormTest extends WebTestBase {
+
   /**
    * User account with purge_purger_http permissions.
    *
@@ -78,24 +79,26 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
    * Test posting data to the HTTP Purger settings form.
    */
   public function testHttpPurgerSettingsPost() {
+    $this->initializeQueueService('memory');
     // Post form with new values.
-    $edit = array(
-      'edit-hostname' => 'example.com',
-      'edit-port' => 8080,
-      'edit-path' => 'node/1',
-      'edit-request-method' => 1,
-    );
+    $edit = [
+      'hostname' => 'example.com',
+      'port' => 8080,
+      'path' => 'node/1',
+      'request_method' => 1,
+    ];
     $this->drupalPostForm('admin/config/development/performance/purge/http', $edit, t('Save configuration'));
 
     // Load settings form page and test for new values.
     $this->drupalGet('admin/config/development/performance/purge/http');
-    $this->assertFieldById('edit-hostname', $edit['edit-hostname'],
-      format_string('The edit-hostname field has the value %val.', array('%val' => $edit['edit-hostname'])));
-    $this->assertNoFieldChecked('edit-compact-forms-descriptions');
-    $this->assertFieldChecked('edit-compact-forms-stars-0');
-    $this->assertNoFieldChecked('edit-compact-forms-stars-1');
-    $this->assertNoFieldChecked('edit-compact-forms-stars-2');
-    $this->assertFieldById('edit-compact-forms-field-size', $edit['compact_forms_field_size'],
-     format_string('The edit-compact-forms-field-size field has the value %val.', array('%val' => $edit['compact_forms_field_size'])));
-  }*/
+    $this->assertFieldById('edit-hostname', $edit['hostname'],
+      format_string('The hostname field has the value %val.', ['%val' => $edit['hostname']]));
+    $this->assertFieldById('edit-port', $edit['port'],
+     format_string('The port field has the value %val.', ['%val' => $edit['port']]));
+    $this->assertFieldById('edit-path', $edit['path'],
+      format_string('The path field has the value %val.', ['%val' => $edit['port']]));
+    $this->assertFieldById('edit-request-method', $edit['request_method'],
+      format_string('The request_method field has the value %val.', ['%val' => $edit['request_method']]));
+  }
+
 }

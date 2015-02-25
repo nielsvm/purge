@@ -7,8 +7,9 @@
 
 namespace Drupal\purge\Plugin\PurgeQueue;
 
-use Drupal\purge\Plugin\PurgeQueue\Memory;
+use Drupal\Core\DestructableInterface;
 use Drupal\Core\StreamWrapper\PublicStream;
+use Drupal\purge\Plugin\PurgeQueue\Memory;
 use Drupal\purge\Queue\PluginInterface;
 
 /**
@@ -20,7 +21,7 @@ use Drupal\purge\Queue\PluginInterface;
  *   description = @Translation("A file-based queue for fast I/O systems."),
  * )
  */
-class File extends Memory implements PluginInterface {
+class File extends Memory implements PluginInterface, DestructableInterface {
 
   /**
    * The file path to which the queue buffer gets written to.
@@ -45,15 +46,7 @@ class File extends Memory implements PluginInterface {
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->file = str_replace('public:/', PublicStream::basePath(), $this->file);
-  }
-
-  /**
-   * Trigger a disk commit when the object is destructed.
-   */
-  function __destruct() {
-    if ($this->bufferInitialized) {
-      $this->bufferCommit();
-    }
+    $this->bufferInitialize();
   }
 
   /**
@@ -91,4 +84,25 @@ class File extends Memory implements PluginInterface {
     fwrite($fh, $ob);
     fclose($fh);
   }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @see \Drupal\purge\Queue\Service::reload()
+   */
+  public function destruct() {
+    if ($this->bufferInitialized) {
+      $this->bufferCommit();
+    }
+  }
+
+  /**
+   * Trigger a disk commit when the object is destructed.
+   */
+  function __destruct() {
+    if ($this->bufferInitialized) {
+      $this->bufferCommit();
+    }
+  }
+
 }

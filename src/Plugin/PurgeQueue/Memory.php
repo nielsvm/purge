@@ -201,4 +201,5 @@ class Memory extends PluginBase implements PluginInterface {
     $this->bufferInitialize();
     $this->buffer = [];
   }
+  
 }

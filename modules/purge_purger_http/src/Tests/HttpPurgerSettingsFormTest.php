@@ -48,7 +48,7 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
   /**
    * Test the HTTP Purger settings form.
    */
-  public function testHttpPurgerSettingsForm() {
+  public function testHttpPurgerSettings() {
     // Verify if we can successfully access the HTTP Purger form.
     $this->drupalGet('admin/config/development/performance/purge/http');
     $this->assertResponse(200, 'The HTTP Purger settings page is available.');
@@ -73,9 +73,9 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
   }
 
   /**
-   * Test posting data to the purge_purger_http settings form.
+   * Test posting data to the HTTP Purger settings form.
    */
-/*  public function testHttpPurgerFormPost() {
+  public function testHttpPurgerSettingsPost() {
     // Post form with new values.
     $edit = array(
       'edit-hostname' => 'example.com',

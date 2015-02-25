@@ -69,8 +69,8 @@ class CapacityCheck extends PluginBase implements PluginInterface {
 
     // When the capacity is zero - this would be problematic.
     if ($this->value === 0) {
-      $this->recommendation = $this->t("There is no purging capacity available, this either means that you have too many purgers enabled or non at all.");
-      return SELF::SEVERITY_ERROR;
+      $this->recommendation = $this->t("There is no purging capacity available.");
+      return SELF::SEVERITY_WARNING;
     }
     elseif ($this->value < 3) {
       $this->recommendation = $this->t("There is not much capacity available, this means that Drupal might be attempting purges at higher rate then your configuration is able to catch up. Expect your queue to build up quickly.");

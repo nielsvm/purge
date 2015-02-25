@@ -72,12 +72,12 @@ class CacheTagsQueuerCheck extends PluginBase implements PluginInterface {
   public function run() {
     if (!$this->container->has('purge.queuer.cache_tags')) {
       $this->value = $this->t('Disabled');
-      $this->recommendation = $this->t("Your system automatically queues the cache tags that Drupal core invalidates, this means external cache invalidation is configured for ordinary use cases.");
+      $this->recommendation = $this->t("Purge does NOT add 'tag' invalidations to its queue because the service got disabled by another module.");
       return SELF::SEVERITY_WARNING;
     }
     else {
       $this->value = $this->t('Enabled');
-      $this->recommendation = $this->t("Your system automatically queues the cache tags that Drupal core invalidates, this means external cache invalidation is configured for ordinary use cases.");
+      $this->recommendation = $this->t("When Drupal invalidates its own content, purge will add a 'tag' item to its queue for external invalidation.");
       return SELF::SEVERITY_OK;
     }
   }

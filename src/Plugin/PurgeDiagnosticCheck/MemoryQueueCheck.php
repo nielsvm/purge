@@ -30,10 +30,7 @@ class MemoryQueueCheck extends PluginBase implements PluginInterface {
 
     // There's nothing to test for here, as this check only gets loaded when
     // the memory queue is active, so we can jump straight to conclusions.
-    $this->recommendation = $this->t("You are using the memory queue, which ".
-      "is not recommend for day to day use. Items stored in its queue will ".
-      "not get stored after each request, so unless a module is processing ".
-      "purges in-request, its better not to use it (outside development).");
+    $this->recommendation = $this->t("You are using the memory queue, which is not recommend for day to day use. Anything stored in this queue, gets lost if it doesn't get processed during the same request.");
     return SELF::SEVERITY_WARNING;
   }
 }

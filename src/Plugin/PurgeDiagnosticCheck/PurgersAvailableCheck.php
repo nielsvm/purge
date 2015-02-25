@@ -19,7 +19,7 @@ use Drupal\purge\DiagnosticCheck\PluginBase;
  *
  * @PurgeDiagnosticCheck(
  *   id = "purgersavailable",
- *   title = @Translation("Purger(s) configured"),
+ *   title = @Translation("Purgers"),
  *   description = @Translation("Tests if there is a purger plugin available."),
  *   dependent_queue_plugins = {},
  *   dependent_purger_plugins = {}
@@ -76,18 +76,27 @@ class PurgersAvailableCheck extends PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function run() {
-    $purgers = $this->purgePurgers->getPluginsEnabled();
+    $purgers = $this->purgePurgers->getPlugins();
+    $enabled = $this->purgePurgers->getPluginsEnabled();
+
+    // Put all enabled in a comma separated value.
+    $this->value = '';
+    if (!in_array('null', $enabled)) {
+      $this->value = [];
+      foreach ($enabled as $plugin_id) {
+        $this->value[] = $purgers[$plugin_id]['label'];
+      }
+      $this->value = implode(', ', $this->value);
+    }
 
     // Test for the 'null' purger, which only loads if nothing else exists.
-    if (in_array('null', $purgers)) {
-      $this->value = $this->t("n/a");
+    if (in_array('null', $enabled)) {
       $this->recommendation = $this->t("There is no purger loaded which means ".
         "that you need a module enabled to provide a purger plugin to clear ".
         "your external cache or CDN.");
       return SELF::SEVERITY_ERROR;
     }
-    elseif (count($purgers) > 3) {
-      $this->value = implode(', ', $purgers);
+    elseif (count($enabled) > 3) {
       $this->recommendation = $this->t("You have more than 3 purgers active ".
         "on one system. This introduces the risk of congesting Drupal as ".
         "multiple purgers are clearing external caches. It is highly ".
@@ -95,7 +104,6 @@ class PurgersAvailableCheck extends PluginBase implements PluginInterface {
       return SELF::SEVERITY_WARNING;
     }
     else {
-      $this->value = implode(', ', $purgers);
       $this->recommendation = $this->t("Purger configured.");
       return SELF::SEVERITY_OK;
     }

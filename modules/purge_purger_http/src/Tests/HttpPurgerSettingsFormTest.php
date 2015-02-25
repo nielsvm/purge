@@ -27,7 +27,7 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('purge', 'purge_ui', 'purge_purger_http');
+  public static $modules = ['purge', 'purge_ui', 'purge_purger_http'];
 
   /**
    * The installation profile to use with this test.
@@ -41,7 +41,7 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $this->privilegedUser = $this->drupalCreateUser(array('administer site configuration'));
+    $this->privilegedUser = $this->drupalCreateUser(['administer site configuration']);
     $this->drupalLogin($this->privilegedUser);
   }
 

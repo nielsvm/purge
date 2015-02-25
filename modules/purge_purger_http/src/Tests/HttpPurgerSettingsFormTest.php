@@ -7,7 +7,7 @@
 
 namespace Drupal\purge_purger_http\Tests;
 
-use Drupal\simpletest\WebTestBase;
+use Drupal\purge\Tests\WebTestBase;
 
 /**
  * Tests the HTTP Purger admin settings form.
@@ -27,7 +27,7 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge', 'purge_ui', 'purge_purger_http'];
+  public static $modules = ['purge_noqueuer_test', 'system', 'purge_ui', 'purge_purger_http'];
 
   /**
    * The installation profile to use with this test.
@@ -41,6 +41,7 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
    */
   public function setUp() {
     parent::setUp();
+    $this->initializeQueueService('memory');
     $this->privilegedUser = $this->drupalCreateUser(['administer site configuration']);
     $this->drupalLogin($this->privilegedUser);
   }
@@ -49,6 +50,7 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
    * Test the HTTP Purger settings form.
    */
   public function testHttpPurgerSettings() {
+    $this->initializeQueueService('memory');
     // Verify if we can successfully access the HTTP Purger form.
     $this->drupalGet('admin/config/development/performance/purge/http');
     $this->assertResponse(200, 'The HTTP Purger settings page is available.');

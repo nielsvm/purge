@@ -7,6 +7,7 @@
 
 namespace Drupal\purge_purger_http\Tests;
 
+use Drupal\Core\Url;
 use Drupal\purge\Tests\WebTestBase;
 
 /**
@@ -31,12 +32,22 @@ class ConfigurationFormTest extends WebTestBase {
   public static $modules = ['purge_noqueuer_test', 'purge_ui', 'purge_purger_http'];
 
   /**
+   * The route to a purgers configuration form (takes argument 'purger').
+   *
+   * @var string|\Drupal\Core\Url
+   */
+  protected $route = 'purge_ui.purger_form';
+
+  /**
    * {@inheritdoc}
    */
   public function setUp() {
     parent::setUp();
     $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
-
+    if (is_string($this->route)) {
+      $this->route = Url::fromRoute($this->route, ['purger' => 'http']);
+      $this->route->setAbsolute(FALSE);
+    }
   }
 
   /**
@@ -46,7 +57,7 @@ class ConfigurationFormTest extends WebTestBase {
     $this->drupalLogin($this->admin_user);
 
     // Verify if we can successfully access the HTTP Purger form.
-    $this->drupalGet('admin/config/development/performance/purge/http');
+    $this->drupalGet($this->route);
     $this->assertResponse(200);
     $this->assertTitle(t('Configure HTTP Purger | Drupal'));
 
@@ -64,7 +75,7 @@ class ConfigurationFormTest extends WebTestBase {
 
     // Verify that there's no access bypass.
     $this->drupalLogout();
-    $this->drupalGet('admin/config/development/performance/purge/http');
+    $this->drupalGet($this->route);
     $this->assertResponse(403);
   }
 
@@ -81,10 +92,10 @@ class ConfigurationFormTest extends WebTestBase {
       'path' => 'node/1',
       'request_method' => 1,
     ];
-    $this->drupalPostForm('admin/config/development/performance/purge/http', $edit, t('Save configuration'));
+    $this->drupalPostForm($this->route, $edit, t('Save configuration'));
 
     // Load settings form page and test for new values.
-    $this->drupalGet('admin/config/development/performance/purge/http');
+    $this->drupalGet($this->route);
     $this->assertFieldById('edit-hostname', $edit['hostname']);
     $this->assertFieldById('edit-port', $edit['port']);
     $this->assertFieldById('edit-path', $edit['path']);

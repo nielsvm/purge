@@ -31,13 +31,6 @@ class ConfigurationFormTest extends WebTestBase {
   public static $modules = ['purge_noqueuer_test', 'purge_ui', 'purge_purger_http'];
 
   /**
-   * The installation profile to use with this test.
-   *
-   * @var string
-   */
-  protected $profile = 'minimal';
-
-  /**
    * {@inheritdoc}
    */
   public function setUp() {
@@ -54,8 +47,8 @@ class ConfigurationFormTest extends WebTestBase {
 
     // Verify if we can successfully access the HTTP Purger form.
     $this->drupalGet('admin/config/development/performance/purge/http');
-    $this->assertResponse(200, 'The HTTP Purger settings page is available.');
-    $this->assertTitle(t('Configure HTTP Purger | Drupal'), 'The title on the page is "Configure HTTP Purger".');
+    $this->assertResponse(200);
+    $this->assertTitle(t('Configure HTTP Purger | Drupal'));
 
     // Verify every field exists.
     $this->assertField('edit-hostname');
@@ -72,7 +65,7 @@ class ConfigurationFormTest extends WebTestBase {
     // Verify that there's no access bypass.
     $this->drupalLogout();
     $this->drupalGet('admin/config/development/performance/purge/http');
-    $this->assertResponse(403, 'Access denied for anonymous user.');
+    $this->assertResponse(403);
   }
 
   /**
@@ -92,14 +85,10 @@ class ConfigurationFormTest extends WebTestBase {
 
     // Load settings form page and test for new values.
     $this->drupalGet('admin/config/development/performance/purge/http');
-    $this->assertFieldById('edit-hostname', $edit['hostname'],
-      format_string('The hostname field has the value %val.', ['%val' => $edit['hostname']]));
-    $this->assertFieldById('edit-port', $edit['port'],
-     format_string('The port field has the value %val.', ['%val' => $edit['port']]));
-    $this->assertFieldById('edit-path', $edit['path'],
-      format_string('The path field has the value %val.', ['%val' => $edit['port']]));
-    $this->assertFieldById('edit-request-method', $edit['request_method'],
-      format_string('The request_method field has the value %val.', ['%val' => $edit['request_method']]));
+    $this->assertFieldById('edit-hostname', $edit['hostname']);
+    $this->assertFieldById('edit-port', $edit['port']);
+    $this->assertFieldById('edit-path', $edit['path']);
+    $this->assertFieldById('edit-request-method', $edit['request_method']);
   }
 
 }

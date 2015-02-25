@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Test case for testing the HTTP Purger module.
+ * Contains \Drupal\purge_purger_http\Tests\ConfigurationFormTest;
  */
 
 namespace Drupal\purge_purger_http\Tests;
@@ -10,18 +10,18 @@ namespace Drupal\purge_purger_http\Tests;
 use Drupal\purge\Tests\WebTestBase;
 
 /**
- * Tests the HTTP Purger admin settings form.
+ * Tests \Drupal\purge_purger_http\Form\ConfigurationForm.
  *
- * @group purge_purger_http
+ * @group purge
  */
-class HttpPurgerSettingsFormTest extends WebTestBase {
+class ConfigurationFormTest extends WebTestBase {
 
   /**
    * User account with purge_purger_http permissions.
    *
    * @var \Drupal\Core\Session\AccountInterface
    */
-  protected $privilegedUser;
+  protected $admin_user;
 
   /**
    * Modules to enable.
@@ -43,8 +43,8 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
   public function setUp() {
     parent::setUp();
     $this->initializeQueueService('memory');
-    $this->privilegedUser = $this->drupalCreateUser(['administer site configuration']);
-    $this->drupalLogin($this->privilegedUser);
+    $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
+    $this->drupalLogin($this->admin_user);
   }
 
   /**

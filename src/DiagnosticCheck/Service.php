@@ -151,6 +151,17 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * {@inheritdoc}
    */
+  public function getRequirementsArray() {
+    $requirements = [];
+    foreach ($this as $check) {
+      $requirements[$check->getPluginId()] = $check->getRequirementsArray();
+    }
+    return $requirements;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isSystemOnFire() {
     foreach ($this as $check) {
       if ($check->getSeverity() === PluginInterface::SEVERITY_ERROR) {

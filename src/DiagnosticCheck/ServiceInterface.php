@@ -54,6 +54,28 @@ interface ServiceInterface extends PurgeServiceInterface, \Iterator, \Countable 
   public function getHookRequirementsArray();
 
   /**
+   * Generates a status-report.html.twig compatible array.
+   *
+   * The main difference with ::getHookRequirementsArray is that this helper is
+   * not intended to be used in a hook_requirements() implementation but rather
+   * when rendering status reports directly using #theme = 'status_report',
+   *
+   * @return array
+   *   An associative array where the keys are arbitrary but unique (check id)
+   *   and the values themselves are associative arrays with these elements:
+   *   - title: The name of this check.
+   *   - value: The current value (e.g., version, time, level, etc), will not
+   *     be set if not applicable.
+   *   - description: The description of the check.
+   *   - severity: The checks result/severity level, one of:
+   *     - REQUIREMENT_INFO: For info only.
+   *     - REQUIREMENT_OK: The requirement is satisfied.
+   *     - REQUIREMENT_WARNING: The requirement failed with a warning.
+   *     - REQUIREMENT_ERROR: The requirement failed with an error.
+   */
+  public function getRequirementsArray();
+
+  /**
    * Reports if any of the diagnostic checks report a SEVERITY_ERROR severity.
    *
    * This method provides a simple - boolean evaluable - way to determine if

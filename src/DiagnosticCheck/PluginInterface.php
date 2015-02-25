@@ -118,18 +118,6 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
   public function getValue();
 
   /**
-   * Get the severity level, expressed as hook_requirements() severity.
-   *
-   * @return int
-   *   Integer, matching either of the following constants:
-   *    - REQUIREMENT_INFO
-   *    - REQUIREMENT_OK
-   *    - REQUIREMENT_WARNING
-   *    - REQUIREMENT_ERROR
-   */
-  public function getHookRequirementsSeverity();
-
-  /**
    * Generates a hook_requirements() compatible item array.
    *
    * @return array
@@ -145,4 +133,34 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    *     - REQUIREMENT_ERROR: The requirement failed with an error.
    */
   public function getHookRequirementsArray();
+
+  /**
+   * Generates a status-report.html.twig compatible array.
+   *
+   * @return array
+   *   An associative array with the following elements:
+   *   - title: The name of this check.
+   *   - value: The current value (e.g., version, time, level, etc), will not
+   *     be set if not applicable.
+   *   - description: The description of the check.
+   *   - severity: The check's result/severity level, one of:
+   *     - REQUIREMENT_INFO: For info only.
+   *     - REQUIREMENT_OK: The requirement is satisfied.
+   *     - REQUIREMENT_WARNING: The requirement failed with a warning.
+   *     - REQUIREMENT_ERROR: The requirement failed with an error.
+   */
+  public function getRequirementsArray();
+
+  /**
+   * Get the severity level, expressed as a status_report severity.
+   *
+   * @return int
+   *   Integer, matching either of the following constants:
+   *    - REQUIREMENT_INFO
+   *    - REQUIREMENT_OK
+   *    - REQUIREMENT_WARNING
+   *    - REQUIREMENT_ERROR
+   */
+  public function getRequirementsSeverity();
+
 }

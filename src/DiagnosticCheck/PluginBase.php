@@ -154,7 +154,33 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function getHookRequirementsSeverity() {
+  public function getHookRequirementsArray() {
+    $this->runCheck();
+    return [
+      'title' => $this->t('Purge - @title', ['@title' => $this->getTitle()]),
+      'value' => $this->getValue(),
+      'description' => $this->getRecommendation(),
+      'severity' => $this->getRequirementsSeverity()
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRequirementsArray() {
+    $this->runCheck();
+    return [
+      'title' => $this->getTitle(),
+      'value' => $this->getValue(),
+      'description' => $this->getRecommendation(),
+      'severity' => $this->getRequirementsSeverity()
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRequirementsSeverity() {
     static $mapping;
     $this->runCheck();
     if (is_null($mapping)) {
@@ -174,16 +200,4 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
     return $mapping[$this->getSeverity()];
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function getHookRequirementsArray() {
-    $this->runCheck();
-    return [
-      'title' => $this->t('Purge - @title', ['@title' => $this->getTitle()]),
-      'value' => $this->getValue(),
-      'description' => $this->getRecommendation(),
-      'severity' => $this->getHookRequirementsSeverity()
-    ];
-  }
 }

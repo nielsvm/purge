@@ -54,7 +54,7 @@ interface ServiceInterface extends PurgeServiceInterface, \Iterator, \Countable 
   public function getHookRequirementsArray();
 
   /**
-   * Checks whether one of the diagnostic checks reports full failure.
+   * Reports if any of the diagnostic checks report a SEVERITY_ERROR severity.
    *
    * This method provides a simple - boolean evaluable - way to determine if
    * a \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR severity
@@ -62,9 +62,20 @@ interface ServiceInterface extends PurgeServiceInterface, \Iterator, \Countable 
    * cannot continue and should happen once all problems are resolved.
    *
    * @return false|\Drupal\purge\DiagnosticCheck\PluginInterface
-   *   If everything is fine, this returns FALSE. But, if a blocking problem
-   *   exists, the first failing check object is returned holding a UI applicable
-   *   recommendation message.
+   *   The SEVERITY_ERROR reporting check, or FALSE when everything was fine.
    */
   public function isSystemOnFire();
+
+  /**
+   * Reports if any of the diagnostic checks report a SEVERITY_WARNING severity.
+   *
+   * This method provides a - boolean evaluable - way to determine if a check
+   * reported a \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING.
+   * If SEVERITY_WARNING was reported, cache invalidation can continue but it is
+   * important that the site administrator gets notified.
+   *
+   * @return false|\Drupal\purge\DiagnosticCheck\PluginInterface
+   *   The SEVERITY_WARNING reporting check, or FALSE when everything was fine.
+   */
+  public function isSystemShowingSmoke();
 }

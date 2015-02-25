@@ -162,6 +162,18 @@ class Service extends ServiceBase implements ServiceInterface {
 
   /**
    * {@inheritdoc}
+   */
+  public function isSystemShowingSmoke() {
+    foreach ($this as $check) {
+      if ($check->getSeverity() === PluginInterface::SEVERITY_WARNING) {
+        return $check;
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
    * @ingroup iterator
    */
   function rewind() {

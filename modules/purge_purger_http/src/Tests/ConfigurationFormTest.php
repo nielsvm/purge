@@ -1,0 +1,105 @@
+<?php
+
+/**
+ * @file
+ * Contains \Drupal\purge_purger_http\Tests\ConfigurationFormTest;
+ */
+
+namespace Drupal\purge_purger_http\Tests;
+
+use Drupal\Core\Url;
+use Drupal\purge\Tests\WebTestBase;
+
+/**
+ * Tests \Drupal\purge_purger_http\Form\ConfigurationForm.
+ *
+ * @group purge
+ */
+class ConfigurationFormTest extends WebTestBase {
+
+  /**
+   * User account with purge_purger_http permissions.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $admin_user;
+
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = ['purge_noqueuer_test', 'purge_ui', 'purge_purger_http'];
+
+  /**
+   * The route to a purgers configuration form (takes argument 'purger').
+   *
+   * @var string|\Drupal\Core\Url
+   */
+  protected $route = 'purge_ui.purger_form';
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    parent::setUp();
+    $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
+    if (is_string($this->route)) {
+      $this->route = Url::fromRoute($this->route, ['purger' => 'http']);
+      $this->route->setAbsolute(FALSE);
+    }
+  }
+
+  /**
+   * Test the HTTP Purger settings form.
+   */
+  public function testHttpPurgerSettings() {
+    $this->drupalLogin($this->admin_user);
+
+    // Verify if we can successfully access the HTTP Purger form.
+    $this->drupalGet($this->route);
+    $this->assertResponse(200);
+    $this->assertTitle(t('Configure HTTP Purger | Drupal'));
+
+    // Verify every field exists.
+    $this->assertField('edit-hostname');
+    $this->assertField('edit-port');
+    $this->assertField('edit-path');
+    $this->assertField('edit-request-method');
+
+    // Validate default form values.
+    $this->assertFieldById('edit-hostname', 'localhost');
+    $this->assertFieldById('edit-port', '80');
+    $this->assertFieldById('edit-path', '');
+    $this->assertOptionSelected('edit-request-method', 0);
+
+    // Verify that there's no access bypass.
+    $this->drupalLogout();
+    $this->drupalGet($this->route);
+    $this->assertResponse(403);
+  }
+
+  /**
+   * Test posting data to the HTTP Purger settings form.
+   */
+  public function testHttpPurgerSettingsPost() {
+    $this->drupalLogin($this->admin_user);
+
+    // Post form with new values.
+    $edit = [
+      'hostname' => 'example.com',
+      'port' => 8080,
+      'path' => 'node/1',
+      'request_method' => 1,
+    ];
+    $this->drupalPostForm($this->route, $edit, t('Save configuration'));
+
+    // Load settings form page and test for new values.
+    $this->drupalGet($this->route);
+    $this->assertFieldById('edit-hostname', $edit['hostname']);
+    $this->assertFieldById('edit-port', $edit['port']);
+    $this->assertFieldById('edit-path', $edit['path']);
+    $this->assertFieldById('edit-request-method', $edit['request_method']);
+  }
+
+}

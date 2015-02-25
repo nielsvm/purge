@@ -28,7 +28,7 @@ class ConfigurationFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_noqueuer_test', 'system', 'purge_ui', 'purge_purger_http'];
+  public static $modules = ['purge_noqueuer_test', 'purge_ui', 'purge_purger_http'];
 
   /**
    * The installation profile to use with this test.
@@ -42,16 +42,16 @@ class ConfigurationFormTest extends WebTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $this->initializeQueueService('memory');
     $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
-    $this->drupalLogin($this->admin_user);
+
   }
 
   /**
    * Test the HTTP Purger settings form.
    */
   public function testHttpPurgerSettings() {
-    $this->initializeQueueService('memory');
+    $this->drupalLogin($this->admin_user);
+
     // Verify if we can successfully access the HTTP Purger form.
     $this->drupalGet('admin/config/development/performance/purge/http');
     $this->assertResponse(200, 'The HTTP Purger settings page is available.');
@@ -79,7 +79,8 @@ class ConfigurationFormTest extends WebTestBase {
    * Test posting data to the HTTP Purger settings form.
    */
   public function testHttpPurgerSettingsPost() {
-    $this->initializeQueueService('memory');
+    $this->drupalLogin($this->admin_user);
+
     // Post form with new values.
     $edit = [
       'hostname' => 'example.com',

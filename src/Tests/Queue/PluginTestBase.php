@@ -58,13 +58,6 @@ abstract class PluginTestBase extends KernelTestBase {
   }
 
   /**
-   * Clean the queue and wait a little bit.
-   */
-  protected function cleanAndWait() {
-    $this->queue->deleteQueue();
-  }
-
-  /**
    * Test the data integrity of data stored in the queue.
    */
   function testDataStorageIntegrity() {
@@ -84,49 +77,46 @@ abstract class PluginTestBase extends KernelTestBase {
     foreach ($samples as $sample) {
       $this->queue->createItem($sample);
       $reference = $this->queue->claimItem(3600);
-      $this->assertIdentical($sample, $reference->data,
-        var_export($sample, TRUE) . " stored identically");
+      $this->assertIdentical($sample, $reference->data);
     }
 
     // Test that we get the same data back by storing it in an object.
     $this->queue->createItem($samples);
     $reference = $this->queue->claimItem(3600);
-    $this->assertIdentical($samples, $reference->data,
-      "Objects stored identically");
+    $this->assertIdentical($samples, $reference->data);
 
-    $this->cleanAndWait();
+    $this->queue->deleteQueue();
   }
 
   /**
    * Test the queue counter by deleting items and emptying the queue.
    */
   public function testQueueCountBehavior() {
-    $this->assertNull($this->queue->deleteQueue(), 'deleteQueue returns NULL');
-    $this->assertEqual(0, $this->queue->numberOfItems(), 'numberOfItems returns 0');
+    $this->assertNull($this->queue->deleteQueue());
+    $this->assertEqual(0, $this->queue->numberOfItems());
     for ($i=1; $i <= 5; $i++) {
       $id = $this->queue->createItem($i);
-      $this->assertTrue(is_scalar($id), 'createItem returned a scalar.');
-      $this->assertTrue($id !== FALSE, 'createItem did not return FALSE.');
-      $this->assertEqual($i, $this->queue->numberOfItems(), "numberOfItems returns $i");
+      $this->assertTrue(is_scalar($id));
+      $this->assertTrue($id !== FALSE);
+      $this->assertEqual($i, $this->queue->numberOfItems());
     }
-    $this->assertTrue(is_object($this->queue->claimItem(1)), 'claimItem gives object');
-    $this->assertEqual(5, $this->queue->numberOfItems(), 'numberOfItems still returns 5 after claim');
-    $this->assertNull($this->queue->deleteQueue(), 'deleteQueue returns NULL');
-    $this->assertEqual(0, $this->queue->numberOfItems(), 'numberOfItems returns 0');
+    $this->assertTrue(is_object($this->queue->claimItem(1)));
+    $this->assertEqual(5, $this->queue->numberOfItems());
+    $this->assertNull($this->queue->deleteQueue());
+    $this->assertEqual(0, $this->queue->numberOfItems());
     for ($i=1; $i <= 10; $i++) {
       $this->queue->createItem($i);
     }
     for ($i=10; $i > 5; $i--) {
       $claim = $this->queue->claimItem();
-      $this->assertNull($this->queue->deleteItem($claim), 'deleteItem returns NULL');
-      $this->assertEqual($i-1, $this->queue->numberOfItems(),
-        "numberOfItems returns " . ($i-1));
+      $this->assertNull($this->queue->deleteItem($claim));
+      $this->assertEqual($i-1, $this->queue->numberOfItems());
     }
     $claims = $this->queue->claimItemMultiple(5);
     $this->queue->deleteItemMultiple($claims);
-    $this->assertEqual(0, $this->queue->numberOfItems(), 'numberOfItems returns 0');
+    $this->assertEqual(0, $this->queue->numberOfItems());
 
-    $this->cleanAndWait();
+    $this->queue->deleteQueue();
   }
 
   /**
@@ -135,10 +125,9 @@ abstract class PluginTestBase extends KernelTestBase {
   function testCreateQueue() {
     $this->queue->createItem([1,2,3]);
     $this->queue->createQueue();
-    $this->assertEqual(1, $this->queue->numberOfItems(),
-      'queue not emptied after double createQueue() call');
+    $this->assertEqual(1, $this->queue->numberOfItems());
 
-    $this->cleanAndWait();
+    $this->queue->deleteQueue();
   }
 
   /**
@@ -147,62 +136,47 @@ abstract class PluginTestBase extends KernelTestBase {
   function testCreatingClaimingAndReleasing() {
     $this->queue->createItem([1,2,3]);
     $claim = $this->queue->claimItem(3600);
-    $this->assertFalse($this->queue->claimItem(3600), 'second claim fails');
-    $this->assertTrue($this->queue->releaseItem($claim),
-      'releaseItem() returns TRUE');
-    $this->assertTrue($claim = $this->queue->claimItem(3600),
-      'item can be claimed after releaseItem() was called.');
+    $this->assertFalse($this->queue->claimItem(3600));
+    $this->assertTrue($this->queue->releaseItem($claim));
+    $this->assertTrue($claim = $this->queue->claimItem(3600));
     $this->queue->releaseItem($claim);
-    $this->assertIdentical(4,
-      count($this->queue->createItemMultiple([1,2,3,4])),
-      "createItemMultiple() returned four id's");
+    $this->assertIdentical(4, count($this->queue->createItemMultiple([1,2,3,4])));
     $claims = $this->queue->claimItemMultiple(5, 3600);
-    $this->assertIdentical([],
-      $this->queue->claimItemMultiple(5, 3600),
-      'claimItemMultiple() returned an empty []');
-    $this->assertIdentical([],
-      $this->queue->releaseItemMultiple($claims),
-      'releaseItemMultiple() returned an empty []');
+    $this->assertIdentical([], $this->queue->claimItemMultiple(5, 3600));
+    $this->assertIdentical([], $this->queue->releaseItemMultiple($claims));
     $claims = $this->queue->claimItemMultiple(5, 3600);
-    $this->assertIdentical(5,
-      count($claims),
-      "createItemMultiple() returned 5 items");
+    $this->assertIdentical(5, count($claims));
 
-    $this->cleanAndWait();
+    $this->queue->deleteQueue();
   }
 
   /**
    * Test the behavior of lease time when claiming queue items.
    */
   function testLeaseTime() {
-    $this->assertFalse($this->queue->claimItem(), 'claiming on empty queue.');
+    $this->assertFalse($this->queue->claimItem());
     $this->queue->createItem($this->randomString());
-    $this->assertEqual(1, $this->queue->numberOfItems(), 'numberOfItems returns 1');
-    $this->assertTrue($this->queue->claimItem(5), 'claiming item for 5s');
-    $this->assertFalse($this->queue->claimItem(), 'FALSE on direct claim');
+    $this->assertEqual(1, $this->queue->numberOfItems());
+    $this->assertTrue($this->queue->claimItem(5));
+    $this->assertFalse($this->queue->claimItem());
     sleep(6);
-    $this->assertTrue($this->queue->claimItem(2),
-      'after lease expired (6s), we can claim it again for 2s');
-    $this->assertFalse($this->queue->claimItem(1), 'FALSE on direct claim');
+    $this->assertTrue($this->queue->claimItem(2));
+    $this->assertFalse($this->queue->claimItem(1));
     sleep(3);
-    $this->assertTrue($claim = $this->queue->claimItem(2),
-      'after lease expired (3s), we can claim it again for 2s');
+    $this->assertTrue($claim = $this->queue->claimItem(2));
     $this->queue->deleteQueue();
 
     // Test claimItemMultiple which should work in the same way.
-    $this->assertTrue(empty($this->queue->claimItemMultiple(2)),
-      'claiming 2 on empty queue.');
+    $this->assertTrue(empty($this->queue->claimItemMultiple(2)));
     for ($i=1; $i <= 5; $i++) {
       $this->queue->createItem($this->randomString());
     }
-    $this->assertIdentical(5, count($this->queue->claimItemMultiple(5, 5)),
-      'claimItemMultiple(5,5) with 5s lease time.');
-    $this->assertTrue(empty($this->queue->claimItemMultiple(2)),
-      'claimItemMultiple(2,5) during lease gives empty []');
+    $this->assertIdentical(5, count($this->queue->claimItemMultiple(5, 5)));
+    $this->assertTrue(empty($this->queue->claimItemMultiple(2)));
     sleep(6);
-    $this->assertIdentical(5, count($this->queue->claimItemMultiple(5, 5)),
-      'claimItemMultiple(5,5) after lease expired.');
+    $this->assertIdentical(5, count($this->queue->claimItemMultiple(5, 5)));
 
-    $this->cleanAndWait();
+    $this->queue->deleteQueue();
   }
+
 }

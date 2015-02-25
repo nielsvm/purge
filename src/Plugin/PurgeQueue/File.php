@@ -58,7 +58,7 @@ class File extends Memory implements PluginInterface, DestructableInterface {
       $this->buffer = [];
 
       // Open and parse the queue file, if it wasn't there during initialization
-      // it will automatically become written at some point.
+      // it will automatically get written at some point.
       if (file_exists($this->file)) {
         foreach (file($this->file) as $line) {
           $line = explode(self::SEPARATOR, str_replace("\n", '', $line));
@@ -83,6 +83,16 @@ class File extends Memory implements PluginInterface, DestructableInterface {
     }
     fwrite($fh, $ob);
     fclose($fh);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteQueue() {
+    if (file_exists($this->file)) {
+      unlink($this->file);
+    }
+    parent::deleteQueue();
   }
 
   /**

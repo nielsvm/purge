@@ -51,6 +51,43 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
+  public function getCapacityLimit() {
+    $max_execution_time = (int) ini_get('max_execution_time');
+    $time_per_invalidation = $this->getClaimTimeHint();
+
+    // Since we are in PluginBase, this limit is a wild guess as we have no idea
+    // what derived purgers do and how they perform. Plugins that wipe directly
+    // from memory on localhost, can do with much higher limits whereas slow
+    // CDNs are likely to lower this quite a bit. Derivatives do have to
+    // provide ::getClaimTimeHint, which is far more important and indicative.
+    $limit = 100;
+
+    // When PHP's max_execution_time equals 0, the system is given carte blanche
+    // for how long it can run. Since looping endlessly is out of the question,
+    // use a hard fixed limit.
+    if ($max_execution_time === 0) {
+      return $limit;
+    }
+
+    // But when it is not, we have to lower expectations to protect stability.
+    $max_execution_time = intval(0.75 * $max_execution_time);
+
+    // Now calculate the minimum of invalidations we should be able to process.
+    $suggested = intval($max_execution_time / $time_per_invalidation);
+
+    // In the case our conservative calculation would be higher than the set
+    // limit, return the hard limit as our capacity limit.
+    if ($suggested > $limit) {
+      return (int) $limit;
+    }
+    else {
+      return (int) $suggested;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getNumberPurged() {
     return $this->numberPurged;
   }

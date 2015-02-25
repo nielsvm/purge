@@ -115,7 +115,7 @@ interface PurgerLookalikeInterface {
    *
    * @warning
    *   Multiple purgers can be active per Drupal installation which affects the
-   *   total amount of purges that can be processed per run. As PurgerService
+   *   total amount of purges that can be processed per run. As Purger\Service
    *   takes this into account already, purgers should always assume that they
    *   are the only active purger.
    *

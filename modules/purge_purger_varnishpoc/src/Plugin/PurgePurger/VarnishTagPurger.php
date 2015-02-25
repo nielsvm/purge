@@ -44,11 +44,11 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
   protected $client;
 
   /**
-   * The configuration factory.
+   * The ImmutableConfig object 'purge_purger_varnishpoc.settings'.
    *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   * @var \Drupal\Core\Config\ImmutableConfig
    */
-  protected $configFactory;
+  protected $config;
 
   /**
    * Constructs the HTTP purger.
@@ -60,6 +60,7 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
    */
   function __construct(ClientInterface $http_client, ConfigFactoryInterface $config_factory) {
     $this->client = $http_client;
+    $this->config = $config_factory->get('purge_purger_varnishpoc.settings');
   }
 
   /**
@@ -82,7 +83,6 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
    * @see http://stackoverflow.com/questions/25661591/php-how-to-check-for-timeout-exception-in-guzzle-4
    */
   public function invalidate(Invalidation $invalidation) {
-    $config = $this->configFactory->get('purge_purger_varnishpoc.conf');
 
     // For now - until Purge only sends supported invalidation objects - mark
     // anything besides a tag as immediately failed.
@@ -93,7 +93,7 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
     }
 
     // When the URL setting is still empty, we also fail.
-    if (empty($config->get('url'))) {
+    if (empty($this->config->get('url'))) {
       $invalidation->setState(Invalidation::STATE_FAILED);
       $this->numberFailed += 1;
       return;
@@ -101,11 +101,11 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
 
     // Construct a Guzzle request.
     $options = [
-      'timeout' => $config->get('timeout'),
-      'connect_timeout' => $config->get('connect_timeout'),
+      'timeout' => $this->config->get('timeout'),
+      'connect_timeout' => $this->config->get('connect_timeout'),
     ];
-    $request = $this->client->createRequest('BAN', $config->get('url'), $options)
-      ->addHeader($config->get('header'), static::toClearRegex($invalidation));
+    $request = $this->client->createRequest('BAN', $this->config->get('url'), $options)
+      ->addHeader($this->config->get('header'), static::toClearRegex($invalidation));
 
     // Purge.
     $invalidation->setState(Invalidation::STATE_PURGING);
@@ -159,13 +159,40 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function getCapacityLimit() {
-    throw new \Exception("Sorry, Not yet implemented!");
+    $exec_time_consumption = $this->config->get('execution_time_consumption');
+    $time_per_request = $this->getClaimTimeHint();
+    $max_execution_time = (int) ini_get('max_execution_time');
+    $max_requests = $this->config->get('max_requests');
+
+    // When PHP's max_execution_time equals 0, the system is given carte blanche
+    // for how long it can run. Since looping endlessly is out of the question,
+    // the capacity then limits at what $max_requests is set to.
+    if ($max_execution_time === 0) {
+      return $max_requests;
+    }
+
+    // But when it is not, we have to lower expectations to protect stability.
+    $max_execution_time = intval($exec_time_consumption * $max_execution_time);
+
+    // Now calculate the minimum of invalidations we should be able to process.
+    $suggested = intval($max_execution_time / $time_per_request);
+
+    // In the case our conservative calculation would be higher than the set
+    // limit of requests, return the hard limit as our capacity limit.
+    if ($suggested > $max_requests) {
+      return (int) $max_request;
+    }
+    else {
+      return (int) $suggested;
+    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function getClaimTimeHint() {
-    throw new \Exception("Sorry, Not yet implemented!");
+
+    // Take the HTTP timeout configured, add 10% margin and round up to seconds.
+    return (int) ceil($this->config->get('timeout') * 1.1);
   }
 }

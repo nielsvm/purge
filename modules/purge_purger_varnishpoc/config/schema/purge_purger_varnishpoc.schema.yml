@@ -12,7 +12,15 @@ purge_purger_varnishpoc.settings:
       translatable: false
     timeout:
       type: float
+      label: 'Float describing the timeout of the request in seconds. Use 0 to wait indefinitely (the default behavior).'
       translatable: false
     connect_timeout:
       type: float
+      label: 'Float describing the number of seconds to wait while trying to connect to a server. Use 0 to wait indefinitely (the default behavior).'
       translatable: false
+    max_requests:
+      type: int
+      label: 'Maximum number of HTTP requests that can be made during the runtime of one request (including CLI). The higher this number is set, the more - CLI based - scripts can process but this can also badly influence your end-user performance when using runtime-based queue processors.'
+    execution_time_consumption:
+      type: float
+      label: "Percentage of PHP's maximum execution time that can be allocated to processing. When PHP's setting is set to 0 (e.g. on CLI), the max requests setting will be used for capacity limiting. Whenever you notice Drupal requests timing out, lower this percentage."

@@ -2,3 +2,7 @@ hostname: 'localhost'
 port: 80
 path: ''
 request_method: 'BAN'
+timeout: 3.0
+connect_timeout: 1.5
+max_requests: 50
+execution_time_consumption: 0.75

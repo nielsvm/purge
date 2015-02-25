@@ -95,6 +95,26 @@ class PurgeConfigFormTest extends WebTestBase {
   }
 
   /**
+   * Test the visual status report on the configuration form.
+   *
+   * @see \Drupal\purge_ui\Form\PurgeConfigForm::buildFormDiagnosticReport
+   */
+  public function testFormDiagnosticReport() {
+    $this->drupalLogin($this->admin_user);
+    $this->drupalGet($this->configUrl);
+    $this->assertRaw('edit-diagnostics');
+    $this->assertRaw('system-status-report');
+    $this->assertRaw('open="open"');
+    $this->assertText('Status');
+    $this->assertText('Capacity');
+    $this->assertText('Tags queuer');
+    $this->assertText('Always a warning');
+    $this->assertText('Always informational');
+    $this->assertText('Always ok');
+    $this->assertText('Always an error');
+  }
+
+  /**
    * Test the queue section of the configuration form.
    *
    * @see \Drupal\purge_ui\Form\PurgeConfigForm::buildFormQueue

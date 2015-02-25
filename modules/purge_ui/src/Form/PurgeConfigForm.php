@@ -11,6 +11,7 @@ use Drupal\Component\Serialization\Json;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\purge\DiagnosticCheck\ServiceInterface as DiagnosticsInterface;
 use Drupal\purge\Purger\ServiceInterface as PurgerServiceInterface;
 use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 
@@ -18,6 +19,13 @@ use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
  * Configure the Purge pipeline for this site.
  */
 class PurgeConfigForm extends ConfigFormBase {
+
+  /**
+   * Diagnostics service that reports any preliminary issues regarding purge.
+   *
+   * @var \Drupal\purge\DiagnosticCheck\ServiceInterface
+   */
+  protected $purgeDiagnostics;
 
   /**
    * @var \Drupal\purge\Purger\ServiceInterface
@@ -32,12 +40,15 @@ class PurgeConfigForm extends ConfigFormBase {
   /**
    * Constructs a PurgeConfigForm object.
    *
+   * @param \Drupal\purge\DiagnosticCheck\ServiceInterface $purge_diagnostics
+   *   Diagnostics service that reports any preliminary issues regarding purge.
    * @param \Drupal\purge\Purger\ServiceInterface $purge_purgers
    *   The purger service.
    * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
    *   The purge queue service.
    */
-  public function __construct(PurgerServiceInterface $purge_purgers, QueueServiceInterface $purge_queue) {
+  public function __construct(DiagnosticsInterface $purge_diagnostics, PurgerServiceInterface $purge_purgers, QueueServiceInterface $purge_queue) {
+    $this->purgeDiagnostics = $purge_diagnostics;
     $this->purgePurgers = $purge_purgers;
     $this->purgeQueue = $purge_queue;
     parent::__construct($this->configFactory());
@@ -48,6 +59,7 @@ class PurgeConfigForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
+      $container->get('purge.diagnostics'),
       $container->get('purge.purgers'),
       $container->get('purge.queue')
     );
@@ -71,9 +83,38 @@ class PurgeConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $form['info'] = [
+      '#type' => 'item',
+      '#markup' => 'Changes made to content & configuration triggers cache tag invalidations, which cause invalidation instructions.',
+    ];
+
+    $this->buildFormDiagnosticReport($form, $form_state);
     $this->buildFormQueue($form, $form_state);
     $this->buildFormPurgers($form, $form_state);
     return parent::buildForm($form, $form_state);
+  }
+
+  /**
+   * Add a visual report on the current state of the purge module.
+   *
+   * @param array &$form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return array
+   *   The elements inside the queue fieldset.
+   */
+  protected function buildFormDiagnosticReport(array &$form, FormStateInterface $form_state) {
+    $form['diagnostics'] = [
+      '#open' => $this->purgeDiagnostics->isSystemShowingSmoke() || $this->purgeDiagnostics->isSystemOnFire(),
+      '#type' => 'details',
+      '#title' => t('Status'),
+    ];
+    $form['diagnostics']['report'] = [
+      '#theme' => 'status_report',
+      '#requirements' => $this->purgeDiagnostics->getRequirementsArray()
+    ];
   }
 
   /**
@@ -84,14 +125,9 @@ class PurgeConfigForm extends ConfigFormBase {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    *
-   * @return array
-   *   The elements inside the queue fieldset.
+   * @return void
    */
   protected function buildFormQueue(array &$form, FormStateInterface $form_state) {
-    $form['queuer'] = [
-      '#type' => 'item',
-      '#markup' => 'Changes made to content & configuration triggers cache tag invalidations, which cause purge instructions.',
-    ];
     $form['queue'] = [
       '#description' => '<p>' . $this->t('Purge instructions are stored in a queue.') . '</p>',
       '#type' => 'details',
@@ -128,8 +164,7 @@ class PurgeConfigForm extends ConfigFormBase {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    *
-   * @return array
-   *   The elements inside the purger fieldset.
+   * @return void
    */
   protected function buildFormPurgers(array &$form, FormStateInterface $form_state) {
     $form['#attached']['library'][] = 'core/drupal.ajax';

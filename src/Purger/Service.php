@@ -255,21 +255,26 @@ class Service extends ServiceBase implements ServiceInterface {
 
     // As the limit gets cached during this request, calculate it only once.
     if (is_null($limit)) {
-      $limit = 0;
+      $purgers = count($this->purgers);
+      $limits = [];
 
       // Ask all purgers to estimate how many invalidations they can process.
       foreach ($this->purgers as $purger) {
-        $purger_limit = $purger->getCapacityLimit();
-        if (!is_int($purger_limit)) {
+        if (!is_int($limits[] = $purger->getCapacityLimit())) {
           throw new InvalidPurgerBehaviorException(
             "The purger '$plugin_id' did not return an integer on getCapacityLimit().");
         }
-        $limit += $purger_limit;
       }
 
-      // When multiple purgers are active, we lower the capacity limit.
-      if (count($this->purgers) !== 1) {
-        $limit = (int)floor($limit / count($this->purgers));
+      // Directly use its limit for just one loaded purger, lower it otherwise.
+      if ($purgers === 1) {
+        $limit = current($limits);
+      }
+      else {
+        $limit = (int) floor(array_sum($limits) / $purgers / $purgers);
+        if ($limit < 1) {
+          $limit = 1;
+        }
       }
     }
 

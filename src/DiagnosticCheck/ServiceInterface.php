@@ -36,16 +36,16 @@ interface ServiceInterface extends PurgeServiceInterface, \Iterator, \Countable 
    *   Although it shares the same name, this method doesn't return a individual
    *   item array as \Drupal\purge\DiagnosticCheck\PluginInterface::
    *     getHookRequirementsArray() does. It returns a full array (as
-   *   hook_requirements() expects) for all tests.
+   *   hook_requirements() expects) for all checks.
    *
    * @return array
-   *   An associative array where the keys are arbitrary but unique (test id)
+   *   An associative array where the keys are arbitrary but unique (check id)
    *   and the values themselves are associative arrays with these elements:
-   *   - title: The name of this test.
+   *   - title: The name of this check.
    *   - value: The current value (e.g., version, time, level, etc), will not
    *     be set if not applicable.
-   *   - description: The description of the test.
-   *   - severity: The test's result/severity level, one of:
+   *   - description: The description of the check.
+   *   - severity: The checks result/severity level, one of:
    *     - REQUIREMENT_INFO: For info only.
    *     - REQUIREMENT_OK: The requirement is satisfied.
    *     - REQUIREMENT_WARNING: The requirement failed with a warning.
@@ -54,16 +54,16 @@ interface ServiceInterface extends PurgeServiceInterface, \Iterator, \Countable 
   public function getHookRequirementsArray();
 
   /**
-   * Checks whether one of the diagnostic tests reports full failure.
+   * Checks whether one of the diagnostic checks reports full failure.
    *
    * This method provides a simple - boolean evaluable - way to determine if
    * a \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR severity
-   * was reported by one of the tests. If SEVERITY_ERROR was reported, purging
+   * was reported by one of the checks. If SEVERITY_ERROR was reported, purging
    * cannot continue and should happen once all problems are resolved.
    *
-   * @return FALSE or \Drupal\purge\DiagnosticCheck\PluginInterface.
+   * @return false|\Drupal\purge\DiagnosticCheck\PluginInterface
    *   If everything is fine, this returns FALSE. But, if a blocking problem
-   *   exists, the first failing test object is returned holding a UI applicable
+   *   exists, the first failing check object is returned holding a UI applicable
    *   recommendation message.
    */
   public function isSystemOnFire();

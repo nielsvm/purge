@@ -50,7 +50,7 @@ class Null extends PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function getCapacityLimit() {
-    return 100;
+    return 0;
   }
 
   /**

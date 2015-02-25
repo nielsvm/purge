@@ -42,11 +42,11 @@ class Service extends ServiceBase implements ServiceInterface {
   private $position = 0;
 
   /**
-   * Keeps all instantiated tests.
+   * Keeps all instantiated checks.
    *
    * @var array
    */
-  protected $tests;
+  protected $checks;
 
   /**
    * {@inheritdoc}
@@ -59,8 +59,8 @@ class Service extends ServiceBase implements ServiceInterface {
     // Set $this->position to 0, as this object is iterable.
     $this->position = 0;
 
-    // Instantiate all tests, but we are not calling run() on them yet.
-    $this->initializeTests();
+    // Instantiate all checks, but we are not calling run() on them yet.
+    $this->initializeChecks();
   }
 
   /**
@@ -99,7 +99,7 @@ class Service extends ServiceBase implements ServiceInterface {
         return FALSE;
       };
 
-      // Determine for each test if it should be loaded.
+      // Determine for each check if it should be loaded.
       foreach ($this->getPlugins() as $plugin) {
         if (!$load($plugin['dependent_queue_plugins'], $enabled_queues)) {
           continue;
@@ -119,21 +119,21 @@ class Service extends ServiceBase implements ServiceInterface {
   public function reload() {
     parent::reload();
     $this->position = 0;
-    $this->tests = NULL;
-    $this->initializeTests();
+    $this->checks = NULL;
+    $this->initializeChecks();
   }
 
   /**
-   * Load all the tests that should run and gather them in $this->tests.
+   * Load all the plugins that should run and gather them in $this->checks.
    */
-  protected function initializeTests() {
-    if (!is_null($this->tests)) {
+  protected function initializeChecks() {
+    if (!is_null($this->checks)) {
       return;
     }
 
-    // Iterate each test that we should load and instantiate.
+    // Iterate each check that we should load and instantiate.
     foreach ($this->getPluginsEnabled() as $plugin_id) {
-      $this->tests[] = $this->pluginManager->createInstance($plugin_id);
+      $this->checks[] = $this->pluginManager->createInstance($plugin_id);
     }
   }
 
@@ -142,29 +142,19 @@ class Service extends ServiceBase implements ServiceInterface {
    */
   public function getHookRequirementsArray() {
     $requirements = [];
-    foreach ($this as $test) {
-      $requirements[$test->getPluginId()] = $test->getHookRequirementsArray();
+    foreach ($this as $check) {
+      $requirements[$check->getPluginId()] = $check->getHookRequirementsArray();
     }
     return $requirements;
   }
 
   /**
-   * Checks whether one of the diagnostic tests reports full failure.
-   *
-   * This method provides a simple - boolean evaluable - way to determine if
-   * a \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR severity
-   * was reported by one of the tests. If SEVERITY_ERROR was reported, purging
-   * cannot continue and should happen once all problems are resolved.
-   *
-   * @return FALSE or a \Drupal\purge\DiagnosticCheck\PluginInterface test object.
-   *   If everything is fine, this returns FALSE. But, if a blocking problem
-   *   exists, the first failing test object is returned holding a UI applicable
-   *   recommendation message.
+   * {@inheritdoc}
    */
   public function isSystemOnFire() {
-    foreach ($this as $test) {
-      if ($test->getSeverity() === PluginInterface::SEVERITY_ERROR) {
-        return $test;
+    foreach ($this as $check) {
+      if ($check->getSeverity() === PluginInterface::SEVERITY_ERROR) {
+        return $check;
       }
     }
     return FALSE;
@@ -183,7 +173,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * @ingroup iterator
    */
   function current() {
-    return $this->tests[$this->position];
+    return $this->checks[$this->position];
   }
 
   /**
@@ -207,7 +197,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * @ingroup iterator
    */
   function valid() {
-    return isset($this->tests[$this->position]);
+    return isset($this->checks[$this->position]);
   }
 
   /**
@@ -215,6 +205,6 @@ class Service extends ServiceBase implements ServiceInterface {
    * @ingroup countable
    */
   public function count() {
-    return count($this->tests);
+    return count($this->checks);
   }
 }

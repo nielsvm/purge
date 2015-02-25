@@ -9,7 +9,7 @@ namespace Drupal\purge\DiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\PluginBase as CorePluginBase;
-use Drupal\purge\DiagnosticCheck\Exception\TestNotImplementedCorrectly;
+use Drupal\purge\DiagnosticCheck\Exception\CheckNotImplementedCorrectly;
 use Drupal\purge\DiagnosticCheck\PluginInterface;
 
 /**
@@ -18,21 +18,21 @@ use Drupal\purge\DiagnosticCheck\PluginInterface;
 abstract class PluginBase extends CorePluginBase implements PluginInterface {
 
   /**
-   * The title of the test as described in the plugin's metadata.
+   * The title of the check as described in the plugin's metadata.
    *
    * @var \Drupal\Core\StringTranslation\TranslationWrapper
    */
   private $title;
 
   /**
-   * The description of the test as described in the plugin's metadata.
+   * The description of the check as described in the plugin's metadata.
    *
    * @var \Drupal\Core\StringTranslation\TranslationWrapper
    */
   private $description;
 
   /**
-   * The severity of the outcome of this test, maps to any of these constants:
+   * The severity of the outcome of this check, maps to any of these constants:
    *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO
    *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_OK
    *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING
@@ -50,7 +50,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   protected $recommendation;
 
   /**
-   * Optional test outcome / value (e.g. version numbers), may contain NULL.
+   * Optional check outcome / value (e.g. version numbers), may contain NULL.
    *
    * @var mixed
    */
@@ -71,16 +71,16 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    * Assures that \Drupal\purge\DiagnosticCheck\PluginInterface::run() is executed
    * and that the severity gets set on the object. Tests for invalid responses.
    */
-  protected function runTest() {
+  protected function runCheck() {
     if (!is_null($this->severity)) {
       return;
     }
     $this->severity = $this->run();
     if (!is_int($this->severity)) {
-      throw new TestNotImplementedCorrectly('No int was returned by run().');
+      throw new CheckNotImplementedCorrectly('No int was returned by run().');
     }
     if ($this->severity < -1 || $this->severity > 2) {
-      throw new TestNotImplementedCorrectly('No valid const response from run().');
+      throw new CheckNotImplementedCorrectly('No valid const response from run().');
     }
   }
 
@@ -88,7 +88,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function getTitle() {
-    $this->runTest();
+    $this->runCheck();
     if (is_null($this->title)) {
       $this->title = $this->getPluginDefinition()['title'];
     }
@@ -99,7 +99,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function getDescription() {
-    $this->runTest();
+    $this->runCheck();
     if (is_null($this->description)) {
       $this->description = $this->getPluginDefinition()['description'];
     }
@@ -110,7 +110,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function getSeverity() {
-    $this->runTest();
+    $this->runCheck();
     return $this->severity;
   }
 
@@ -118,7 +118,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function getSeverityString() {
-    $this->runTest();
+    $this->runCheck();
     $mapping = [
       SELF::SEVERITY_INFO      => 'INFO',
       SELF::SEVERITY_OK        => 'OK',
@@ -132,15 +132,20 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function getRecommendation() {
-    $this->runTest();
-    return $this->recommendation;
+    $this->runCheck();
+    if ($this->recommendation) {
+      return $this->recommendation;
+    }
+    else {
+      return $this->getDescription();
+    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function getValue() {
-    $this->runTest();
+    $this->runCheck();
     return $this->value;
   }
 
@@ -149,7 +154,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    */
   public function getHookRequirementsSeverity() {
     static $mapping;
-    $this->runTest();
+    $this->runCheck();
     if (is_null($mapping)) {
       include_once DRUPAL_ROOT . '/core/includes/install.inc';
 
@@ -171,15 +176,11 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function getHookRequirementsArray() {
-    $this->runTest();
-    $description = $this->getDescription();
-    if ($recommendation = $this->getRecommendation()) {
-      $description = $recommendation;
-    }
+    $this->runCheck();
     return [
       'title' => $this->t('Purge - @title', ['@title' => $this->getTitle()]),
       'value' => $this->getValue(),
-      'description' => $description,
+      'description' => $this->getRecommendation(),
       'severity' => $this->getHookRequirementsSeverity()
     ];
   }

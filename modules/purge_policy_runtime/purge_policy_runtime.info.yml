@@ -1,0 +1,8 @@
+name: Purge runtime processor
+type: module
+description: 'Processes purge queue items during the same request, only for high-performance purgers!'
+package: "Purge - processing policies"
+version: VERSION
+core: 8.x
+dependencies:
+  - purge

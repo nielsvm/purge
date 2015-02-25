@@ -1,0 +1,8 @@
+purge_policy_runtime.settings:
+  type: mapping
+  label: 'Purge runtime processor'
+  mapping:
+    log_warnings:
+      type: boolean
+      label: 'Whether to log warning messages on every request or not.'
+      translatable: false

@@ -57,16 +57,16 @@ class HttpPurgerSettingsFormTest extends WebTestBase {
     $this->assertTitle(t('Configure HTTP Purger | Drupal'), 'The title on the page is "Configure HTTP Purger".');
 
     // Verify every field exists.
-    $this->assertField('edit-hostname', 'The hostname field exists');
-    $this->assertField('edit-port', 'The port field exists');
-    $this->assertField('edit-path', 'The path field exists');
-    $this->assertField('edit-request-method', 'The request method select list exists');
+    $this->assertField('edit-hostname');
+    $this->assertField('edit-port');
+    $this->assertField('edit-path');
+    $this->assertField('edit-request-method');
 
     // Validate default form values.
-    $this->assertFieldById('edit-hostname', 'localhost', 'The hostname field has the value "localhost".');
-    $this->assertFieldById('edit-port', '80', 'The port field has the value "80".');
-    $this->assertFieldById('edit-path', '', 'The path field is empty.');
-    $this->assertOptionSelected('edit-request-method', 0, 'The request method selected is "BAN" .');
+    $this->assertFieldById('edit-hostname', 'localhost');
+    $this->assertFieldById('edit-port', '80');
+    $this->assertFieldById('edit-path', '');
+    $this->assertOptionSelected('edit-request-method', 0);
 
     // Verify that there's no access bypass.
     $this->drupalLogout();

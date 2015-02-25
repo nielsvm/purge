@@ -89,21 +89,20 @@ class ServiceTest extends ServiceTestBase {
    */
   public function testReleaseReleaseMultiple() {
     $this->assertFalse($this->purgeQueue->claim());
-    $this->purgeQueue->addMultiple($this->getInvalidations(5));
+    $this->purgeQueue->addMultiple($this->getInvalidations(4));
     $claim1 = $this->purgeQueue->claim();
     $claim2 = $this->purgeQueue->claim();
     $claim3 = $this->purgeQueue->claim();
     $claim4 = $this->purgeQueue->claim();
-    $claim5 = $this->purgeQueue->claim();
     $this->assertFalse($this->purgeQueue->claim());
     $this->purgeQueue->release($claim1);
-    $this->assertEqual(1, count($this->purgeQueue->claimMultiple(10, 2)));
-    $this->purgeQueue->releaseMultiple([$claim2, $claim3, $claim4, $claim5]);
-    $this->assertEqual(4, count($this->purgeQueue->claimMultiple(10, 2)));
+    $this->assertEqual(1, count($this->purgeQueue->claimMultiple(4, 1)));
+    $this->purgeQueue->releaseMultiple([$claim2, $claim3, $claim4]);
+    $this->assertEqual(3, count($this->purgeQueue->claimMultiple(4, 1)));
 
-    // Assert that the claims become available again after our 2s expired.
-    sleep(4);
-    $this->assertEqual(5, count($this->purgeQueue->claimMultiple()));
+    // Assert that the claims become available again after our 1*4=4s expired.
+    sleep(5);
+    $this->assertEqual(4, count($this->purgeQueue->claimMultiple()));
   }
 
   /**
@@ -114,10 +113,10 @@ class ServiceTest extends ServiceTestBase {
   public function testDeleteDeleteMultiple() {
     $this->assertFalse($this->purgeQueue->claim());
     $this->purgeQueue->addMultiple($this->getInvalidations(3));
-    $claims = $this->purgeQueue->claimMultiple(10, 2);
+    $claims = $this->purgeQueue->claimMultiple(3, 1);
     $this->purgeQueue->delete(array_pop($claims));
     sleep(4);
-    $claims = $this->purgeQueue->claimMultiple(10, 2);
+    $claims = $this->purgeQueue->claimMultiple(3, 1);
     $this->assertEqual(2, count($claims));
     $this->purgeQueue->deleteMultiple($claims);
     sleep(4);

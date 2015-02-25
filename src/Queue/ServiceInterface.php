@@ -23,6 +23,8 @@ interface ServiceInterface extends PurgeServiceInterface {
    *   be created using the 'purge.invalidation.factory' service. The object
    *   instance added to the queue can be claimed and executed by the
    *   'purge.purgers' service later.
+   *
+   * @return void
    */
   public function add(Invalidation $invalidation);
 
@@ -33,51 +35,56 @@ interface ServiceInterface extends PurgeServiceInterface {
    *   A non-associative array with \Drupal\purge\Invalidation\PluginInterface
    *   objects to be added to the queue. The invalidations can later be claimed
    *   from the queue and fed to the 'purge.purgers' executor.
+   *
+   * @return void
    */
   public function addMultiple(array $invalidations);
 
   /**
    * Claims a invalidation object from the queue for immediate purging.
    *
-   * @param $lease_time
-   *   The lease time determines how long the processing is expected to take
-   *   place in seconds, defaults to an hour. After this lease expires, the item
-   *   will be reset and another consumer can claim the invalidation. Very short
-   *   lease times can result in invalidations being purged twice by parallel
-   *   processes, due this inefficiency the one-hour default is recommended for
-   *   most purgers.
+   * @param int $lease_time
+   *   The expected (maximum) time needed to process this claim. Its encouraged
+   *   to use \Drupal\purge\Purger\Service::getClaimTimeHint for this parameter
+   *   as it gives you a safe number of seconds.
    *
-   * @return \Drupal\purge\Invalidation\PluginInterface
+   *   After the lease_time expires, another running request or CLI process can
+   *   also claim this item and process it, therefore too short lease times are
+   *   dangerous as it could lead to double processing.
+   *
+   * @return \Drupal\purge\Invalidation\PluginInterface|false
    *   Returned will be a fully instantiated invalidation object or FALSE when
    *   the queue is empty. Be aware that its expected that the claimed item
    *   needs to be fed to the purger within the specified $lease_time, else they
    *   will become available again.
    */
-  public function claim($lease_time = 3600);
+  public function claim($lease_time = 30);
 
   /**
    * Claim multiple invalidations for immediate purging from the queue at once.
    *
-   * @param $claims
+   * @param int $claims
    *   Determines how many claims at once should be claimed from the queue. When
    *   the queue is unable to return as many items as requested it will return
    *   as much items as it can.
-   * @param $lease_time
-   *   The lease time determines how long the processing is expected to take
-   *   place in seconds, defaults to an hour. After this lease expires, the item
-   *   will be reset and another consumer can claim the invalidation. Very short
-   *   lease times can result in invalidation objects being purged twice by
-   *   parallel processes, due this inefficiency the one-hour default is
-   *   recommended for most purgers.
+   * @param int $lease_time
+   *   The expected (maximum) time needed per claim, which will get multiplied
+   *   for you by the number of claims you request. Its encouraged to use the
+   *   value returned by \Drupal\purge\Purger\Service::getClaimTimeHint as this
+   *   gets you a stable number of seconds.
    *
-   * @return \Drupal\purge\Invalidation\PluginInterface[]
+   *   After the lease_time expires, another running request or CLI process can
+   *   also claim the items and process them, therefore too short lease times
+   *   are dangerous as it could lead to double processing.
+   *
+   * @return \Drupal\purge\Invalidation\PluginInterface[]|array
    *   Returned will be a non-associative array with the given amount of
    *   \Drupal\purge\Invalidation\PluginInterface objects as claimed. Be aware
    *   that its expected that the claimed invalidations will need to be
    *   processed by the purger within the given $lease_time, else they will
    *   become available again. The returned array is empty when the queue is.
    */
-  public function claimMultiple($claims = 10, $lease_time = 3600);
+  public function claimMultiple($claims = 10, $lease_time = 30);
 
   /**
    * Release a invalidation object that couldn't be purged, back to the queue.
@@ -86,6 +93,8 @@ interface ServiceInterface extends PurgeServiceInterface {
    *   The invalidation that couldn't be held for longer or that failed
    *   processing, to be marked as free for processing in the queue. Once
    *   released, other consumers can claim and attempt purging it again.
+   *
+   * @return void
    */
   public function release(Invalidation $invalidation);
 
@@ -96,6 +105,8 @@ interface ServiceInterface extends PurgeServiceInterface {
    *   A non-associative array with \Drupal\purge\Invalidation\PluginInterface
    *   objects to released and marked as available in the queue. Once released,
    *   other consumers can claim them again and attempt purging them.
+   *
+   * @return void
    */
   public function releaseMultiple(array $invalidations);
 
@@ -106,6 +117,8 @@ interface ServiceInterface extends PurgeServiceInterface {
    *   The invalidation that was successfully purged and that should be removed
    *   from the queue. The object instance might remain to exist but should not
    *   be accessed anymore, cleanup might occur later during runtime.
+   *
+   * @return void
    */
   public function delete(Invalidation $invalidation);
 
@@ -117,6 +130,8 @@ interface ServiceInterface extends PurgeServiceInterface {
    *   objects to be removed from the queue. Once called, the instance might
    *   still exists but should not be accessed anymore, cleanup might occur
    *   later during runtime.
+   *
+   * @return void
    */
   public function deleteMultiple(array $invalidations);
 
@@ -153,6 +168,8 @@ interface ServiceInterface extends PurgeServiceInterface {
 
   /**
    * Empty the entire queue and reset all statistics.
+   *
+   * @return void
    */
   function emptyQueue();
 }

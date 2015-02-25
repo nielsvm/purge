@@ -161,7 +161,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   /**
    * {@inheritdoc}
    */
-  public function claim($lease_time = 3600) {
+  public function claim($lease_time = 30) {
     $this->commitAdding();
     $this->commitReleasing();
     $this->commitDeleting();
@@ -186,10 +186,13 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   /**
    * {@inheritdoc}
    */
-  public function claimMultiple($claims = 10, $lease_time = 3600) {
+  public function claimMultiple($claims = 10, $lease_time = 30) {
     $this->commitAdding();
     $this->commitReleasing();
     $this->commitDeleting();
+
+    // Multiply the lease time by the amount of items being claimed.
+    $lease_time = $claims * $lease_time;
 
     // Claim multiple (raw) items from the queue, return if its empty.
     if (!($items = $this->queue->claimItemMultiple($claims, $lease_time))) {

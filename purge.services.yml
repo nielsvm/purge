@@ -58,3 +58,12 @@ services:
   plugin.manager.purge.purgers:
     class: Drupal\purge\Purger\PluginManager
     parent: default_plugin_manager
+
+  # LOGGER.CHANNEL.PURGE
+  #
+  # Unified logger channel for the purge module and all its submodule. The core
+  # purge APIs won't log anything at all, but leaves that up to purgers,
+  # processing policies and other submodules.
+  logger.channel.purge:
+    parent: logger.channel_base
+    arguments: ['purge']

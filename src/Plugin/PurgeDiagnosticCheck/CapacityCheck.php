@@ -77,7 +77,8 @@ class CapacityCheck extends PluginBase implements PluginInterface {
       return SELF::SEVERITY_WARNING;
     }
     else {
-      SELF::SEVERITY_OK;
+      $this->recommendation = $this->t("Your system can invalidate @number items per Drupal request.", ['@number' => $this->value]);
+      return SELF::SEVERITY_OK;
     }
   }
 }

@@ -77,10 +77,12 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
     }
     $this->severity = $this->run();
     if (!is_int($this->severity)) {
-      throw new CheckNotImplementedCorrectly('No int was returned by run().');
+      $class = $this->getPluginDefinition()['class'];
+      throw new CheckNotImplementedCorrectly("Exected integer as return from $class::run()!");
     }
     if ($this->severity < -1 || $this->severity > 2) {
-      throw new CheckNotImplementedCorrectly('No valid const response from run().');
+      $class = $this->getPluginDefinition()['class'];
+      throw new CheckNotImplementedCorrectly("Invalid const returned by $class::run()!");
     }
   }
 

@@ -85,6 +85,7 @@ trait TestTrait {
     }
     if (is_null($this->purgeQueue)) {
       $this->purgeQueue = $this->container->get('purge.queue');
+      $this->purgeQueue->reload();
     }
     else {
       $this->purgeQueue->reload();

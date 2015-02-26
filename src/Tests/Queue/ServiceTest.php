@@ -7,7 +7,7 @@
 
 namespace Drupal\purge\Tests\Queue;
 
-use Drupal\purge\Tests\ServiceTestBase;
+use Drupal\purge\Tests\KernelServiceTestBase;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 
 /**
@@ -17,15 +17,24 @@ use Drupal\purge\Invalidation\PluginInterface as Invalidation;
  * @see \Drupal\purge\Queue\Service
  * @see \Drupal\purge\Queue\ServiceInterface
  */
-class ServiceTest extends ServiceTestBase {
+class ServiceTest extends KernelServiceTestBase {
   protected $serviceId = 'purge.queue';
+
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = ['system', 'purge_noqueuer_test'];
 
   /**
    * {@inheritdoc}
    */
   function setUp() {
     parent::setUp();
-    $this->initializeQueueService('memory');
+    $this->installSchema('system', ['queue']);
+    $this->initializeQueueService('database');
+    $this->purgeQueue->emptyQueue();
     $this->initializeInvalidationFactoryService();
   }
 
@@ -48,23 +57,34 @@ class ServiceTest extends ServiceTestBase {
   public function testGetPluginsEnabled() {
     $this->initializeQueueService('file');
     $this->assertEqual(['file'], $this->purgeQueue->getPluginsEnabled());
+
     $this->initializeQueueService('memory');
     $this->assertEqual(['memory'], $this->purgeQueue->getPluginsEnabled());
+
     $this->initializeQueueService('DOESNOTEXIST');
     $this->assertEqual(['null'], $this->purgeQueue->getPluginsEnabled());
-    $this->initializeQueueService('memory');
   }
 
   /**
    * Tests \Drupal\purge\Queue\Service::add, \Drupal\purge\Queue\Service::claim
    */
   public function testAddClaim() {
-    $i = $this->getInvalidations(1);
     $this->assertFalse($this->purgeQueue->claim());
+    $i = $this->getInvalidations(1);
     $this->purgeQueue->add($i);
     $c = $this->purgeQueue->claim();
     $this->assertTrue($c instanceof Invalidation);
     $this->assertEqual($i->getId(), $c->getId());
+  }
+
+  /**
+   * Tests \Drupal\purge\Queue\Service::emptyQueue
+   */
+  public function testEmptyQueue() {
+    $this->purgeQueue->addMultiple($this->getInvalidations(10));
+    $this->purgeQueue->emptyQueue();
+    $this->assertFalse($this->purgeQueue->claim());
+    $this->assertTrue(empty($this->purgeQueue->claimMultiple()));
   }
 
   /**
@@ -80,6 +100,28 @@ class ServiceTest extends ServiceTestBase {
     $this->assertTrue($c instanceof Invalidation);
     $this->assertEqual(49, count($this->purgeQueue->claimMultiple(49)));
     $this->assertEqual(0, count($this->purgeQueue->claimMultiple(49)));
+  }
+
+  /**
+   * Tests that states going in, come out exactly the same.
+   */
+  public function testStateConsistency() {
+    $i = $this->getInvalidations(4);
+    $i[0]->setState(Invalidation::STATE_NEW);
+    $i[1]->setState(Invalidation::STATE_PURGING);
+    $i[2]->setState(Invalidation::STATE_FAILED);
+    $i[3]->setState(Invalidation::STATE_UNSUPPORTED);
+    $this->purgeQueue->addMultiple($i);
+
+    // Reload so that \Drupal\purge\Queue\Service::$buffer gets cleaned too.
+    $this->purgeQueue->reload();
+
+    // Now it has to refetch all objects, assure their states.
+    $claims = $this->purgeQueue->claimMultiple(3, 1);
+    $this->assertEqual(Invalidation::STATE_NEW, $claims[0]->getState());
+    $this->assertEqual(Invalidation::STATE_PURGING, $claims[1]->getState());
+    $this->assertEqual(Invalidation::STATE_FAILED, $claims[2]->getState());
+    $this->assertEqual(Invalidation::STATE_UNSUPPORTED, $this->purgeQueue->claim()->getState());
   }
 
   /**

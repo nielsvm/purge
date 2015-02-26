@@ -17,6 +17,13 @@ use Drupal\purge\Tests\KernelTestBase;
 abstract class PluginTestBase extends KernelTestBase {
 
   /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = ['purge_noqueuer_test'];
+  
+  /**
    * The plugin ID of the queue plugin being tested.
    *
    * @var string

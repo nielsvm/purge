@@ -32,5 +32,53 @@ class QueueDatabaseTest extends PluginTestBase {
     parent::setUp();
     $this->installSchema('system', ['queue']);
   }
-  
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUpQueuePlugin() {
+    $this->queue = $this->pluginManagerPurgeQueue->createInstance($this->plugin_id);
+    $this->assertNull($this->queue->createQueue(), 'createQueue returns NULL');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function testDataStorageIntegrity() {
+    $this->setUpQueuePlugin();
+    parent::testDataStorageIntegrity();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function testQueueCountBehavior() {
+    $this->setUpQueuePlugin();
+    parent::testQueueCountBehavior();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function testCreateQueue() {
+    $this->setUpQueuePlugin();
+    parent::testCreateQueue();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function testCreatingClaimingAndReleasing() {
+    $this->setUpQueuePlugin();
+    parent::testCreatingClaimingAndReleasing();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function testLeaseTime() {
+    $this->setUpQueuePlugin();
+    parent::testLeaseTime();
+  }
+
 }

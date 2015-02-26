@@ -7,17 +7,17 @@
 
 namespace Drupal\purge\Tests;
 
-use Drupal\purge\Tests\PurgeTestBaseTrait;
+use Drupal\purge\Tests\TestTrait;
 use Drupal\simpletest\KernelTestBase as RealKernelTestBase;
 
 /**
  * Thin and generic KTB for purge tests.
  *
  * @see \Drupal\simpletest\KernelTestBase
- * @see \Drupal\purge\Tests\PurgeTestBaseTrait
+ * @see \Drupal\purge\Tests\TestTrait
  */
 abstract class KernelTestBase extends RealKernelTestBase {
-  use PurgeTestBaseTrait;
+  use TestTrait;
 
   /**
    * Modules to enable.

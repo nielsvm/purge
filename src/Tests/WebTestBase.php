@@ -7,17 +7,17 @@
 
 namespace Drupal\purge\Tests;
 
-use Drupal\purge\Tests\PurgeTestBaseTrait;
+use Drupal\purge\Tests\TestTrait;
 use Drupal\simpletest\WebTestBase as RealWebTestBase;
 
 /**
  * Thin and generic WTB for purge tests.
  *
  * @see \Drupal\simpletest\WebTestBase
- * @see \Drupal\purge\Tests\PurgeTestBaseTrait
+ * @see \Drupal\purge\Tests\TestTrait
  */
 abstract class WebTestBase extends RealWebTestBase {
-  use PurgeTestBaseTrait;
+  use TestTrait;
 
   /**
    * Modules to enable.

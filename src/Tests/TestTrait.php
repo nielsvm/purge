@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\PurgeTestBaseTrait.
+ * Contains \Drupal\purge\Tests\TestTrait.
  */
 
 namespace Drupal\purge\Tests;
@@ -13,7 +13,7 @@ namespace Drupal\purge\Tests;
  * @see \Drupal\purge\Tests\KernelTestBase
  * @see \Drupal\purge\Tests\WebTestBase
  */
-trait PurgeTestBaseTrait {
+trait TestTrait {
 
   /**
    * Stores the configuration factory.

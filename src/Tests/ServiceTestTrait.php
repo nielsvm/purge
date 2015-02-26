@@ -2,21 +2,21 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\ServiceTestBase.
+ * Contains \Drupal\purge\Tests\ServiceTestTrait.
  */
 
 namespace Drupal\purge\Tests;
 
-use Drupal\purge\Tests\KernelTestBase;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\ServiceInterface;
 
 /**
- * Generic test base for \Drupal\purge\ServiceInterface derivatives.
+ * Several helper properties and methods for purge tests.
  *
  * @see \Drupal\purge\Tests\KernelTestBase
+ * @see \Drupal\purge\Tests\WebTestBase
  */
-abstract class ServiceTestBase extends KernelTestBase {
+trait ServiceTestTrait {
 
   /**
    * The name of the service as defined in services.yml.
@@ -30,6 +30,14 @@ abstract class ServiceTestBase extends KernelTestBase {
    * @var \Drupal\purge\ServiceInterface
    */
   protected $service;
+
+  /**
+   * Set up the test.
+   */
+  function setUp() {
+    parent::setUp();
+    $this->initializeService();
+  }
 
   /**
    * Initialize the requested service as $this->$variable (or reload).
@@ -52,20 +60,11 @@ abstract class ServiceTestBase extends KernelTestBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  function setUp() {
-    parent::setUp();
-    $this->initializeService();
-  }
-
-  /**
    * test for \Drupal\purge\ServiceBase and \Drupal\purge\ServiceInterface.
    */
   public function testCodeContract() {
-    $this->assertTrue($this->service instanceof ServiceInterface,
-      'Object complies to \Drupal\purge\ServiceInterface.');
-    $this->assertTrue($this->service instanceof ServiceBase,
-      'Object complies to \Drupal\purge\ServiceBase.');
+    $this->assertTrue($this->service instanceof ServiceInterface);
+    $this->assertTrue($this->service instanceof ServiceBase);
   }
+
 }

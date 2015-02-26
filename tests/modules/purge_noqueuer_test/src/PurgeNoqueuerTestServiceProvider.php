@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_tests_noqueuer\PurgeNoqueuerTestServiceProvider.
+ * Contains \Drupal\purge_noqueuer_test\PurgeNoqueuerTestServiceProvider.
  */
 
 namespace Drupal\purge_noqueuer_test;

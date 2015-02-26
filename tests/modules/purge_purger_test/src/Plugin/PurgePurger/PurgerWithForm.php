@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge_plugins_test\Plugin\PurgePurger\PurgerWithForm.
+ * Contains \Drupal\purge_purger_test\Plugin\PurgePurger\PurgerWithForm.
  */
 
-namespace Drupal\purge_plugins_test\Plugin\PurgePurger;
+namespace Drupal\purge_purger_test\Plugin\PurgePurger;
 
 use Drupal\purge\Plugin\PurgePurger\Null;
 
@@ -16,7 +16,7 @@ use Drupal\purge\Plugin\PurgePurger\Null;
  *   id = "purger_withform",
  *   label = @Translation("Configurable purger"),
  *   description = @Translation("Test purger with a form attached."),
- *   configform = "\Drupal\purge_plugins_test\Form\PurgerConfigForm",
+ *   configform = "\Drupal\purge_purger_test\Form\PurgerConfigForm",
  * )
  */
 class PurgerWithForm extends Null {}

@@ -2,16 +2,16 @@
 
 /**
  * @file
- * Contains \Drupal\purge_plugins_test\Form\PurgerConfigForm.
+ * Contains \Drupal\purge_purger_test\Form\PurgerConfigForm.
  */
 
-namespace Drupal\purge_plugins_test\Form;
+namespace Drupal\purge_purger_test\Form;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\purge_ui\Form\PurgerConfigFormBase;
 
 /**
- * @see \Drupal\purge_plugins_test\Plugin\PurgePurger\PurgerWithForm.
+ * @see \Drupal\purge_purger_test\Plugin\PurgePurger\PurgerWithForm.
  */
 class PurgerConfigForm extends PurgerConfigFormBase {
 
@@ -26,7 +26,7 @@ class PurgerConfigForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormID() {
-    return 'purge_plugins_test.purgerconfigform';
+    return 'purge_purger_test.purgerconfigform';
   }
 
   /**
@@ -47,4 +47,5 @@ class PurgerConfigForm extends PurgerConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     return parent::submitForm($form, $form_state);
   }
+
 }

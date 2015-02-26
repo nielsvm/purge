@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge_plugins_test\Plugin\PurgeDiagnosticCheck\AlwaysInfoCheck.
+ * Contains \Drupal\purge_check_test\Plugin\PurgeDiagnosticCheck\AlwaysInfoCheck.
  */
 
-namespace Drupal\purge_plugins_test\Plugin\PurgeDiagnosticCheck;
+namespace Drupal\purge_check_test\Plugin\PurgeDiagnosticCheck;
 
 use Drupal\purge\DiagnosticCheck\PluginInterface;
 use Drupal\purge\DiagnosticCheck\PluginBase;
@@ -30,4 +30,5 @@ class AlwaysInfoCheck extends PluginBase implements PluginInterface {
     $this->recommendation = "This is info for testing.";
     return SELF::SEVERITY_INFO;
   }
+
 }

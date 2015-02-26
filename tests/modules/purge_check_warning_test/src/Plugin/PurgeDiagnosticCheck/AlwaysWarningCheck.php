@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge_plugins_test\Plugin\PurgeDiagnosticCheck\QueueSpecificWarningCheck.
+ * Contains \Drupal\purge_check_warning_test\Plugin\PurgeDiagnosticCheck\AlwaysWarningCheck.
  */
 
-namespace Drupal\purge_plugins_test\Plugin\PurgeDiagnosticCheck;
+namespace Drupal\purge_check_warning_test\Plugin\PurgeDiagnosticCheck;
 
 use Drupal\purge\DiagnosticCheck\PluginInterface;
 use Drupal\purge\DiagnosticCheck\PluginBase;
@@ -14,20 +14,20 @@ use Drupal\purge\DiagnosticCheck\PluginBase;
  * Tests if there is a purger plugin that invalidates an external cache.
  *
  * @PurgeDiagnosticCheck(
- *   id = "queuewarning",
- *   title = @Translation("Queue specific warning"),
+ *   id = "alwayswarning",
+ *   title = @Translation("Always a warning"),
  *   description = @Translation("A fake test to test the diagnostics api."),
- *   dependent_queue_plugins = {"queue_b"},
+ *   dependent_queue_plugins = {},
  *   dependent_purger_plugins = {}
  * )
  */
-class QueueSpecificWarningCheck extends PluginBase implements PluginInterface {
+class AlwaysWarningCheck extends PluginBase implements PluginInterface {
 
   /**
    * {@inheritdoc}
    */
   public function run() {
-    $this->recommendation = "This is a queue warning for testing.";
+    $this->recommendation = "This is a warning for testing.";
     return SELF::SEVERITY_WARNING;
   }
 }

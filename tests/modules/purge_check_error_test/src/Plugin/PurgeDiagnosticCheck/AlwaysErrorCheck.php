@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge_plugins_test\Plugin\PurgeDiagnosticCheck\AlwaysErrorCheck.
+ * Contains \Drupal\purge_check_error_test\Plugin\PurgeDiagnosticCheck\AlwaysErrorCheck.
  */
 
-namespace Drupal\purge_plugins_test\Plugin\PurgeDiagnosticCheck;
+namespace Drupal\purge_check_error_test\Plugin\PurgeDiagnosticCheck;
 
 use Drupal\purge\DiagnosticCheck\PluginInterface;
 use Drupal\purge\DiagnosticCheck\PluginBase;

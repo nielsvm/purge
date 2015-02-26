@@ -1,8 +1,0 @@
-name: 'Purge Plugins for testing'
-type: module
-description: 'Support module for purge module testing.'
-package: Testing
-version: VERSION
-core: 8.x
-dependencies:
-  - purge

@@ -47,12 +47,26 @@ class QueueFileTest extends PluginTestBase {
     $this->assertTrue($this->queue instanceof DestructableInterface);
     $this->assertFalse(file_exists($this->file));
 
+    // Two assertions within this test, check the raw payload written to
+    // disk by the file queue. However, because of its dependence on time(),
+    // this test is exposed to the hosts performance. This anonymous function
+    // creates a range of payloads to make this test more resilient.
+    $payloads = function($base, $time) {
+      return [
+        $base . $time-2 . "\n",
+        $base . $time-1 . "\n",
+        $base . $time   . "\n",
+        $base . $time+1 . "\n",
+        $base . $time+2 . "\n"
+      ];
+    };
+
     // Create one item without claiming it, and test the written output.
     $this->queue->createItem('s1');
     $this->assertFalse(file_exists($this->file));
     $this->queue->destruct();
     $this->assertTrue(file_exists($this->file));
-    $this->assertEqual('1|s:2:"s1";|0|' . time() . "\n", file_get_contents($this->file));
+    $this->assertTrue(in_array(file_get_contents($this->file), $payloads('1|s:2:"s1";|0|', time())));
 
     // Delete the queue and assure the file is gone.
     $this->queue->deleteQueue();
@@ -63,7 +77,7 @@ class QueueFileTest extends PluginTestBase {
     $i = $this->queue->claimItem();
     $this->queue->destruct();
     $this->assertTrue(file_exists($this->file));
-    $this->assertEqual('1|s:2:"s2";|' . $i->expire . '|' . $i->created . "\n", file_get_contents($this->file));
+    $this->assertTrue(in_array(file_get_contents($this->file), $payloads('1|s:2:"s2";|' . $i->expire . '|', $i->created)));
 
     // Delete the queue file, write our own file to disk and reload the queue.
     $this->queue->deleteQueue();
@@ -76,8 +90,6 @@ class QueueFileTest extends PluginTestBase {
     $this->assertEqual(1, $claim->item_id);
     $this->assertEqual('qwerty', $claim->data);
     $this->assertEqual(12345, $claim->created);
-
-    $this->queue->deleteQueue();
   }
 
 }

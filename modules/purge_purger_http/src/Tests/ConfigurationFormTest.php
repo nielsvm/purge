@@ -18,7 +18,7 @@ use Drupal\purge\Tests\WebTestBase;
 class ConfigurationFormTest extends WebTestBase {
 
   /**
-   * User account with purge_purger_http permissions.
+   * User account with suitable permission to access the form.
    *
    * @var \Drupal\Core\Session\AccountInterface
    */
@@ -51,27 +51,39 @@ class ConfigurationFormTest extends WebTestBase {
   }
 
   /**
-   * Test the HTTP Purger settings form.
+   * Test the HTTP purger settings form.
    */
   public function testHttpPurgerSettings() {
     $this->drupalLogin($this->admin_user);
 
-    // Verify if we can successfully access the HTTP Purger form.
+    // Verify if we can successfully access the HTTP purger form.
     $this->drupalGet($this->route);
     $this->assertResponse(200);
     $this->assertTitle(t('Configure HTTP Purger | Drupal'));
 
-    // Verify every field exists.
+    // Verify every HTTP settings field exists.
     $this->assertField('edit-hostname');
     $this->assertField('edit-port');
     $this->assertField('edit-path');
     $this->assertField('edit-request-method');
 
-    // Validate default form values.
+    // Validate HTTP settings form values.
     $this->assertFieldById('edit-hostname', 'localhost');
-    $this->assertFieldById('edit-port', '80');
+    $this->assertFieldById('edit-port', 80);
     $this->assertFieldById('edit-path', '');
     $this->assertOptionSelected('edit-request-method', 0);
+
+    // Verify every performance field exists.
+    $this->assertField('edit-timeout');
+    $this->assertField('edit-connect-timeout');
+    $this->assertField('edit-max-requests');
+    $this->assertField('edit-execution-time-consumption');
+
+    // Validate performance form values.
+    $this->assertFieldById('edit-timeout', 3);
+    $this->assertFieldById('edit-connect-timeout', 1.5);
+    $this->assertFieldById('edit-max-requests', 50);
+    $this->assertFieldById('edit-execution-time-consumption', 0.75);
 
     // Verify that there's no access bypass.
     $this->drupalLogout();
@@ -91,15 +103,27 @@ class ConfigurationFormTest extends WebTestBase {
       'port' => 8080,
       'path' => 'node/1',
       'request_method' => 1,
+      'timeout' => 6,
+      'connect_timeout' => 0.5,
+      'max_requests' => 25,
+      'execution_time_consumption' => 0.25,
     ];
     $this->drupalPostForm($this->route, $edit, t('Save configuration'));
 
     // Load settings form page and test for new values.
     $this->drupalGet($this->route);
+
+    // HTTP settings
     $this->assertFieldById('edit-hostname', $edit['hostname']);
     $this->assertFieldById('edit-port', $edit['port']);
     $this->assertFieldById('edit-path', $edit['path']);
     $this->assertFieldById('edit-request-method', $edit['request_method']);
+
+    // Performance
+    $this->assertFieldById('edit-timeout', $edit['timeout']);
+    $this->assertFieldById('edit-connect-timeout', $edit['connect_timeout']);
+    $this->assertFieldById('edit-max-requests', $edit['max_requests']);
+    $this->assertFieldById('edit-execution-time-consumption', $edit['execution_time_consumption']);
   }
 
 }

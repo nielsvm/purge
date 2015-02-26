@@ -49,12 +49,12 @@ trait TestTrait {
    *   Array of plugin ids to be enabled.
    */
   protected function initializePurgersService($plugin_ids = []) {
-    if (!empty($plugin_id)) {
-      $this->configFactory->getEditable('purge.plugins')
-        ->set('purgers', $plugin_ids)->save();
+    if (!empty($plugin_ids)) {
+      $this->configFactory->getEditable('purge.plugins')->set('purgers', $plugin_ids)->save();
     }
     if (is_null($this->purgePurgers)) {
       $this->purgePurgers = $this->container->get('purge.purgers');
+      $this->purgePurgers->reload();
     }
     else {
       $this->purgePurgers->reload();

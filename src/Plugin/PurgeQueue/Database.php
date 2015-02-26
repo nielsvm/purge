@@ -89,7 +89,10 @@ class Database extends PluginBase implements Queue {
    * {@inheritdoc}
    */
   public function createItem($data) {
-    return $this->dbqueue->createItem($data);
+    if ($item_id = $this->dbqueue->createItem($data)) {
+      return (int) $item_id;
+    }
+    return FALSE;
   }
 
   /**
@@ -286,5 +289,5 @@ class Database extends PluginBase implements Queue {
   public function deleteQueue() {
     return $this->dbqueue->deleteQueue();
   }
-  
+
 }

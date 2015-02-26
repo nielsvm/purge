@@ -18,4 +18,20 @@ use Drupal\purge\Plugin\PurgePurger\Null;
  *   description = @Translation("Test purger C."),
  * )
  */
-class PurgerC extends Null {}
+class PurgerC extends Null {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCapacityLimit() {
+    return 10;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getClaimTimeHint() {
+    return 1;
+  }
+
+}

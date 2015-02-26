@@ -7,13 +7,11 @@
 
 namespace Drupal\purge\DiagnosticCheck;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
-use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\purge\ServiceBase;
-use Drupal\purge\Purger\ServiceInterface as PurgerServiceInterface;
-use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 use Drupal\purge\DiagnosticCheck\ServiceInterface;
-use Drupal\purge\DiagnosticCheck\PluginInterface;
+use Drupal\purge\DiagnosticCheck\PluginInterface as Check;
 
 /**
  * Provides a service that interacts with diagnostic checks.
@@ -21,46 +19,109 @@ use Drupal\purge\DiagnosticCheck\PluginInterface;
 class Service extends ServiceBase implements ServiceInterface {
 
   /**
-   * The purge executive service, which wipes content from external caches.
+   * The container, needed to lazy load 'purge.purgers' and 'purge.queue'.
    *
-   * @var \Drupal\purge\Purger\ServiceInterface
+   * @var \Symfony\Component\DependencyInjection\ContainerInterface
    */
-  protected $purgePurgers;
-
-  /**
-   * The queue in which to store, claim and release invalidation objects from.
-   *
-   * @var \Drupal\purge\Queue\ServiceInterface
-   */
-  protected $purgeQueue;
+  protected $container;
 
   /**
    * Current iterator position.
    *
+   * @var int
    * @ingroup iterator
    */
-  private $position = 0;
+  protected $position = 0;
 
   /**
    * Keeps all instantiated checks.
    *
-   * @var array
+   * @var \Drupal\purge\DiagnosticCheck\PluginInterface[]
    */
-  protected $checks;
+  protected $checks = [];
+
+  /**
+   * The plugin manager for checks.
+   *
+   * @var \Drupal\purge\DiagnosticCheck\PluginManager
+   */
+  protected $pluginManager;
+
+  /**
+   * The purge executive service, which wipes content from external caches.
+   *
+   * Do not access this property directly, use ::getPurgers.
+   *
+   * @var \Drupal\purge\Purger\ServiceInterface
+   */
+  private $purgePurgers;
+
+  /**
+   * The queue in which to store, claim and release invalidation objects from.
+   *
+   * Do not access this property directly, use ::getQueue.
+   *
+   * @var \Drupal\purge\Queue\ServiceInterface
+   */
+  private $purgeQueue;
+
+  /**
+   * Construct \Drupal\purge\DiagnosticCheck\Service.
+   *
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   *   The container, needed to lazy load 'purge.purgers' and 'purge.queue'.
+   * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
+   *   The plugin manager for this service.
+   */
+  function __construct(ContainerInterface $container, PluginManagerInterface $pluginManager) {
+    $this->container = $container;
+    $this->pluginManager = $pluginManager;
+  }
+
+  /**
+   * Load all the plugins that should run and gather them in $this->checks.
+   *
+   * @return void
+   */
+  protected function initializeChecks() {
+    if (!empty($this->checks)) {
+      return;
+    }
+
+    // Iterate each check that we should load and instantiate.
+    foreach ($this->getPluginsEnabled() as $plugin_id) {
+      $this->checks[] = $this->pluginManager->createInstance($plugin_id);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   * @ingroup countable
+   */
+  public function count() {
+    $this->initializeChecks();
+    return count($this->checks);
+  }
+
+  /**
+   * {@inheritdoc}
+   * @ingroup iterator
+   */
+  function current() {
+    $this->initializeChecks();
+    return $this->checks[$this->position];
+  }
 
   /**
    * {@inheritdoc}
    */
-  function __construct(PluginManagerInterface $pluginManager, PurgerServiceInterface $purge_purgers, QueueServiceInterface $purge_queue) {
-    $this->pluginManager = $pluginManager;
-    $this->purgePurgers = $purge_purgers;
-    $this->purgeQueue = $purge_queue;
-
-    // Set $this->position to 0, as this object is iterable.
-    $this->position = 0;
-
-    // Instantiate all checks, but we are not calling run() on them yet.
+  public function getHookRequirementsArray() {
     $this->initializeChecks();
+    $requirements = [];
+    foreach ($this as $check) {
+      $requirements[$check->getPluginId()] = $check->getHookRequirementsArray();
+    }
+    return $requirements;
   }
 
   /**
@@ -84,74 +145,56 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function getPluginsEnabled() {
-    if (empty($this->plugins_enabled)) {
-      $enabled_queues = $this->purgeQueue->getPluginsEnabled();
-      $enabled_purgers = $this->purgePurgers->getPluginsEnabled();
+    if (!empty($this->plugins_enabled)) {
+      return $this->plugins_enabled;
+    }
 
-      // Define a lambda that tests whether a plugin should be loaded.
-      $load = function($needles, $haystack) {
-        if (empty($needles)) return TRUE;
-        foreach ($needles as $needle) {
-          if (in_array($needle, $haystack)) {
-            return TRUE;
-          }
+    // We blindly load all diagnostic check plugins that we discovered, but not
+    // when plugins put dependencies on either a queue or purger plugin. When
+    // plugins do depend, we load 'purge.purgers' and/or 'purge.queue' and
+    // carefully check if we should load them or not.
+    $load = function($needles, $haystack) {
+      if (empty($needles)) return TRUE;
+      foreach ($needles as $needle) {
+        if (in_array($needle, $haystack)) {
+          return TRUE;
         }
-        return FALSE;
-      };
-
-      // Determine for each check if it should be loaded.
-      foreach ($this->getPlugins() as $plugin) {
-        if (!$load($plugin['dependent_queue_plugins'], $enabled_queues)) {
-          continue;
-        }
-        if (!$load($plugin['dependent_purger_plugins'], $enabled_purgers)) {
-          continue;
-        }
-        $this->plugins_enabled[] = $plugin['id'];
       }
+      return FALSE;
+    };
+    foreach ($this->getPlugins() as $plugin) {
+      if (!empty($plugin['dependent_queue_plugins'])) {
+        if (!$load($plugin['dependent_queue_plugins'], $this->getQueue()->getPluginsEnabled())) {
+          continue;
+        }
+      }
+      if (!empty($plugin['dependent_purger_plugins'])) {
+        if (!$load($plugin['dependent_purger_plugins'], $this->getPurgers()->getPluginsEnabled())) {
+          continue;
+        }
+      }
+      $this->plugins_enabled[] = $plugin['id'];
     }
     return $this->plugins_enabled;
   }
 
   /**
-   * {@inheritdoc}
+   * Retrieve the 'purge.purgers' service - lazy loaded.
+   *
+   * @return \Drupal\purge\Purger\ServiceInterface
    */
-  public function reload() {
-    parent::reload();
-    $this->position = 0;
-    $this->checks = NULL;
-    $this->initializeChecks();
-  }
-
-  /**
-   * Load all the plugins that should run and gather them in $this->checks.
-   */
-  protected function initializeChecks() {
-    if (!is_null($this->checks)) {
-      return;
+  protected function getPurgers() {
+    if (is_null($this->purgePurgers)) {
+      $this->purgePurgers = $this->container->get('purge.purgers');
     }
-
-    // Iterate each check that we should load and instantiate.
-    foreach ($this->getPluginsEnabled() as $plugin_id) {
-      $this->checks[] = $this->pluginManager->createInstance($plugin_id);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getHookRequirementsArray() {
-    $requirements = [];
-    foreach ($this as $check) {
-      $requirements[$check->getPluginId()] = $check->getHookRequirementsArray();
-    }
-    return $requirements;
+    return $this->purgePurgers;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getRequirementsArray() {
+    $this->initializeChecks();
     $requirements = [];
     foreach ($this as $check) {
       $requirements[$check->getPluginId()] = $check->getRequirementsArray();
@@ -160,11 +203,24 @@ class Service extends ServiceBase implements ServiceInterface {
   }
 
   /**
+   * Retrieve the 'purge.queue' service - lazy loaded.
+   *
+   * @return \Drupal\purge\Queue\ServiceInterface
+   */
+  protected function getQueue() {
+    if (is_null($this->purgeQueue)) {
+      $this->purgeQueue = $this->container->get('purge.queue');
+    }
+    return $this->purgeQueue;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function isSystemOnFire() {
+    $this->initializeChecks();
     foreach ($this as $check) {
-      if ($check->getSeverity() === PluginInterface::SEVERITY_ERROR) {
+      if ($check->getSeverity() === Check::SEVERITY_ERROR) {
         return $check;
       }
     }
@@ -175,8 +231,9 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function isSystemShowingSmoke() {
+    $this->initializeChecks();
     foreach ($this as $check) {
-      if ($check->getSeverity() === PluginInterface::SEVERITY_WARNING) {
+      if ($check->getSeverity() === Check::SEVERITY_WARNING) {
         return $check;
       }
     }
@@ -187,23 +244,8 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    * @ingroup iterator
    */
-  function rewind() {
-    $this->position = 0;
-  }
-
-  /**
-   * {@inheritdoc}
-   * @ingroup iterator
-   */
-  function current() {
-    return $this->checks[$this->position];
-  }
-
-  /**
-   * {@inheritdoc}
-   * @ingroup iterator
-   */
   function key() {
+    $this->initializeChecks();
     return $this->position;
   }
 
@@ -212,7 +254,28 @@ class Service extends ServiceBase implements ServiceInterface {
    * @ingroup iterator
    */
   function next() {
+    $this->initializeChecks();
     ++$this->position;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function reload() {
+    parent::reload();
+    $this->purgePurgers = NULL;
+    $this->purgeQueue = NULL;
+    $this->position = 0;
+    $this->checks = [];
+  }
+
+  /**
+   * {@inheritdoc}
+   * @ingroup iterator
+   */
+  function rewind() {
+    $this->initializeChecks();
+    $this->position = 0;
   }
 
   /**
@@ -220,14 +283,8 @@ class Service extends ServiceBase implements ServiceInterface {
    * @ingroup iterator
    */
   function valid() {
+    $this->initializeChecks();
     return isset($this->checks[$this->position]);
   }
 
-  /**
-   * {@inheritdoc}
-   * @ingroup countable
-   */
-  public function count() {
-    return count($this->checks);
-  }
 }

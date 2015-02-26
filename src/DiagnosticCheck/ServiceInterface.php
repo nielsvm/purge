@@ -18,18 +18,6 @@ use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 interface ServiceInterface extends PurgeServiceInterface, \Iterator, \Countable {
 
   /**
-   * Instantiate the purger service.
-   *
-   * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
-   *   The plugin manager for this service.
-   * @param \Drupal\purge\Purger\ServiceInterface $purge_purgers
-   *   The purge executive service, which wipes content from external caches.
-   * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
-   *   The queue in which to store, claim and release invalidation objects from.
-   */
-  function __construct(PluginManagerInterface $pluginManager, PurgerServiceInterface $purge_purgers, QueueServiceInterface $purge_queue);
-
-  /**
    * Generates a hook_requirements() compatible array.
    *
    * @warning

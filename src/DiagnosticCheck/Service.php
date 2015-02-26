@@ -107,9 +107,12 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    * @ingroup iterator
    */
-  function current() {
+  public function current() {
     $this->initializeChecks();
-    return $this->checks[$this->position];
+    if ($this->valid()) {
+      return $this->checks[$this->position];
+    }
+    return FALSE;
   }
 
   /**
@@ -244,7 +247,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    * @ingroup iterator
    */
-  function key() {
+  public function key() {
     $this->initializeChecks();
     return $this->position;
   }
@@ -253,7 +256,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    * @ingroup iterator
    */
-  function next() {
+  public function next() {
     $this->initializeChecks();
     ++$this->position;
   }
@@ -273,7 +276,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    * @ingroup iterator
    */
-  function rewind() {
+  public function rewind() {
     $this->initializeChecks();
     $this->position = 0;
   }
@@ -282,7 +285,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    * @ingroup iterator
    */
-  function valid() {
+  public function valid() {
     $this->initializeChecks();
     return isset($this->checks[$this->position]);
   }

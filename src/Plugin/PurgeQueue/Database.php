@@ -27,7 +27,7 @@ class Database extends PluginBase implements Queue {
   /**
    * @var \Drupal\Core\Database\Connection
    */
-  protected $database;
+  protected $connection;
 
   /**
    * @var \Drupal\Core\Queue\QueueDatabaseFactory
@@ -55,14 +55,14 @@ class Database extends PluginBase implements Queue {
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\Database\Connection $database
+   * @param \Drupal\Core\Database\Connection $connection
    *   The active database connection.
    * @param \Drupal\Core\Queue\QueueDatabaseFactory $queue_database
    *   The 'queue.database' service creating database queue objects.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database, QueueDatabaseFactory $queue_database) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $connection, QueueDatabaseFactory $queue_database) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->database = $database;
+    $this->connection = $connection;
     $this->queueDatabase = $queue_database;
 
     // The name of the database queue we are storing items in.
@@ -86,7 +86,7 @@ class Database extends PluginBase implements Queue {
   }
 
   /**
-   * Implements Drupal\Core\Queue\QueueInterface::createItem().
+   * {@inheritdoc}
    */
   public function createItem($data) {
     return $this->dbqueue->createItem($data);
@@ -132,21 +132,57 @@ class Database extends PluginBase implements Queue {
   }
 
   /**
-   * Implements Drupal\Core\Queue\QueueInterface::numberOfItems().
+   * {@inheritdoc}
    */
   public function numberOfItems() {
     return $this->dbqueue->numberOfItems();
   }
 
   /**
-   * Implements Drupal\Core\Queue\QueueInterface::claimItem().
+   * {@inheritdoc}
+   *
+   * @todo
+   *   \Drupal\Core\Queue\DatabaseQueue::claimItem() doesn't included expired
+   *   items in its query which means that its essentially broken and makes our
+   *   tests fail. Therefore we overload the implementation with one that does
+   *   it accurately. However, this should flow back to core.
    */
   public function claimItem($lease_time = 3600) {
-    if ($item = $this->dbqueue->claimItem($lease_time)) {
-      $item->item_id = (int)$item->item_id;
-      return $item;
+
+    // Claim an item by updating its expire fields. If claim is not successful
+    // another thread may have claimed the item in the meantime. Therefore loop
+    // until an item is successfully claimed or we are reasonably sure there
+    // are no unclaimed items left.
+    while (TRUE) {
+      $conditions = [':name' => $this->name, ':now' => time()];
+      $item = $this->connection->queryRange('SELECT * FROM {queue} q WHERE name = :name AND ((expire = 0) OR (:now > expire)) ORDER BY created, item_id ASC', 0, 1, $conditions)->fetchObject();
+      if ($item) {
+        $item->item_id = (int)$item->item_id;
+        $item->expire = (int)$item->expire;
+
+        // Try to update the item. Only one thread can succeed in UPDATEing the
+        // same row. We cannot rely on REQUEST_TIME because items might be
+        // claimed by a single consumer which runs longer than 1 second. If we
+        // continue to use REQUEST_TIME instead of the current time(), we steal
+        // time from the lease, and will tend to reset items before the lease
+        // should really expire.
+        $update = $this->connection->update('queue')
+          ->fields([
+            'expire' => time() + $lease_time,
+          ])
+          ->condition('item_id', $item->item_id)
+          ->condition('expire', $item->expire);
+        // If there are affected rows, this update succeeded.
+        if ($update->execute()) {
+          $item->data = unserialize($item->data);
+          return $item;
+        }
+      }
+      else {
+        // No items currently available to claim.
+        return FALSE;
+      }
     }
-    return FALSE;
   }
 
   /**
@@ -156,25 +192,27 @@ class Database extends PluginBase implements Queue {
     $returned_items = $item_ids = [];
 
     // Retrieve all items in one query.
-    $items = $this->database->queryRange('SELECT data, created, item_id FROM {queue} q WHERE expire = 0 AND name = :name ORDER BY created ASC', 0, $claims, [':name' => $this->name]);
+    $conditions = [':name' => $this->name, ':now' => time()];
+    $items = $this->connection->queryRange('SELECT * FROM {queue} q WHERE name = :name AND ((expire = 0) OR (:now > expire)) ORDER BY created, item_id ASC', 0, $claims, $conditions);
 
     // Iterate all returned items and unpack them.
     foreach ($items as $item) {
       if (!$item) continue;
       $item_ids[] = $item->item_id;
       $item->item_id = (int)$item->item_id;
+      $item->expire = (int)$item->expire;
       $item->data = unserialize($item->data);
       $returned_items[] = $item;
     }
 
     // Update the items (marking them claimed) in one query.
     if (count($returned_items)) {
-      $update = $this->database->update('queue')
+      $update = $this->connection->update('queue')
         ->fields([
           'expire' => time() + $lease_time,
         ])
         ->condition('item_id', $item_ids, 'IN')
-        ->condition('expire', 0)
+        ->condition('expire', $item->expire)
         ->execute();
     }
 
@@ -183,7 +221,7 @@ class Database extends PluginBase implements Queue {
   }
 
   /**
-   * Implements Drupal\Core\Queue\QueueInterface::releaseItem().
+   * Implements \Drupal\Core\Queue\QueueInterface::releaseItem().
    */
   public function releaseItem($item) {
     return $this->dbqueue->releaseItem($item);
@@ -197,7 +235,7 @@ class Database extends PluginBase implements Queue {
     foreach ($items as $item) {
       $item_ids[] = $item->item_id;
     }
-    $update = $this->database->update('queue')
+    $update = $this->connection->update('queue')
       ->fields([
         'expire' => 0,
       ])
@@ -212,7 +250,7 @@ class Database extends PluginBase implements Queue {
   }
 
   /**
-   * Implements Drupal\Core\Queue\QueueInterface::deleteItem().
+   * {@inheritdoc}
    */
   public function deleteItem($item) {
     return $this->dbqueue->deleteItem($item);
@@ -226,14 +264,14 @@ class Database extends PluginBase implements Queue {
     foreach ($items as $item) {
       $item_ids[] = $item->item_id;
     }
-    $update = $this->database
+    $update = $this->connection
       ->delete('queue')
       ->condition('item_id', $item_ids, 'IN')
       ->execute();
   }
 
   /**
-   * Implements Drupal\Core\Queue\QueueInterface::createQueue().
+   * {@inheritdoc}
    */
   public function createQueue() {
     // All tasks are stored in a single database table (which is created when
@@ -243,9 +281,10 @@ class Database extends PluginBase implements Queue {
   }
 
   /**
-   * Implements Drupal\Core\Queue\QueueInterface::deleteQueue().
+   * {@inheritdoc}
    */
   public function deleteQueue() {
     return $this->dbqueue->deleteQueue();
   }
+  
 }

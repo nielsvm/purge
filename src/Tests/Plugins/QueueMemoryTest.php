@@ -17,4 +17,5 @@ use Drupal\purge\Tests\Queue\PluginTestBase;
  */
 class QueueMemoryTest extends PluginTestBase {
   protected $plugin_id = 'memory';
+  
 }

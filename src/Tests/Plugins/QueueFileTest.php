@@ -75,7 +75,6 @@ class QueueFileTest extends PluginTestBase {
     $this->assertTrue(is_object($claim));
     $this->assertEqual(1, $claim->item_id);
     $this->assertEqual('qwerty', $claim->data);
-    $this->assertEqual(time() + 1, $claim->expire);
     $this->assertEqual(12345, $claim->created);
 
     $this->queue->deleteQueue();

@@ -16,7 +16,7 @@ use Drupal\purge\DiagnosticCheck\PluginBase;
  * @PurgeDiagnosticCheck(
  *   id = "memoryqueuewarning",
  *   title = @Translation("Memory queue"),
- *   description = @Translation("Warns when the memory queue is in use."),
+ *   description = @Translation("Checks when the memory queue is in use."),
  *   dependent_queue_plugins = {"memory"},
  *   dependent_purger_plugins = {}
  * )

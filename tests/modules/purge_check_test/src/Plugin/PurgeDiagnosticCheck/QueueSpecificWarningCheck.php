@@ -11,7 +11,7 @@ use Drupal\purge\DiagnosticCheck\PluginInterface;
 use Drupal\purge\DiagnosticCheck\PluginBase;
 
 /**
- * Tests if there is a purger plugin that invalidates an external cache.
+ * Checks if there is a purger plugin that invalidates an external cache.
  *
  * @PurgeDiagnosticCheck(
  *   id = "queuewarning",

@@ -15,12 +15,12 @@ use Drupal\purge\DiagnosticCheck\PluginInterface;
 use Drupal\purge\DiagnosticCheck\PluginBase;
 
 /**
- * Tests if there is a purger plugin that invalidates an external cache.
+ * Checks if there is a purger plugin that invalidates an external cache.
  *
  * @PurgeDiagnosticCheck(
  *   id = "purgersavailable",
  *   title = @Translation("Purgers"),
- *   description = @Translation("Tests if there is a purger plugin available."),
+ *   description = @Translation("Checks if there is a purger plugin available."),
  *   dependent_queue_plugins = {},
  *   dependent_purger_plugins = {}
  * )

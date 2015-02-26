@@ -12,7 +12,7 @@ use Drupal\Core\StreamWrapper\PublicStream;
 use Drupal\purge\Tests\Queue\PluginTestBase;
 
 /**
- * Tests the 'file' queue plugin.
+ * Tests \Drupal\purge\Plugin\PurgeQueue\File.
  *
  * @group purge
  * @see \Drupal\purge\Queue\PluginInterface

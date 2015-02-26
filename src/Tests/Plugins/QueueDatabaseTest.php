@@ -10,7 +10,7 @@ namespace Drupal\purge\Tests\Plugins;
 use Drupal\purge\Tests\Queue\PluginTestBase;
 
 /**
- * Tests the 'database' queue plugin.
+ * Tests \Drupal\purge\Plugin\PurgeQueue\Database.
  *
  * @group purge
  * @see \Drupal\purge\Queue\PluginInterface

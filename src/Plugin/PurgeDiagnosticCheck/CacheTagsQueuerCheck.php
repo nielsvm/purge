@@ -23,7 +23,7 @@ use Drupal\purge\DiagnosticCheck\PluginBase;
  * @PurgeDiagnosticCheck(
  *   id = "cachetagsqueuerexists",
  *   title = @Translation("Tags queuer"),
- *   description = @Translation("Tests if invalidated core tags get queued."),
+ *   description = @Translation("Checks if invalidated core tags get queued."),
  *   dependent_queue_plugins = {},
  *   dependent_purger_plugins = {}
  * )

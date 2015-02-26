@@ -13,12 +13,12 @@ use Drupal\purge\DiagnosticCheck\PluginInterface;
 use Drupal\purge\DiagnosticCheck\PluginBase;
 
 /**
- * Tests if there is purging capacity available.
+ * Checks if there is purging capacity available.
  *
  * @PurgeDiagnosticCheck(
  *   id = "capacity",
  *   title = @Translation("Capacity"),
- *   description = @Translation("Tests if there is invalidation capacity available."),
+ *   description = @Translation("Checks if there is invalidation capacity available."),
  *   dependent_queue_plugins = {},
  *   dependent_purger_plugins = {}
  * )

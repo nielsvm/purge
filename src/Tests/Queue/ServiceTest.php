@@ -11,7 +11,7 @@ use Drupal\purge\Tests\KernelServiceTestBase;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 
 /**
- * Tests the Queue service API ('purge.queue').
+ * Tests \Drupal\purge\Queue\Service.
  *
  * @group purge
  * @see \Drupal\purge\Queue\Service

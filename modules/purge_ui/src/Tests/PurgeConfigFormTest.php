@@ -11,10 +11,9 @@ use Drupal\Core\Url;
 use Drupal\purge\Tests\WebTestBase;
 
 /**
- * Tests the configuration form that sets the active plugins.
+ * Tests \Drupal\purge_ui\Form\PurgeConfigForm.
  *
  * @group purge
- * @see \Drupal\purge_ui\Form\PurgeConfigForm
  */
 class PurgeConfigFormTest extends WebTestBase {
 

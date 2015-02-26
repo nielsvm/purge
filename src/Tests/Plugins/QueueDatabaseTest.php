@@ -32,4 +32,5 @@ class QueueDatabaseTest extends PluginTestBase {
     parent::setUp();
     $this->installSchema('system', ['queue']);
   }
+  
 }

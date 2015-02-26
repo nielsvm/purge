@@ -22,7 +22,7 @@ abstract class PluginTestBase extends KernelTestBase {
    * @var array
    */
   public static $modules = ['purge_noqueuer_test'];
-  
+
   /**
    * The plugin ID of the queue plugin being tested.
    *
@@ -61,7 +61,7 @@ abstract class PluginTestBase extends KernelTestBase {
       return;
     }
     $this->queue = $this->pluginManagerPurgeQueue->createInstance($this->plugin_id);
-    $this->assertNull($this->queue->createQueue(), 'createQueue returns NULL');
+    $this->assertNull($this->queue->createQueue());
   }
 
   /**

@@ -52,7 +52,7 @@ class PurgerFormController extends ControllerBase {
   protected function getDefinition($purger) {
     if ($this->pluginManager->hasDefinition($purger)) {
       $definition = $this->pluginManager->getDefinition($purger);
-      if (isset($definition['configform'])) {
+      if (isset($definition['configform']) && !empty($definition['configform'])) {
         return $definition;
       }
     }

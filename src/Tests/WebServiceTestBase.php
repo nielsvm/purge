@@ -11,7 +11,7 @@ use Drupal\purge\Tests\WebTestBase;
 use Drupal\purge\Tests\ServiceTestTrait;
 
 /**
- * Thin and generic WTB for testing \Drupal\purge\ServiceInterface derivatives.
+ * Thin and generic WTB for testing services.yml exposed classes.
  *
  * @see \Drupal\purge\Tests\WebTestBase
  * @see \Drupal\purge\Tests\ServiceTestTrait

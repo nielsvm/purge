@@ -47,6 +47,6 @@ class PurgePurger extends Plugin {
    *
    * @var string
    */
-  public $configform;
+  public $configform = '';
 
 }

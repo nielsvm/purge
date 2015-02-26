@@ -200,7 +200,7 @@ class PurgeConfigForm extends ConfigFormBase {
 
     // LAMBDA: Build a configuration link given the plugin definition.
     $link = function($definition) {
-      if (isset($definition['configform'])) {
+      if (isset($definition['configform']) && !empty($definition['configform'])) {
         return [
           'configure' => [
             'title' => $this->t("Configure"),

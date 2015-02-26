@@ -11,7 +11,7 @@ use Drupal\purge\ServiceBase;
 use Drupal\purge\ServiceInterface;
 
 /**
- * Several helper properties and methods for purge tests.
+ * Properties and methods for services.yml exposed classes.
  *
  * @see \Drupal\purge\Tests\KernelTestBase
  * @see \Drupal\purge\Tests\WebTestBase
@@ -24,10 +24,9 @@ trait ServiceTestTrait {
   protected $serviceId;
 
   /**
-   * Instance of the service being tested, instantiated by the dependency
-   * injection container.
+   * Instance of the service being tested, instantiated by the container.
    *
-   * @var \Drupal\purge\ServiceInterface
+   * @var mixed
    */
   protected $service;
 
@@ -56,11 +55,16 @@ trait ServiceTestTrait {
         $this->$variable = $this->container->get($service);
       }
     }
-    $this->$variable->reload();
+    if ($this->$variable instanceof ServiceInterface) {
+      $this->$variable->reload();
+    }
   }
 
   /**
-   * test for \Drupal\purge\ServiceBase and \Drupal\purge\ServiceInterface.
+   * Test for \Drupal\purge\ServiceBase and \Drupal\purge\ServiceInterface.
+   *
+   * Services not derived from \Drupal\purge\ServiceInterface, should overload
+   * this test. This applies to plugin managers for instance.
    */
   public function testCodeContract() {
     $this->assertTrue($this->service instanceof ServiceInterface);

@@ -10,7 +10,7 @@ namespace Drupal\purge\Plugin\PurgeDiagnosticCheck;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\Queue\PluginInterface as Queue;
-use Drupal\purge\Purger\ServiceInterface as PurgerService;
+use Drupal\purge\Purger\ServiceInterface as PurgersService;
 use Drupal\purge\DiagnosticCheck\PluginInterface;
 use Drupal\purge\DiagnosticCheck\PluginBase;
 
@@ -53,7 +53,7 @@ class PurgersAvailableCheck extends PluginBase implements PluginInterface {
    * @param \Drupal\purge\Purger\PurgerServiceInterface $purge_purgers
    *   The purge executive service, which wipes content from external caches.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, PurgerService $purge_purgers) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, PurgersService $purge_purgers) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
     $this->purgePurgers = $purge_purgers;
@@ -108,5 +108,5 @@ class PurgersAvailableCheck extends PluginBase implements PluginInterface {
       return SELF::SEVERITY_OK;
     }
   }
-  
+
 }

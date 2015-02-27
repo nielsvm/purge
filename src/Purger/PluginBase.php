@@ -17,6 +17,13 @@ use Drupal\purge\Purger\PluginInterface;
 abstract class PluginBase extends CorePluginBase implements PluginInterface {
 
   /**
+   * Unique instance ID for this purger.
+   *
+   * @var string
+   */
+  protected $id;
+
+  /**
    * The number of successfully processed invalidations for this instance.
    *
    * @var int
@@ -83,6 +90,13 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
     else {
       return (int) $suggested;
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getId() {
+    return $this->id;
   }
 
   /**

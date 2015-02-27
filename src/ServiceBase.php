@@ -39,18 +39,11 @@ abstract class ServiceBase extends ServiceProviderBase implements ServiceInterfa
   /**
    * {@inheritdoc}
    */
-  public function getPlugins($simple = FALSE) {
+  public function getPlugins() {
     if (empty($this->plugins)) {
       $this->plugins = $this->pluginManager->getDefinitions();
     }
-    if (!$simple) {
-      return $this->plugins;
-    }
-    $plugins = [];
-    foreach ($this->plugins as $plugin) {
-      $plugins[$plugin['id']] = (string)$plugin['label'];
-    }
-    return $plugins;
+    return $this->plugins;
   }
 
   /**
@@ -70,4 +63,5 @@ abstract class ServiceBase extends ServiceProviderBase implements ServiceInterfa
     $this->plugins = [];
     $this->plugins_enabled = [];
   }
+
 }

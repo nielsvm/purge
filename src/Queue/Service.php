@@ -77,19 +77,12 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   /**
    * {@inheritdoc}
    */
-  public function getPlugins($simple = FALSE) {
+  public function getPlugins() {
     if (empty($this->plugins)) {
       $this->plugins = $this->pluginManager->getDefinitions();
       unset($this->plugins[SELF::FALLBACK_PLUGIN]);
     }
-    if (!$simple) {
-      return $this->plugins;
-    }
-    $plugins = [];
-    foreach ($this->plugins as $plugin) {
-      $plugins[$plugin['id']] = sprintf('%s: %s', $plugin['label'], $plugin['description']);
-    }
-    return $plugins;
+    return $this->plugins;
   }
 
   /**

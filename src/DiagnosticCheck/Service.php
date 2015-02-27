@@ -130,23 +130,6 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function getPlugins($simple = FALSE) {
-    if (empty($this->plugins)) {
-      $this->plugins = $this->pluginManager->getDefinitions();
-    }
-    if (!$simple) {
-      return $this->plugins;
-    }
-    $plugins = [];
-    foreach ($this->plugins as $plugin) {
-      $plugins[$plugin['id']] = sprintf('%s: %s', $plugin['title'], $plugin['description']);
-    }
-    return $plugins;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getPluginsEnabled() {
     if (!empty($this->plugins_enabled)) {
       return $this->plugins_enabled;

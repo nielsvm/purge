@@ -18,21 +18,18 @@ interface ServiceInterface extends ServiceProviderInterface, ServiceModifierInte
   /**
    * Retrieve a list of all available plugins providing the service.
    *
-   * @param bool $simple
-   *   When $simple is TRUE the returned array will use user interface readable
-   *   strings as element values instead of plugin definition arrays.
+   * @return array[]
+   *   Associative array with plugin definitions and the plugin_id in each key.
    *
-   * @return array
-   *   Associative array with the plugin ID's as key and the additional plugin
-   *   metadata as another associative array in the value.
+   * @see \Drupal\Component\Plugin\PluginManagerInterface::getDefinitions()
    */
-  public function getPlugins($simple = FALSE);
+  public function getPlugins();
 
   /**
-   * Retrieve a list of plugin ID's that are enabled.
+   * Retrieve the configured plugin_ids that the service will use.
    *
-   * @return array
-   *   Non-associative array with the plugin ID's of the enabled plugins.
+   * @return string[]
+   *   Array with the plugin_ids of the enabled plugins.
    */
   public function getPluginsEnabled();
 
@@ -42,7 +39,8 @@ interface ServiceInterface extends ServiceProviderInterface, ServiceModifierInte
    * @warning
    *   Reloading a service implies that all cached data will be reset and that
    *   plugins get reinstantiated during the current request, which should
-   *   normally not be used. This method is specifically used in unit tests. 
+   *   normally not be used. This method is specifically used in tests.
    */
   public function reload();
+
 }

@@ -29,6 +29,11 @@ class Null extends PluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
+  public function delete() {}
+
+  /**
+   * {@inheritdoc}
+   */
   public function invalidate(Invalidation $invalidation) {
     $this->numberFailed += 1;
     $invalidation->setState(Invalidation::STATE_FAILED);
@@ -59,5 +64,5 @@ class Null extends PluginBase implements PluginInterface {
   public function getClaimTimeHint() {
     return 1;
   }
-  
+
 }

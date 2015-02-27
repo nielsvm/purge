@@ -28,4 +28,18 @@ interface PluginInterface extends ContainerFactoryPluginInterface, PurgerLookali
    */
   public function getId();
 
+  /**
+   * The current instance of this purger plugin is about to be deleted.
+   *
+   * When end-users decide to uninstall this purger through the user interface,
+   * this method gets called. Especially when this purger is multi-instantiable
+   * this gets useful as it allows to remove configuration and perform cleanup
+   * prior to when the instance gets uninstalled.
+   *
+   * @see \Drupal\purge\Purger\ServiceInterface::deletePluginsEnabled()
+   *
+   * @return void
+   */
+  public function delete();
+
 }

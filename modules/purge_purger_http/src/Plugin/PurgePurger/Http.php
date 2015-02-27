@@ -79,6 +79,11 @@ class Http extends PluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
+  public function delete() {}
+
+  /**
+   * {@inheritdoc}
+   */
   public function invalidate(Invalidation $invalidation) {
     throw new \Exception("Sorry, Not yet implemented!");
   }

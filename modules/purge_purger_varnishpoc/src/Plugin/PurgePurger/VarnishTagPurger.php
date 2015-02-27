@@ -86,6 +86,11 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
 
   /**
    * {@inheritdoc}
+   */
+  public function delete() {}
+
+  /**
+   * {@inheritdoc}
    *
    * Sadly, Guzzle doesn't support detection of timeouts, its exceptions are not
    * granular enough.

@@ -45,6 +45,25 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   protected $numberFailed = 0;
 
   /**
+   * Constructs a \Drupal\Component\Plugin\PluginBase derivative.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    if (!is_string($configuration['id']) || empty($configuration['id'])) {
+      throw new \LogicException('Purger cannot be constructed without ID.');
+    }
+    $this->id = $configuration['id'];
+    unset($configuration['id']);
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {

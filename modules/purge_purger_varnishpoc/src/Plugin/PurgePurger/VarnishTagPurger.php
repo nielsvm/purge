@@ -52,14 +52,21 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
   protected $config;
 
   /**
-   * Constructs the HTTP purger.
+   * Constructs the Varnish purger.
    *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
    * @param \GuzzleHttp\ClientInterface $http_client
    *   An HTTP client that can perform remote requests.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The configuration factory.
    */
-  function __construct(ClientInterface $http_client, ConfigFactoryInterface $config_factory) {
+  function __construct(array $configuration, $plugin_id, $plugin_definition, ClientInterface $http_client, ConfigFactoryInterface $config_factory) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->client = $http_client;
     $this->config = $config_factory->get('purge_purger_varnishpoc.settings');
   }
@@ -69,6 +76,9 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
       $container->get('http_client'),
       $container->get('config.factory')
     );

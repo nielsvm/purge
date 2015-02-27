@@ -87,13 +87,16 @@ class Service extends ServiceBase implements ServiceInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @return string[]
+   *   Associative array with enabled purgers: id => plugin_id.
    */
   public function getPluginsEnabled() {
     if (empty($this->plugins_enabled)) {
       $enabled = $this->configFactory->get('purge.plugins')->get('purgers');
       $plugin_ids = array_keys($this->getPlugins());
 
-      foreach ($enabled as $plugin_id) {
+      foreach ($enabled as $id => $plugin_id) {
         if ($plugin_id === SELF::FALLBACK_PLUGIN) {
           continue;
         }
@@ -105,14 +108,14 @@ class Service extends ServiceBase implements ServiceInterface {
           continue;
         }
         else {
-          $this->plugins_enabled[] = $plugin_id;
+          $this->plugins_enabled[$id] = $plugin_id;
         }
       }
 
       // The public API always has to be reliable and always requires a purger
-      // backend. Therefore we utilize the NULL backend in unfunctional setups.
+      // backend. Therefore we load the 'null' backend in unfunctional setups.
       if (empty($this->plugins_enabled)) {
-        $this->plugins_enabled[] = SELF::FALLBACK_PLUGIN;
+        $this->plugins_enabled[SELF::FALLBACK_PLUGIN] = SELF::FALLBACK_PLUGIN;
       }
     }
     return $this->plugins_enabled;
@@ -163,8 +166,8 @@ class Service extends ServiceBase implements ServiceInterface {
     }
 
     // Iterate each purger plugin we should load and instantiate them.
-    foreach ($this->getPluginsEnabled() as $plugin_id) {
-      $this->purgers[] = $this->pluginManager->createInstance($plugin_id);
+    foreach ($this->getPluginsEnabled() as $id => $plugin_id) {
+      $this->purgers[] = $this->pluginManager->createInstance($plugin_id, ['id' => $id]);
     }
   }
 

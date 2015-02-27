@@ -164,7 +164,10 @@ class Service extends ServiceBase implements ServiceInterface {
     if (is_null($config_factory)) {
       $config_factory = \Drupal::configFactory();
     }
-    foreach ($plugin_ids as $plugin_id) {
+    foreach ($plugin_ids as $id => $plugin_id) {
+      if (!is_string($id) || empty($id)) {
+        throw new \LogicException('Invalid instance ID (key) in ::setPluginsStatic().');
+      }
       if (!isset($plugin_manager->getDefinitions()[$plugin_id])) {
         throw new \LogicException('Invalid plugin_id in ::setPluginsStatic().');
       }
@@ -192,7 +195,7 @@ class Service extends ServiceBase implements ServiceInterface {
 
     // Iterate each purger plugin we should load and instantiate them.
     foreach ($this->getPluginsEnabled() as $id => $plugin_id) {
-      $this->purgers[] = $this->pluginManager->createInstance($plugin_id, ['id' => $id]);
+      $this->purgers[$id] = $this->pluginManager->createInstance($plugin_id, ['id' => $id]);
     }
   }
 

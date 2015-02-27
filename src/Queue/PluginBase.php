@@ -99,4 +99,5 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
     }
     return $failures;
   }
+  
 }

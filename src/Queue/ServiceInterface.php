@@ -172,4 +172,5 @@ interface ServiceInterface extends PurgeServiceInterface {
    * @return void
    */
   public function emptyQueue();
+
 }

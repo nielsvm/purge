@@ -19,4 +19,5 @@ class InvalidationRegularExpressionTest extends PluginTestBase {
   protected $plugin_id = 'regex';
   protected $expressions = ['\.(jpg|jpeg|css|js)$'];
   protected $expressionsInvalid = [NULL, ''];
+  
 }

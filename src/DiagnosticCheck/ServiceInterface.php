@@ -88,4 +88,5 @@ interface ServiceInterface extends PurgeServiceInterface, \Iterator, \Countable 
    *   The SEVERITY_WARNING reporting check, or FALSE when everything was fine.
    */
   public function isSystemShowingSmoke();
+  
 }

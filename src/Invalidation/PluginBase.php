@@ -152,4 +152,5 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
       throw new InvalidExpressionException($this->t("String argument required for @type invalidation.", $topt));
     }
   }
+  
 }

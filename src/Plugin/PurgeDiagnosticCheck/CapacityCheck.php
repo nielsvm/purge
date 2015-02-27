@@ -81,4 +81,5 @@ class CapacityCheck extends PluginBase implements PluginInterface {
       return SELF::SEVERITY_OK;
     }
   }
+  
 }

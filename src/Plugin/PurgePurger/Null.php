@@ -59,4 +59,5 @@ class Null extends PluginBase implements PluginInterface {
   public function getClaimTimeHint() {
     return 1;
   }
+  
 }

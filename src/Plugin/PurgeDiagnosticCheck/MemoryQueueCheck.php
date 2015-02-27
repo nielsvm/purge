@@ -33,4 +33,5 @@ class MemoryQueueCheck extends PluginBase implements PluginInterface {
     $this->recommendation = $this->t("You are using the memory queue, which is not recommend for day to day use. Anything stored in this queue, gets lost if it doesn't get processed during the same request.");
     return SELF::SEVERITY_WARNING;
   }
+  
 }

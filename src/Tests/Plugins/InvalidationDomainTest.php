@@ -19,4 +19,5 @@ class InvalidationDomainTest extends PluginTestBase {
   protected $plugin_id = 'domain';
   protected $expressions = ['sitea.com', 'www.site.com'];
   protected $expressionsInvalid = [NULL, ''];
+  
 }

@@ -19,4 +19,5 @@ class InvalidationEverythingTest extends PluginTestBase {
   protected $plugin_id = 'everything';
   protected $expressions = [NULL];
   protected $expressionsInvalid = ['', 'foobar'];
+
 }

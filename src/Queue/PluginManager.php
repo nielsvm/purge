@@ -36,4 +36,5 @@ class PluginManager extends DefaultPluginManager {
       'Drupal\purge\Annotation\PurgeQueue');
     $this->setCacheBackend($cache_backend, 'purge_queue_plugins');
   }
+  
 }

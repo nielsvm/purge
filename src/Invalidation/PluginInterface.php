@@ -105,4 +105,5 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    * @return void
    */
   public function validateExpression();
+  
 }

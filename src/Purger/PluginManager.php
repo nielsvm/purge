@@ -36,4 +36,5 @@ class PluginManager extends DefaultPluginManager {
       'Drupal\purge\Annotation\PurgePurger');
     $this->setCacheBackend($cache_backend, 'purge_purger_plugins');
   }
+  
 }

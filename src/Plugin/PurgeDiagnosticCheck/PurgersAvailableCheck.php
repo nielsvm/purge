@@ -108,4 +108,5 @@ class PurgersAvailableCheck extends PluginBase implements PluginInterface {
       return SELF::SEVERITY_OK;
     }
   }
+  
 }

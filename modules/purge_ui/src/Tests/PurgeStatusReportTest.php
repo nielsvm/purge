@@ -64,4 +64,5 @@ class PurgeStatusReportTest extends WebTestBase {
     $this->assertText('Purge - Always an error');
     $this->assertText('This is an error for testing.');
   }
+  
 }

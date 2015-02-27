@@ -195,4 +195,5 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
     // Take the HTTP timeout configured, add 10% margin and round up to seconds.
     return (int) ceil($this->config->get('timeout') * 1.1);
   }
+  
 }

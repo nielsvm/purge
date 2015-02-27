@@ -33,4 +33,5 @@ class InvalidationPathTest extends PluginTestBase {
     '/news/*',
     '*'
   ];
+  
 }

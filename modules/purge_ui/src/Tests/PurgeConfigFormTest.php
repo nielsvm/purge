@@ -189,4 +189,5 @@ class PurgeConfigFormTest extends WebTestBase {
     $this->assertNoFieldChecked('edit-purger-plugins-purger-c');
     $this->assertNoFieldChecked('edit-purger-plugins-purger-withform');
   }
+  
 }

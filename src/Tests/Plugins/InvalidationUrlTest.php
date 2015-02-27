@@ -29,4 +29,5 @@ class InvalidationUrlTest extends PluginTestBase {
     'http:// /aa',
     'http://www.test.com/*',
   ];
+  
 }

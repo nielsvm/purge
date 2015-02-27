@@ -28,4 +28,5 @@ class InvalidationTagTest extends PluginTestBase {
     ['node', '1'],
     'wildtag:*'
   ];
+  
 }

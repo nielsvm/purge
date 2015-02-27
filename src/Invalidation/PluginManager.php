@@ -36,4 +36,5 @@ class PluginManager extends DefaultPluginManager {
       'Drupal\purge\Annotation\PurgeInvalidation');
     $this->setCacheBackend($cache_backend, 'purge_invalidation_plugins');
   }
+  
 }

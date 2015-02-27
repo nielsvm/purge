@@ -77,6 +77,24 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * {@inheritdoc}
    */
+  public function deletePluginsEnabled(array $ids) {
+    if (empty($ids)) {
+      throw new \LogicException('Empty $ids in ::deletePluginsEnabled().');
+    }
+    $enabled = $this->getPluginsEnabled();
+    foreach ($ids as $id) {
+      if (!isset($enabled[$id])) {
+        throw new \LogicException('Invalid id in ::deletePluginsEnabled().');
+      }
+      unset($enabled[$id]);
+    }
+    $this->purgers[$id]->delete();
+    $this->setPluginsEnabled($enabled);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPlugins() {
     if (empty($this->plugins)) {
       $this->plugins = $this->pluginManager->getDefinitions();

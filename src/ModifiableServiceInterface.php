@@ -22,6 +22,9 @@ interface ModifiableServiceInterface {
    * @param string[] $plugin_ids
    *   Array with the plugin ids to be enabled in its value.
    *
+   * @throws \LogicException
+   *   Thrown when the parameter $plugin_ids doesn't make any sense.
+   *
    * @return void
    */
   public function setPluginsEnabled(array $plugin_ids);
@@ -35,6 +38,9 @@ interface ModifiableServiceInterface {
    *   The plugin manager for the service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
+   *
+   * @throws \LogicException
+   *   Thrown when the parameter $plugin_ids doesn't make any sense.
    *
    * @return void
    */

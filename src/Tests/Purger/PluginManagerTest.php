@@ -33,6 +33,7 @@ class PluginManagerTest extends KernelServiceTestBase {
     'id',
     'label',
     'description',
+    'multi_instance',
     'configform',
   ];
 

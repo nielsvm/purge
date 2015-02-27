@@ -24,8 +24,9 @@ use Drupal\purge\Invalidation\PluginInterface as Invalidation;
  * @PurgePurger(
  *   id = "http",
  *   label = @Translation("HTTP Purger"),
- *   configform = "\Drupal\purge_purger_http\Form\ConfigurationForm",
  *   description = @Translation("Generic and highly configurable purger making HTTP requests, best suits custom configurations."),
+ *   configform = "\Drupal\purge_purger_http\Form\ConfigurationForm",
+ *   multi_instance = TRUE,
  * )
  */
 class Http extends PluginBase implements PluginInterface {
@@ -126,5 +127,5 @@ class Http extends PluginBase implements PluginInterface {
   public function getNumberPurging() {
     throw new \Exception("Sorry, Not yet implemented!");
   }
-  
+
 }

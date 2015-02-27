@@ -34,6 +34,7 @@ use Drupal\purge\Invalidation\PluginInterface as Invalidation;
  *   label = @Translation("Varnish (cache tags)"),
  *   description = @Translation("Cache tags purger for Varnish."),
  *   configform = "Drupal\purge_purger_varnishpoc\Form\VarnishTagConfigForm",
+ *   multi_instance = TRUE,
  * )
  */
 class VarnishTagPurger extends PluginBase implements PluginInterface {
@@ -195,5 +196,5 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
     // Take the HTTP timeout configured, add 10% margin and round up to seconds.
     return (int) ceil($this->config->get('timeout') * 1.1);
   }
-  
+
 }

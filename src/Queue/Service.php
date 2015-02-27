@@ -57,15 +57,15 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   /**
    * Instantiate the queue service.
    *
-   * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
+   * @param \Drupal\Component\Plugin\PluginManagerInterface $plugin_manager
    *   The plugin manager for this service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
    * @param \Drupal\purge\Invalidation\ServiceInterface $purge_invalidation_factory
    *   The service that instantiates invalidation objects for queue items.
    */
-  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory, InvalidationService $purge_invalidation_factory) {
-    $this->pluginManager = $pluginManager;
+  function __construct(PluginManagerInterface $plugin_manager, ConfigFactoryInterface $config_factory, InvalidationService $purge_invalidation_factory) {
+    $this->pluginManager = $plugin_manager;
     $this->configFactory = $config_factory;
     $this->purgeInvalidationFactory = $purge_invalidation_factory;
 
@@ -104,6 +104,34 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
       }
     }
     return $this->plugins_enabled;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setPluginsEnabled(array $plugin_ids) {
+    static::setPluginsStatic($plugin_ids, $this->pluginManager, $this->configFactory);
+    $this->reload();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function setPluginsStatic(array $plugin_ids, PluginManagerInterface $plugin_manager = NULL, ConfigFactoryInterface $config_factory = NULL) {
+    if (count($plugin_ids) !== 1) {
+      throw new \LogicException('Incorrect number of arguments in ::setPluginsStatic().');
+    }
+    if (is_null($plugin_manager)) {
+      $plugin_manager = \Drupal::service('plugin.manager.purge.queue');
+    }
+    if (is_null($config_factory)) {
+      $config_factory = \Drupal::service('config.factory');
+    }
+    $plugin_id = current($plugin_ids);
+    if (!isset($plugin_manager->getDefinitions()[$plugin_id])) {
+      throw new \LogicException('Invalid plugin_id in ::setPluginsStatic().');
+    }
+    $config_factory->getEditable('purge.plugins')->set('queue', $plugin_id)->save();
   }
 
   /**
@@ -419,5 +447,5 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   function __destruct() {
     $this->destruct();
   }
-  
+
 }

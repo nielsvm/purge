@@ -121,6 +121,32 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * {@inheritdoc}
    */
+  public function setPluginsEnabled(array $plugin_ids) {
+    static::setPluginsStatic($plugin_ids, $this->pluginManager, $this->configFactory);
+    $this->reload();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function setPluginsStatic(array $plugin_ids, PluginManagerInterface $plugin_manager = NULL, ConfigFactoryInterface $config_factory = NULL) {
+    if (is_null($plugin_manager)) {
+      $plugin_manager = \Drupal::service('plugin.manager.purge.purgers');
+    }
+    if (is_null($config_factory)) {
+      $config_factory = \Drupal::configFactory();
+    }
+    foreach ($plugin_ids as $plugin_id) {
+      if (!isset($plugin_manager->getDefinitions()[$plugin_id])) {
+        throw new \LogicException('Invalid plugin_id in ::setPluginsStatic().');
+      }
+    }
+    $config_factory->getEditable('purge.plugins')->set('purgers', $plugin_ids)->save();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function reload() {
     parent::reload();
     $this->purgers = NULL;

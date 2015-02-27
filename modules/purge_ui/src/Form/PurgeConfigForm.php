@@ -69,7 +69,7 @@ class PurgeConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return ['purge.plugins'];
+    return [];
   }
 
   /**
@@ -136,7 +136,7 @@ class PurgeConfigForm extends ConfigFormBase {
     ];
     $form['queue']['queue_plugin'] = [
       '#type' => 'tableselect',
-      '#default_value' => $this->config('purge.plugins')->get('queue'),
+      '#default_value' => current($this->purgeQueue->getPluginsEnabled()),
       '#responsive' => TRUE,
       '#multiple' => FALSE,
       '#options' => [],
@@ -306,9 +306,7 @@ class PurgeConfigForm extends ConfigFormBase {
    * @return void
    */
   protected function submitFormQueue(array &$form, FormStateInterface $form_state) {
-    $this->config('purge.plugins')
-      ->set('queue', $form_state->getValue('queue_plugin'))
-      ->save();
+    $this->purgeQueue->setPluginsEnabled([$form_state->getValue('queue_plugin')]);
   }
 
   /**
@@ -328,9 +326,7 @@ class PurgeConfigForm extends ConfigFormBase {
         $purgers[] = $plugin_id;
       }
     }
-    $this->config('purge.plugins')
-      ->set('purgers', $purgers)
-      ->save();
+    $this->purgePurgers->setPluginsEnabled($purgers);
   }
-  
+
 }

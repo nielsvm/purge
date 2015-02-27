@@ -7,9 +7,7 @@
 
 namespace Drupal\purge\Tests\DiagnosticCheck;
 
-use Drupal\purge\Tests\KernelTestBase;
 use Drupal\purge\Tests\KernelServiceTestBase;
-use Drupal\purge\DiagnosticCheck\ServiceInterface;
 
 /**
  * Tests \Drupal\purge\DiagnosticCheck\Service.
@@ -23,28 +21,21 @@ class ServiceSmokeAndFireTest extends KernelServiceTestBase {
   public static $modules = ['purge_purger_test'];
 
   /**
-   * Set up the test.
+   * Tests:
+   *   - \Drupal\purge\DiagnosticCheck\Service::isSystemOnFire()
+   *   - \Drupal\purge\DiagnosticCheck\Service::isSystemShowingSmoke()
    */
-  function setUp() {
-
-    // Skip parent::setUp() as we don't want it to initialize the service yet.
-    KernelTestBase::setUp();
+  public function testIsSystemOnFireOrShowingSmoke() {
     $this->initializePurgersService(['purger_a']);
     $this->initializeService();
-  }
-
-  /**
-   * Tests \Drupal\purge\DiagnosticCheck\Service::isSystemOnFire.
-   */
-  public function testIsSystemOnFire() {
-    $this->assertFalse($this->service->isSystemOnFire());
-  }
-
-  /**
-   * Tests \Drupal\purge\DiagnosticCheck\Service::isSystemShowingSmoke.
-   */
-  public function testIsSystemShowingSmoke() {
-    $this->assertFalse($this->service->isSystemShowingSmoke());
+    $this->assertFalse(is_object($this->service->isSystemOnFire()));
+    if ($this->assertTrue(is_bool($this->service->isSystemOnFire()))) {
+      $this->assertFalse($this->service->isSystemOnFire());
+    }
+    $this->assertFalse(is_object($this->service->isSystemShowingSmoke()));
+    if ($this->assertTrue(is_bool($this->service->isSystemShowingSmoke()))) {
+      $this->assertFalse($this->service->isSystemShowingSmoke());
+    }
   }
 
 }

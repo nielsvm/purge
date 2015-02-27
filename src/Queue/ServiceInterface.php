@@ -8,12 +8,13 @@
 namespace Drupal\purge\Queue;
 
 use Drupal\purge\ServiceInterface as PurgeServiceInterface;
+use Drupal\purge\ModifiableServiceInterface;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 
 /**
  * Describes a service that lets invalidations interact with a queue backend.
  */
-interface ServiceInterface extends PurgeServiceInterface {
+interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInterface {
 
   /**
    * Add a invalidation object to the queue, schedule it for later purging.

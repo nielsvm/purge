@@ -129,6 +129,7 @@ class PurgeConfigFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\PurgeConfigForm::submitFormQueue
    */
   public function testFormQueueSection() {
+    $this->initializeQueueService();
     $this->drupalLogin($this->admin_user);
 
     // Assert that the configured queue is selected on page load.
@@ -137,12 +138,14 @@ class PurgeConfigFormTest extends WebTestBase {
 
     // Test that just submitting the form, results in the exact same config.
     $this->drupalPostForm($this->configUrl, [], t('Save configuration'));
-    $this->assertEqual('database', $this->configFactory->get('purge.plugins')->get('queue'));
+    $this->purgeQueue->reload();
+    $this->assertEqual(['database'], $this->purgeQueue->getPluginsEnabled());
 
     // Test that changing the queue plugin, gets reflected in the config.
     $edit = ['queue_plugin' => 'queue_b'];
     $this->drupalPostForm($this->configUrl, $edit, t('Save configuration'));
-    $this->assertEqual('queue_b', $this->configFactory->get('purge.plugins')->get('queue'));
+    $this->purgeQueue->reload();
+    $this->assertEqual(['queue_b'], $this->purgeQueue->getPluginsEnabled());
 
     // @todo test \Drupal\purge_ui\Form\PurgeConfigForm::validateFormQueue.
   }
@@ -153,6 +156,7 @@ class PurgeConfigFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\PurgeConfigForm::buildFormPurgers
    */
   public function testFormPurgersSection() {
+    $this->initializePurgersService();
     $this->drupalLogin($this->admin_user);
 
     // Assert that by default, none of the available test purgers are selected.
@@ -170,7 +174,8 @@ class PurgeConfigFormTest extends WebTestBase {
 
     // Test that just submitting the form, results in the exact same config.
     $this->drupalPostForm($this->configUrl, [], t('Save configuration'));
-    $this->assertEqual([], $this->configFactory->get('purge.plugins')->get('purgers'));
+    $this->purgePurgers->reload();
+    $this->assertEqual(['null'], $this->purgePurgers->getPluginsEnabled());
 
     // Test that configuring two purgers, results in correct config.
     $edit = [
@@ -180,7 +185,8 @@ class PurgeConfigFormTest extends WebTestBase {
       'purger_plugins[purger_withform]' => FALSE,
     ];
     $this->drupalPostForm($this->configUrl, $edit, t('Save configuration'));
-    $this->assertEqual(['purger_a', 'purger_b'], $this->configFactory->get('purge.plugins')->get('purgers'));
+    $this->purgePurgers->reload();
+    $this->assertEqual(['purger_a', 'purger_b'], $this->purgePurgers->getPluginsEnabled());
 
     // Test that the configured purgers, are also selected on the form.
     $this->drupalGet($this->configUrl);
@@ -189,5 +195,5 @@ class PurgeConfigFormTest extends WebTestBase {
     $this->assertNoFieldChecked('edit-purger-plugins-purger-c');
     $this->assertNoFieldChecked('edit-purger-plugins-purger-withform');
   }
-  
+
 }

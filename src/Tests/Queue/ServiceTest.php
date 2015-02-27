@@ -52,17 +52,31 @@ class ServiceTest extends KernelServiceTestBase {
   /**
    * Tests:
    *   - \Drupal\purge\Queue\Service::getPluginsEnabled
+   *   - \Drupal\purge\Queue\Service::setPluginsEnabled
+   *   - \Drupal\purge\Queue\Service::setPluginsStatic
    *   - \Drupal\purge\Queue\Service::reload
    */
-  public function testGetPluginsEnabled() {
-    $this->initializeQueueService('file');
+  public function testSettingAndGettingPlugins() {
+    $this->purgeQueue->setPluginsEnabled(['file']);
     $this->assertEqual(['file'], $this->purgeQueue->getPluginsEnabled());
-
-    $this->initializeQueueService('memory');
+    $this->purgeQueue->setPluginsEnabled(['memory']);
     $this->assertEqual(['memory'], $this->purgeQueue->getPluginsEnabled());
-
-    $this->initializeQueueService('DOESNOTEXIST');
-    $this->assertEqual(['null'], $this->purgeQueue->getPluginsEnabled());
+    $thrown = FALSE;
+    try {
+      $this->purgeQueue->setPluginsEnabled(['DOESNOTEXIST']);
+    }
+    catch (\LogicException $e) {
+      $thrown = $e instanceof \LogicException;
+    }
+    $this->assertTrue($thrown);
+    $thrown = FALSE;
+    try {
+      $this->purgeQueue->setPluginsEnabled([]);
+    }
+    catch (\LogicException $e) {
+      $thrown = $e instanceof \LogicException;
+    }
+    $this->assertTrue($thrown);
   }
 
   /**

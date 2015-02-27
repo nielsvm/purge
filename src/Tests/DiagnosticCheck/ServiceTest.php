@@ -22,7 +22,6 @@ use Drupal\purge\DiagnosticCheck\PluginInterface as Check;
 class ServiceTest extends KernelServiceTestBase {
   protected $serviceId = 'purge.diagnostics';
   public static $modules = [
-    'purge_noqueuer_test',
     'purge_purger_test',
     'purge_check_test',
     'purge_check_error_test',
@@ -169,7 +168,7 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testIsSystemShowingSmoke() {
     $this->assertTrue($this->service->isSystemShowingSmoke() instanceof Check);
-    $this->assertEqual('capacity', $this->service->isSystemShowingSmoke()->getPluginId());
+    $this->assertEqual('alwayswarning', $this->service->isSystemShowingSmoke()->getPluginId());
   }
 
 }

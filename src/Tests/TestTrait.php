@@ -7,6 +7,9 @@
 
 namespace Drupal\purge\Tests;
 
+use \Drupal\purge\Purger\Service as PurgersService;
+use \Drupal\purge\Queue\Service as QueueService;
+
 /**
  * Several helper properties and methods for purge tests.
  *
@@ -50,14 +53,18 @@ trait TestTrait {
    */
   protected function initializePurgersService($plugin_ids = []) {
     if (!empty($plugin_ids)) {
-      $this->configFactory->getEditable('purge.plugins')->set('purgers', $plugin_ids)->save();
+      if (is_null($this->purgePurgers)) {
+        PurgersService::setPluginsStatic($plugin_ids);
+        $this->purgePurgers = $this->container->get('purge.purgers');
+      }
+      else {
+        $this->purgePurgers->setPluginsEnabled($plugin_ids);
+      }
     }
     if (is_null($this->purgePurgers)) {
       $this->purgePurgers = $this->container->get('purge.purgers');
-      $this->purgePurgers->reload();
     }
     else {
-      $this->purgePurgers->reload();
       if (!is_null($this->purgeDiagnostics)) {
         $this->purgeDiagnostics->reload();
       }
@@ -80,15 +87,19 @@ trait TestTrait {
    *   The plugin ID of the queue to be configured.
    */
   protected function initializeQueueService($plugin_id = NULL) {
-    if (!is_null($plugin_id)) {
-      $this->configFactory->getEditable('purge.plugins')->set('queue', $plugin_id)->save();
+    if (!empty($plugin_id)) {
+      if (is_null($this->purgeQueue)) {
+        QueueService::setPluginsStatic([$plugin_id]);
+        $this->purgeQueue = $this->container->get('purge.queue');
+      }
+      else {
+        $this->purgeQueue->setPluginsEnabled([$plugin_id]);
+      }
     }
     if (is_null($this->purgeQueue)) {
       $this->purgeQueue = $this->container->get('purge.queue');
-      $this->purgeQueue->reload();
     }
     else {
-      $this->purgeQueue->reload();
       if (!is_null($this->purgeDiagnostics)) {
         $this->purgeDiagnostics->reload();
       }

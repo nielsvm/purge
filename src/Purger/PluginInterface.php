@@ -23,6 +23,8 @@ interface PluginInterface extends ContainerFactoryPluginInterface, PurgerLookali
    * to TRUE in their annotations, are likely to require the use of this method
    * to differentiate their purger instance (e.g. through configuration).
    *
+   * @see \Drupal\purge\Purger\ServiceInterface::createId()
+   *
    * @return string
    *   The unique identifier for this purger instance.
    */

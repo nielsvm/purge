@@ -34,4 +34,17 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
    */
   public function deletePluginsEnabled(array $ids);
 
+  /**
+   * Create a unique instance ID for new purger instances.
+   *
+   * Every purger has a unique instance identifier set by the purgers service,
+   * whether it is multi-instantiable or not. This helper creates a unique,
+   * random string, 10 characters long.
+   *
+   * @see \Drupal\purge\Purger\PluginInterface::getId()
+   *
+   * @return string
+   */
+  public function createId();
+
 }

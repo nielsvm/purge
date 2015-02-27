@@ -77,6 +77,13 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * {@inheritdoc}
    */
+  public function createId() {
+    return strtoupper(substr(sha1(microtime()), 0, 10));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function deletePluginsEnabled(array $ids) {
     if (empty($ids)) {
       throw new \LogicException('Empty $ids in ::deletePluginsEnabled().');

@@ -36,7 +36,7 @@ class ConfigurationFormTest extends WebTestBase {
    *
    * @var string|\Drupal\Core\Url
    */
-  protected $route = 'purge_ui.purger_form';
+  protected $route = 'purge_ui.purger_config_form';
 
   /**
    * {@inheritdoc}

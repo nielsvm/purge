@@ -32,7 +32,7 @@ class VarnishTagConfigForm extends PurgerConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state, $id = NULL) {
     $config = $this->config('purge_purger_varnishpoc.settings');
 
     // HTTP Settings.

@@ -33,28 +33,35 @@ class PurgerConfigFormTest extends WebTestBase {
   protected $purger = 'purger_withform';
 
   /**
-   * The route to a purgers configuration form (takes argument 'purger').
+   * The route to a purgers configuration form (takes argument 'id').
    *
    * @var string
    */
-  protected $route = 'purge_ui.purger_form';
+  protected $route = 'purge_ui.purger_config_form';
 
   /**
-   * The URL object constructed from $this->configRoute - plain version.
+   * The route to a purgers configuration form (takes argument 'id') - dialog.
+   *
+   * @var string
+   */
+  protected $route_dialog = 'purge_ui.purger_config_dialog_form';
+
+  /**
+   * The URL object constructed from $this->route.
    *
    * @var \Drupal\Core\Url
    */
   protected $urlValid = NULL;
 
   /**
-   * The URL object constructed from $this->configRoute - dialog version.
+   * The URL object constructed from $this->route_dialog.
    *
    * @var \Drupal\Core\Url
    */
   protected $urlValidDialog = NULL;
 
   /**
-   * The URL object constructed from $this->configRoute -invalid argument.
+   * The URL object constructed from $this->route -invalid argument.
    *
    * @var \Drupal\Core\Url
    */
@@ -73,7 +80,7 @@ class PurgerConfigFormTest extends WebTestBase {
   function setUp() {
     parent::setUp();
     $this->urlValid = Url::fromRoute($this->route, ['purger' => $this->purger]);
-    $this->urlValidDialog = Url::fromRoute($this->route, ['purger' => $this->purger], ['query' => ['dialog' => '1']]);
+    $this->urlValidDialog = Url::fromRoute($this->route_dialog, ['purger' => $this->purger], ['query' => ['dialog' => '1']]);
     $this->urlInvalid = Url::fromRoute($this->route, ['purger' => 'nonexistent']);
     $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
   }

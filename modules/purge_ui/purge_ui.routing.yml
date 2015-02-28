@@ -5,12 +5,33 @@ purge_ui.config_form:
     _form: 'Drupal\purge_ui\Form\PurgeConfigForm'
   requirements:
     _permission: 'administer site configuration'
-
-purge_ui.purger_form:
-  path: '/admin/config/development/performance/purge/{purger}'
+purge_ui.purger_add_form:
+  path: '/admin/config/development/performance/purge/purger/add'
   defaults:
-    _controller: '\Drupal\purge_ui\Controller\PurgerFormController::getForm'
-    _title: 'Configure'
-    _title_callback: '\Drupal\purge_ui\Controller\PurgerFormController::getTitle'
+    _title: 'Which purger would you like to add?'
+    _form: 'Drupal\purge_ui\Form\AddPurgerForm'
+  requirements:
+    _permission: 'administer site configuration'
+purge_ui.purger_config_form:
+  path: '/admin/config/development/performance/purge/purger/{id}'
+  defaults:
+    _controller: '\Drupal\purge_ui\Controller\PurgerFormController::configForm'
+    _title_callback: '\Drupal\purge_ui\Controller\PurgerFormController::configFormTitle'
+    dialog: FALSE
+  requirements:
+    _permission: 'administer site configuration'
+purge_ui.purger_config_dialog_form:
+  path: '/admin/config/development/performance/purge/purger/{id}/dialog'
+  defaults:
+    _controller: '\Drupal\purge_ui\Controller\PurgerFormController::configForm'
+    _title_callback: '\Drupal\purge_ui\Controller\PurgerFormController::configFormTitle'
+    dialog: TRUE
+  requirements:
+    _permission: 'administer site configuration'
+purge_ui.purger_delete_form:
+  path: '/admin/config/development/performance/purge/purger/{id}/delete'
+  defaults:
+    _controller: '\Drupal\purge_ui\Controller\PurgerFormController::deleteForm'
+    _title_callback: '\Drupal\purge_ui\Controller\PurgerFormController::deleteFormTitle'
   requirements:
     _permission: 'administer site configuration'

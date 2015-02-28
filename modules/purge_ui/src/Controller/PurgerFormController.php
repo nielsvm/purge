@@ -10,84 +10,134 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\purge\Purger\PluginManager;
+use \Drupal\purge\Purger\ServiceInterface as PurgersService;
 
 /**
- * Return the purger configuration form for the given purger plugin_id.
+ * Controller for forms working with purgers that are enabled, e.g.:
+ *   - \Drupal\purge_ui\Form\DeletePurgerForm
+ *   - \Drupal\purge_ui\Form\PurgerConfigFormBase derivatives.
  */
 class PurgerFormController extends ControllerBase {
 
   /**
-   * The plugin manager for purgers ('plugin.manager.purge.purgers').
+   * The purge executive service, which wipes content from external caches.
    *
-   * @var \Drupal\purge\Purger\PluginManager.
+   * @var \Drupal\purge\Purger\ServiceInterface
    */
-  protected $pluginManager;
+  protected $purgePurgers;
 
   /**
-   * Instantiate PurgerFormController.
+   * Construct the PurgerFormController.
    *
-   * @param \Drupal\purge\Purger\PluginManager $pluginManager
-   *   The plugin manager for purgers.
+   * @param \Drupal\purge\Purger\ServiceInterface $purge_purgers
+   *   The purge executive service, which wipes content from external caches.
    */
-  function __construct(PluginManager $pluginManager) {
-    $this->pluginManager = $pluginManager;
+  function __construct(PurgersService $purge_purgers) {
+    $this->purgePurgers = $purge_purgers;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('plugin.manager.purge.purgers'));
+    return new static($container->get('purge.purgers'));
   }
 
   /**
-   * Route title callback.
+   * Retrieve the plugin definition for the given instance ID.
    *
-   * @param string $purger
-   *   The plugin_id of the purger plugin to render its configuration form for.
+   * @param string $id
+   *   Unique instance ID for the purger instance requested.
+   *
    * @return array|false
-   *   The definition or false when it didn't pass validation.
+   *   The definition or FALSE when it doesn't exist.
    */
-  protected function getDefinition($purger) {
-    if ($this->pluginManager->hasDefinition($purger)) {
-      $definition = $this->pluginManager->getDefinition($purger);
+  protected function getPurgerPluginDefinition($id) {
+    $enabled = $this->purgePurgers->getPluginsEnabled();
+    if (!isset($enabled[$id])) {
+      return FALSE;
+    }
+    return $this->purgePurgers->getPlugins()[$enabled[$id]];
+  }
+
+  /**
+   * Render the purger configuration form.
+   *
+   * @param string $id
+   *   Unique instance ID for the purger instance.
+   * @param bool $dialog
+   *   Determines if the modal dialog variant of the form should be rendered.
+   *
+   * @return array
+   */
+  public function configForm($id, $dialog) {
+    if ($definition = $this->getPurgerPluginDefinition($id)) {
       if (isset($definition['configform']) && !empty($definition['configform'])) {
-        return $definition;
+        return $this->formBuilder()->getForm(
+          $definition['configform'],
+          [
+            'id' => $id,
+            'dialog' => $dialog
+          ]
+        );
       }
     }
-    return FALSE;
+    throw new NotFoundHttpException();
   }
 
   /**
    * Route title callback.
    *
-   * @param string $purger
-   *   The plugin_id of the purger plugin to render its configuration form for.
-   * @return string
+   * @param string $id
+   *   Unique instance ID for the purger instance.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslationWrapper
    *   The page title.
    */
-  public function getTitle($purger) {
-    if ($definition = $this->getDefinition($purger)) {
-      return $this->t('Configure @label', ['@label' => $definition['label']]);
+  public function configFormTitle($id) {
+    if ($definition = $this->getPurgerPluginDefinition($id)) {
+      if (isset($definition['configform']) && !empty($definition['configform'])) {
+        return $this->t('Configure @label', ['@label' => $definition['label']]);
+      }
     }
     return $this->t('Configure');
   }
 
   /**
-   * Render the correct purger configuration form.
+   * Render the purger delete form.
    *
-   * @param string $purger
-   *   The plugin_id of the purger plugin to render its configuration form for.
+   * @param string $id
+   *   Unique instance ID for the purger instance.
    *
    * @return array
-   *   The render array.
    */
-  public function getForm($purger) {
-    if ($definition = $this->getDefinition($purger)) {
-      return $this->formBuilder()->getForm($definition['configform']);
+  public function deleteForm($id) {
+    if (!($definition = $this->getPurgerPluginDefinition($id))) {
+      $definition = ['label' => ''];
     }
-    throw new NotFoundHttpException();
+    return $this->formBuilder()->getForm(
+      "\Drupal\purge_ui\Form\DeletePurgerForm",
+      [
+        'id' => $id,
+        'definition' => $definition
+      ]
+    );
+  }
+
+  /**
+   * Route title callback.
+   *
+   * @param string $id
+   *   Unique instance ID for the purger instance.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   *   The page title.
+   */
+  public function deleteFormTitle($id) {
+    if ($definition = $this->getPurgerPluginDefinition($id)) {
+      return $this->t('Delete @label', ['@label' => $definition['label']]);
+    }
+    return $this->t('Delete');
   }
 
 }

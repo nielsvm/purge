@@ -7,36 +7,23 @@
 
 namespace Drupal\purge_ui\Form;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
+use Drupal\purge_ui\Form\CloseDialogTrait;
 
 /**
  * Provides a base class for purger configuration forms.
  *
  * Derived forms will be rendered by purge_ui as modal dialogs from the purge
  * configuration page. For testing purposes, a dialogless variant of the form
- * can be found on /admin/config/development/performance/purge/PLUGINID.
+ * can be found on /admin/config/development/performance/purge/purger/ID.
  */
 abstract class PurgerConfigFormBase extends ConfigFormBase {
-
-  /**
-   * Respond a CloseModalDialogCommand to close the modal dialog.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return \Drupal\Core\Ajax\AjaxResponse
-   */
-  public function closeDialog(array &$form, FormStateInterface $form_state) {
-    $response = new AjaxResponse();
-    $response->addCommand(new CloseModalDialogCommand());
-    return $response;
-  }
+  use CloseDialogTrait;
 
   /**
    * Determine if this is a AJAX dialog request or not.
@@ -49,15 +36,27 @@ abstract class PurgerConfigFormBase extends ConfigFormBase {
    * @return bool
    */
   public function isDialog(array &$form, FormStateInterface $form_state) {
-    if (isset($form['#attached']['library'])) {
-      if (in_array('core/drupal.dialog.ajax', $form['#attached']['library'])) {
-        return TRUE;
-      }
-    }
-    if ($this->getRequest()->get('dialog', FALSE)) {
-      return TRUE;
-    }
-    return FALSE;
+    return $form_state->getBuildInfo()['args'][0]['dialog'];
+  }
+
+  /**
+   * Retrieve the unique instance ID for the purger being configured.
+   *
+   * Every purger has a unique instance identifier set by the purgers service,
+   * whether it is multi-instantiable or not. Plugins with 'multi_instance' set
+   * to TRUE in their annotations, are likely to require the use of this method
+   * to differentiate their purger instance (e.g. through configuration).
+   *
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @see \Drupal\purge\Purger\PluginInterface::getId()
+   *
+   * @return string
+   *   The unique identifier for this purger instance.
+   */
+  public function getId(FormStateInterface $form_state) {
+    return $form_state->getBuildInfo()['args'][0]['id'];
   }
 
   /**

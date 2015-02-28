@@ -8,6 +8,7 @@ namespace Drupal\purge_ui\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Serialization\Json;
+use Drupal\Component\Utility\String;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -85,7 +86,7 @@ class PurgeConfigForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['info'] = [
       '#type' => 'item',
-      '#markup' => 'Changes made to content & configuration triggers cache tag invalidations, which cause invalidation instructions.',
+      '#markup' => $this->t('Changes made to content & configuration triggers cache tag invalidations, which cause invalidation instructions.'),
     ];
 
     $this->buildFormDiagnosticReport($form, $form_state);
@@ -167,70 +168,89 @@ class PurgeConfigForm extends ConfigFormBase {
    * @return void
    */
   protected function buildFormPurgers(array &$form, FormStateInterface $form_state) {
+    $all = $this->purgePurgers->getPlugins();
+    $available = $this->purgePurgers->getPluginsAvailable();
+    $enabled = $this->purgePurgers->getPluginsEnabled();
+    unset($enabled['null']);
+
+    // Include the ajax library as we'll need it.
     $form['#attached']['library'][] = 'core/drupal.ajax';
-    $form['purger'] = [
-      '#description' => '<p>' . $this->t('Purgers invalidate external caches.<p/>') . '</p>',
+    $form['purgers'] = [
+      '#description' => '<p>' . $this->t('Purgers invalidate external caches, which third-party modules provide.') . '</p>',
       '#type' => 'details',
       '#title' => $this->t('Purger'),
       '#open' => TRUE,
     ];
 
-    // Define the base table that we are going to build and return.
-    $form['purger']['purger_plugins'] = [
-      '#empty' => $this->t("You do not have any third-party modules installed that provide purgers. Please install the appropriate module that provides a purger for your external cache system."),
-      '#type' => 'tableselect',
-      '#default_value' => [],
-      '#responsive' => TRUE,
-      '#multiple' => TRUE,
-      '#options' => [],
-      '#header' => [
-        'label' => $this->t('Purger'),
-        'description' => [
-          'data' => $this->t('Description'),
-          'class' => array('description', 'priority-low'),
+    // Anonymous functions to take the pain out of generating modal dialogs.
+    $dialog = function($title, $url, $width = '70%') {
+      return [
+        'title' => $title,
+        'url' => $url,
+        'attributes' => [
+          'class' => ['use-ajax'],
+          'data-accepts' => 'application/vnd.drupal-modal',
+          'data-dialog-options' => Json::encode(['width' => $width]),
         ],
-        'operations' => $this->t('Operations')
+      ];
+    };
+    $add_delete_link = function(&$links, $id, $definition) use ($dialog) {
+      $links['delete'] = $dialog($this->t("Remove"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]), '40%');
+    };
+    $add_configure_link = function(&$links, $id, $definition) use ($dialog) {
+      if (isset($definition['configform']) && !empty($definition['configform'])) {
+        $url = Url::fromRoute('purge_ui.purger_config_dialog_form', ['id' => $id]);
+        $links['configure'] = $dialog($this->t("Configure"), $url);
+      }
+    };
+
+    // Define the table and add all enabled plugins.
+    $form['purgers']['table'] = [
+      '#type' => 'table',
+      '#responsive' => TRUE,
+      '#header' => [
+        'label' => ['data' => $this->t('Purger')],
+        'id' => ['data' => $this->t('Instance ID'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
+        'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
+        'link1' => ['style' => 'min-width: 3em;', 'data' => ' '],
+        'link2' => ['style' => 'min-width: 3em;', 'data' => ' '],
       ],
     ];
 
-    // Check the purgers that are already enabled.
-    foreach($this->purgePurgers->getPluginsEnabled() as $plugin_id) {
-      $form['purger']['purger_plugins']['#default_value'][$plugin_id] = TRUE;
+    foreach($enabled as $id => $plugin_id) {
+      $form['purgers']['table']['#rows'][$id] = [
+        'id' => $id,
+        'data' => [
+          'label' => ['data' => ['#markup' => $all[$plugin_id]['label']]],
+          'id' => ['data' => ['#markup' => String::checkPlain($id)]],
+          'description' => ['data' => ['#markup' => $all[$plugin_id]['description']]],
+          'link1' => ['data' => ['#type' => 'dropbutton', '#links' => []]],
+          'link2' => ['data' => ['#type' => 'dropbutton', '#links' => []]],
+        ],
+      ];
+      $add_configure_link($form['purgers']['table']['#rows'][$id]['data']['link1']['data']['#links'], $id, $all[$plugin_id]);
+      $add_delete_link($form['purgers']['table']['#rows'][$id]['data']['link2']['data']['#links'], $id, $all[$plugin_id]);
     }
 
-    // LAMBDA: Build a configuration link given the plugin definition.
-    $link = function($definition) {
-      if (isset($definition['configform']) && !empty($definition['configform'])) {
-        return [
-          'configure' => [
-            'title' => $this->t("Configure"),
-            'url' => Url::fromRoute(
-              'purge_ui.purger_form',
-              ['purger' => $definition['id']],
-              ['query' => ['dialog' => '1']]
-            ),
-            'attributes' => [
-              'class' => ['use-ajax'],
-              'data-accepts' => 'application/vnd.drupal-modal',
-              'data-dialog-options' => Json::encode(['width' => '70%']),
-            ],
-          ]
-        ];
+    // Add the footer of the table with empty message and "Add purger" button.
+    $emptycel = ['#markup' => '&nbsp;'];
+    $emptyrow = ['no_striping' => TRUE, 'data' => [['data' => $emptycel, 'colspan' => 5]]];
+    if (empty($enabled)) {
+      $form['purgers']['table']['#rows'][] = $emptyrow;
+    }
+    if (count($available)) {
+      $addlink = ['#type' => 'dropbutton', '#links' => [$dialog($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'), '40%')]];
+      if (!empty($enabled)) {
+        $form['purgers']['table']['#rows'][] = $emptyrow;
       }
-      return [];
-    };
-
-    // Define a row for each purger and add the other columns.
-    foreach ($this->purgePurgers->getPlugins() as $plugin_id => $definition) {
-      $form['purger']['purger_plugins']['#options'][$plugin_id] = [
-        'label' => $definition['label'],
-        'description' => $definition['description'],
-        'operations' => [
-          'data' => [
-            '#type' => 'operations',
-            '#links' => $link($definition),
-          ]
-        ]
+      $form['purgers']['table']['#rows'][] = [
+        'data' => [
+          'label' => ['data' => $emptycel],
+          'id' => ['data' => $emptycel],
+          'description' => ['data' => $emptycel],
+          'link1' => ['data' => $emptycel],
+          'link2' => ['data' => $addlink],
+        ],
       ];
     }
   }
@@ -240,7 +260,6 @@ class PurgeConfigForm extends ConfigFormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $this->validateFormQueue($form, $form_state);
-    $this->validateFormPurgers($form, $form_state);
     parent::validateForm($form, $form_state);
   }
 
@@ -278,12 +297,6 @@ class PurgeConfigForm extends ConfigFormBase {
     if (!$form_state->hasValue('purger_plugins')) {
       $form_state->setError($form['purger']['purger_plugins'], $this->t('Value missing.'));
     }
-    $plugins = array_keys($this->purgePurgers->getPlugins());
-    foreach ($form_state->getValue('purger_plugins') as $plugin_id => $checked) {
-      if (!in_array($plugin_id, $plugins)) {
-        $form_state->setError($form['purger']['purger_plugins'], $this->t('Invalid input.'));
-      }
-    }
   }
 
   /**
@@ -291,7 +304,6 @@ class PurgeConfigForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->submitFormQueue($form, $form_state);
-    $this->submitFormPurgers($form, $form_state);
     parent::submitForm($form, $form_state);
   }
 
@@ -307,26 +319,6 @@ class PurgeConfigForm extends ConfigFormBase {
    */
   protected function submitFormQueue(array &$form, FormStateInterface $form_state) {
     $this->purgeQueue->setPluginsEnabled([$form_state->getValue('queue_plugin')]);
-  }
-
-  /**
-   * Store the purgers form submission values into configuration.
-   *
-   * @param array &$form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return void
-   */
-  protected function submitFormPurgers(array &$form, FormStateInterface $form_state) {
-    $purgers = [];
-    foreach ($form_state->getValue('purger_plugins') as $plugin_id => $checked) {
-      if ($checked) {
-        $purgers[] = $plugin_id;
-      }
-    }
-    $this->purgePurgers->setPluginsEnabled($purgers);
   }
 
 }

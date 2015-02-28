@@ -77,16 +77,20 @@ class AddPurgerForm extends ConfigFormBase {
       if (!in_array($plugin_id, $available)) {
         unset($plugins[$plugin_id]);
       }
-      $plugins[$plugin_id] = $definition['label'];
+      else {
+        $plugins[$plugin_id] = $definition['label'];
+      }
     }
     $form['plugin_id'] = [
-      '#type' => 'radios',
+      '#access' => count($plugins),
       '#default_value' => count($plugins) ? key($plugins) : NULL,
+      '#type' => 'radios',
       '#options' => $plugins
     ];
 
     // Update the buttons and bind callbacks.
     $form['actions']['submit'] = [
+      '#access' => count($plugins),
       '#type' => 'submit',
       '#button_type' => 'primary',
       '#value' => $this->t("Add"),

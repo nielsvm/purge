@@ -17,6 +17,19 @@ use Drupal\purge\Purger\PurgerLookalikeInterface;
 interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInterface, PurgerLookalikeInterface {
 
   /**
+   * Retrieve the plugin_ids of purgers that can be enabled.
+   *
+   * This method takes into account that purger plugins that are not
+   * multi-instantiable, can only be loaded once and are no longer available if
+   * they are already available. Plugins that are multi-instantiable, will
+   * always be listed.
+   *
+   * @return string[]
+   *   Array with the plugin_ids of the plugins that can be enabled.
+   */
+  public function getPluginsAvailable();
+
+  /**
    * Disable the given purger plugin instances.
    *
    * Just before, it calls \Drupal\purge\Purger\PluginInterface::delete()

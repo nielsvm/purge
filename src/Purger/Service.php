@@ -149,6 +149,25 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * {@inheritdoc}
    */
+  public function getPluginsAvailable() {
+    $enabled = $this->getPluginsEnabled();
+    $available = [];
+    foreach ($this->getPlugins() as $plugin_id => $definition) {
+      if ($definition['multi_instance']) {
+        $available[] = $plugin_id;
+      }
+      else {
+        if (!in_array($plugin_id, $enabled)) {
+          $available[] = $plugin_id;
+        }
+      }
+    }
+    return $available;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function setPluginsEnabled(array $plugin_ids) {
     static::setPluginsStatic($plugin_ids, $this->pluginManager, $this->configFactory);
     $this->reload();
@@ -158,6 +177,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public static function setPluginsStatic(array $plugin_ids, PluginManagerInterface $plugin_manager = NULL, ConfigFactoryInterface $config_factory = NULL) {
+    unset($plugin_ids[SELF::FALLBACK_PLUGIN]);
     if (is_null($plugin_manager)) {
       $plugin_manager = \Drupal::service('plugin.manager.purge.purgers');
     }

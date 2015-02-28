@@ -44,8 +44,9 @@ class ConfigurationFormTest extends WebTestBase {
   public function setUp() {
     parent::setUp();
     $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
+    $this->initializePurgersService(['testid' => 'http']);
     if (is_string($this->route)) {
-      $this->route = Url::fromRoute($this->route, ['purger' => 'http']);
+      $this->route = Url::fromRoute($this->route, ['id' => 'testid']);
       $this->route->setAbsolute(FALSE);
     }
   }

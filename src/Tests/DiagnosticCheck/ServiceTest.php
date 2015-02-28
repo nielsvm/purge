@@ -157,7 +157,7 @@ class ServiceTest extends KernelServiceTestBase {
    * Tests \Drupal\purge\DiagnosticCheck\Service::isSystemOnFire.
    */
   public function testIsSystemOnFire() {
-    $this->initializePurgersService(['purger_a']);
+    $this->initializePurgersService(['ida' => 'purger_a']);
     $this->service->reload();
     $this->assertTrue($this->service->isSystemOnFire() instanceof Check);
     $this->assertEqual('alwayserror', $this->service->isSystemOnFire()->getPluginId());
@@ -168,7 +168,8 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testIsSystemShowingSmoke() {
     $this->assertTrue($this->service->isSystemShowingSmoke() instanceof Check);
-    $this->assertEqual('alwayswarning', $this->service->isSystemShowingSmoke()->getPluginId());
+    $possibilities = ['alwayswarning', 'capacity'];
+    $this->assertTrue(in_array($this->service->isSystemShowingSmoke()->getPluginId(), $possibilities));
   }
 
 }

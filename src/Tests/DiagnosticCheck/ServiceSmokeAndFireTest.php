@@ -26,7 +26,7 @@ class ServiceSmokeAndFireTest extends KernelServiceTestBase {
    *   - \Drupal\purge\DiagnosticCheck\Service::isSystemShowingSmoke()
    */
   public function testIsSystemOnFireOrShowingSmoke() {
-    $this->initializePurgersService(['purger_a']);
+    $this->initializePurgersService(['ida' => 'purger_a']);
     $this->initializeService();
     $this->assertFalse(is_object($this->service->isSystemOnFire()));
     if ($this->assertTrue(is_bool($this->service->isSystemOnFire()))) {

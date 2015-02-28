@@ -8,6 +8,7 @@
 namespace Drupal\purge_purger_http\Plugin\PurgePurger;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\Purger\PluginBase;

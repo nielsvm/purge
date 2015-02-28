@@ -53,18 +53,13 @@ trait TestTrait {
    */
   protected function initializePurgersService($plugin_ids = []) {
     if (!empty($plugin_ids)) {
-      if (is_null($this->purgePurgers)) {
-        PurgersService::setPluginsStatic($plugin_ids);
-        $this->purgePurgers = $this->container->get('purge.purgers');
-      }
-      else {
-        $this->purgePurgers->setPluginsEnabled($plugin_ids);
-      }
+      PurgersService::setPluginsStatic($plugin_ids);
     }
     if (is_null($this->purgePurgers)) {
       $this->purgePurgers = $this->container->get('purge.purgers');
     }
     else {
+      $this->purgePurgers->reload();
       if (!is_null($this->purgeDiagnostics)) {
         $this->purgeDiagnostics->reload();
       }

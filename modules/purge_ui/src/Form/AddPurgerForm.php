@@ -71,14 +71,18 @@ class AddPurgerForm extends ConfigFormBase {
     $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
 
     // Provide all plugins that can be added.
+    $available = $this->purgePurgers->getPluginsAvailable();
     $plugins = $this->purgePurgers->getPlugins();
-    foreach ($this->purgePurgers->getPluginsAvailable() as $plugin_id) {
-      $options[$plugin_id] = $plugins[$plugin_id]['label'];
+    foreach ($plugins as $plugin_id => $definition) {
+      if (!in_array($plugin_id, $available)) {
+        unset($plugins[$plugin_id]);
+      }
+      $plugins[$plugin_id] = $definition['label'];
     }
     $form['plugin_id'] = [
       '#type' => 'radios',
-      '#default_value' => key($options),
-      '#options' => $options
+      '#default_value' => count($plugins) ? key($plugins) : NULL,
+      '#options' => $plugins
     ];
 
     // Update the buttons and bind callbacks.

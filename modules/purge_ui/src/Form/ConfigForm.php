@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains \Drupal\purge_ui\Form\PurgeConfigForm.
+ * Contains \Drupal\purge_ui\Form\ConfigForm.
  */
 
 namespace Drupal\purge_ui\Form;
@@ -19,7 +19,7 @@ use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 /**
  * Configure the Purge pipeline for this site.
  */
-class PurgeConfigForm extends ConfigFormBase {
+class ConfigForm extends ConfigFormBase {
 
   /**
    * Diagnostics service that reports any preliminary issues regarding purge.

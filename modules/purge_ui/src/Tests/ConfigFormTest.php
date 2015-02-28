@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\PurgeConfigFormTest.
+ * Contains \Drupal\purge_ui\Tests\ConfigFormTest.
  */
 
 namespace Drupal\purge_ui\Tests;
@@ -11,11 +11,11 @@ use Drupal\Core\Url;
 use Drupal\purge\Tests\WebTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Form\PurgeConfigForm.
+ * Tests \Drupal\purge_ui\Form\ConfigForm.
  *
  * @group purge
  */
-class PurgeConfigFormTest extends WebTestBase {
+class ConfigFormTest extends WebTestBase {
 
   /**
    * @var \Drupal\user\Entity\User
@@ -104,7 +104,7 @@ class PurgeConfigFormTest extends WebTestBase {
   /**
    * Test the visual status report on the configuration form.
    *
-   * @see \Drupal\purge_ui\Form\PurgeConfigForm::buildFormDiagnosticReport
+   * @see \Drupal\purge_ui\Form\ConfigForm::buildFormDiagnosticReport
    */
   public function testFormDiagnosticReport() {
     $this->drupalLogin($this->admin_user);
@@ -124,9 +124,9 @@ class PurgeConfigFormTest extends WebTestBase {
   /**
    * Test the queue section of the configuration form.
    *
-   * @see \Drupal\purge_ui\Form\PurgeConfigForm::buildFormQueue
-   * @see \Drupal\purge_ui\Form\PurgeConfigForm::validateFormQueue
-   * @see \Drupal\purge_ui\Form\PurgeConfigForm::submitFormQueue
+   * @see \Drupal\purge_ui\Form\ConfigForm::buildFormQueue
+   * @see \Drupal\purge_ui\Form\ConfigForm::validateFormQueue
+   * @see \Drupal\purge_ui\Form\ConfigForm::submitFormQueue
    */
   public function testFormQueueSection() {
     $this->initializeQueueService();
@@ -147,13 +147,13 @@ class PurgeConfigFormTest extends WebTestBase {
     $this->purgeQueue->reload();
     $this->assertEqual(['queue_b'], $this->purgeQueue->getPluginsEnabled());
 
-    // @todo test \Drupal\purge_ui\Form\PurgeConfigForm::validateFormQueue.
+    // @todo test \Drupal\purge_ui\Form\ConfigForm::validateFormQueue.
   }
 
   /**
    * Test the queue section of the configuration form.
    *
-   * @see \Drupal\purge_ui\Form\PurgeConfigForm::buildFormPurgers
+   * @see \Drupal\purge_ui\Form\ConfigForm::buildFormPurgers
    */
   public function testFormPurgersSection() {
     $this->initializePurgersService();

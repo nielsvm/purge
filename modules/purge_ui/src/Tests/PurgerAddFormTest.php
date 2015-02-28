@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\AddPurgerFormTest.
+ * Contains \Drupal\purge_ui\Tests\PurgerAddFormTest.
  */
 
 namespace Drupal\purge_ui\Tests;
@@ -11,11 +11,11 @@ use Drupal\Core\Url;
 use Drupal\purge\Tests\WebTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Form\AddPurgerForm.
+ * Tests \Drupal\purge_ui\Form\PurgerAddForm.
  *
  * @group purge
  */
-class AddPurgerFormTest extends WebTestBase {
+class PurgerAddFormTest extends WebTestBase {
 
   /**
    * @var \Drupal\user\Entity\User

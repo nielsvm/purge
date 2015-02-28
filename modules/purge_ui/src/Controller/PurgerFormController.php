@@ -116,7 +116,7 @@ class PurgerFormController extends ControllerBase {
       $definition = ['label' => ''];
     }
     return $this->formBuilder()->getForm(
-      "\Drupal\purge_ui\Form\DeletePurgerForm",
+      "\Drupal\purge_ui\Form\PurgerDeleteForm",
       [
         'id' => $id,
         'definition' => $definition

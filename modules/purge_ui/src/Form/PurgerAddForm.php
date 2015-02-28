@@ -2,39 +2,26 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Form\DeletePurgerForm.
+ * Contains \Drupal\purge_ui\Form\PurgerAddForm.
  */
 
 namespace Drupal\purge_ui\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\ConfirmFormBase;
+use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
-use Drupal\Core\Ajax\RemoveCommand;
+use Drupal\Core\Ajax\RedirectCommand;
 use Drupal\purge\Purger\ServiceInterface;
 use Drupal\purge_ui\Form\CloseDialogTrait;
 
 /**
- * Delete the {id} purger instance.
+ * Add a new instance of a purger plugin to purge.
  */
-class DeletePurgerForm extends ConfirmFormBase {
+class PurgerAddForm extends ConfigFormBase {
   use CloseDialogTrait;
-
-  /**
-   * Unique instance ID for the purger being deleted.
-   *
-   * @var string
-   */
-  protected $id;
-
-  /**
-   * The plugin definition for the purger being deleted.
-   *
-   * @var array
-   */
-  protected $definition;
 
   /**
    * The purge executive service, which wipes content from external caches.
@@ -44,7 +31,7 @@ class DeletePurgerForm extends ConfirmFormBase {
   protected $purgePurgers;
 
   /**
-   * Constructs a DeletePurgerForm object.
+   * Constructs a AddPurgerForm object.
    *
    * @param \Drupal\purge\Purger\ServiceInterface $purge_purgers
    *   The purger service.
@@ -73,30 +60,45 @@ class DeletePurgerForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getFormID() {
-    return 'purge_ui.purger_delete_form';
+    return 'purge_ui.purger_add_form';
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $this->id = $form_state->getBuildInfo()['args'][0]['id'];
-    $this->definition = $form_state->getBuildInfo()['args'][0]['definition'];
     $form = parent::buildForm($form, $form_state);
-
-    // This is rendered as a modal dialog, so we need to set some extras.
     $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
+
+    // Provide all plugins that can be added.
+    $available = $this->purgePurgers->getPluginsAvailable();
+    $plugins = $this->purgePurgers->getPlugins();
+    foreach ($plugins as $plugin_id => $definition) {
+      if (!in_array($plugin_id, $available)) {
+        unset($plugins[$plugin_id]);
+      }
+      else {
+        $plugins[$plugin_id] = $definition['label'];
+      }
+    }
+    $form['plugin_id'] = [
+      '#access' => count($plugins),
+      '#default_value' => count($plugins) ? key($plugins) : NULL,
+      '#type' => 'radios',
+      '#options' => $plugins
+    ];
 
     // Update the buttons and bind callbacks.
     $form['actions']['submit'] = [
+      '#access' => count($plugins),
       '#type' => 'submit',
       '#button_type' => 'primary',
-      '#value' => $this->getConfirmText(),
-      '#ajax' => ['callback' => '::deletePurger']
+      '#value' => $this->t("Add"),
+      '#ajax' => ['callback' => '::addPurger']
     ];
     $form['actions']['cancel'] = [
       '#type' => 'submit',
-      '#value' => $this->t('No'),
+      '#value' => $this->t('Cancel'),
       '#weight' => -10,
       '#ajax' => ['callback' => '::closeDialog']
     ];
@@ -104,33 +106,7 @@ class DeletePurgerForm extends ConfirmFormBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getConfirmText() {
-    return $this->t('Yes, remove this purger!');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getQuestion() {
-    return $this->t('Are you sure you want to remove @label?', ['@label' => $this->definition['label']]);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCancelUrl() {
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function submitForm(array &$form, FormStateInterface $form_state) {}
-
-  /**
-   * Delete the purger.
+   * Add the purger.
    *
    * @param array $form
    *   An associative array containing the structure of the form.
@@ -139,12 +115,16 @@ class DeletePurgerForm extends ConfirmFormBase {
    *
    * @return \Drupal\Core\Ajax\AjaxResponse
    */
-  public function deletePurger(array &$form, FormStateInterface $form_state) {
+  public function addPurger(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
+    $enabled = $this->purgePurgers->getPluginsEnabled();
+    $plugin_id = $form_state->getValue('plugin_id');
     $response->addCommand(new CloseModalDialogCommand());
-    $response->addCommand(new RemoveCommand('#' . $this->id));
-    if (isset($this->purgePurgers->getPluginsEnabled()[$this->id])) {
-      $this->purgePurgers->deletePluginsEnabled([$this->id]);
+    if (in_array($plugin_id, $this->purgePurgers->getPluginsAvailable())) {
+      $enabled[$this->purgePurgers->createId()] = $plugin_id;
+      $this->purgePurgers->setPluginsEnabled($enabled);
+      $options = ['fragment' => 'edit-purgers', 'query' => ['unique' => time()]];
+      $response->addCommand(new RedirectCommand((string) Url::fromRoute('purge_ui.config_form', [], $options)));
     }
     return $response;
   }

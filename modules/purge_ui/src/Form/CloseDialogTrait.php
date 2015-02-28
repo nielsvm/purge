@@ -14,7 +14,7 @@ use Drupal\Core\Ajax\CloseModalDialogCommand;
 /**
  * Shares the closeDialog AJAX form callback.
  *
- * @see \Drupal\purge_ui\Form\AddPurgerForm
+ * @see \Drupal\purge_ui\Form\PurgerAddForm
  * @see \Drupal\purge_ui\Form\DeletePurgerForm
  * @see \Drupal\purge_ui\Form\PurgerConfigFormBase
  */

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\PurgeStatusReportTest.
+ * Contains \Drupal\purge_ui\Tests\StatusReportTest.
  */
 
 namespace Drupal\purge_ui\Tests;
@@ -17,7 +17,7 @@ use Drupal\simpletest\WebTestBase;
  * @see purge_ui_requirements()
  * @see \Drupal\purge\DiagnosticCheck\ServiceInterface
  */
-class PurgeStatusReportTest extends WebTestBase {
+class StatusReportTest extends WebTestBase {
 
   /**
    * @var \Drupal\purge\DiagnosticCheck\ServiceInterface
@@ -64,5 +64,5 @@ class PurgeStatusReportTest extends WebTestBase {
     $this->assertText('Purge - Always an error');
     $this->assertText('This is an error for testing.');
   }
-  
+
 }

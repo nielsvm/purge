@@ -25,7 +25,7 @@ class PurgerAddFormTest extends WebTestBase {
   /**
    * The route that renders the form.
    *
-   * @var string
+   * @var string|\Drupal\Core\Url
    */
   protected $route = 'purge_ui.purger_add_form';
 

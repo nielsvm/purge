@@ -18,9 +18,10 @@ use Drupal\purge_ui\Form\CloseDialogTrait;
 /**
  * Provides a base class for purger configuration forms.
  *
- * Derived forms will be rendered by purge_ui as modal dialogs from the purge
- * configuration page. For testing purposes, a dialogless variant of the form
- * can be found on /admin/config/development/performance/purge/purger/ID.
+ * Derived forms will be rendered by purge_ui as modal dialogs through links
+ * pointing at /admin/config/development/performance/purge/purger/ID/dialog. You
+ * can use /admin/config/development/performance/purge/purger/ID as testing
+ * variant that works outside of the modal dialog.
  */
 abstract class PurgerConfigFormBase extends ConfigFormBase {
   use CloseDialogTrait;

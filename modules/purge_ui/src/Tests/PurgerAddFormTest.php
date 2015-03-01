@@ -68,6 +68,7 @@ class PurgerAddFormTest extends WebTestBase {
     $this->initializePurgersService();
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->route);
+    $this->assertRaw(t('Add'));
     $this->assertEqual(['null' => 'null'], $this->purgePurgers->getPluginsEnabled());
     $json = $this->drupalPostAjaxForm($this->route, ['plugin_id' => 'purger_c'], ['op' => t('Add')]);
     $this->assertEqual('closeDialog', $json[0]['command']);
@@ -86,6 +87,7 @@ class PurgerAddFormTest extends WebTestBase {
   public function testCancel() {
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->route);
+    $this->assertRaw(t('Cancel'));
     $json = $this->drupalPostAjaxForm($this->route, [], ['op' => t('Cancel')]);
     $this->assertEqual('closeDialog', $json[0]['command']);
     $this->assertEqual(1, count($json));

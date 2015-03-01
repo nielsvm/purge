@@ -142,8 +142,8 @@ class PurgerDeleteForm extends ConfirmFormBase {
   public function deletePurger(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
     $response->addCommand(new CloseModalDialogCommand());
-    $response->addCommand(new RemoveCommand('#' . $this->id));
     if (isset($this->purgePurgers->getPluginsEnabled()[$this->id])) {
+      $response->addCommand(new RemoveCommand('#' . $this->id));
       $this->purgePurgers->deletePluginsEnabled([$this->id]);
     }
     return $response;

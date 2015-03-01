@@ -61,7 +61,7 @@ class PurgerConfigFormTest extends WebTestBase {
   protected $urlValidDialog = NULL;
 
   /**
-   * The URL object constructed from $this->route -invalid argument.
+   * The URL object constructed from $this->route - invalid argument.
    *
    * @var \Drupal\Core\Url
    */
@@ -79,9 +79,10 @@ class PurgerConfigFormTest extends WebTestBase {
    */
   function setUp() {
     parent::setUp();
-    $this->urlValid = Url::fromRoute($this->route, ['purger' => $this->purger]);
-    $this->urlValidDialog = Url::fromRoute($this->route_dialog, ['purger' => $this->purger], ['query' => ['dialog' => '1']]);
-    $this->urlInvalid = Url::fromRoute($this->route, ['purger' => 'nonexistent']);
+    $this->initializePurgersService(['bad' => 'purger_c', 'good' => $this->purger]);
+    $this->urlValid = Url::fromRoute($this->route, ['id' => 'good']);
+    $this->urlValidDialog = Url::fromRoute($this->route_dialog, ['id' => 'good']);
+    $this->urlInvalid = Url::fromRoute($this->route, ['id' => 'bad']);
     $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
   }
 
@@ -109,8 +110,8 @@ class PurgerConfigFormTest extends WebTestBase {
   public function testValidForm() {
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->urlValid);
-    $this->assertNoFieldById('edit-cancel');
-    $this->assertFieldById('edit-submit');
+    $this->assertRaw(t('Save configuration'));
+    $this->assertNoRaw(t('Cancel'));
     $this->assertFieldByName('textfield');
   }
 
@@ -123,9 +124,12 @@ class PurgerConfigFormTest extends WebTestBase {
   public function testValidDialogForm() {
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->urlValidDialog);
-    $this->assertFieldById('edit-cancel');
-    $this->assertFieldById('edit-submit');
+    $this->assertRaw(t('Save configuration'));
+    $this->assertRaw(t('Cancel'));
     $this->assertFieldByName('textfield');
+    $json = $this->drupalPostAjaxForm($this->urlValidDialog, [], ['op' => t('Cancel')]);
+    $this->assertEqual('closeDialog', $json[0]['command']);
+    $this->assertEqual(1, count($json));
   }
 
 }

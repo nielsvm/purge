@@ -284,22 +284,6 @@ class ConfigForm extends ConfigFormBase {
   }
 
   /**
-   * Validate the purgers form values.
-   *
-   * @param array &$form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return void
-   */
-  protected function validateFormPurgers(array &$form, FormStateInterface $form_state) {
-    if (!$form_state->hasValue('purger_plugins')) {
-      $form_state->setError($form['purger']['purger_plugins'], $this->t('Value missing.'));
-    }
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {

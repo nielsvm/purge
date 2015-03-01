@@ -23,18 +23,11 @@ class ConfigFormTest extends WebTestBase {
   protected $admin_user;
 
   /**
-   * The route providing purge's configuration form.
+   * Route providing the main configuration form of the purge module.
    *
-   * @var string
+   * @var string|\Drupal\Core\Url
    */
-  protected $configRoute = 'purge_ui.config_form';
-
-  /**
-   * The URL object constructed from $this->configRoute.
-   *
-   * @var \Drupal\Core\Url
-   */
-  protected $configUrl = NULL;
+  protected $route = 'purge_ui.config_form';
 
   /**
    * Modules to enable.
@@ -56,8 +49,10 @@ class ConfigFormTest extends WebTestBase {
    */
   function setUp() {
     parent::setUp();
-    $this->configUrl = Url::fromRoute($this->configRoute);
     $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
+    if (is_string($this->route)) {
+      $this->route = Url::fromRoute($this->route);
+    }
   }
 
   /**
@@ -89,16 +84,13 @@ class ConfigFormTest extends WebTestBase {
    * Test if the form is at its place and has the right permissions.
    */
   public function testFormAccess() {
-    $this->drupalGet($this->configUrl);
+    $this->drupalGet($this->route);
     $this->assertResponse(403);
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet($this->configUrl);
+    $this->drupalGet($this->route);
     $this->assertResponse(200);
     $this->drupalGet(Url::fromRoute('system.performance_settings'));
-    $this->assertLocalTasks([
-      ['system.performance_settings', []],
-      [$this->configRoute, []],
-    ]);
+    $this->assertLocalTasks([['system.performance_settings', []], [$this->route->getRouteName(), []]]);
   }
 
   /**
@@ -108,7 +100,7 @@ class ConfigFormTest extends WebTestBase {
    */
   public function testFormDiagnosticReport() {
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet($this->configUrl);
+    $this->drupalGet($this->route);
     $this->assertRaw('edit-diagnostics');
     $this->assertRaw('system-status-report');
     $this->assertRaw('open="open"');
@@ -131,23 +123,18 @@ class ConfigFormTest extends WebTestBase {
   public function testFormQueueSection() {
     $this->initializeQueueService();
     $this->drupalLogin($this->admin_user);
-
     // Assert that the configured queue is selected on page load.
-    $this->drupalGet($this->configUrl);
+    $this->drupalGet($this->route);
     $this->assertFieldChecked('edit-queue-plugin-database');
-
     // Test that just submitting the form, results in the exact same config.
-    $this->drupalPostForm($this->configUrl, [], t('Save configuration'));
+    $this->drupalPostForm($this->route, [], t('Save configuration'));
     $this->purgeQueue->reload();
     $this->assertEqual(['database'], $this->purgeQueue->getPluginsEnabled());
-
     // Test that changing the queue plugin, gets reflected in the config.
     $edit = ['queue_plugin' => 'queue_b'];
-    $this->drupalPostForm($this->configUrl, $edit, t('Save configuration'));
+    $this->drupalPostForm($this->route, $edit, t('Save configuration'));
     $this->purgeQueue->reload();
     $this->assertEqual(['queue_b'], $this->purgeQueue->getPluginsEnabled());
-
-    // @todo test \Drupal\purge_ui\Form\ConfigForm::validateFormQueue.
   }
 
   /**
@@ -156,44 +143,32 @@ class ConfigFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\ConfigForm::buildFormPurgers
    */
   public function testFormPurgersSection() {
-    $this->initializePurgersService();
     $this->drupalLogin($this->admin_user);
-
-    // Assert that by default, none of the available test purgers are selected.
-    $this->drupalGet($this->configUrl);
-    $this->assertNoFieldChecked('edit-purger-plugins-purger-a');
-    $this->assertNoFieldChecked('edit-purger-plugins-purger-b');
-    $this->assertNoFieldChecked('edit-purger-plugins-purger-c');
-    $this->assertNoFieldChecked('edit-purger-plugins-purger-withform');
-
-    // Assert configuration buttons for purgers that defined a config form.
-    $this->assertNoLinkByHref('performance/purge/purger_a?dialog=1');
-    $this->assertNoLinkByHref('performance/purge/purger_b?dialog=1');
-    $this->assertNoLinkByHref('performance/purge/purger_c?dialog=1');
-    $this->assertLinkByHref('performance/purge/purger_withform?dialog=1');
-
-    // Test that just submitting the form, results in the exact same config.
-    $this->drupalPostForm($this->configUrl, [], t('Save configuration'));
-    $this->purgePurgers->reload();
-    $this->assertEqual(['null'], $this->purgePurgers->getPluginsEnabled());
-
-    // Test that configuring two purgers, results in correct config.
-    $edit = [
-      'purger_plugins[purger_a]' => TRUE,
-      'purger_plugins[purger_b]' => TRUE,
-      'purger_plugins[purger_c]' => FALSE,
-      'purger_plugins[purger_withform]' => FALSE,
-    ];
-    $this->drupalPostForm($this->configUrl, $edit, t('Save configuration'));
-    $this->purgePurgers->reload();
-    $this->assertEqual(['purger_a', 'purger_b'], $this->purgePurgers->getPluginsEnabled());
-
-    // Test that the configured purgers, are also selected on the form.
-    $this->drupalGet($this->configUrl);
-    $this->assertFieldChecked('edit-purger-plugins-purger-a');
-    $this->assertFieldChecked('edit-purger-plugins-purger-b');
-    $this->assertNoFieldChecked('edit-purger-plugins-purger-c');
-    $this->assertNoFieldChecked('edit-purger-plugins-purger-withform');
+    // Assert that without any enabled purgers, the form stays empty.
+    $this->initializePurgersService([]);
+    $this->drupalGet($this->route);
+    $this->assertNoRaw('<td>Purger A</td>');
+    $this->assertNoRaw('<td>Purger B</td>');
+    $this->assertNoRaw('<td>Purger C</td>');
+    $this->assertNoRaw('<td>Configurable purger</td>');
+    // Assert that enabled purgers show up and have the right buttons attached.
+    $this->initializePurgersService(['id1' => 'purger_a', 'id2' => 'purger_withform']);
+    $this->drupalGet($this->route);
+    $this->assertRaw('<td>Purger A</td>');
+    $this->assertRaw('<td class="priority-low">id1</td>');
+    $this->assertRaw('<td class="priority-low">Test purger A.</td>');
+    $this->assertNoRaw('href="/admin/config/development/performance/purge/purger/id1/dialog"');
+    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id1/delete"');
+    $this->assertRaw('<td>Configurable purger</td>');
+    $this->assertRaw('<td class="priority-low">id2</td>');
+    $this->assertRaw('<td class="priority-low">Test purger with a form attached.</td>');
+    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id2/dialog"');
+    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id2/delete"');
+    // Assert that the 'Add purger' button only shows up when it actually can.
+    $this->assertRaw(t('Add purger'));
+    $this->initializePurgersService(['id1' => 'purger_a', 'id2' => 'purger_b', 'id3' => 'purger_c', 'id4' => 'purger_withform']);
+    $this->drupalGet($this->route);
+    $this->assertNoRaw(t('Add purger'));
   }
 
 }

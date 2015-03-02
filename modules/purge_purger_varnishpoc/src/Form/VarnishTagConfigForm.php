@@ -9,6 +9,7 @@ namespace Drupal\purge_purger_varnishpoc\Form;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\purge_ui\Form\PurgerConfigFormBase;
+use Drupal\purge_purger_varnishpoc\Entity\VarnishTagPurgerSettings;
 
 /**
  * Configuration elements for the Varnish cache tags purger.
@@ -19,7 +20,7 @@ class VarnishTagConfigForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return ['purge_purger_varnishpoc.settings'];
+    return [];
   }
 
   /**
@@ -32,10 +33,10 @@ class VarnishTagConfigForm extends PurgerConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $id = NULL) {
-    $config = $this->config('purge_purger_varnishpoc.settings');
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $settings = VarnishTagPurgerSettings::load($this->getId($form_state));
 
-    // HTTP Settings.
+     // HTTP Settings.
     $form['http_settings'] = [
       '#title' => $this->t('HTTP Settings'),
       '#description' => $this->t('Configure how custom outbound HTTP requests should be formed.'),
@@ -46,14 +47,14 @@ class VarnishTagConfigForm extends PurgerConfigFormBase {
     $form['http_settings']['url'] = [
       '#type' => 'url',
       '#title' => $this->t('Varnish URL'),
-      '#default_value' => $config->get('url'),
+      '#default_value' => $settings->url,
       '#required' => TRUE,
       '#description' => $this->t('The URL of the Varnish instance to send <code>BAN</code> requests to.')
     ];
     $form['http_settings']['header'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Header'),
-      '#default_value' => $config->get('header'),
+      '#default_value' => $settings->header,
       '#required' => TRUE,
       '#description' => $this->t('The outbound HTTP header that identifies the tag to be purged.')
     ];
@@ -70,7 +71,7 @@ class VarnishTagConfigForm extends PurgerConfigFormBase {
       '#step' => 0.1,
       '#min' => 1,
       '#title' => $this->t('Timeout'),
-      '#default_value' => $config->get('timeout'),
+      '#default_value' => $settings->timeout,
       '#required' => TRUE,
       '#description' => $this->t('Float describing the timeout of the request in seconds.')
     ];
@@ -79,7 +80,7 @@ class VarnishTagConfigForm extends PurgerConfigFormBase {
       '#step' => 0.1,
       '#min' => 0.5,
       '#title' => $this->t('Connection timeout'),
-      '#default_value' => $config->get('connect_timeout'),
+      '#default_value' => $settings->connect_timeout,
       '#required' => TRUE,
       '#description' => $this->t('Float describing the number of seconds to wait while trying to connect to a server.')
     ];
@@ -89,7 +90,7 @@ class VarnishTagConfigForm extends PurgerConfigFormBase {
       '#min' => 1,
       '#max' => 500,
       '#title' => $this->t('Maximum requests'),
-      '#default_value' => $config->get('max_requests'),
+      '#default_value' => $settings->max_requests,
       '#required' => TRUE,
       '#description' => $this->t('Maximum number of HTTP requests that can be made during the runtime of one request (including CLI). The higher this number is set, the more - CLI based - scripts can process but this can also badly influence your end-user performance when using runtime-based queue processors.')
     ];
@@ -100,7 +101,7 @@ class VarnishTagConfigForm extends PurgerConfigFormBase {
       '#max' => 0.90,
       '#field_suffix' => '%',
       '#title' => $this->t('Execution time consumption'),
-      '#default_value' => $config->get('execution_time_consumption'),
+      '#default_value' => $settings->execution_time_consumption,
       '#required' => TRUE,
       '#description' => $this->t("Percentage of PHP's maximum execution time that can be allocated to processing. When PHP's setting is set to 0 (e.g. on CLI), the max requests setting will be used for capacity limiting. Whenever you notice Drupal requests timing out, lower this percentage.")
     ];
@@ -121,14 +122,14 @@ class VarnishTagConfigForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->config('purge_purger_varnishpoc.settings')
-      ->set('url', $form_state->getValue('url'))
-      ->set('header', $form_state->getValue('header'))
-      ->set('timeout', $form_state->getValue('timeout'))
-      ->set('connect_timeout', $form_state->getValue('connect_timeout'))
-      ->set('max_requests', $form_state->getValue('max_requests'))
-      ->set('execution_time_consumption', $form_state->getValue('execution_time_consumption'))
-      ->save();
+    $settings = VarnishTagPurgerSettings::load($this->getId($form_state));
+    $settings->url = $form_state->getValue('url');
+    $settings->header = $form_state->getValue('header');
+    $settings->timeout = $form_state->getValue('timeout');
+    $settings->connect_timeout = $form_state->getValue('connect_timeout');
+    $settings->max_requests = $form_state->getValue('max_requests');
+    $settings->execution_time_consumption = $form_state->getValue('execution_time_consumption');
+    $settings->save();
     return parent::submitForm($form, $form_state);
   }
 

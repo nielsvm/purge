@@ -11,11 +11,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\Plugin\PurgeInvalidation\Tag;
 use Drupal\purge\Purger\PluginBase;
 use Drupal\purge\Purger\PluginInterface;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge_purger_varnishpoc\Entity\VarnishTagPurgerSettings;
 
 /**
  * Varnish cache tags purger.
@@ -45,11 +45,11 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
   protected $client;
 
   /**
-   * The ImmutableConfig object 'purge_purger_varnishpoc.settings'.
+   * The settings entity holding all configuration.
    *
-   * @var \Drupal\Core\Config\ImmutableConfig
+   * @var \Drupal\purge_purger_varnishpoc\Entity\VarnishTagPurgerSettings
    */
-  protected $config;
+  protected $settings;
 
   /**
    * Constructs the Varnish purger.
@@ -62,13 +62,11 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
    *   The plugin implementation definition.
    * @param \GuzzleHttp\ClientInterface $http_client
    *   An HTTP client that can perform remote requests.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The configuration factory.
    */
-  function __construct(array $configuration, $plugin_id, $plugin_definition, ClientInterface $http_client, ConfigFactoryInterface $config_factory) {
+  function __construct(array $configuration, $plugin_id, $plugin_definition, ClientInterface $http_client) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->client = $http_client;
-    $this->config = $config_factory->get('purge_purger_varnishpoc.settings');
+    $this->settings = VarnishTagPurgerSettings::load($this->getId());
   }
 
   /**
@@ -79,15 +77,16 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('http_client'),
-      $container->get('config.factory')
+      $container->get('http_client')
     );
   }
 
   /**
    * {@inheritdoc}
    */
-  public function delete() {}
+  public function delete() {
+    VarnishTagPurgerSettings::load($this->getId())->delete();
+  }
 
   /**
    * {@inheritdoc}
@@ -109,7 +108,7 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
     }
 
     // When the URL setting is still empty, we also fail.
-    if (empty($this->config->get('url'))) {
+    if (empty($this->settings->url)) {
       $invalidation->setState(Invalidation::STATE_FAILED);
       $this->numberFailed += 1;
       return;
@@ -117,11 +116,11 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
 
     // Construct a Guzzle request.
     $options = [
-      'timeout' => $this->config->get('timeout'),
-      'connect_timeout' => $this->config->get('connect_timeout'),
+      'timeout' => $this->settings->timeout,
+      'connect_timeout' => $this->settings->connect_timeout,
     ];
-    $request = $this->client->createRequest('BAN', $this->config->get('url'), $options)
-      ->addHeader($this->config->get('header'), static::toClearRegex($invalidation));
+    $request = $this->client->createRequest('BAN', $this->settings->url, $options)
+      ->addHeader($this->settings->header, static::toClearRegex($invalidation));
 
     // Purge.
     $invalidation->setState(Invalidation::STATE_PURGING);
@@ -175,10 +174,10 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function getCapacityLimit() {
-    $exec_time_consumption = $this->config->get('execution_time_consumption');
+    $exec_time_consumption = $this->settings->execution_time_consumption;
     $time_per_request = $this->getClaimTimeHint();
     $max_execution_time = (int) ini_get('max_execution_time');
-    $max_requests = $this->config->get('max_requests');
+    $max_requests = $this->settings->max_requests;
 
     // When PHP's max_execution_time equals 0, the system is given carte blanche
     // for how long it can run. Since looping endlessly is out of the question,
@@ -196,7 +195,7 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
     // In the case our conservative calculation would be higher than the set
     // limit of requests, return the hard limit as our capacity limit.
     if ($suggested > $max_requests) {
-      return (int) $max_request;
+      return (int) $max_requests;
     }
     else {
       return (int) $suggested;
@@ -209,7 +208,7 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
   public function getClaimTimeHint() {
 
     // Take the HTTP timeout configured, add 10% margin and round up to seconds.
-    return (int) ceil($this->config->get('timeout') * 1.1);
+    return (int) ceil($this->settings->timeout * 1.1);
   }
 
 }

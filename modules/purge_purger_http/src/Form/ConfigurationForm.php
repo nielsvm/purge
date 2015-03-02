@@ -9,6 +9,7 @@ namespace Drupal\purge_purger_http\Form;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\purge_ui\Form\PurgerConfigFormBase;
+use Drupal\purge_purger_http\Entity\HttpPurgerSettings;
 
 /**
  * Configuration form for the HTTP Purger.
@@ -30,7 +31,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return ['purge_purger_http.settings'];
+    return [];
   }
 
   /**
@@ -44,7 +45,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config('purge_purger_http.settings');
+    $settings = HttpPurgerSettings::load($this->getId($form_state));
 
     // HTTP Settings.
     $form['http_settings'] = [
@@ -56,13 +57,13 @@ class ConfigurationForm extends PurgerConfigFormBase {
     $form['http_settings']['hostname'] = [
       '#title' => $this->t('Hostname'),
       '#type' => 'textfield',
-      '#default_value' => $config->get('hostname'),
+      '#default_value' => $settings->hostname,
       '#required' => FALSE,
     ];
     $form['http_settings']['port'] = [
       '#title' => $this->t('Port'),
       '#type' => 'textfield',
-      '#default_value' => $config->get('port'),
+      '#default_value' => $settings->port,
       '#required' => FALSE,
     ];
 
@@ -70,13 +71,13 @@ class ConfigurationForm extends PurgerConfigFormBase {
     $form['http_settings']['path'] = [
       '#title' => $this->t('Path'),
       '#type' => 'textfield',
-      '#default_value' => $config->get('path'),
+      '#default_value' => $settings->path,
       '#required' => FALSE,
     ];
     $form['http_settings']['request_method'] = [
       '#title' => $this->t('Request Method'),
       '#type' => 'select',
-      '#default_value' => array_search($config->get('request_method'), $this->request_methods),
+      '#default_value' => array_search($settings->request_method, $this->request_methods),
       '#options' => $this->request_methods,
       '#required' => FALSE,
     ];
@@ -93,7 +94,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
       '#step' => 0.1,
       '#min' => 1,
       '#title' => $this->t('Timeout'),
-      '#default_value' => $config->get('timeout'),
+      '#default_value' => $settings->timeout,
       '#required' => TRUE,
       '#description' => $this->t('Float describing the timeout of the request in seconds.')
     ];
@@ -102,7 +103,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
       '#step' => 0.1,
       '#min' => 0.5,
       '#title' => $this->t('Connection timeout'),
-      '#default_value' => $config->get('connect_timeout'),
+      '#default_value' => $settings->connect_timeout,
       '#required' => TRUE,
       '#description' => $this->t('Float describing the number of seconds to wait while trying to connect to a server.')
     ];
@@ -112,7 +113,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
       '#min' => 1,
       '#max' => 500,
       '#title' => $this->t('Maximum requests'),
-      '#default_value' => $config->get('max_requests'),
+      '#default_value' => $settings->max_requests,
       '#required' => TRUE,
       '#description' => $this->t('Maximum number of HTTP requests that can be made during the runtime of one request (including CLI). The higher this number is set, the more - CLI based - scripts can process but this can also badly influence your end-user performance when using runtime-based queue processors.')
     ];
@@ -123,7 +124,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
       '#max' => 0.90,
       '#field_suffix' => '%',
       '#title' => $this->t('Execution time consumption'),
-      '#default_value' => $config->get('execution_time_consumption'),
+      '#default_value' => $settings->execution_time_consumption,
       '#required' => TRUE,
       '#description' => $this->t("Percentage of PHP's maximum execution time that can be allocated to processing. When PHP's setting is set to 0 (e.g. on CLI), the max requests setting will be used for capacity limiting. Whenever you notice Drupal requests timing out, lower this percentage.")
     ];
@@ -158,17 +159,16 @@ class ConfigurationForm extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->config('purge_purger_http.settings')
-      ->set('hostname', $form_state->getValue('hostname'))
-      ->set('port', $form_state->getValue('port'))
-      ->set('path', $form_state->getValue('path'))
-      ->set('request_method', $this->request_methods[$form_state->getValue('request_method')])
-      ->set('timeout', $form_state->getValue('timeout'))
-      ->set('connect_timeout', $form_state->getValue('connect_timeout'))
-      ->set('max_requests', $form_state->getValue('max_requests'))
-      ->set('execution_time_consumption', $form_state->getValue('execution_time_consumption'))
-      ->save();
-
+    $settings = HttpPurgerSettings::load($this->getId($form_state));
+    $settings->hostname = $form_state->getValue('hostname');
+    $settings->port = $form_state->getValue('port');
+    $settings->path = $form_state->getValue('path');
+    $settings->request_method = $this->request_methods[$form_state->getValue('request_method')];
+    $settings->timeout = $form_state->getValue('timeout');
+    $settings->connect_timeout = $form_state->getValue('connect_timeout');
+    $settings->max_requests = $form_state->getValue('max_requests');
+    $settings->execution_time_consumption = $form_state->getValue('execution_time_consumption');
+    $settings->save();
     return parent::submitForm($form, $form_state);
   }
 

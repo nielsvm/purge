@@ -1,7 +1,10 @@
-purge_purger_varnishpoc.settings:
-  type: mapping
+purge_purger_varnishpoc.settings.*:
+  type: config_entity
   label: 'Varnish PoC Purger'
   mapping:
+    id:
+      type: string
+      label: 'ID'
     url:
       type: uri
       label: 'The URL of the Varnish instance to send BAN requests to.'

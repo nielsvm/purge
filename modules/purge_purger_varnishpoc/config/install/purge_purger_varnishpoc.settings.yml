@@ -1,6 +1,0 @@
-url: ''
-header: 'X-Drupal-Cache-Tags-Banned'
-timeout: 3.0
-connect_timeout: 1.5
-max_requests: 50
-execution_time_consumption: 0.75

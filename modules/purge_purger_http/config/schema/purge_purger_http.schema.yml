@@ -1,7 +1,10 @@
-purge_purger_http.settings:
-  type: mapping
+purge_purger_http.settings.*:
+  type: config_entity
   label: 'HTTP Purger'
   mapping:
+    id:
+      type: string
+      label: 'ID'
     hostname:
       type: string
       label: 'The hostname to connect to for the custom outbound HTTP request.'

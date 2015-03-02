@@ -90,8 +90,7 @@ class PurgerDeleteFormTest extends WebTestBase {
     $this->assertEqual(['id3' => 'purger_c'], $this->purgePurgers->getPluginsEnabled());
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'id3']), [], ['op' => t('Yes, remove this purger!')]);
     $this->assertEqual('closeDialog', $json[0]['command']);
-    $this->assertEqual('remove', $json[1]['command']);
-    $this->assertEqual('#id3', $json[1]['selector']);
+    $this->assertEqual('redirect', $json[1]['command']);
     $this->purgePurgers->reload();
     $this->assertEqual(['null' => 'null'], $this->purgePurgers->getPluginsEnabled());
     $this->assertEqual(2, count($json));

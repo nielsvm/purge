@@ -8,11 +8,12 @@
 namespace Drupal\purge_ui\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
-use Drupal\Core\Ajax\RemoveCommand;
+use Drupal\Core\Ajax\RedirectCommand;
 use Drupal\purge\Purger\ServiceInterface;
 use Drupal\purge_ui\Form\CloseDialogTrait;
 
@@ -143,7 +144,8 @@ class PurgerDeleteForm extends ConfirmFormBase {
     $response = new AjaxResponse();
     $response->addCommand(new CloseModalDialogCommand());
     if (isset($this->purgePurgers->getPluginsEnabled()[$this->id])) {
-      $response->addCommand(new RemoveCommand('#' . $this->id));
+      $options = ['fragment' => 'edit-purgers', 'query' => ['unique' => time()]];
+      $response->addCommand(new RedirectCommand((string) Url::fromRoute('purge_ui.config_form', [], $options)));
       $this->purgePurgers->deletePluginsEnabled([$this->id]);
     }
     return $response;

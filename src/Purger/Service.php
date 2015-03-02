@@ -78,7 +78,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function createId() {
-    return strtoupper(substr(sha1(microtime()), 0, 10));
+    return substr(sha1(microtime()), 0, 10);
   }
 
   /**

@@ -1,5 +1,4 @@
 <?php
-      iselect_result = curl_multi_select($curl_purges);
 
 /**
  * @file

@@ -18,9 +18,8 @@ http://labs.frickle.com/nginx_ngx_cache_purge/ and the installation hints below.
 Also see this issue http://drupal.org/node/1048000 for more background info
 - PHP with curl(http://php.net/manual/en/book.curl.php) enabled. The Purge
 module uses curl for issuing the http PURGE requests.
-- Acquia Managed Cloud and Dev Cloud hosting services support Purging. See the 
-configuration settings below.
-- Purge requires the expire module http://drupal.org/project/expire
+- Purge integrates with the expire module http://drupal.org/project/expire.
+Without Expire or a mechanism to replace it, Purge won't act.
 
 Installation:
 - Unpack, place and enable just like any other module.
@@ -30,8 +29,6 @@ Installation:
 - If your using nginx you need to specify the purge path and the get method in
 your proxy setting like this:
 "http://192.168.1.76:8080/purge?purge_method=get"
-- If your site is on one of the Acquia Hosting services configure like:
-"http://yoursite.com/?purge_method=ah"
 
 Q&A:
 Q: How do I know if its working?
@@ -59,6 +56,9 @@ limitation of Varnish.) Also firewall or other security policies could pose a
 problem. It does not require modification of your config file. If you have the
 choice Varnish module is probably your best bet but Purge might help you out in
 places where Varnish module is not an option.
+
+Q: What happened to support for Acquia Cloud platforms?
+A: This was dropped in the 1.x branches of Purge. We're recommending the special purpose Acquia Purge Module at http://drupal.org/project/acquia_purge
 
 Credits:
 Paul Krischer / "SqyD" on drupal.org

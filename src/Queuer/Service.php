@@ -27,6 +27,14 @@ class Service extends ServiceBase implements ServiceInterface {
   protected $position = 0;
 
   /**
+   * Mapping of container ids to the iterator indexes.
+   *
+   * @var string[]
+   * @ingroup iterator
+   */
+  protected $idmap = [];
+
+  /**
    * All registered queuers.
    *
    * @var \Drupal\purge\Queuer\QueuerInterface[]
@@ -42,6 +50,7 @@ class Service extends ServiceBase implements ServiceInterface {
     if (empty($this->queuers)) {
       foreach ($this->container->getParameter('purge_queuers') as $id) {
         $this->queuers[] = $this->container->get($id);
+        $this->idmap[$id] = key($this->queuers);
       }
     }
   }
@@ -51,7 +60,7 @@ class Service extends ServiceBase implements ServiceInterface {
    */
   public function get($id) {
     $this->retrieveQueuers();
-    return isset($this->queuers[$id]) ? $this->queuers[$id] : NULL;
+    return isset($this->idmap[$id]) ? $this->queuers[$this->idmap[$id]] : NULL;
   }
 
   /**
@@ -60,6 +69,11 @@ class Service extends ServiceBase implements ServiceInterface {
    */
   public function key() {
     $this->retrieveQueuers();
+    foreach ($this->idmap as $id => $i) {
+      if ($this->position === $i) {
+        return $id;
+      }
+    }
     return $this->position;
   }
 

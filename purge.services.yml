@@ -10,7 +10,7 @@ services:
     - [setContainer, ['@service_container']]
   purge.queuers.cache_tags:
     class: Drupal\purge\Queuer\CacheTagsQueuer
-    arguments: ['@purge.queue', '@purge.invalidation.factory']
+    arguments: ['@config.factory', '@purge.queue', '@purge.invalidation.factory']
     tags:
       - { name: cache_tags_invalidator }
       - { name: purge_queuer }

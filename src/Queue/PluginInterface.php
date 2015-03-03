@@ -84,5 +84,5 @@ interface PluginInterface extends ReliableQueueInterface, ContainerFactoryPlugin
    *   Empty array upon full success, else the remaining items that failed.
    */
   public function releaseItemMultiple(array $items);
-  
+
 }

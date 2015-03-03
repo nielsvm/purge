@@ -7,6 +7,9 @@ module to act on events that are likely to expire urls from the proxy cache.
 This allows delivering content updates faster to end users.
 
 Requirements:
+- A cachable version of Drupal 6. This can be an official Drupal release with
+a patch applied (http://drupal.org/node/466444) or use Pressflow
+(http://pressflow.org/), a cachable friendly fork of Drupal.
 - One or more reverse proxy caches (http://en.wikipedia.org/wiki/Reverse_proxy)
 like Varnish (recommended), Squid or Nginx that point to your webserver(s).
 - Varnish needs a modification to its configuration file. See this section in the
@@ -16,14 +19,10 @@ http://docstore.mik.ua/squid/FAQ-7.html#ss7.5
 - Nginx needs an extra module and configuration. See 
 http://labs.frickle.com/nginx_ngx_cache_purge/ and the installation hints below.
 Also see this issue http://drupal.org/node/1048000 for more background info
-- A cachable version of Drupal 6. This can be an official Drupal release with
-a patch applied (http://drupal.org/node/466444) or use Pressflow
-(http://pressflow.org/), a cachable friendly fork of Drupal.
 - PHP with curl(http://php.net/manual/en/book.curl.php) enabled. The Purge
 module uses curl for issuing the http PURGE requests.
-- Acquia Managed Cloud and Dev Cloud hosting services support Purging. See the 
-configuration settings below.
-- Purge requires the expire module http://drupal.org/project/expire
+- Purge integrates with the expire module http://drupal.org/project/expire.
+Without Expire or a mechanism to replace it, Purge won't act.
 
 Installation:
 - Unpack, place and enable just like any other module.
@@ -33,8 +32,6 @@ Installation:
 - If your using nginx you need to specify the purge path and the get method in
 your proxy setting like this:
 "http://192.168.1.76:8080/purge?purge_method=get"
-- If your site is on one of the Acquia Hosting services configure like:
-"http://yoursite.com/?purge_method=ah"
 
 Q&A:
 Q: How do I know if its working?
@@ -63,6 +60,9 @@ problem. It does not require modification of your config file. If you have the
 choice Varnish module is probably your best bet but Purge might help you out in
 places where Varnish module is not an option.
 
+Q: What happened to support for Acquia Cloud platforms?
+A: This was dropped in the 1.x branches of Purge for the 1.7 releases. We're recommending the special purpose Acquia Purge Module at http://drupal.org/project/acquia_purge
+
 Credits:
 Paul Krischer / "SqyD" on drupal.org
 paul@krischer.nl / sqyd@sqyd.net
@@ -75,3 +75,4 @@ Changelog:
 1.1 Refactoring for Nginx and future platform support and better error handling
 1.2 (Upcoming) Acquia Hosting support, form validation
 1.3 Bugfix release. Issue 1235674. Output buffering patch by mauritsl on drupal.org.
+1.7 Bugfix release and dropping Acquia support.

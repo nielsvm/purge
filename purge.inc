@@ -1,4 +1,5 @@
 <?php
+      iselect_result = curl_multi_select($curl_purges);
 
 /**
  * @file
@@ -42,10 +43,6 @@ function purge_urls($purge_urls) {
         if (strstr($proxy_url_parts['query'], 'purge_method=get')) {
           $method = 'get';
         }
-        if (strstr($proxy_url_parts['query'], 'purge_method=ah')) {
-          $method = 'ah';
-        }
-
       }
       else {
         $method = 'purge';
@@ -82,14 +79,6 @@ function purge_urls($purge_urls) {
         $purge_requests[$current_purge_request]['request_method'] = 'GET';
         // Set the host header to the sites hostname
         $purge_requests[$current_purge_request]['headers'] = array("Host: " . $purge_url_host);
-      }
-
-      // The AH (Acquia Hosting) option.
-      elseif ($method == 'ah') {
-        // Make it a PURGE request (not GET or POST)
-        $purge_requests[$current_purge_request]['request_method'] = 'PURGE';
-        //  Set the Acquia purge header to the Acquia Hosting site name
-        $purge_requests[$current_purge_request]['headers'] = array('Accept-Encoding: gzip', 'X-Acquia-Purge:' . $_SERVER['AH_SITE_NAME']);
       }
       $current_purge_request++;
     }
@@ -129,10 +118,16 @@ function purge_issue_requests_curl($purges) {
     // Block until there is activity on any of the handlers. Avoids
     // busywaiting.
     if ($multi_result == CURLM_OK) {
-      $select_result = curl_multi_select($curl_purges);
+      // According to https://bugs.php.net/bug.php?id=63411, in PHP 5.3.18+
+      // curl_multi_select can return immediately if libcurl cannot block, but
+      // still has something to process, so we block a bit ourselves.
+      if (curl_multi_select($curl_purges) == -1) {
+        // Wait 0.1 second.
+        usleep(100000);
+      }
     }
     if ($multi_result != CURLM_OK || $select_result == -1) {
-    // @TODO: error handling. Something truly awkward happened.
+      // @TODO: error handling. Something truly awkward happened.
       ob_end_clean(); 
     return FALSE;
     }
@@ -206,14 +201,14 @@ function purge_logging($purge_request_results) {
       watchdog(
         'purge',
         '1 URL has been successfully purged from the reverse proxy caches: !$purge_success_log',
-        array('!$purge_success_log' => expire_print_r($purge_success_log))
+        array('!$purge_success_log' => purge_print_r($purge_success_log))
       );
     }
     else {
       watchdog(
         'purge',
         '!purge_success_count URLs have been successfully purged from the reverse proxy caches: !$purge_success_log',
-        array('!purge_success_count' => $purge_success, '!$purge_success_log' => expire_print_r($purge_success_log))
+        array('!purge_success_count' => $purge_success, '!$purge_success_log' => purge_print_r($purge_success_log))
       );
     }
   }
@@ -223,7 +218,7 @@ function purge_logging($purge_request_results) {
       watchdog(
         'purge',
         '1 error has been encountered when purging URLs !$purge_error_log',
-        array('!$purge_error_log' => expire_print_r($purge_error_log)),
+        array('!$purge_error_log' => purge_print_r($purge_error_log)),
         $severity = WATCHDOG_ERROR
       );
     }
@@ -231,7 +226,7 @@ function purge_logging($purge_request_results) {
       watchdog(
         'purge',
         '!purge_errors_count errors have been encountered when purging these URLs. !$purge_error_log',
-        array('!purge_errors_count' => $purge_errors, '!$purge_error_log' => expire_print_r($purge_error_log)),
+        array('!purge_errors_count' => $purge_errors, '!$purge_error_log' => purge_print_r($purge_error_log)),
         $severity = WATCHDOG_ERROR
       );
     }

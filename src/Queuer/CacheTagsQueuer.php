@@ -77,8 +77,16 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface {
           }
         }
         if (!$blacklisted) {
-          $invalidations[] = $this->purgeInvalidationFactory->get('tag', $tag);
-          $this->invalidatedTags[] = $tag;
+          try {
+            $invalidations[] = $this->purgeInvalidationFactory->get('tag', $tag);
+            $this->invalidatedTags[] = $tag;
+          }
+          catch (PluginNotFoundException $e) {
+            // When Drupal uninstalls Purge, rebuilds plugin caches it might
+            // run into the condition where the tag plugin isn't available. In
+            // these scenarios we want the queuer to silently fail.
+            return;
+          }
         }
       }
     }

@@ -41,6 +41,11 @@ trait TestTrait {
   protected $purgeQueue;
 
   /**
+   * @var \Drupal\purge\Queuer\ServiceInterface
+   */
+  protected $purgeQueuers;
+
+  /**
    * @var \Drupal\purge\DiagnosticCheck\ServiceInterface
    */
   protected $purgeDiagnostics;
@@ -98,6 +103,18 @@ trait TestTrait {
       if (!is_null($this->purgeDiagnostics)) {
         $this->purgeDiagnostics->reload();
       }
+    }
+  }
+
+  /**
+   * Make $this->purgeQueuers available.
+   */
+  protected function initializeQueuersService() {
+    if (is_null($this->purgeQueuers)) {
+      $this->purgeQueuers = $this->container->get('purge.queuers');
+    }
+    else {
+      $this->purgeQueuers->reload();
     }
   }
 

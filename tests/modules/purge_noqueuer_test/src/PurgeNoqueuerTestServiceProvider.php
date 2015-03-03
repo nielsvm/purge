@@ -19,7 +19,7 @@ class PurgeNoqueuerTestServiceProvider implements ServiceModifierInterface {
    * {@inheritdoc}
    */
   public function alter(ContainerBuilder $container) {
-    $container->removeDefinition('purge.queuer.cache_tags');
+    $container->removeDefinition('purge.queuers.cache_tags');
   }
 
 }

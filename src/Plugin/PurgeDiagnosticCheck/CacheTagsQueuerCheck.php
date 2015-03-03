@@ -12,7 +12,7 @@ use Drupal\purge\DiagnosticCheck\PluginInterface;
 use Drupal\purge\DiagnosticCheck\PluginBase;
 
 /**
- * Simply checks if "purge.queuer.cache_tags" is defined and queues cache tags.
+ * Simply checks if "purge.queuers.cache_tags" is defined and queues cache tags.
  *
  * The sole reason this test exists is to check if a service - defined in this
  * same module - is on the container. Certain use cases of this module - e.g.
@@ -70,7 +70,7 @@ class CacheTagsQueuerCheck extends PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function run() {
-    if (!$this->container->has('purge.queuer.cache_tags')) {
+    if (!$this->container->has('purge.queuers.cache_tags')) {
       $this->value = $this->t('Disabled');
       $this->recommendation = $this->t("Purge does NOT add 'tag' invalidations to its queue because the service got disabled by another module.");
       return SELF::SEVERITY_WARNING;

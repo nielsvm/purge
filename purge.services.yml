@@ -1,15 +1,19 @@
 services:
 
-  # PURGE.QUEUER.CACHE_TAGS
+  # PURGE.QUEUERS
   #
-  # Captures Drupals own internal cache invalidations and automatically adds
-  # tag invalidation objects to 'purge.queue', which is why its a 'queuer'. If
-  # this service is undesirable, see tests/modules/purge_noqueuer_test.
-  purge.queuer.cache_tags:
+  # Manages services tagged 'purge_queuer' by exposing them in end-user
+  # interfaces and allowing users to disable/enable them.
+  purge.queuers:
+    class: Drupal\purge\Queuer\Service
+    calls:
+    - [setContainer, ['@service_container']]
+  purge.queuers.cache_tags:
     class: Drupal\purge\Queuer\CacheTagsQueuer
     arguments: ['@purge.queue', '@purge.invalidation.factory']
     tags:
       - { name: cache_tags_invalidator }
+      - { name: purge_queuer }
 
   # PURGE.INVALIDATION.FACTORY
   #

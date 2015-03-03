@@ -8,13 +8,12 @@ namespace Drupal\purge_ui\Controller;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Controller\ControllerBase;
-use \Drupal\purge\Purger\ServiceInterface as PurgersService;
+use Drupal\purge\Purger\ServiceInterface as PurgersService;
 
 /**
  * Controller for forms working with purgers that are enabled, e.g.:
- *   - \Drupal\purge_ui\Form\DeletePurgerForm
+ *   - \Drupal\purge_ui\Form\PurgerDeleteForm
  *   - \Drupal\purge_ui\Form\PurgerConfigFormBase derivatives.
  */
 class PurgerFormController extends ControllerBase {

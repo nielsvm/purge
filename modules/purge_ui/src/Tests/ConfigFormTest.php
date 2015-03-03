@@ -106,7 +106,7 @@ class ConfigFormTest extends WebTestBase {
     $this->assertRaw('open="open"');
     $this->assertText('Status');
     $this->assertText('Capacity');
-    $this->assertText('Tags queuer');
+    $this->assertText('Queuers');
     $this->assertText('Always a warning');
     $this->assertText('Always informational');
     $this->assertText('Always ok');

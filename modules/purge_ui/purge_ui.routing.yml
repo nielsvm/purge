@@ -35,3 +35,17 @@ purge_ui.purger_delete_form:
     _title_callback: '\Drupal\purge_ui\Controller\PurgerFormController::deleteFormTitle'
   requirements:
     _permission: 'administer site configuration'
+purge_ui.queuer_enable_form:
+  path: '/admin/config/development/performance/purge/queuer/enable'
+  defaults:
+    _title: 'Which queuer would you like to add?'
+    _controller: '\Drupal\purge_ui\Controller\QueuerFormController::enableForm'
+  requirements:
+    _permission: 'administer site configuration'
+purge_ui.queuer_disable_form:
+  path: '/admin/config/development/performance/purge/queuer/{id}/disable'
+  defaults:
+    _controller: '\Drupal\purge_ui\Controller\QueuerFormController::disableForm'
+    _title_callback: '\Drupal\purge_ui\Controller\QueuerFormController::disableFormTitle'
+  requirements:
+    _permission: 'administer site configuration'

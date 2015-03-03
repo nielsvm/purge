@@ -13,8 +13,9 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\purge\DiagnosticCheck\ServiceInterface as DiagnosticsInterface;
-use Drupal\purge\Purger\ServiceInterface as PurgerServiceInterface;
+use Drupal\purge\Purger\ServiceInterface as PurgersServiceInterface;
 use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
+use Drupal\purge\Queuer\ServiceInterface as QueuersServiceInterface;
 
 /**
  * Configure the Purge pipeline for this site.
@@ -39,6 +40,11 @@ class ConfigForm extends ConfigFormBase {
   protected $purgeQueue;
 
   /**
+   * @var \Drupal\purge\Queuer\ServiceInterface
+   */
+  protected $purgeQueuers;
+
+  /**
    * Constructs a PurgeConfigForm object.
    *
    * @param \Drupal\purge\DiagnosticCheck\ServiceInterface $purge_diagnostics
@@ -47,11 +53,14 @@ class ConfigForm extends ConfigFormBase {
    *   The purger service.
    * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
    *   The purge queue service.
+   * @param \Drupal\purge\Queuer\ServiceInterface $purge_queuers
+   *   The purge queuers registry service.
    */
-  public function __construct(DiagnosticsInterface $purge_diagnostics, PurgerServiceInterface $purge_purgers, QueueServiceInterface $purge_queue) {
+  public function __construct(DiagnosticsInterface $purge_diagnostics, QueuersServiceInterface $purge_queuers, QueueServiceInterface $purge_queue, PurgersServiceInterface $purge_purgers) {
     $this->purgeDiagnostics = $purge_diagnostics;
-    $this->purgePurgers = $purge_purgers;
+    $this->purgeQueuers = $purge_queuers;
     $this->purgeQueue = $purge_queue;
+    $this->purgePurgers = $purge_purgers;
     parent::__construct($this->configFactory());
   }
 
@@ -61,8 +70,9 @@ class ConfigForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('purge.diagnostics'),
-      $container->get('purge.purgers'),
-      $container->get('purge.queue')
+      $container->get('purge.queuers'),
+      $container->get('purge.queue'),
+      $container->get('purge.purgers')
     );
   }
 
@@ -90,9 +100,34 @@ class ConfigForm extends ConfigFormBase {
     ];
 
     $this->buildFormDiagnosticReport($form, $form_state);
+    $this->buildFormQueuers($form, $form_state);
     $this->buildFormQueue($form, $form_state);
     $this->buildFormPurgers($form, $form_state);
     return parent::buildForm($form, $form_state);
+  }
+
+  /**
+   * Helper for #links modal buttons.
+   *
+   * @param string $title
+   *   The title of the button.
+   * @param \Drupal\Core\Url $url
+   *   The route to the modal dialog provider.
+   * @param string $width
+   *   Optional width of the dialog button to be generated.
+   *
+   *  @return array
+   */
+  protected function getDialogButton($title, $url, $width = '70%') {
+    return [
+      'title' => $title,
+      'url' => $url,
+      'attributes' => [
+        'class' => ['use-ajax'],
+        'data-accepts' => 'application/vnd.drupal-modal',
+        'data-dialog-options' => Json::encode(['width' => $width]),
+      ],
+    ];
   }
 
   /**
@@ -116,6 +151,55 @@ class ConfigForm extends ConfigFormBase {
       '#theme' => 'status_report',
       '#requirements' => $this->purgeDiagnostics->getRequirementsArray()
     ];
+  }
+
+  /**
+   * Visualize the queuers that are registered and adding things to the queue.
+   *
+   * @param array &$form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return void
+   */
+  protected function buildFormQueuers(array &$form, FormStateInterface $form_state) {
+    $available = $this->purgeQueuers->getAvailable();
+    $enabled = $this->purgeQueuers->getEnabled();
+    $form['queuers'] = [
+      '#description' => '<p>' . $this->t('Queuers queue items in the queue upon certain events.') . '</p>',
+      '#type' => 'details',
+      '#title' => t('Queuers'),
+      '#open' => !count($enabled),
+    ];
+    $form['queuers']['table'] = [
+      '#type' => 'table',
+      '#access' => count($enabled),
+      '#responsive' => TRUE,
+      '#header' => [
+        'title' => ['data' => $this->t('Queuer')],
+        'id' => ['data' => $this->t('Container ID'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
+        'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
+        'operations' => ['style' => 'min-width: 3em;', 'data' => ' '],
+      ],
+    ];
+    foreach ($enabled as $id => $queuer) {
+      $form['queuers']['table']['#rows'][$id] = [
+        'id' => $id,
+        'data' => [
+          'title' => ['data' => ['#markup' => $queuer->getTitle()]],
+          'id' => ['data' => ['#markup' => String::checkPlain($id)]],
+          'description' => ['data' => ['#markup' => $queuer->getDescription()]],
+          'operations' => ['data' => ['#type' => 'dropbutton', '#links' => ['disable' => $this->getDialogButton($this->t("Disable"), Url::fromRoute('purge_ui.queuer_disable_form', ['id' => $id]), '40%')]]],
+        ],
+      ];
+    }
+    if (count($available)) {
+      $form['queuers']['add'] = [
+        '#type' => 'dropbutton',
+        '#links' => [$this->getDialogButton($this->t("Add queuer"), Url::fromRoute('purge_ui.queuer_enable_form'), '40%')]
+      ];
+    }
   }
 
   /**
@@ -181,32 +265,20 @@ class ConfigForm extends ConfigFormBase {
       '#title' => $this->t('Purger'),
       '#open' => TRUE,
     ];
-
-    // Anonymous functions to take the pain out of generating modal dialogs.
-    $dialog = function($title, $url, $width = '70%') {
-      return [
-        'title' => $title,
-        'url' => $url,
-        'attributes' => [
-          'class' => ['use-ajax'],
-          'data-accepts' => 'application/vnd.drupal-modal',
-          'data-dialog-options' => Json::encode(['width' => $width]),
-        ],
-      ];
+    $add_delete_link = function(&$links, $id, $definition) {
+      $links['delete'] = $this->getDialogButton($this->t("Remove"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]), '40%');
     };
-    $add_delete_link = function(&$links, $id, $definition) use ($dialog) {
-      $links['delete'] = $dialog($this->t("Remove"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]), '40%');
-    };
-    $add_configure_link = function(&$links, $id, $definition) use ($dialog) {
+    $add_configure_link = function(&$links, $id, $definition) {
       if (isset($definition['configform']) && !empty($definition['configform'])) {
         $url = Url::fromRoute('purge_ui.purger_config_dialog_form', ['id' => $id]);
-        $links['configure'] = $dialog($this->t("Configure"), $url);
+        $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
       }
     };
 
     // Define the table and add all enabled plugins.
     $form['purgers']['table'] = [
       '#type' => 'table',
+      '#access' => count($enabled),
       '#responsive' => TRUE,
       '#header' => [
         'label' => ['data' => $this->t('Purger')],
@@ -216,7 +288,6 @@ class ConfigForm extends ConfigFormBase {
         'link2' => ['style' => 'min-width: 3em;', 'data' => ' '],
       ],
     ];
-
     foreach($enabled as $id => $plugin_id) {
       $form['purgers']['table']['#rows'][$id] = [
         'id' => $id,
@@ -231,26 +302,10 @@ class ConfigForm extends ConfigFormBase {
       $add_configure_link($form['purgers']['table']['#rows'][$id]['data']['link1']['data']['#links'], $id, $all[$plugin_id]);
       $add_delete_link($form['purgers']['table']['#rows'][$id]['data']['link2']['data']['#links'], $id, $all[$plugin_id]);
     }
-
-    // Add the footer of the table with empty message and "Add purger" button.
-    $emptycel = ['#markup' => '&nbsp;'];
-    $emptyrow = ['no_striping' => TRUE, 'data' => [['data' => $emptycel, 'colspan' => 5]]];
-    if (empty($enabled)) {
-      $form['purgers']['table']['#rows'][] = $emptyrow;
-    }
     if (count($available)) {
-      $addlink = ['#type' => 'dropbutton', '#links' => [$dialog($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'), '40%')]];
-      if (!empty($enabled)) {
-        $form['purgers']['table']['#rows'][] = $emptyrow;
-      }
-      $form['purgers']['table']['#rows'][] = [
-        'data' => [
-          'label' => ['data' => $emptycel],
-          'id' => ['data' => $emptycel],
-          'description' => ['data' => $emptycel],
-          'link1' => ['data' => $emptycel],
-          'link2' => ['data' => $addlink],
-        ],
+      $form['purgers']['add'] = [
+        '#type' => 'dropbutton',
+        '#links' => [$this->getDialogButton($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'), '40%')]
       ];
     }
   }

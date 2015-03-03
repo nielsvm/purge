@@ -124,14 +124,15 @@ function purge_issue_requests_curl($purges) {
     // Block until there is activity on any of the handlers. Avoids
     // busywaiting.
     if ($multi_result == CURLM_OK) {
-      $select_result = curl_multi_select($curl_purges);
+      // According to https://bugs.php.net/bug.php?id=63411, in PHP 5.3.18+
+      // curl_multi_select can return immediately if libcurl cannot block, but
+      // still has something to process, so we block a bit ourselves.
+      if (curl_multi_select($curl_purges) == -1) {
+        // Wait 0.1 second.
+        usleep(100000);
+      }
     }
-    if ($multi_result != CURLM_OK || $select_result == -1) {
-      // @TODO: error handling. Something truly awkward happened.
-      ob_end_clean();
-      return FALSE;
-    }
-  } while ($select_result != -1 && $active && $multi_result == CURLM_OK);
+  } while ($active && $multi_result == CURLM_OK);
   ob_end_clean();
 
   // Result collection. Collects the http code returned for each url purged

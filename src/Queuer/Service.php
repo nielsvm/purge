@@ -66,14 +66,27 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function getEnabled() {
-    $queuers = [];
+  public function getAvailable() {
+    $available = [];
     foreach ($this as $id => $queuer) {
-      if ($queuer->isEnabled()) {
-        $queuers[$id] = $queuer;
+      if (!$queuer->isEnabled()) {
+        $available[$id] = $queuer;
       }
     }
-    return $queuers;
+    return $available;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEnabled() {
+    $enabled = [];
+    foreach ($this as $id => $queuer) {
+      if ($queuer->isEnabled()) {
+        $enabled[$id] = $queuer;
+      }
+    }
+    return $enabled;
   }
 
   /**

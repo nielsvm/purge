@@ -75,6 +75,7 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface, QueuerInterface 
     $this->configFactory = $config_factory;
     $this->status = $this->configFactory->get('purge.cache_tags_queuer')->get('status');
     $this->purgeInvalidationFactory = $purge_invalidation_factory;
+    $this->purgeQueue = $purge_queue;
   }
 
   /**

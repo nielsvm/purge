@@ -26,6 +26,13 @@ interface ServiceInterface extends PurgeServiceInterface, ContainerAwareInterfac
   public function get($id);
 
   /**
+   * Get the disabled queuers.
+   *
+   * @return \Drupal\purge\Queuer\QueuerInterface[]
+   */
+  public function getAvailable();
+
+  /**
    * Get the enabled queuers.
    *
    * @return \Drupal\purge\Queuer\QueuerInterface[]

@@ -112,6 +112,7 @@ trait TestTrait {
   protected function initializeQueuersService() {
     if (is_null($this->purgeQueuers)) {
       $this->purgeQueuers = $this->container->get('purge.queuers');
+      $this->purgeQueuers->reload();
     }
     else {
       $this->purgeQueuers->reload();

@@ -65,6 +65,19 @@ class Service extends ServiceBase implements ServiceInterface {
 
   /**
    * {@inheritdoc}
+   */
+  public function getEnabled() {
+    $queuers = [];
+    foreach ($this as $id => $queuer) {
+      if ($queuer->isEnabled()) {
+        $queuers[$id] = $queuer;
+      }
+    }
+    return $queuers;
+  }
+
+  /**
+   * {@inheritdoc}
    * @ingroup iterator
    */
   public function key() {

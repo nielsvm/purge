@@ -138,7 +138,9 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface, QueuerInterface 
     }
 
     // The queue buffers invalidations, though we don't care about that here.
-    $this->purgeQueue->addMultiple($invalidations);
+    if (count($invalidations)) {
+      $this->purgeQueue->addMultiple($invalidations);
+    }
   }
 
   /**

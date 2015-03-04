@@ -107,7 +107,7 @@ class ConfigForm extends ConfigFormBase {
   }
 
   /**
-   * Helper for #links modal buttons.
+   * Helper for dropbutton/operations modal buttons (#links).
    *
    * @param string $title
    *   The title of the button.
@@ -177,10 +177,10 @@ class ConfigForm extends ConfigFormBase {
       '#access' => count($enabled),
       '#responsive' => TRUE,
       '#header' => [
-        'title' => ['data' => $this->t('Queuer')],
+        'title' => $this->t('Queuer'),
         'id' => ['data' => $this->t('Container ID'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
         'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
-        'operations' => ['style' => 'min-width: 3em;', 'data' => ' '],
+        'operations' => $this->t('Operations'),
       ],
     ];
     foreach ($enabled as $id => $queuer) {
@@ -190,13 +190,13 @@ class ConfigForm extends ConfigFormBase {
           'title' => ['data' => ['#markup' => $queuer->getTitle()]],
           'id' => ['data' => ['#markup' => String::checkPlain($id)]],
           'description' => ['data' => ['#markup' => $queuer->getDescription()]],
-          'operations' => ['data' => ['#type' => 'dropbutton', '#links' => ['disable' => $this->getDialogButton($this->t("Disable"), Url::fromRoute('purge_ui.queuer_disable_form', ['id' => $id]), '40%')]]],
+          'operations' => ['data' => ['#type' => 'operations', '#links' => ['disable' => $this->getDialogButton($this->t("Disable"), Url::fromRoute('purge_ui.queuer_disable_form', ['id' => $id]), '40%')]]],
         ],
       ];
     }
     if (count($available)) {
       $form['queuers']['add'] = [
-        '#type' => 'dropbutton',
+        '#type' => 'operations',
         '#links' => [$this->getDialogButton($this->t("Add queuer"), Url::fromRoute('purge_ui.queuer_enable_form'), '40%')]
       ];
     }
@@ -229,7 +229,7 @@ class ConfigForm extends ConfigFormBase {
         'label' => $this->t('Queue'),
         'description' => [
           'data' => $this->t('Description'),
-          'class' => array('description', 'priority-low'),
+          'class' => [RESPONSIVE_PRIORITY_MEDIUM],
         ],
       ],
     ];
@@ -281,11 +281,10 @@ class ConfigForm extends ConfigFormBase {
       '#access' => count($enabled),
       '#responsive' => TRUE,
       '#header' => [
-        'label' => ['data' => $this->t('Purger')],
+        'label' => $this->t('Purger'),
         'id' => ['data' => $this->t('Instance ID'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
-        'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
-        'link1' => ['style' => 'min-width: 3em;', 'data' => ' '],
-        'link2' => ['style' => 'min-width: 3em;', 'data' => ' '],
+        'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_MEDIUM]],
+        'operations' => $this->t('Operations'),
       ],
     ];
     foreach($enabled as $id => $plugin_id) {
@@ -295,16 +294,15 @@ class ConfigForm extends ConfigFormBase {
           'label' => ['data' => ['#markup' => $all[$plugin_id]['label']]],
           'id' => ['data' => ['#markup' => String::checkPlain($id)]],
           'description' => ['data' => ['#markup' => $all[$plugin_id]['description']]],
-          'link1' => ['data' => ['#type' => 'dropbutton', '#links' => []]],
-          'link2' => ['data' => ['#type' => 'dropbutton', '#links' => []]],
+          'operations' => ['data' => ['#type' => 'operations', '#links' => []]],
         ],
       ];
-      $add_configure_link($form['purgers']['table']['#rows'][$id]['data']['link1']['data']['#links'], $id, $all[$plugin_id]);
-      $add_delete_link($form['purgers']['table']['#rows'][$id]['data']['link2']['data']['#links'], $id, $all[$plugin_id]);
+      $add_configure_link($form['purgers']['table']['#rows'][$id]['data']['operations']['data']['#links'], $id, $all[$plugin_id]);
+      $add_delete_link($form['purgers']['table']['#rows'][$id]['data']['operations']['data']['#links'], $id, $all[$plugin_id]);
     }
     if (count($available)) {
       $form['purgers']['add'] = [
-        '#type' => 'dropbutton',
+        '#type' => 'operations',
         '#links' => [$this->getDialogButton($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'), '40%')]
       ];
     }

@@ -128,9 +128,9 @@ class ServiceTest extends KernelServiceTestBase {
     $this->assertFalse($this->service->current());
     $this->assertFalse($this->service->valid());
     $this->assertNull($this->service->rewind());
-    $this->assertEqual('capacity', $this->service->current()->getPluginId());
-    $this->assertNull($this->service->next());
     $this->assertEqual('queuersavailable', $this->service->current()->getPluginId());
+    $this->assertNull($this->service->next());
+    $this->assertEqual('capacity', $this->service->current()->getPluginId());
     $this->assertTrue($this->service->valid());
   }
 

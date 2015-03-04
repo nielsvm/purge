@@ -86,6 +86,7 @@ class QueuersAvailableCheck extends PluginBase implements PluginInterface {
       }
       $this->value = implode(', ', $this->value);
       $this->recommendation = $this->t("You have multiple queueing services configured.");
+      return SELF::SEVERITY_OK;
     }
   }
 

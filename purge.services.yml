@@ -53,6 +53,15 @@ services:
     class:  Drupal\purge\DiagnosticCheck\PluginManager
     parent: default_plugin_manager
 
+  # PURGE.PROCESSORS
+  #
+  # Processing policies work the queue and put purgers actively to work. These
+  # are services tagged 'purge_processor' provided by submodules.
+  purge.processors:
+    class: Drupal\purge\Processor\Service
+    calls:
+    - [setContainer, ['@service_container']]
+
   # PURGE.PURGERS:
   #
   # The executive service which lets enabled purgers invalidate external caches.

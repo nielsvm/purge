@@ -1,0 +1,16 @@
+purge_processor_test.status:
+  type: mapping
+  label: 'Purge test processors'
+  mapping:
+    a:
+      type: boolean
+      translatable: false
+    b:
+      type: boolean
+      translatable: false
+    c:
+      type: boolean
+      translatable: false
+    d:
+      type: boolean
+      translatable: false

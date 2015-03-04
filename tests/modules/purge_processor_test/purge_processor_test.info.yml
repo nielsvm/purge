@@ -1,0 +1,8 @@
+name: 'Purge tests support (processors)'
+type: module
+description: "Provides processor services for testing."
+package: Testing
+version: VERSION
+core: 8.x
+dependencies:
+  - purge

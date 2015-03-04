@@ -7,8 +7,9 @@
 
 namespace Drupal\purge\Tests;
 
-use \Drupal\purge\Purger\Service as PurgersService;
-use \Drupal\purge\Queue\Service as QueueService;
+use Drupal\purge\Processor\ServiceInterface as ProcessorsService;
+use Drupal\purge\Purger\Service as PurgersService;
+use Drupal\purge\Queue\Service as QueueService;
 
 /**
  * Several helper properties and methods for purge tests.
@@ -24,6 +25,11 @@ trait TestTrait {
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
+
+  /**
+   * @var \Drupal\purge\Processor\ServiceInterface
+   */
+  protected $purgeProcessors;
 
   /**
    * @var \Drupal\purge\Purger\ServiceInterface
@@ -49,6 +55,19 @@ trait TestTrait {
    * @var \Drupal\purge\DiagnosticCheck\ServiceInterface
    */
   protected $purgeDiagnostics;
+
+  /**
+   * Make $this->purgeProcessors available.
+   */
+  protected function initializeProcessorsService() {
+    if (is_null($this->purgeProcessors)) {
+      $this->purgeProcessors = $this->container->get('purge.processors');
+      $this->purgeProcessors->reload();
+    }
+    else {
+      $this->purgeProcessors->reload();
+    }
+  }
 
   /**
    * Make $this->purgePurgers available.

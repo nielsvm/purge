@@ -22,6 +22,13 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface, QueuerInterface 
   use StringTranslationTrait;
 
   /**
+   * The container id of this queuer.
+   *
+   * @var string
+   */
+  protected $id;
+
+  /**
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
@@ -147,6 +154,13 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface, QueuerInterface 
   /**
    * {@inheritdoc}
    */
+  public function getId() {
+    return $this->id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getTitle() {
     return $this->t("Tags");
   }
@@ -156,6 +170,13 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface, QueuerInterface 
    */
   public function getDescription() {
     return $this->t("Monitors Drupal's own content invalidations.");
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setId($id) {
+    $this->id = $id;
   }
 
 }

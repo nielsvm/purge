@@ -20,6 +20,13 @@ class QueuerA implements QueuerInterface {
   use StringTranslationTrait;
 
   /**
+   * The container id of this queuer.
+   *
+   * @var string
+   */
+  protected $id;
+
+  /**
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
@@ -99,6 +106,13 @@ class QueuerA implements QueuerInterface {
   /**
    * {@inheritdoc}
    */
+  public function getId() {
+    return $this->id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getTitle() {
     return $this->t("Queuer A");
   }
@@ -108,6 +122,13 @@ class QueuerA implements QueuerInterface {
    */
   public function getDescription() {
     return $this->t("A test queuer that adds a path when you enable it.");
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setId($id) {
+    $this->id = $id;
   }
 
 }

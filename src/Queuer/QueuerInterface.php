@@ -34,6 +34,14 @@ interface QueuerInterface {
   public function isEnabled();
 
   /**
+   * Get the container id of the queuer.
+   *
+   * @return string
+   *   The container id of the queuer.
+   */
+  public function getId();
+
+  /**
    * Retrieve the title of this queuing service.
    *
    * @return \Drupal\Core\StringTranslation\TranslationWrapper
@@ -46,5 +54,15 @@ interface QueuerInterface {
    * @return \Drupal\Core\StringTranslation\TranslationWrapper
    */
   public function getDescription();
+
+  /**
+   * Set the container id of the queuer.
+   *
+   * @param string $id
+   *   The container id of the queuer.
+   *
+   * @return void
+   */
+  public function setId($id);
 
 }

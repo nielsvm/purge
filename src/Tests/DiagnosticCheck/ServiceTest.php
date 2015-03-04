@@ -109,7 +109,6 @@ class ServiceTest extends KernelServiceTestBase {
   /**
    * Tests the \Iterator implementation.
    *
-   * @see \Itera
    * @see \Drupal\purge\DiagnosticCheck\Service::current
    * @see \Drupal\purge\DiagnosticCheck\Service::key
    * @see \Drupal\purge\DiagnosticCheck\Service::next

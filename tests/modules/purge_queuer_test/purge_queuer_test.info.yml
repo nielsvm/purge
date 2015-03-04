@@ -1,0 +1,8 @@
+name: 'Purge tests support (queuers)'
+type: module
+description: "Provides queuer services for testing."
+package: Testing
+version: VERSION
+core: 8.x
+dependencies:
+  - purge

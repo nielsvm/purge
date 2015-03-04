@@ -1,0 +1,13 @@
+purge_queuer_test.status:
+  type: mapping
+  label: 'Purge test queuers'
+  mapping:
+    a:
+      type: boolean
+      translatable: false
+    b:
+      type: boolean
+      translatable: false
+    c:
+      type: boolean
+      translatable: false

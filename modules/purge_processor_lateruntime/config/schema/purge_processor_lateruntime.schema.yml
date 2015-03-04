@@ -2,6 +2,9 @@ purge_processor_lateruntime.settings:
   type: mapping
   label: 'Purge late runtime processor'
   mapping:
+    status:
+      type: boolean
+      translatable: false
     log_warnings:
       type: boolean
       label: 'Whether to log warning messages on every request or not.'

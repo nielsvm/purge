@@ -127,7 +127,7 @@ class PurgerConfigFormTest extends WebTestBase {
     $this->assertRaw(t('Save configuration'));
     $this->assertRaw(t('Cancel'));
     $this->assertFieldByName('textfield');
-    $json = $this->drupalPostAjaxForm($this->urlValidDialog, [], ['op' => t('Cancel')]);
+    $json = $this->drupalPostAjaxForm($this->urlValidDialog->toString(), [], ['op' => t('Cancel')]);
     $this->assertEqual('closeDialog', $json[0]['command']);
     $this->assertEqual(1, count($json));
   }

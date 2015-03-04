@@ -134,7 +134,7 @@ class QueuerDisableForm extends ConfirmFormBase {
     $response = new AjaxResponse();
     $response->addCommand(new CloseModalDialogCommand());
     $options = ['fragment' => 'edit-queuers', 'query' => ['unique' => time()]];
-    $response->addCommand(new RedirectCommand((string) Url::fromRoute('purge_ui.config_form', [], $options)));
+    $response->addCommand(new RedirectCommand(Url::fromRoute('purge_ui.config_form', [], $options)->toString()));
     $this->queuer->disable();
     return $response;
   }

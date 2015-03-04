@@ -71,7 +71,7 @@ class PurgerDeleteFormTest extends WebTestBase {
     $this->drupalLogin($this->admin_user);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id3']));
     $this->assertRaw(t('No'));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'id3']), [], ['op' => t('No')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'id3'])->toString(), [], ['op' => t('No')]);
     $this->assertEqual('closeDialog', $json[0]['command']);
     $this->assertEqual(1, count($json));
   }
@@ -88,14 +88,14 @@ class PurgerDeleteFormTest extends WebTestBase {
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id3']));
     $this->assertRaw(t('Yes, remove this purger!'));
     $this->assertEqual(['id3' => 'purger_c'], $this->purgePurgers->getPluginsEnabled());
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'id3']), [], ['op' => t('Yes, remove this purger!')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'id3'])->toString(), [], ['op' => t('Yes, remove this purger!')]);
     $this->assertEqual('closeDialog', $json[0]['command']);
     $this->assertEqual('redirect', $json[1]['command']);
     $this->purgePurgers->reload();
     $this->assertEqual(['null' => 'null'], $this->purgePurgers->getPluginsEnabled());
     $this->assertEqual(2, count($json));
     // Assert that deleting a purger that does not exist, passes silently.
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'doesnotexist']), [], ['op' => t('Yes, remove this purger!')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'doesnotexist'])->toString(), [], ['op' => t('Yes, remove this purger!')]);
     $this->assertEqual('closeDialog', $json[0]['command']);
     $this->assertEqual(1, count($json));
   }

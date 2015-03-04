@@ -156,12 +156,12 @@ class ConfigFormTest extends WebTestBase {
     $this->drupalGet($this->route);
     $this->assertRaw('<td>Purger A</td>');
     $this->assertRaw('<td class="priority-low">id1</td>');
-    $this->assertRaw('<td class="priority-low">Test purger A.</td>');
+    $this->assertRaw('<td class="priority-medium">Test purger A.</td>');
     $this->assertNoRaw('href="/admin/config/development/performance/purge/purger/id1/dialog"');
     $this->assertRaw('href="/admin/config/development/performance/purge/purger/id1/delete"');
     $this->assertRaw('<td>Configurable purger</td>');
     $this->assertRaw('<td class="priority-low">id2</td>');
-    $this->assertRaw('<td class="priority-low">Test purger with a form attached.</td>');
+    $this->assertRaw('<td class="priority-medium">Test purger with a form attached.</td>');
     $this->assertRaw('href="/admin/config/development/performance/purge/purger/id2/dialog"');
     $this->assertRaw('href="/admin/config/development/performance/purge/purger/id2/delete"');
     // Assert that the 'Add purger' button only shows up when it actually can.

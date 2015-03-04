@@ -145,7 +145,7 @@ class PurgerDeleteForm extends ConfirmFormBase {
     $response->addCommand(new CloseModalDialogCommand());
     if (isset($this->purgePurgers->getPluginsEnabled()[$this->id])) {
       $options = ['fragment' => 'edit-purgers', 'query' => ['unique' => time()]];
-      $response->addCommand(new RedirectCommand((string) Url::fromRoute('purge_ui.config_form', [], $options)));
+      $response->addCommand(new RedirectCommand(Url::fromRoute('purge_ui.config_form', [], $options)->toString()));
       $this->purgePurgers->deletePluginsEnabled([$this->id]);
     }
     return $response;

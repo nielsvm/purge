@@ -53,7 +53,7 @@ class QueuerEnableFormTest extends WebTestBase {
   public function testCancelAndEnabling() {
     $this->initializeQueuersService();
     $this->purgeQueuers->get('purge.queuers.cache_tags')->disable();
-    $this->assertEqual(1, count($this->purgeQueuers->getAvailable()));
+    $this->assertEqual(1, count($this->purgeQueuers->getDisabled()));
 
     // Tests the cancel button.
     $this->drupalLogin($this->admin_user);

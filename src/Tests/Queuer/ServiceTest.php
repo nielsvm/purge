@@ -34,7 +34,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests the \Iterator implementation, ::getEnabled and ::getAvailable.
+   * Tests the \Iterator implementation, ::getEnabled and ::getDisabled.
    */
   public function testWholeService() {
     $this->initializeService();
@@ -67,9 +67,9 @@ class ServiceTest extends KernelServiceTestBase {
     foreach ($this->service->getEnabled() as $id => $queuer) {
       $this->assertTrue(in_array($id, ['purge.queuers.cache_tags', 'purge_queuer_test.queuera']), $id);
     }
-    // Tests \Drupal\purge\Queuer\Service::getAvailable
-    $this->assertEqual(2, count($this->service->getAvailable()));
-    foreach ($this->service->getAvailable() as $id => $queuer) {
+    // Tests \Drupal\purge\Queuer\Service::getDisabled
+    $this->assertEqual(2, count($this->service->getDisabled()));
+    foreach ($this->service->getDisabled() as $id => $queuer) {
       $this->assertTrue(in_array($id, ['purge_queuer_test.queuerb', 'purge_queuer_test.queuerc']), $id);
     }
   }

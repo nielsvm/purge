@@ -164,7 +164,7 @@ class ConfigForm extends ConfigFormBase {
    * @return void
    */
   protected function buildFormQueuers(array &$form, FormStateInterface $form_state) {
-    $available = $this->purgeQueuers->getAvailable();
+    $available = $this->purgeQueuers->getDisabled();
     $enabled = $this->purgeQueuers->getEnabled();
     $form['queuers'] = [
       '#description' => '<p>' . $this->t('Queuers queue items in the queue upon certain events.') . '</p>',

@@ -71,7 +71,7 @@ class QueuerEnableForm extends ConfigFormBase {
 
     // List all available queuer services.
     $options = [];
-    foreach ($this->purgeQueuers->getAvailable() as $id => $queuer) {
+    foreach ($this->purgeQueuers->getDisabled() as $id => $queuer) {
       $options[$id] = t("@title: @description", ['@title' => $queuer->getTitle(), '@description' => $queuer->getDescription()]);
     }
     $form['id'] = [
@@ -111,7 +111,7 @@ class QueuerEnableForm extends ConfigFormBase {
     $response = new AjaxResponse();
     $id = $form_state->getValue('id');
     $response->addCommand(new CloseModalDialogCommand());
-    if (isset($this->purgeQueuers->getAvailable()[$id])) {
+    if (isset($this->purgeQueuers->getDisabled()[$id])) {
       $this->purgeQueuers->get($id)->enable();
       $options = ['fragment' => 'edit-purgers', 'query' => ['unique' => time()]];
       $response->addCommand(new RedirectCommand(Url::fromRoute('purge_ui.config_form', [], $options)->toString()));

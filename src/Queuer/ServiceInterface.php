@@ -30,7 +30,7 @@ interface ServiceInterface extends PurgeServiceInterface, ContainerAwareInterfac
    *
    * @return \Drupal\purge\Queuer\QueuerInterface[]
    */
-  public function getAvailable();
+  public function getDisabled();
 
   /**
    * Get the enabled queuers.

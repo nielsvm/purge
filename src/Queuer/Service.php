@@ -48,9 +48,11 @@ class Service extends ServiceBase implements ServiceInterface {
    */
   protected function retrieveQueuers() {
     if (empty($this->queuers)) {
+      $i = 0;
       foreach ($this->container->getParameter('purge_queuers') as $id) {
-        $this->queuers[] = $this->container->get($id);
-        $this->idmap[$id] = key($this->queuers);
+        $this->queuers[$i] = $this->container->get($id);
+        $this->idmap[$id] = $i;
+        $i++;
       }
     }
   }

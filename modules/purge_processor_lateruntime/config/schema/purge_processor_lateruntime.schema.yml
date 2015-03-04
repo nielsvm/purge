@@ -1,6 +1,6 @@
-purge_policy_runtime.settings:
+purge_processor_lateruntime.settings:
   type: mapping
-  label: 'Purge runtime processor'
+  label: 'Purge late runtime processor'
   mapping:
     log_warnings:
       type: boolean

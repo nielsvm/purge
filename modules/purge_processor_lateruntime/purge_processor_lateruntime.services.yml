@@ -1,13 +1,14 @@
 services:
 
-  # PURGE_POLICY_RUNTIME.PROCESSOR
+  # PURGE_PROCESSOR_LATERUNTIME.PROCESSOR
   #
   # Subscribes to the kernel FINISH_REQUEST event and checks for items in the
   # purge queue upon every request. If there are items, it attempts to process
   # a number of items and deletes from- or releases back to the queue.
-  purge_policy_runtime.processor:
-    class: Drupal\purge_policy_runtime\EventSubscriber\LateRuntimeProcessor
+  purge_processor_lateruntime.processor:
+    class: Drupal\purge_processor_lateruntime\EventSubscriber\LateRuntimeProcessor
     tags:
       - { name: event_subscriber }
+      - { name: purge_processor }
     calls:
       - [setContainer, ['@service_container']]

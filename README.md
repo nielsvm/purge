@@ -89,7 +89,7 @@ Policy possibilities:
 * **``cron``** claims items from the queue & purges during cron.
 * **``ajaxui``** AJAX-based progress bar working the queue after a piece of
 content has been updated.
-* **``runtime``** purges (just-queued) items during the same request (**SLOW**).
+* **``lateruntime``** purges items from the queue on every request (**SLOW**).
 
 API examples
 ------------------------------------------------------------------------------

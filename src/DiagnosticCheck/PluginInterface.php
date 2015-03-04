@@ -60,6 +60,9 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    *   will only see the check getting executed when any of the get* methods are
    *   called.
    *
+   * @throws \Drupal\purge\DiagnosticCheck\Exception\CheckNotImplementedCorrectly
+   *   Thrown when the return value is incorrect.
+   *
    * @return int
    *   Integer, matching either of the following constants:
    *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO

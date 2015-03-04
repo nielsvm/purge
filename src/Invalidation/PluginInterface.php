@@ -68,7 +68,7 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
   /**
    * Get the current state of the invalidation.
    *
-   * @return
+   * @return int
    *   Integer matching to one of the PluginInterface::STATE_* constants.
    */
   public function getState();
@@ -76,7 +76,7 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
   /**
    * Get the current state as string.
    *
-   * @return
+   * @return string
    *   The string comes without the 'STATE_' prefix as on the constants.
    */
   public function getStateString();
@@ -86,6 +86,11 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    *
    * @param $state
    *   Integer matching to any of the PluginInterface::STATE_* constants.
+   *
+   * @throws \Drupal\purge\Invalidation\Exception\InvalidStateException
+   *   Thrown when the given value doesn't match any of the STATE_ constants.
+   *
+   * @return void
    */
   public function setState($state);
 
@@ -105,5 +110,5 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    * @return void
    */
   public function validateExpression();
-  
+
 }

@@ -53,6 +53,9 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
+   *
+   * @throws \LogicException
+   *   Thrown if $configuration['id'] is missing, see Purger\Service::createId.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     if (!is_string($configuration['id']) || empty($configuration['id'])) {

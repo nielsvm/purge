@@ -10,12 +10,9 @@ namespace Drupal\purge_ui\Tests;
 use Drupal\simpletest\WebTestBase;
 
 /**
- * Tests if diagnostic checks are showing up on Drupal's status report and thus
- * verifies that purge_ui's hook_requirements() implementation works correctly.
+ * Tests purge_ui_requirements()
  *
  * @group purge
- * @see purge_ui_requirements()
- * @see \Drupal\purge\DiagnosticCheck\ServiceInterface
  */
 class StatusReportTest extends WebTestBase {
 

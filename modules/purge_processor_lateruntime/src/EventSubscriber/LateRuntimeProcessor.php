@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 use Drupal\purge\Processor\ProcessorInterface;
 
@@ -19,6 +20,7 @@ use Drupal\purge\Processor\ProcessorInterface;
  */
 class LateRuntimeProcessor implements ProcessorInterface, EventSubscriberInterface, ContainerAwareInterface {
   use ContainerAwareTrait;
+  use StringTranslationTrait;
 
   /**
    * The container id of this processor.

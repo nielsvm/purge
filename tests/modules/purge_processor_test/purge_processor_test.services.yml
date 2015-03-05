@@ -15,7 +15,7 @@ services:
     tags:
       - { name: purge_processor }
   purge_processor_test.d:
-    class: Drupal\purge_processor_test\ProcessorC
+    class: Drupal\purge_processor_test\ProcessorD
     arguments: ['@config.factory']
     tags:
       - { name: purge_processor }

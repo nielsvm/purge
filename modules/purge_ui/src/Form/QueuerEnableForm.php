@@ -113,7 +113,7 @@ class QueuerEnableForm extends ConfigFormBase {
     $response->addCommand(new CloseModalDialogCommand());
     if (isset($this->purgeQueuers->getDisabled()[$id])) {
       $this->purgeQueuers->get($id)->enable();
-      $options = ['fragment' => 'edit-purgers', 'query' => ['unique' => time()]];
+      $options = ['fragment' => 'edit-queuers', 'query' => ['queuers' => time()]];
       $response->addCommand(new RedirectCommand(Url::fromRoute('purge_ui.config_form', [], $options)->toString()));
     }
     return $response;

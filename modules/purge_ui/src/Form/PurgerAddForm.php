@@ -123,7 +123,7 @@ class PurgerAddForm extends ConfigFormBase {
     if (in_array($plugin_id, $this->purgePurgers->getPluginsAvailable())) {
       $enabled[$this->purgePurgers->createId()] = $plugin_id;
       $this->purgePurgers->setPluginsEnabled($enabled);
-      $options = ['fragment' => 'edit-purgers', 'query' => ['unique' => time()]];
+      $options = ['fragment' => 'edit-purgers', 'query' => ['purgers' => time()]];
       $response->addCommand(new RedirectCommand(Url::fromRoute('purge_ui.config_form', [], $options)->toString()));
     }
     return $response;

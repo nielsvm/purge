@@ -170,7 +170,7 @@ class ConfigForm extends ConfigFormBase {
       '#description' => '<p>' . $this->t('Queuers queue items in the queue upon certain events.') . '</p>',
       '#type' => 'details',
       '#title' => t('Queuers'),
-      '#open' => !count($enabled),
+      '#open' => $this->getRequest()->get('queuers', FALSE) || (!count($enabled)),
     ];
     $form['queuers']['table'] = [
       '#type' => 'table',
@@ -217,7 +217,7 @@ class ConfigForm extends ConfigFormBase {
       '#description' => '<p>' . $this->t('Purge instructions are stored in a queue.') . '</p>',
       '#type' => 'details',
       '#title' => t('Queue'),
-      '#open' => TRUE,
+      '#open' => FALSE,
     ];
     $form['queue']['queue_plugin'] = [
       '#type' => 'tableselect',
@@ -262,8 +262,8 @@ class ConfigForm extends ConfigFormBase {
     $form['purgers'] = [
       '#description' => '<p>' . $this->t('Purgers invalidate external caches, which third-party modules provide.') . '</p>',
       '#type' => 'details',
-      '#title' => $this->t('Purger'),
-      '#open' => TRUE,
+      '#title' => $this->t('Purgers'),
+      '#open' => $this->getRequest()->get('purgers', FALSE) || (!count($enabled)),
     ];
     $add_delete_link = function(&$links, $id, $definition) {
       $links['delete'] = $this->getDialogButton($this->t("Remove"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]), '40%');

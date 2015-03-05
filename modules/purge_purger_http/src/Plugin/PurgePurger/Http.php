@@ -85,14 +85,20 @@ class Http extends PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function invalidate(Invalidation $invalidation) {
-    throw new \Exception("Sorry, Not yet implemented!");
+    // @todo: this obviously needs to be implemented.
+    $this->numberFailed += 1;
+    $invalidation->setState(Invalidation::STATE_FAILED);
   }
 
   /**
    * {@inheritdoc}
    */
   public function invalidateMultiple(array $invalidations) {
-    throw new \Exception("Sorry, Not yet implemented!");
+    // @todo: this obviously needs to be implemented.
+    foreach ($invalidations as $invalidation) {
+      $this->numberFailed += 1;
+      $invalidation->setState(Invalidation::STATE_FAILED);
+    }
   }
 
   /**

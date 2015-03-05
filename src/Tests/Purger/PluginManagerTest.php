@@ -47,6 +47,7 @@ class PluginManagerTest extends KernelServiceTestBase {
     'purger_a',
     'purger_b',
     'purger_c',
+    'goodpurger',
     'purger_withform'
   ];
 

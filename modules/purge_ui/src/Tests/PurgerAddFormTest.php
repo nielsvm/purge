@@ -101,12 +101,11 @@ class PurgerAddFormTest extends WebTestBase {
    */
   public function testNoAvailablePurgers() {
     $this->drupalLogin($this->admin_user);
-    $this->initializePurgersService(['id1' => 'purger_a', 'id2' => 'purger_b', 'id3' => 'purger_c', 'id4' => 'purger_withform']);
+    $this->initializePurgersService(['id1' => 'purger_a', 'id2' => 'purger_b', 'id3' => 'purger_c', 'id4' => 'purger_withform', 'id5' => 'goodpurger']);
     $this->drupalGet($this->route);
     $this->assertNoFieldByName('plugin_id');
     $this->assertFieldByName('op', t('Cancel'));
     $this->assertNoFieldByName('op', t('Add'));
-
   }
 
   /**

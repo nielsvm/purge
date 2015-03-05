@@ -78,14 +78,13 @@ anything else that affects runtime execution. These checks can block all purging
 but also raise warnings and other diagnostic information. End-users can rely on
 Drupal's status report page where these checks bubble up.
 
-#### Processing Policies
-Although editing content leads to ``tag`` invalidation objects automatically
-getting queued, this doesn't mean they get processed automatically. It is up to
-you to select a stable configuration for your needs.
+#### Processors
+With queuers adding ``tag`` invalidation objects to the queue, this still leaves
+the processing of it open. Since different use cases are possible, it is up to
+you to configure a stable processing policy that's suitable for your use case.
 
-Policy possibilities:
+Possibilities:
 
-* **none** tags get queued, but nothing gets cleared automatically.
 * **``cron``** claims items from the queue & purges during cron.
 * **``ajaxui``** AJAX-based progress bar working the queue after a piece of
 content has been updated.

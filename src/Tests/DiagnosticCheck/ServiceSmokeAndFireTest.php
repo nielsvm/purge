@@ -18,7 +18,17 @@ use Drupal\purge\Tests\KernelServiceTestBase;
  */
 class ServiceSmokeAndFireTest extends KernelServiceTestBase {
   protected $serviceId = 'purge.diagnostics';
-  public static $modules = ['purge_purger_test'];
+  public static $modules = ['purge_purger_test', 'purge_processor_test'];
+
+  /**
+   * Set up the test.
+   */
+  function setUp() {
+
+    // Skip parent::setUp() as we don't want the service initialized here.
+    KernelServiceTestBase::setUp();
+    $this->installConfig(['purge_processor_test']);
+  }
 
   /**
    * Tests:

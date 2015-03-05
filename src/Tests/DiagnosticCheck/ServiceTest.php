@@ -23,6 +23,7 @@ class ServiceTest extends KernelServiceTestBase {
   protected $serviceId = 'purge.diagnostics';
   public static $modules = [
     'purge_purger_test',
+    'purge_processor_test',
     'purge_check_test',
     'purge_check_error_test',
     'purge_check_warning_test'
@@ -59,7 +60,8 @@ class ServiceTest extends KernelServiceTestBase {
   function setUp() {
 
     // Skip parent::setUp() as we don't want the service initialized here.
-    KernelTestBase::setUp();
+    KernelServiceTestBase::setUp();
+    $this->installConfig(['purge_processor_test']);
   }
 
   /**
@@ -103,7 +105,7 @@ class ServiceTest extends KernelServiceTestBase {
   public function testCount() {
     $this->initializeService();
     $this->assertTrue($this->service instanceof \Countable);
-    $this->assertEqual(7, count($this->service));
+    $this->assertEqual(8, count($this->service));
   }
 
   /**
@@ -123,7 +125,7 @@ class ServiceTest extends KernelServiceTestBase {
       $this->assertTrue($check instanceof Check);
       $items++;
     }
-    $this->assertEqual(7, $items);
+    $this->assertEqual(8, $items);
     $this->assertFalse($this->service->current());
     $this->assertFalse($this->service->valid());
     $this->assertNull($this->service->rewind());
@@ -140,7 +142,7 @@ class ServiceTest extends KernelServiceTestBase {
     $this->initializeRequirementSeverities();
     $this->initializeService();
     $requirements = $this->service->getHookRequirementsArray();
-    $this->assertEqual(7, count($requirements));
+    $this->assertEqual(8, count($requirements));
     foreach ($requirements as $id => $requirement) {
       $this->assertTrue(is_string($id));
       $this->assertFalse(empty($id));

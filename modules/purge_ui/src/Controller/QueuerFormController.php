@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\purge_ui\Controller\QueuerFormController.
@@ -81,4 +82,5 @@ class QueuerFormController extends ControllerBase {
     }
     throw new NotFoundHttpException();
   }
+
 }

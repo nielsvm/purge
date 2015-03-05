@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\purge_ui\Controller\PurgerFormController.

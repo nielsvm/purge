@@ -10,11 +10,12 @@ namespace Drupal\purge_ui\Controller;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Controller\ControllerBase;
-use \Drupal\purge\Queuer\ServiceInterface as QueuerService;
+use Drupal\purge\Queuer\ServiceInterface as QueuerService;
 
 /**
- * Controller for forms working with purgers that are enabled, e.g.:
- *   - \Drupal\purge_ui\Form\QueuerDisableForm
+ * Controller for:
+ *  - \Drupal\purge_ui\Form\QueuerDisableForm.
+ *  - \Drupal\purge_ui\Form\QueuerEnableForm.
  */
 class QueuerFormController extends ControllerBase {
 

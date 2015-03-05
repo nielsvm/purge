@@ -63,7 +63,7 @@ class QueuerEnableFormTest extends WebTestBase {
     $this->assertEqual('closeDialog', $json[0]['command']);
     $this->assertEqual(1, count($json));
 
-    // Tests adding the purger.
+    // Tests adding the queuer.
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertRaw(t('Add'));
     $this->assertRaw(t('Tags'));

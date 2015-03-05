@@ -13,6 +13,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\purge\DiagnosticCheck\ServiceInterface as DiagnosticsInterface;
+use Drupal\purge\Processor\ServiceInterface as ProcessorsServiceInterface;
 use Drupal\purge\Purger\ServiceInterface as PurgersServiceInterface;
 use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 use Drupal\purge\Queuer\ServiceInterface as QueuersServiceInterface;
@@ -28,6 +29,11 @@ class ConfigForm extends ConfigFormBase {
    * @var \Drupal\purge\DiagnosticCheck\ServiceInterface
    */
   protected $purgeDiagnostics;
+
+  /**
+   * @var \Drupal\purge\Processor\ServiceInterface
+   */
+  protected $purgeProcessors;
 
   /**
    * @var \Drupal\purge\Purger\ServiceInterface
@@ -49,6 +55,8 @@ class ConfigForm extends ConfigFormBase {
    *
    * @param \Drupal\purge\DiagnosticCheck\ServiceInterface $purge_diagnostics
    *   Diagnostics service that reports any preliminary issues regarding purge.
+   * @param \Drupal\purge\Processor\ServiceInterface $purge_processors
+   *   The purge processors registry service.
    * @param \Drupal\purge\Purger\ServiceInterface $purge_purgers
    *   The purger service.
    * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
@@ -56,10 +64,11 @@ class ConfigForm extends ConfigFormBase {
    * @param \Drupal\purge\Queuer\ServiceInterface $purge_queuers
    *   The purge queuers registry service.
    */
-  public function __construct(DiagnosticsInterface $purge_diagnostics, QueuersServiceInterface $purge_queuers, QueueServiceInterface $purge_queue, PurgersServiceInterface $purge_purgers) {
+  public function __construct(DiagnosticsInterface $purge_diagnostics, ProcessorsServiceInterface $purge_processors, QueuersServiceInterface $purge_queuers, QueueServiceInterface $purge_queue, PurgersServiceInterface $purge_purgers) {
     $this->purgeDiagnostics = $purge_diagnostics;
     $this->purgeQueuers = $purge_queuers;
     $this->purgeQueue = $purge_queue;
+    $this->purgeProcessors = $purge_processors;
     $this->purgePurgers = $purge_purgers;
     parent::__construct($this->configFactory());
   }
@@ -70,6 +79,7 @@ class ConfigForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('purge.diagnostics'),
+      $container->get('purge.processors'),
       $container->get('purge.queuers'),
       $container->get('purge.queue'),
       $container->get('purge.purgers')
@@ -103,6 +113,7 @@ class ConfigForm extends ConfigFormBase {
     $this->buildFormQueuers($form, $form_state);
     $this->buildFormQueue($form, $form_state);
     $this->buildFormPurgers($form, $form_state);
+    $this->buildFormProcessors($form, $form_state);
     return parent::buildForm($form, $form_state);
   }
 
@@ -237,6 +248,55 @@ class ConfigForm extends ConfigFormBase {
       $form['queue']['queue_plugin']['#options'][$plugin_id] = [
         'label' => $definition['label'],
         'description' => $definition['description'],
+      ];
+    }
+  }
+
+  /**
+   * List all enabled processors.
+   *
+   * @param array &$form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return void
+   */
+  protected function buildFormProcessors(array &$form, FormStateInterface $form_state) {
+    $available = $this->purgeProcessors->getDisabled();
+    $enabled = $this->purgeProcessors->getEnabled();
+    $form['processors'] = [
+      '#description' => '<p>' . $this->t('Processors queue items in the queue upon certain events.') . '</p>',
+      '#type' => 'details',
+      '#title' => t('Processors'),
+      '#open' => $this->getRequest()->get('processors', FALSE) || (!count($enabled)),
+    ];
+    $form['processors']['table'] = [
+      '#type' => 'table',
+      '#access' => count($enabled),
+      '#responsive' => TRUE,
+      '#header' => [
+        'title' => $this->t('Processor'),
+        'id' => ['data' => $this->t('Container ID'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
+        'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
+        'operations' => $this->t('Operations'),
+      ],
+    ];
+    foreach ($enabled as $id => $processor) {
+      $form['processors']['table']['#rows'][$id] = [
+        'id' => $id,
+        'data' => [
+          'title' => ['data' => ['#markup' => $processor->getTitle()]],
+          'id' => ['data' => ['#markup' => String::checkPlain($id)]],
+          'description' => ['data' => ['#markup' => $processor->getDescription()]],
+          'operations' => ['data' => ['#type' => 'operations', '#links' => ['disable' => $this->getDialogButton($this->t("Disable"), Url::fromRoute('purge_ui.processor_disable_form', ['id' => $id]), '40%')]]],
+        ],
+      ];
+    }
+    if (count($available)) {
+      $form['processors']['add'] = [
+        '#type' => 'operations',
+        '#links' => [$this->getDialogButton($this->t("Add processor"), Url::fromRoute('purge_ui.processor_enable_form'), '40%')]
       ];
     }
   }

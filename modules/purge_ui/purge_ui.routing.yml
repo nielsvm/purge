@@ -20,6 +20,20 @@ purge_ui.purger_config_form:
     dialog: FALSE
   requirements:
     _permission: 'administer site configuration'
+purge_ui.processor_enable_form:
+  path: '/admin/config/development/performance/purge/processor/enable'
+  defaults:
+    _title: 'Which processor would you like to add?'
+    _controller: '\Drupal\purge_ui\Controller\ProcessorFormController::enableForm'
+  requirements:
+    _permission: 'administer site configuration'
+purge_ui.processor_disable_form:
+  path: '/admin/config/development/performance/purge/processor/{id}/disable'
+  defaults:
+    _controller: '\Drupal\purge_ui\Controller\ProcessorFormController::disableForm'
+    _title_callback: '\Drupal\purge_ui\Controller\ProcessorFormController::disableFormTitle'
+  requirements:
+    _permission: 'administer site configuration'
 purge_ui.purger_config_dialog_form:
   path: '/admin/config/development/performance/purge/purger/{id}/dialog'
   defaults:

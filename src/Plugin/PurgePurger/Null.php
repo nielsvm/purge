@@ -37,7 +37,6 @@ class Null extends PluginBase implements PluginInterface {
   public function invalidate(Invalidation $invalidation) {
     $this->numberFailed += 1;
     $invalidation->setState(Invalidation::STATE_FAILED);
-    return FALSE;
   }
 
   /**
@@ -48,7 +47,6 @@ class Null extends PluginBase implements PluginInterface {
       $this->numberFailed += 1;
       $invalidation->setState(Invalidation::STATE_FAILED);
     }
-    return FALSE;
   }
 
   /**

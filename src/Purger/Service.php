@@ -234,7 +234,7 @@ class Service extends ServiceBase implements ServiceInterface {
     // Request each purger to execute the invalidation.
     foreach ($this->purgers as $plugin_id => $purger) {
       $invalidation->setState($initialstate);
-      $purger->purge($invalidation);
+      $purger->invalidate($invalidation);
 
       // Test the returning state of the object we just gave to the purger.
       if (!in_array($invalidation->getState(), $this->states_outbound)) {

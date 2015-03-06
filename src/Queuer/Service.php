@@ -7,7 +7,6 @@
 
 namespace Drupal\purge\Queuer;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Drupal\purge\Queuer\ServiceInterface;
 use Drupal\purge\ServiceBase;

@@ -7,7 +7,7 @@
 
 namespace Drupal\purge\DiagnosticCheck;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\DiagnosticCheck\ServiceInterface;
@@ -17,13 +17,7 @@ use Drupal\purge\DiagnosticCheck\PluginInterface as Check;
  * Provides a service that interacts with diagnostic checks.
  */
 class Service extends ServiceBase implements ServiceInterface {
-
-  /**
-   * The container, needed to lazy load 'purge.purgers' and 'purge.queue'.
-   *
-   * @var \Symfony\Component\DependencyInjection\ContainerInterface
-   */
-  protected $container;
+  use ContainerAwareTrait;
 
   /**
    * Current iterator position.
@@ -68,13 +62,10 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * Construct \Drupal\purge\DiagnosticCheck\Service.
    *
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-   *   The container, needed to lazy load 'purge.purgers' and 'purge.queue'.
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
    *   The plugin manager for this service.
    */
-  function __construct(ContainerInterface $container, PluginManagerInterface $pluginManager) {
-    $this->container = $container;
+  function __construct(PluginManagerInterface $pluginManager) {
     $this->pluginManager = $pluginManager;
   }
 

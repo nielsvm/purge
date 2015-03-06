@@ -7,7 +7,6 @@
 
 namespace Drupal\purge\Processor;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Processor\ServiceInterface;

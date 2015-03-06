@@ -48,7 +48,9 @@ services:
   # prevent all purges in the first place.
   purge.diagnostics:
     class: Drupal\purge\DiagnosticCheck\Service
-    arguments: ['@service_container', '@plugin.manager.purge.diagnostics']
+    arguments: ['@plugin.manager.purge.diagnostics']
+    calls:
+    - [setContainer, ['@service_container']]
   plugin.manager.purge.diagnostics:
     class:  Drupal\purge\DiagnosticCheck\PluginManager
     parent: default_plugin_manager

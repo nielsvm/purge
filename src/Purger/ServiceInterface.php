@@ -9,12 +9,12 @@ namespace Drupal\purge\Purger;
 
 use Drupal\purge\ServiceInterface as PurgeServiceInterface;
 use Drupal\purge\ModifiableServiceInterface;
-use Drupal\purge\Purger\PurgerLookalikeInterface;
+use Drupal\purge\Purger\SharedInterface;
 
 /**
  * Describes a service that distributes access to one or more purgers.
  */
-interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInterface, PurgerLookalikeInterface {
+interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInterface, SharedInterface {
 
   /**
    * Retrieve the plugin_ids of purgers that can be enabled.

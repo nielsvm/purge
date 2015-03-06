@@ -8,12 +8,12 @@
 namespace Drupal\purge\Purger;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\purge\Purger\PurgerLookalikeInterface;
+use Drupal\purge\Purger\SharedInterface;
 
 /**
  * Describes a purger - the cache invalidation executor.
  */
-interface PluginInterface extends ContainerFactoryPluginInterface, PurgerLookalikeInterface {
+interface PluginInterface extends ContainerFactoryPluginInterface, SharedInterface {
 
   /**
    * Retrieve the unique instance ID for this purger.

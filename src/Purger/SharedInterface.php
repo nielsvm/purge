@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purger\PurgerLookalikeInterface.
+ * Contains \Drupal\purge\Purger\SharedInterface.
  */
 
 namespace Drupal\purge\Purger;
@@ -13,7 +13,7 @@ use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 /**
  * Describes a purger or service transparently acting as one.
  */
-interface PurgerLookalikeInterface {
+interface SharedInterface {
 
   /**
    * Invalidate $invalidation from the external cache and update its state.

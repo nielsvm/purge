@@ -8,7 +8,7 @@ namespace Drupal\purge_ui\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Serialization\Json;
-use Drupal\Component\Utility\String;
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -199,7 +199,7 @@ class ConfigForm extends ConfigFormBase {
         'id' => $id,
         'data' => [
           'title' => ['data' => ['#markup' => $queuer->getTitle()]],
-          'id' => ['data' => ['#markup' => String::checkPlain($id)]],
+          'id' => ['data' => ['#markup' => SafeMarkup::checkPlain($id)]],
           'description' => ['data' => ['#markup' => $queuer->getDescription()]],
           'operations' => ['data' => ['#type' => 'operations', '#links' => ['disable' => $this->getDialogButton($this->t("Disable"), Url::fromRoute('purge_ui.queuer_disable_form', ['id' => $id]), '40%')]]],
         ],
@@ -287,7 +287,7 @@ class ConfigForm extends ConfigFormBase {
         'id' => $id,
         'data' => [
           'title' => ['data' => ['#markup' => $processor->getTitle()]],
-          'id' => ['data' => ['#markup' => String::checkPlain($id)]],
+          'id' => ['data' => ['#markup' => SafeMarkup::checkPlain($id)]],
           'description' => ['data' => ['#markup' => $processor->getDescription()]],
           'operations' => ['data' => ['#type' => 'operations', '#links' => ['disable' => $this->getDialogButton($this->t("Disable"), Url::fromRoute('purge_ui.processor_disable_form', ['id' => $id]), '40%')]]],
         ],
@@ -352,7 +352,7 @@ class ConfigForm extends ConfigFormBase {
         'id' => $id,
         'data' => [
           'label' => ['data' => ['#markup' => $all[$plugin_id]['label']]],
-          'id' => ['data' => ['#markup' => String::checkPlain($id)]],
+          'id' => ['data' => ['#markup' => SafeMarkup::checkPlain($id)]],
           'description' => ['data' => ['#markup' => $all[$plugin_id]['description']]],
           'operations' => ['data' => ['#type' => 'operations', '#links' => []]],
         ],

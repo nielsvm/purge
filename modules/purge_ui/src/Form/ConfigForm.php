@@ -135,7 +135,7 @@ class ConfigForm extends ConfigFormBase {
       'url' => $url,
       'attributes' => [
         'class' => ['use-ajax'],
-        'data-accepts' => 'application/vnd.drupal-modal',
+        'data-dialog-type' => 'modal',
         'data-dialog-options' => Json::encode(['width' => $width]),
       ],
     ];

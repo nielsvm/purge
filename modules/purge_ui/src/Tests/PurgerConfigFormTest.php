@@ -128,8 +128,8 @@ class PurgerConfigFormTest extends WebTestBase {
     $this->assertRaw(t('Cancel'));
     $this->assertFieldByName('textfield');
     $json = $this->drupalPostAjaxForm($this->urlValidDialog->toString(), [], ['op' => t('Cancel')]);
-    $this->assertEqual('closeDialog', $json[0]['command']);
-    $this->assertEqual(1, count($json));
+    $this->assertEqual('closeDialog', $json[1]['command']);
+    $this->assertEqual(2, count($json));
   }
 
 }

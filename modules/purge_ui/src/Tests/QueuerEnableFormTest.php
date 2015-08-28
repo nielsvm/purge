@@ -60,16 +60,16 @@ class QueuerEnableFormTest extends WebTestBase {
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertRaw(t('Cancel'));
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('Cancel')]);
-    $this->assertEqual('closeDialog', $json[0]['command']);
-    $this->assertEqual(1, count($json));
+    $this->assertEqual('closeDialog', $json[1]['command']);
+    $this->assertEqual(2, count($json));
 
     // Tests adding the queuer.
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertRaw(t('Add'));
     $this->assertRaw(t('Tags'));
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['id' => 'purge.queuers.cache_tags'], ['op' => t('Add')]);
-    $this->assertEqual('closeDialog', $json[0]['command']);
-    $this->assertEqual('redirect', $json[1]['command']);
+    $this->assertEqual('closeDialog', $json[1]['command']);
+    $this->assertEqual('redirect', $json[2]['command']);
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(404);
   }

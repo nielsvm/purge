@@ -72,8 +72,8 @@ class ProcessorDisableFormTest extends WebTestBase {
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge_processor_test.a']));
     $this->assertRaw(t('No'));
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'purge_processor_test.a'])->toString(), [], ['op' => t('No')]);
-    $this->assertEqual('closeDialog', $json[0]['command']);
-    $this->assertEqual(1, count($json));
+    $this->assertEqual('closeDialog', $json[1]['command']);
+    $this->assertEqual(2, count($json));
   }
 
   /**
@@ -89,9 +89,9 @@ class ProcessorDisableFormTest extends WebTestBase {
     $this->assertRaw(t('Yes, disable this processor!'));
     $this->assertTrue($this->purgeProcessors->get('purge_processor_test.a')->isEnabled());
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'purge_processor_test.a'])->toString(), [], ['op' => t('Yes, disable this processor!')]);
-    $this->assertEqual('closeDialog', $json[0]['command']);
+    $this->assertEqual('closeDialog', $json[1]['command']);
     // The redirect command proves that its submit disabled the processor.
-    $this->assertEqual('redirect', $json[1]['command']);
+    $this->assertEqual('redirect', $json[2]['command']);
     $this->assertFalse($this->configFactory->get('purge_processor_test.status')->get('a'));
   }
 

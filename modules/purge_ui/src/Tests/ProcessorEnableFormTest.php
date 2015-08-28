@@ -66,8 +66,8 @@ class ProcessorEnableFormTest extends WebTestBase {
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertRaw(t('Cancel'));
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('Cancel')]);
-    $this->assertEqual('closeDialog', $json[0]['command']);
-    $this->assertEqual(1, count($json));
+    $this->assertEqual('closeDialog', $json[1]['command']);
+    $this->assertEqual(2, count($json));
 
     // Tests adding processors.
     $this->drupalGet(Url::fromRoute($this->route));
@@ -77,9 +77,9 @@ class ProcessorEnableFormTest extends WebTestBase {
     $this->assertRaw(t('Processor D'));
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['id' => 'purge_processor_test.a'], ['op' => t('Add')]);
     $this->assertTrue($this->configFactory->get('purge_processor_test.status')->get('a'));
-    $this->assertEqual('closeDialog', $json[0]['command']);
+    $this->assertEqual('closeDialog', $json[1]['command']);
     // The redirect command proves that its submit enabled the processor.
-    $this->assertEqual('redirect', $json[1]['command']);
+    $this->assertEqual('redirect', $json[2]['command']);
     $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['id' => 'purge_processor_test.c'], ['op' => t('Add')]);
     $this->assertTrue($this->configFactory->get('purge_processor_test.status')->get('c'));
     $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['id' => 'purge_processor_test.d'], ['op' => t('Add')]);

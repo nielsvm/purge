@@ -71,11 +71,11 @@ class PurgerAddFormTest extends WebTestBase {
     $this->assertRaw(t('Add'));
     $this->assertEqual(['null' => 'null'], $this->purgePurgers->getPluginsEnabled());
     $json = $this->drupalPostAjaxForm($this->route->toString(), ['plugin_id' => 'purger_c'], ['op' => t('Add')]);
-    $this->assertEqual('closeDialog', $json[0]['command']);
-    $this->assertEqual('redirect', $json[1]['command']);
+    $this->assertEqual('closeDialog', $json[1]['command']);
+    $this->assertEqual('redirect', $json[2]['command']);
     $this->purgePurgers->reload();
     $this->assertTrue(in_array('purger_c', $this->purgePurgers->getPluginsEnabled()));
-    $this->assertEqual(2, count($json));
+    $this->assertEqual(3, count($json));
   }
 
   /**
@@ -89,8 +89,8 @@ class PurgerAddFormTest extends WebTestBase {
     $this->drupalGet($this->route);
     $this->assertRaw(t('Cancel'));
     $json = $this->drupalPostAjaxForm($this->route->toString(), [], ['op' => t('Cancel')]);
-    $this->assertEqual('closeDialog', $json[0]['command']);
-    $this->assertEqual(1, count($json));
+    $this->assertEqual('closeDialog', $json[1]['command']);
+    $this->assertEqual(2, count($json));
   }
 
   /**

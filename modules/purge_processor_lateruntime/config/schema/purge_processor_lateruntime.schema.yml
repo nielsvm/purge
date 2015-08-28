@@ -1,5 +1,5 @@
 purge_processor_lateruntime.settings:
-  type: mapping
+  type: config_object
   label: 'Purge late runtime processor'
   mapping:
     status:

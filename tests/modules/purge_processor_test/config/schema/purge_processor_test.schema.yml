@@ -1,5 +1,5 @@
 purge_processor_test.status:
-  type: mapping
+  type: config_object
   label: 'Purge test processors'
   mapping:
     a:

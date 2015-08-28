@@ -1,6 +1,6 @@
  # Schema for the configuration files of the Purge module.
 purge.plugins:
-  type: mapping
+  type: config_object
   label: 'Purge plugins'
   mapping:
     queue:
@@ -15,7 +15,7 @@ purge.plugins:
           label: 'Plugin ID'
       translatable: false
 purge.cache_tags_queuer:
-  type: mapping
+  type: config_object
   label: 'Purge cache tags queuer'
   mapping:
     status:

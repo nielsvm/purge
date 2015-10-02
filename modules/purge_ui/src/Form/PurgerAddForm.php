@@ -82,7 +82,7 @@ class PurgerAddForm extends ConfigFormBase {
       }
     }
     $form['plugin_id'] = [
-      '#access' => count($plugins),
+      '#access' => (bool)count($plugins),
       '#default_value' => count($plugins) ? key($plugins) : NULL,
       '#type' => 'radios',
       '#options' => $plugins
@@ -90,7 +90,7 @@ class PurgerAddForm extends ConfigFormBase {
 
     // Update the buttons and bind callbacks.
     $form['actions']['submit'] = [
-      '#access' => count($plugins),
+      '#access' => (bool)count($plugins),
       '#type' => 'submit',
       '#button_type' => 'primary',
       '#value' => $this->t("Add"),

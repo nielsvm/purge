@@ -23,7 +23,7 @@ interface PluginInterface extends ReliableQueueInterface, ContainerFactoryPlugin
    *   Non-associative array containing arrays with arbitrary data to be
    *   associated with the new tasks in the queue.
    *
-   * @return
+   * @return array|false
    *   Non-associative array containing unique ID's for the items that were
    *   saved successfully, otherwise FALSE. We don't guarantee the item was
    *   committed to disk etc, but as far as we know, the item is now in the
@@ -34,11 +34,11 @@ interface PluginInterface extends ReliableQueueInterface, ContainerFactoryPlugin
   /**
    * Claims multiple items from the queue for processing.
    *
-   * @param $claims
+   * @param int $claims
    *   Determines how many claims at once should be claimed from the queue. When
    *   the queue is unable to return as many items as requested it will return
    *   as much items as it can.
-   * @param $lease_time
+   * @param int $lease_time
    *   How long the processing is expected to take in seconds, defaults to an
    *   hour. After this lease expires, the item will be reset and another
    *   consumer can claim the item. For idempotent tasks (which can be run
@@ -48,14 +48,12 @@ interface PluginInterface extends ReliableQueueInterface, ContainerFactoryPlugin
    *   more rare for a given task to run multiple times in cases of failure,
    *   at the cost of higher latency.
    *
-   * @return
-   *   On success we return a non-associative array with item objects. If the
-   *   queue is unable to claim an item it will not be included in the array and
-   *   not include a FALSE as claimItem() does. This implies a best effort to
-   *   claim multiple items concurrently and implies a empty array when the
-   *   queue turns out to be empty.
+   * @return array
+   *   On success we return a non-associative array with item objects. When the
+   *   queue has no items that can be claimed, this doesn't return FALSE as
+   *   claimItem() does, but an empty array instead.
    *
-   *   If included, the objects will have at least the following properties:
+   *   If claims return, the objects have at least these properties:
    *   - data: the same as what what passed into createItem().
    *   - item_id: the unique ID returned from createItem().
    *   - created: timestamp when the item was put into the queue.
@@ -68,6 +66,7 @@ interface PluginInterface extends ReliableQueueInterface, ContainerFactoryPlugin
    * @param array $items
    *   Non-associative array with item objects as returned by
    *   claimItemMultiple() or \Drupal\Core\Queue\QueueInterface::claimItem().
+   * @return void
    */
   public function deleteItemMultiple(array $items);
 

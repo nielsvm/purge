@@ -173,8 +173,8 @@ class Database extends PluginBase implements Queue {
           ->fields([
             'expire' => time() + $lease_time,
           ])
-          ->condition('item_id', $item->item_id)
-          ->condition('expire', $item->expire);
+          ->condition('item_id', $item->item_id);
+
         // If there are affected rows, this update succeeded.
         if ($update->execute()) {
           $item->data = unserialize($item->data);
@@ -215,7 +215,6 @@ class Database extends PluginBase implements Queue {
           'expire' => time() + $lease_time,
         ])
         ->condition('item_id', $item_ids, 'IN')
-        ->condition('expire', $item->expire)
         ->execute();
     }
 
@@ -267,7 +266,7 @@ class Database extends PluginBase implements Queue {
     foreach ($items as $item) {
       $item_ids[] = $item->item_id;
     }
-    $update = $this->connection
+    $this->connection
       ->delete('queue')
       ->condition('item_id', $item_ids, 'IN')
       ->execute();

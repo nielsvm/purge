@@ -80,6 +80,15 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
+  public function delete() {
+    if ($this->pluginDefinition['multi_instance']) {
+      throw new \LogicException('Plugin is multi-instantiable, ::delete() not implemented!');
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getCapacityLimit() {
     $max_execution_time = (int) ini_get('max_execution_time');
     $time_per_invalidation = $this->getClaimTimeHint();

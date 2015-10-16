@@ -13,7 +13,7 @@ use Drupal\purge\Tests\WebTestBase;
 /**
  * Tests \Drupal\purge_ui\Form\QueuerEnableForm.
  *
- * @group purge
+ * @group purge_ui
  */
 class QueuerEnableFormTest extends WebTestBase {
 

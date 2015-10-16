@@ -13,7 +13,7 @@ use Drupal\purge_ui\Tests\ConfigFormTestBase;
 /**
  * Tests \Drupal\purge_ui\Form\ConfigForm - purgers section.
  *
- * @group purge
+ * @group purge_ui
  */
 class ConfigFormPurgersTest extends ConfigFormTestBase {
 

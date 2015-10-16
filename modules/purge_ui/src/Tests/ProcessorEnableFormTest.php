@@ -13,7 +13,7 @@ use Drupal\purge\Tests\WebTestBase;
 /**
  * Tests \Drupal\purge_ui\Form\ProcessorEnableForm.
  *
- * @group purge
+ * @group purge_ui
  */
 class ProcessorEnableFormTest extends WebTestBase {
 

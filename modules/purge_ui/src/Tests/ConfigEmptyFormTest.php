@@ -13,7 +13,7 @@ use Drupal\purge_ui\Tests\ConfigFormTestBase;
 /**
  * Tests \Drupal\purge_ui\Form\ConfigForm in almost default (no modules state).
  *
- * @group purge
+ * @group purge_ui
  */
 class ConfigEmptyFormTest extends ConfigFormTestBase {
 

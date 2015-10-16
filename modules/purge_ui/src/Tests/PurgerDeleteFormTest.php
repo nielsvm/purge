@@ -13,7 +13,7 @@ use Drupal\purge\Tests\WebTestBase;
 /**
  * Tests \Drupal\purge_ui\Form\PurgerDeleteForm.
  *
- * @group purge
+ * @group purge_ui
  */
 class PurgerDeleteFormTest extends WebTestBase {
 

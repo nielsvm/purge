@@ -61,6 +61,7 @@ class ConfigurationFormTest extends WebTestBase {
     $this->drupalGet($this->route);
     $this->assertResponse(200);
     $this->assertTitle(t('Configure HTTP Purger | Drupal'));
+    $this->assertField('edit-invalidationtype');
 
     // Verify every HTTP settings field exists.
     $this->assertField('edit-hostname');
@@ -100,6 +101,7 @@ class ConfigurationFormTest extends WebTestBase {
 
     // Post form with new values.
     $edit = [
+      'invalidationtype' => 'wildcardurl',
       'hostname' => 'example.com',
       'port' => 8080,
       'path' => 'node/1',
@@ -113,6 +115,7 @@ class ConfigurationFormTest extends WebTestBase {
 
     // Load settings form page and test for new values.
     $this->drupalGet($this->route);
+    $this->assertFieldById('edit-invalidationtype', $edit['invalidationtype']);
 
     // HTTP settings
     $this->assertFieldById('edit-hostname', $edit['hostname']);

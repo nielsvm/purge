@@ -7,7 +7,10 @@
 
 namespace Drupal\purge_purger_http\Form;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\purge\Invalidation\ServiceInterface as InvalidationInterface;
 use Drupal\purge_ui\Form\PurgerConfigFormBase;
 use Drupal\purge_purger_http\Entity\HttpPurgerSettings;
 
@@ -15,6 +18,13 @@ use Drupal\purge_purger_http\Entity\HttpPurgerSettings;
  * Configuration form for the HTTP Purger.
  */
 class ConfigurationForm extends PurgerConfigFormBase {
+
+  /**
+   * The service that generates invalidation objects on-demand.
+   *
+   * @var \Drupal\purge\Invalidation\ServiceInterface
+   */
+  protected $purgeInvalidationFactory;
 
   /**
    * Static listing of all possible requests methods.
@@ -26,6 +36,29 @@ class ConfigurationForm extends PurgerConfigFormBase {
    * @var array
    */
   protected $request_methods = ['BAN', 'GET', 'POST', 'HEAD', 'PUT', 'OPTIONS', 'PURGE', 'DELETE', 'TRACE', 'CONNECT'];
+
+  /**
+   * Constructs a \Drupal\purge_purger_http\Form\ConfigurationForm object.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
+   * @param \Drupal\purge\Invalidation\ServiceInterface $purge_invalidation_factory
+   *   The invalidation objects factory service.
+   */
+  public function __construct(ConfigFactoryInterface $config_factory, InvalidationInterface $purge_invalidation_factory) {
+    $this->setConfigFactory($config_factory);
+    $this->purgeInvalidationFactory = $purge_invalidation_factory;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('config.factory'),
+      $container->get('purge.invalidation.factory')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -46,6 +79,20 @@ class ConfigurationForm extends PurgerConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $settings = HttpPurgerSettings::load($this->getId($form_state));
+
+    // Invalidation type.
+    $types = [];
+    foreach ($this->purgeInvalidationFactory->getPlugins() as $type => $definition) {
+      $types[$type] = (string)$definition['label'];
+    }
+    $form['invalidationtype'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Type of invalidation'),
+      '#description' => $this->t('Configure which type of cache invalidation this purger will clear.'),
+      '#default_value' => $settings->invalidationtype,
+      '#options' => $types,
+      '#required' => FALSE,
+    ];
 
     // HTTP Settings.
     $form['http_settings'] = [
@@ -160,6 +207,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $settings = HttpPurgerSettings::load($this->getId($form_state));
+    $settings->invalidationtype = $form_state->getValue('invalidationtype');
     $settings->hostname = $form_state->getValue('hostname');
     $settings->port = $form_state->getValue('port');
     $settings->path = $form_state->getValue('path');

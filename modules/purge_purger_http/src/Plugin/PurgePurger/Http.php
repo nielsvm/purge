@@ -24,9 +24,10 @@ use Drupal\purge_purger_http\Entity\HttpPurgerSettings;
  *
  * @PurgePurger(
  *   id = "http",
- *   label = @Translation("HTTP Purger"),
+ *   label = @Translation("HTTP"),
  *   description = @Translation("Generic and highly configurable purger making HTTP requests, best suits custom configurations."),
  *   configform = "\Drupal\purge_purger_http\Form\ConfigurationForm",
+ *   types = {},
  *   multi_instance = TRUE,
  * )
  */
@@ -147,6 +148,13 @@ class Http extends PluginBase implements PluginInterface {
    */
   public function getNumberPurging() {
     throw new \Exception("Sorry, Not yet implemented!");
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTypes() {
+    return [$this->settings->invalidationtype];
   }
 
 }

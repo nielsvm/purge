@@ -5,6 +5,11 @@ purge_purger_http.settings.*:
     id:
       type: string
       label: 'ID'
+      translatable: false
+    invalidationtype:
+      type: string
+      label: 'Invalidation Type'
+      translatable: false
     hostname:
       type: string
       label: 'The hostname to connect to for the custom outbound HTTP request.'

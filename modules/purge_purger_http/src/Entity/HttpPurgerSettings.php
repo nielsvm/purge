@@ -23,6 +23,13 @@ use Drupal\purge\Purger\SettingsInterface;
 class HttpPurgerSettings extends SettingsBase implements SettingsInterface {
 
   /**
+   * The invalidation plugin ID that this instance is configured to invalidate.
+   *
+   * @var string
+   */
+  public $invalidationtype = 'tag';
+
+  /**
    * The hostname to connect to for the custom outbound HTTP request.
    *
    * @var string

@@ -32,7 +32,7 @@ class ReloadConfigFormCommand extends RedirectCommand implements CommandInterfac
    *   The fragment to jump to in the main config form.
    */
   public function __construct($fragment) {
-    $options = ['fragment' => $fragment, 'query' => ['unique' => time()]];
+    $options = ['fragment' => $fragment, 'query' => [$fragment => time()]];
     parent::__construct(Url::fromRoute($this->route, [], $options)->toString());
   }
 

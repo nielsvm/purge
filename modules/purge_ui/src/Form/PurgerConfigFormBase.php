@@ -14,6 +14,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\purge_ui\Form\CloseDialogTrait;
+use Drupal\purge_ui\Form\ReloadConfigFormCommand;
 
 /**
  * Provides a base class for purger configuration forms.
@@ -101,6 +102,7 @@ abstract class PurgerConfigFormBase extends ConfigFormBase {
       }
       else {
         $response->addCommand(new CloseModalDialogCommand());
+        $response->addCommand(new ReloadConfigFormCommand('edit-purgers'));
       }
       return $response;
     }

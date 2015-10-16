@@ -8,14 +8,13 @@
 namespace Drupal\purge_ui\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
-use Drupal\Core\Ajax\RedirectCommand;
 use Drupal\purge\Purger\ServiceInterface;
 use Drupal\purge_ui\Form\CloseDialogTrait;
+use Drupal\purge_ui\Form\ReloadConfigFormCommand;
 
 /**
  * Add a new instance of a purger plugin to purge.
@@ -123,8 +122,7 @@ class PurgerAddForm extends ConfigFormBase {
     if (in_array($plugin_id, $this->purgePurgers->getPluginsAvailable())) {
       $enabled[$this->purgePurgers->createId()] = $plugin_id;
       $this->purgePurgers->setPluginsEnabled($enabled);
-      $options = ['fragment' => 'edit-purgers', 'query' => ['purgers' => time()]];
-      $response->addCommand(new RedirectCommand(Url::fromRoute('purge_ui.config_form', [], $options)->toString()));
+      $response->addCommand(new ReloadConfigFormCommand('edit-purgers'));
     }
     return $response;
   }

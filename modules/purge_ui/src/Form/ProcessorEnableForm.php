@@ -8,14 +8,13 @@
 namespace Drupal\purge_ui\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
-use Drupal\Core\Ajax\RedirectCommand;
 use Drupal\purge\Processor\ServiceInterface;
 use Drupal\purge_ui\Form\CloseDialogTrait;
+use Drupal\purge_ui\Form\ReloadConfigFormCommand;
 
 /**
  * Enable a processor service.
@@ -113,8 +112,7 @@ class ProcessorEnableForm extends ConfigFormBase {
     $response->addCommand(new CloseModalDialogCommand());
     if (isset($this->purgeProcessors->getDisabled()[$id])) {
       $this->purgeProcessors->get($id)->enable();
-      $options = ['fragment' => 'edit-purgers', 'query' => ['processors' => time()]];
-      $response->addCommand(new RedirectCommand(Url::fromRoute('purge_ui.config_form', [], $options)->toString()));
+      $response->addCommand(new ReloadConfigFormCommand('edit-purgers'));
     }
     return $response;
   }

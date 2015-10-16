@@ -8,14 +8,13 @@
 namespace Drupal\purge_ui\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
-use Drupal\Core\Ajax\RedirectCommand;
 use Drupal\purge\Queuer\ServiceInterface;
 use Drupal\purge_ui\Form\CloseDialogTrait;
+use Drupal\purge_ui\Form\ReloadConfigFormCommand;
 
 /**
  * Enable a queuer service.
@@ -113,8 +112,7 @@ class QueuerEnableForm extends ConfigFormBase {
     $response->addCommand(new CloseModalDialogCommand());
     if (isset($this->purgeQueuers->getDisabled()[$id])) {
       $this->purgeQueuers->get($id)->enable();
-      $options = ['fragment' => 'edit-queuers', 'query' => ['queuers' => time()]];
-      $response->addCommand(new RedirectCommand(Url::fromRoute('purge_ui.config_form', [], $options)->toString()));
+      $response->addCommand(new ReloadConfigFormCommand('edit-queuers'));
     }
     return $response;
   }

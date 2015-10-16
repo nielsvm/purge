@@ -22,6 +22,8 @@ use Drupal\purge\Invalidation\PluginInterface as Invalidation;
  *   id = "null",
  *   label = @Translation("Null"),
  *   description = @Translation("API-compliant null purger back-end."),
+ *   types = {},
+ *   multi_instance = FALSE,
  * )
  */
 class Null extends PluginBase implements PluginInterface {

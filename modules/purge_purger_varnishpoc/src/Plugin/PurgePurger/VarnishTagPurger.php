@@ -31,9 +31,10 @@ use Drupal\purge_purger_varnishpoc\Entity\VarnishTagPurgerSettings;
  *
  * @PurgePurger(
  *   id = "varnish_tag",
- *   label = @Translation("Varnish (cache tags)"),
+ *   label = @Translation("VarnishPOC"),
  *   description = @Translation("Cache tags purger for Varnish."),
  *   configform = "Drupal\purge_purger_varnishpoc\Form\VarnishTagConfigForm",
+ *   types = {"tag"},
  *   multi_instance = TRUE,
  * )
  */

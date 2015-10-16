@@ -53,7 +53,6 @@ class ServiceTest extends KernelServiceTestBase {
    * Tests:
    *   - \Drupal\purge\Queue\Service::getPluginsEnabled
    *   - \Drupal\purge\Queue\Service::setPluginsEnabled
-   *   - \Drupal\purge\Queue\Service::setPluginsStatic
    *   - \Drupal\purge\Queue\Service::reload
    */
   public function testSettingAndGettingPlugins() {

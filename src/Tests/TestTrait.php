@@ -74,20 +74,23 @@ trait TestTrait {
    *
    * @param $plugin_ids
    *   Array of plugin ids to be enabled.
+   * @param $persistent
+   *   If the settings need to be stored in CMI, or not.
    */
-  protected function initializePurgersService($plugin_ids = []) {
-    if (!empty($plugin_ids)) {
-      PurgersService::setPluginsStatic($plugin_ids);
-    }
+  protected function initializePurgersService($plugin_ids = [], $persistent = FALSE) {
     if (is_null($this->purgePurgers)) {
       $this->purgePurgers = $this->container->get('purge.purgers');
     }
-    else {
-      $this->purgePurgers->reload();
-      if (!is_null($this->purgeDiagnostics)) {
-        $this->purgeDiagnostics->reload();
+    if (count($plugin_ids)) {
+      if ($persistent) {
+        $this->purgePurgers->reload();
+        $this->purgePurgers->setPluginsEnabled($plugin_ids);
+      }
+      else {
+        $this->purgePurgers->setPluginsEnabledSimpletestByPass($plugin_ids);
       }
     }
+    $this->initializeDiagnosticsService();
   }
 
   /**
@@ -104,25 +107,23 @@ trait TestTrait {
    *
    * @param $plugin_id
    *   The plugin ID of the queue to be configured.
+   * @param $persistent
+   *   If the settings need to be stored in CMI, or not.
    */
-  protected function initializeQueueService($plugin_id = NULL) {
-    if (!empty($plugin_id)) {
-      if (is_null($this->purgeQueue)) {
-        QueueService::setPluginsStatic([$plugin_id]);
-        $this->purgeQueue = $this->container->get('purge.queue');
-      }
-      else {
-        $this->purgeQueue->setPluginsEnabled([$plugin_id]);
-      }
-    }
+  protected function initializeQueueService($plugin_id = NULL, $persistent = FALSE) {
     if (is_null($this->purgeQueue)) {
       $this->purgeQueue = $this->container->get('purge.queue');
     }
-    else {
-      if (!is_null($this->purgeDiagnostics)) {
-        $this->purgeDiagnostics->reload();
+    if (!is_null($plugin_id)) {
+      if ($persistent) {
+        $this->purgePurgers->reload();
+        $this->purgeQueue->setPluginsEnabled([$plugin_ids]);
+      }
+      else {
+        $this->purgeQueue->setPluginsEnabledSimpletestByPass([$plugin_id]);
       }
     }
+    $this->initializeDiagnosticsService();
   }
 
   /**

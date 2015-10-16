@@ -32,6 +32,7 @@ abstract class WebTestBase extends RealWebTestBase {
   function setUp() {
     parent::setUp();
     $this->configFactory = $this->container->get('config.factory');
+    $this->initializeQueueService('memory');
   }
 
 }

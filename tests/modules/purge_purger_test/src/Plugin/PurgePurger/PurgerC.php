@@ -16,6 +16,7 @@ use Drupal\purge\Plugin\PurgePurger\Null;
  *   id = "purger_c",
  *   label = @Translation("Purger C"),
  *   description = @Translation("Test purger C."),
+ *   types = {"wildcardpath", "wildcardurl"},
  * )
  */
 class PurgerC extends Null {

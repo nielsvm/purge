@@ -17,6 +17,7 @@ use Drupal\purge\Plugin\PurgePurger\Null;
  *   label = @Translation("Configurable purger"),
  *   description = @Translation("Test purger with a form attached."),
  *   configform = "\Drupal\purge_purger_test\Form\PurgerConfigForm",
+ *   types = {"path"},
  * )
  */
 class PurgerWithForm extends Null {}

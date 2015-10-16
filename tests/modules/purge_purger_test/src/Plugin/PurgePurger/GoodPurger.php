@@ -17,10 +17,11 @@ use Drupal\purge\Invalidation\PluginInterface as Invalidation;
  *   id = "goodpurger",
  *   label = @Translation("Good Purger"),
  *   description = @Translation("A purger that always succeeds."),
+ *   types = {"tag, path, domain"},
  * )
  */
 class GoodPurger extends Null {
-  
+
   /**
    * {@inheritdoc}
    */

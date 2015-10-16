@@ -16,6 +16,7 @@ use Drupal\purge\Plugin\PurgePurger\Null;
  *   id = "purger_b",
  *   label = @Translation("Purger B"),
  *   description = @Translation("Test purger B."),
+ *   types = {"regex", "url"},
  * )
  */
 class PurgerB extends Null {

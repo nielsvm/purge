@@ -2,15 +2,15 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\StatusReportTest.
+ * Contains \Drupal\purge\Tests\DiagnosticCheck\StatusReportTest.
  */
 
-namespace Drupal\purge_ui\Tests;
+namespace Drupal\purge\Tests\DiagnosticCheck;
 
 use Drupal\simpletest\WebTestBase;
 
 /**
- * Tests purge_ui_requirements()
+ * Tests purge_requirements()
  *
  * @group purge
  */

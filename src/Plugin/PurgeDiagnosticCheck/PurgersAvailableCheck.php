@@ -77,26 +77,30 @@ class PurgersAvailableCheck extends PluginBase implements PluginInterface {
    */
   public function run() {
     $purgers = $this->purgePurgers->getPlugins();
-    $enabled = $this->purgePurgers->getPluginsEnabled();
+    $purgerlabels  = $this->purgePurgers->getLabels(FALSE);
 
     // Put all enabled in a comma separated value.
     $this->value = '';
-    if (!in_array('null', $enabled)) {
+    if (!empty($purgerlabels)) {
       $this->value = [];
-      foreach ($enabled as $plugin_id) {
-        $this->value[] = $purgers[$plugin_id]['label'];
+      foreach ($purgerlabels as $id => $label) {
+        $this->value[] = (string)$label;
       }
       $this->value = implode(', ', $this->value);
     }
 
-    // Test for the 'null' purger, which only loads if nothing else exists.
-    if (in_array('null', $enabled)) {
+    // Test for an empty set of labels, indicating no purgers are configured.
+    if (empty($purgerlabels)) {
       $this->recommendation = $this->t("There is no purger loaded which means ".
         "that you need a module enabled to provide a purger plugin to clear ".
         "your external cache or CDN.");
       return SELF::SEVERITY_ERROR;
     }
-    elseif (count($enabled) > 3) {
+    elseif (count($purgerlabels) == 1) {
+      $this->recommendation = $this->t("Purger configured.");
+      return SELF::SEVERITY_OK;
+    }
+    elseif (count($purgerlabels) > 3) {
       $this->recommendation = $this->t("You have more than 3 purgers active ".
         "on one system. This introduces the risk of congesting Drupal as ".
         "multiple purgers are clearing external caches. It is highly ".
@@ -104,7 +108,7 @@ class PurgersAvailableCheck extends PluginBase implements PluginInterface {
       return SELF::SEVERITY_WARNING;
     }
     else {
-      $this->recommendation = $this->t("Purger configured.");
+      $this->recommendation = $this->t("Purgers configured.");
       return SELF::SEVERITY_OK;
     }
   }

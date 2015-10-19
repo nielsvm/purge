@@ -29,7 +29,7 @@ abstract class KernelTestBase extends RealKernelTestBase {
   /**
    * Set up the test object.
    *
-   * @param $switch_to_memory_queue
+   * @param bool $switch_to_memory_queue
    *   Whether to switch the default queue to the memory backend or not.
    *
    */

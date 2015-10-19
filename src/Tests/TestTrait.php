@@ -72,7 +72,7 @@ trait TestTrait {
   /**
    * Make $this->purgePurgers available.
    *
-   * @param $plugin_ids
+   * @param string[] $plugin_ids
    *   Array of plugin ids to be enabled.
    */
   protected function initializePurgersService($plugin_ids = []) {
@@ -98,7 +98,7 @@ trait TestTrait {
   /**
    * Make $this->purgeQueue available.
    *
-   * @param $plugin_id
+   * @param null|string[] $plugin_id
    *   The plugin ID of the queue to be configured.
    */
   protected function initializeQueueService($plugin_id = NULL) {

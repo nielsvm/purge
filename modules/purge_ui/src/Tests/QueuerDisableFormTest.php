@@ -34,7 +34,11 @@ class QueuerDisableFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_ui'];
+  public static $modules = [
+    'purge_ui',
+    'purge_noqueuer_test',
+    'purge_queuer_test',
+  ];
 
   /**
    * Setup the test.
@@ -48,11 +52,13 @@ class QueuerDisableFormTest extends WebTestBase {
    * Tests permissions, the form controller and general form returning.
    */
   public function testAccess() {
-    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge.queuers.cache_tags']));
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge_queuer_test.queuera']));
     $this->assertResponse(403);
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge.queuers.cache_tags']));
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge_queuer_test.queuera']));
     $this->assertResponse(200);
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge_queuer_test.queuerb']));
+    $this->assertResponse(404);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => "doesnotexist"]));
     $this->assertResponse(404);
   }
@@ -65,9 +71,9 @@ class QueuerDisableFormTest extends WebTestBase {
    */
   public function testNo() {
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge.queuers.cache_tags']));
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge_queuer_test.queuera']));
     $this->assertRaw(t('No'));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'purge.queuers.cache_tags'])->toString(), [], ['op' => t('No')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'purge_queuer_test.queuera'])->toString(), [], ['op' => t('No')]);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }
@@ -76,19 +82,24 @@ class QueuerDisableFormTest extends WebTestBase {
    * Tests that 'Yes, disable..', disables the queuer and closes the window.
    *
    * @see \Drupal\purge_ui\Form\QueuerDisableForm::buildForm
-   * @see \Drupal\purge_ui\Form\CloseDialogTrait::disableQueuer
+   * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testDisableQueuer() {
     $this->initializeQueuersService();
-    $this->purgeQueuers->get('purge.queuers.cache_tags')->enable();
+    // Assert that disabling directly through the service works as expected.
+    $this->assertEqual(1, count($this->purgeQueuers->getEnabled()));
+    $this->purgeQueuers->get('purge_queuer_test.queuera')->disable();
+    $this->assertEqual(0, count($this->purgeQueuers->getEnabled()));
+    // Test disabling the queuer.
+    $this->purgeQueuers->get('purge_queuer_test.queuera')->enable();
+    $this->assertTrue($this->purgeQueuers->get('purge_queuer_test.queuera')->isEnabled());
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge.queuers.cache_tags']));
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge_queuer_test.queuera']));
     $this->assertRaw(t('Yes, disable this queuer!'));
-    $this->assertTrue($this->purgeQueuers->get('purge.queuers.cache_tags')->isEnabled());
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'purge.queuers.cache_tags'])->toString(), [], ['op' => t('Yes, disable this queuer!')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'purge_queuer_test.queuera'])->toString(), [], ['op' => t('Yes, disable this queuer!')]);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual('redirect', $json[2]['command']);
-    $this->purgeQueuers->reload();
+    $this->assertFalse($this->configFactory->get('purge_queuer_test.status')->get('a'));
   }
 
 }

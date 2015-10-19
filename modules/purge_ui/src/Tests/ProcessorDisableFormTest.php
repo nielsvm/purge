@@ -57,6 +57,8 @@ class ProcessorDisableFormTest extends WebTestBase {
     $this->drupalLogin($this->admin_user);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge_processor_test.a']));
     $this->assertResponse(200);
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge_processor_test.c']));
+    $this->assertResponse(404);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => "doesnotexist"]));
     $this->assertResponse(404);
   }
@@ -90,7 +92,6 @@ class ProcessorDisableFormTest extends WebTestBase {
     $this->assertTrue($this->purgeProcessors->get('purge_processor_test.a')->isEnabled());
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'purge_processor_test.a'])->toString(), [], ['op' => t('Yes, disable this processor!')]);
     $this->assertEqual('closeDialog', $json[1]['command']);
-    // The redirect command proves that its submit disabled the processor.
     $this->assertEqual('redirect', $json[2]['command']);
     $this->assertFalse($this->configFactory->get('purge_processor_test.status')->get('a'));
   }

@@ -79,7 +79,7 @@ class PurgerConfigFormTest extends WebTestBase {
    */
   function setUp() {
     parent::setUp();
-    $this->initializePurgersService(['bad' => 'purger_c', 'good' => $this->purger], TRUE);
+    $this->initializePurgersService(['bad' => 'purger_c', 'good' => $this->purger]);
     $this->urlValid = Url::fromRoute($this->route, ['id' => 'good']);
     $this->urlValidDialog = Url::fromRoute($this->route_dialog, ['id' => 'good']);
     $this->urlInvalid = Url::fromRoute($this->route, ['id' => 'bad']);

@@ -37,7 +37,7 @@ class ConfigFormPurgersTest extends ConfigFormTestBase {
   public function testFormPurgersSection() {
     $this->drupalLogin($this->admin_user);
     // Assert that without any enabled purgers, the form stays empty.
-    $this->initializePurgersService([]);
+    $this->initializePurgersService();
     $this->drupalGet($this->route);
     $this->assertRaw('Purgers are provided by third-party modules and clear content from external caching systems.');
     $this->assertNoRaw('Purger A</th>');
@@ -45,7 +45,7 @@ class ConfigFormPurgersTest extends ConfigFormTestBase {
     $this->assertNoRaw('Purger C</th>');
     $this->assertNoRaw('Configurable purger</th>');
     // Assert that enabled purgers show up and have the right buttons attached.
-    $this->initializePurgersService(['id1' => 'purger_a', 'id2' => 'purger_withform'], TRUE);
+    $this->initializePurgersService(['id1' => 'purger_a', 'id2' => 'purger_withform']);
     $this->drupalGet($this->route);
     $this->assertRaw('<th title="Test purger A." class="priority-medium">Purger A</th>');
     $this->assertRaw('<th title="Test purger with a form attached." class="priority-medium">Configurable purger</th>');
@@ -68,7 +68,7 @@ class ConfigFormPurgersTest extends ConfigFormTestBase {
     $this->assertRaw("Everything</td>$checked");
     // Assert that the 'Add purger' button only shows up when it actually should.
     $this->assertRaw(t('Add purger'));
-    $this->initializePurgersService(['id1' => 'purger_a', 'id2' => 'purger_b', 'id3' => 'purger_c', 'id4' => 'purger_withform', 'id5' => 'goodpurger'], TRUE);
+    $this->initializePurgersService(['id1' => 'purger_a', 'id2' => 'purger_b', 'id3' => 'purger_c', 'id4' => 'purger_withform', 'id5' => 'goodpurger']);
     $this->drupalGet($this->route);
     $this->assertNoRaw(t('Add purger'));
   }

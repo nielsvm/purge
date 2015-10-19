@@ -27,6 +27,11 @@ class ConfigFormPurgersTest extends ConfigFormTestBase {
   /**
    * Test the queue section of the configuration form.
    *
+   * @warning
+   *   This test depends on raw HTML, which is a bit of a maintenance cost. At
+   *   the same time, core's markup guarantees should keep us safe. Having that
+   *   said, for the purpose of testing, raw HTML checking is very accurate :-).
+   *
    * @see \Drupal\purge_ui\Form\ConfigForm::buildFormPurgers
    */
   public function testFormPurgersSection() {
@@ -48,6 +53,19 @@ class ConfigFormPurgersTest extends ConfigFormTestBase {
     $this->assertRaw('href="/admin/config/development/performance/purge/purger/id1/delete"');
     $this->assertRaw('href="/admin/config/development/performance/purge/purger/id2/dialog"');
     $this->assertRaw('href="/admin/config/development/performance/purge/purger/id2/delete"');
+    // Assert that the purger-type supportability matrix shows the checkmarks.
+    $padding = str_repeat(' ', 22);
+    $unchecked = "\n$padding<td class=\"priority-medium\">&nbsp;</td>";
+    $checked = "\n$padding<td class=\"priority-medium\"><img src=";
+    $this->assertRaw('core/misc/icons/73b355/check.svg');
+    $this->assertRaw('width="18" height="18" alt="Supported" title="Supported" />');
+    $this->assertRaw("Domain</td>$unchecked");
+    $this->assertRaw("Path</td>$unchecked");
+    $this->assertRaw("Tag</td>$unchecked");
+    $this->assertRaw("Regular expression</td>$unchecked");
+    $this->assertRaw("Path with wildcard</td>$unchecked");
+    $this->assertRaw("Url with wildcard</td>$unchecked");
+    $this->assertRaw("Everything</td>$checked");
     // Assert that the 'Add purger' button only shows up when it actually should.
     $this->assertRaw(t('Add purger'));
     $this->initializePurgersService(['id1' => 'purger_a', 'id2' => 'purger_b', 'id3' => 'purger_c', 'id4' => 'purger_withform', 'id5' => 'goodpurger'], TRUE);

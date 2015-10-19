@@ -122,6 +122,7 @@ class Service extends ServiceBase implements ServiceInterface {
   public function reload() {
     $this->position = 0;
     $this->processors = [];
+    $this->idmap = [];
   }
 
   /**

@@ -51,7 +51,9 @@ class QueuerFormController extends ControllerBase {
    */
   public function disableForm($id) {
     if ($queuer = $this->purgeQueuers->get($id)) {
-      return $this->formBuilder()->getForm("\Drupal\purge_ui\Form\QueuerDisableForm", $id);
+      if ($this->purgeQueuers->get($id)->isEnabled()) {
+        return $this->formBuilder()->getForm("\Drupal\purge_ui\Form\QueuerDisableForm", $id);
+      }
     }
     throw new NotFoundHttpException();
   }

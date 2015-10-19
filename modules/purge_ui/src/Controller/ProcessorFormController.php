@@ -51,7 +51,9 @@ class ProcessorFormController extends ControllerBase {
    */
   public function disableForm($id) {
     if ($processor = $this->purgeProcessors->get($id)) {
-      return $this->formBuilder()->getForm("\Drupal\purge_ui\Form\ProcessorDisableForm", $id);
+      if ($this->purgeProcessors->get($id)->isEnabled()) {
+        return $this->formBuilder()->getForm("\Drupal\purge_ui\Form\ProcessorDisableForm", $id);
+      }
     }
     throw new NotFoundHttpException();
   }

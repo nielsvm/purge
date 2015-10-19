@@ -42,6 +42,19 @@ class PurgePurger extends Plugin {
   public $description;
 
   /**
+   * A list of invalidation types that are supported by the purger plugin, for
+   * instance 'tag', 'path' or 'url'. The plugin will only receive invalidation
+   * requests for the given types, others fail with state STATE_UNSUPPORTED. It
+   * is possible to dynamically provide this list by overloading the base
+   * implementation of \Drupal\purge\Purger\SharedInterface::getTypes().
+   *
+   * @see \Drupal\purge\Purger\SharedInterface::getTypes()
+   *
+   * @var string[]
+   */
+  public $types = [];
+
+  /**
    * Whether end users can create more then one instance of the purger plugin.
    *
    * When you set 'multi_instance = TRUE' in your plugin annotation, it

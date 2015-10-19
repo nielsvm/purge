@@ -11,7 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
-use Drupal\purge\Plugin\PurgeInvalidation\Tag;
 use Drupal\purge\Purger\PluginBase;
 use Drupal\purge\Purger\PluginInterface;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
@@ -99,14 +98,6 @@ class VarnishTagPurger extends PluginBase implements PluginInterface {
    * @see http://stackoverflow.com/questions/25661591/php-how-to-check-for-timeout-exception-in-guzzle-4
    */
   public function invalidate(Invalidation $invalidation) {
-
-    // For now - until Purge only sends supported invalidation objects - mark
-    // anything besides a tag as immediately failed.
-    if (!$invalidation instanceof Tag) {
-      $invalidation->setState(Invalidation::STATE_FAILED);
-      $this->numberFailed += 1;
-      return;
-    }
 
     // When the URL setting is still empty, we also fail.
     if (empty($this->settings->url)) {

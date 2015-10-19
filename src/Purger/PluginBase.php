@@ -133,6 +133,26 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
+  public function getLabel() {
+    $label = $this->getPluginDefinition()['label'];
+    if ($this->getPluginDefinition()['multi_instance']) {
+      return $this->t('@label @id', ['@label' => $label, '@id' => $this->id]);
+    }
+    else {
+      return $label;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTypes() {
+    return $this->getPluginDefinition()['types'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getNumberPurged() {
     return $this->numberPurged;
   }

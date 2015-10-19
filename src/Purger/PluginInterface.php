@@ -31,6 +31,15 @@ interface PluginInterface extends ContainerFactoryPluginInterface, SharedInterfa
   public function getId();
 
   /**
+   * Generate a user-readable label for this purger (instance).
+   *
+   * @see \Drupal\purge\Annotation\PurgePurger::$label
+   *
+   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   */
+  public function getLabel();
+
+  /**
    * The current instance of this purger plugin is about to be deleted.
    *
    * When end-users decide to uninstall this purger through the user interface,

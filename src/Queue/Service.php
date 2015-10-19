@@ -110,48 +110,25 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * {@inheritdoc}
    */
   public function setPluginsEnabled(array $plugin_ids) {
-    static::setPluginsStatic($plugin_ids, $this->pluginManager, $this->configFactory);
+    if (count($plugin_ids) !== 1) {
+      throw new \LogicException('Incorrect number of arguments.');
+    }
+    $plugin_id = current($plugin_ids);
+    if (!isset($this->pluginManager->getDefinitions()[$plugin_id])) {
+      throw new \LogicException('Invalid plugin_id.');
+    }
+    $this->configFactory->getEditable('purge.plugins')->set('queue', $plugin_id)->save();
     $this->reload();
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function setPluginsStatic(array $plugin_ids, PluginManagerInterface $plugin_manager = NULL, ConfigFactoryInterface $config_factory = NULL) {
-    if (count($plugin_ids) !== 1) {
-      throw new \LogicException('Incorrect number of arguments in ::setPluginsStatic().');
-    }
-    if (is_null($plugin_manager)) {
-      $plugin_manager = \Drupal::service('plugin.manager.purge.queue');
-    }
-    if (is_null($config_factory)) {
-      $config_factory = \Drupal::service('config.factory');
-    }
-    $plugin_id = current($plugin_ids);
-    if (!isset($plugin_manager->getDefinitions()[$plugin_id])) {
-      throw new \LogicException('Invalid plugin_id in ::setPluginsStatic().');
-    }
-    $config_factory->getEditable('purge.plugins')->set('queue', $plugin_id)->save();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function reload() {
-
-    // First commit all work and destruct the plugin if it needs destruction.
-    $this->commit();
-    if ($this->queue instanceof DestructableInterface) {
-      $this->queue->destruct();
-    }
-
-    // Reset all properties and empty the buffer.
     parent::reload();
+    $this->configFactory = \Drupal::configFactory();
     $this->queue = NULL;
     $this->buffer->deleteEverything();
-
-    // Refetch the configFactory - needed in tests - and reinitialize.
-    $this->configFactory = \Drupal::configFactory();
     $this->initializeQueue();
   }
 

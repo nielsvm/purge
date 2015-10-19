@@ -30,20 +30,24 @@ interface SharedInterface {
    * future (via the queue presumably). That means that incoming $invalidation
    * objects have to be checked for the STATE_PURGING in these cases as well.
    *
+   * Implementations of \Drupal\purge\Purger\ServiceInterface::invalidate() can
+   * also set the state to STATE_UNSUPPORTED when available purgers cannot
+   * invalidate the type of $invalidation given.
+   *
    * @param \Drupal\purge\Invalidation\PluginInterface $invalidation
    *   The invalidation object describes what needs to be invalidated from the
    *   external caching system, and gets instantiated by the service
    *   'purge.invalidation.factory', either directly or through a queue claim.
    *
    * @throws \Drupal\purge\Purger\Exception\InvalidStateException
-   *   Exception thrown by \Drupal\purge\Purger\ServiceInterface::invalidate
+   *   Exception thrown by \Drupal\purge\Purger\SharedInterface::invalidate
    *   when the incoming $invalidation object's state is not any of these:
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_NEW
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGING
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_FAILED
    *
    * @throws \Drupal\purge\Purger\Exception\InvalidStateException
-   *   Exception thrown by \Drupal\purge\Purger\ServiceInterface::invalidate
+   *   Exception thrown by \Drupal\purge\Purger\SharedInterface::invalidate
    *   when the invalidation object processed by the purger plugin, is not in
    *   any of the following states:
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGED
@@ -73,13 +77,17 @@ interface SharedInterface {
    * future (via the queue presumably). That means that incoming $invalidation
    * objects have to be checked for the STATE_PURGING in these cases as well.
    *
+   * \Drupal\purge\Purger\ServiceInterface::invalidateMultiple() implementations
+   * can also set the state to STATE_UNSUPPORTED when available purgers cannot
+   * invalidate the type of $invalidation given.
+   *
    * @param \Drupal\purge\Invalidation\PluginInterface[] $invalidations
    *   Non-associative array of invalidation objects that each describe what
    *   needs to be invalidated by the external caching system. These objects can
    *   come from the queue or from the 'purge.invalidation.factory' service.
    *
    * @throws \Drupal\purge\Purger\Exception\InvalidStateException
-   *   Thrown by \Drupal\purge\Purger\ServiceInterface::invalidateMultiple when
+   *   Thrown by \Drupal\purge\Purger\SharedInterface::invalidateMultiple when
    *   any of the incoming invalidation objects does not have any of the
    *   following states:
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_NEW
@@ -87,7 +95,7 @@ interface SharedInterface {
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_FAILED
    *
    * @throws \Drupal\purge\Purger\Exception\InvalidStateException
-   *   Thrown by \Drupal\purge\Purger\ServiceInterface::invalidateMultiple when
+   *   Thrown by \Drupal\purge\Purger\SharedInterface::invalidateMultiple when
    *   any of the invalidation objects returning from the purger plugin are not
    *   in one of these states:
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGED
@@ -191,5 +199,15 @@ interface SharedInterface {
    *   The current number of invalidation objects being processed.
    */
   public function getNumberPurging();
+
+  /**
+   * Retrieve the list of supported invalidation types.
+   *
+   * @see \Drupal\purge\Annotation\PurgePurger::$types.
+   *
+   * @return string[]
+   *   List of supported invalidation type plugins.
+   */
+  public function getTypes();
 
 }

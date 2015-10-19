@@ -92,8 +92,6 @@ class QueuerA implements QueuerInterface {
     list($prefix, $key) = $this->config;
     $this->configFactory->getEditable($prefix)->set($key, TRUE)->save();
     $this->status = TRUE;
-    $i = $this->purgeInvalidationFactory->get('path', 'news/big-fat-headline');
-    $this->purgeQueue->add($i);
   }
 
   /**

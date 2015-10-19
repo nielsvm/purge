@@ -29,21 +29,4 @@ interface ModifiableServiceInterface {
    */
   public function setPluginsEnabled(array $plugin_ids);
 
-  /**
-   * Configure the plugins to be used by the service when it isn't started yet.
-   *
-   * @param string[] $plugin_ids
-   *   Array with the plugin ids to be enabled in its value.
-   * @param \Drupal\Component\Plugin\PluginManagerInterface $plugin_manager
-   *   The plugin manager for the service.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   *
-   * @throws \LogicException
-   *   Thrown when the parameter $plugin_ids doesn't make any sense.
-   *
-   * @return void
-   */
-  public static function setPluginsStatic(array $plugin_ids, PluginManagerInterface $plugin_manager = NULL, ConfigFactoryInterface $config_factory = NULL);
-
 }

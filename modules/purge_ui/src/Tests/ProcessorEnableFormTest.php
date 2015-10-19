@@ -49,18 +49,32 @@ class ProcessorEnableFormTest extends WebTestBase {
   }
 
   /**
+   * Tests permissions, the form controller and general form returning.
+   */
+  public function testAccess() {
+    $this->initializeProcessorsService();
+    $this->drupalGet(Url::fromRoute($this->route));
+    $this->assertResponse(403);
+    $this->drupalLogin($this->admin_user);
+    $this->drupalGet(Url::fromRoute($this->route));
+    $this->assertResponse(200);
+    $this->purgeProcessors->get('purge_processor_test.c')->enable();
+    $this->drupalGet(Url::fromRoute($this->route));
+    $this->assertResponse(200);
+    $this->purgeProcessors->get('purge_processor_test.d')->enable();
+    $this->drupalGet(Url::fromRoute($this->route));
+    $this->assertResponse(404);
+    $this->purgeProcessors->get('purge_processor_test.c')->disable();
+    $this->purgeProcessors->get('purge_processor_test.d')->disable();
+  }
+
+  /**
    * Tests that the cancel button closes the dialog.
    *
    * @see \Drupal\purge_ui\Form\ProcessorEnableForm::buildForm
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testCancelAndEnabling() {
-    $this->initializeProcessorsService();
-    $this->assertEqual(2, count($this->purgeProcessors->getDisabled()));
-    $this->purgeProcessors->get('purge_processor_test.a')->disable();
-    $this->assertEqual(3, count($this->purgeProcessors->getDisabled()));
-    $this->assertFalse($this->configFactory->get('purge_processor_test.status')->get('a'));
-
     // Tests the cancel button.
     $this->drupalLogin($this->admin_user);
     $this->drupalGet(Url::fromRoute($this->route));
@@ -68,24 +82,19 @@ class ProcessorEnableFormTest extends WebTestBase {
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('Cancel')]);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
-
     // Tests adding processors.
+    $this->assertFalse($this->configFactory->get('purge_processor_test.status')->get('c'));
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertRaw(t('Add'));
-    $this->assertRaw(t('Processor A'));
+    $this->assertNoRaw(t('Processor A'));
+    $this->assertNoRaw(t('Processor B'));
     $this->assertRaw(t('Processor C'));
     $this->assertRaw(t('Processor D'));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['id' => 'purge_processor_test.a'], ['op' => t('Add')]);
-    $this->assertTrue($this->configFactory->get('purge_processor_test.status')->get('a'));
-    $this->assertEqual('closeDialog', $json[1]['command']);
-    // The redirect command proves that its submit enabled the processor.
-    $this->assertEqual('redirect', $json[2]['command']);
-    $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['id' => 'purge_processor_test.c'], ['op' => t('Add')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['id' => 'purge_processor_test.c'], ['op' => t('Add')]);
     $this->assertTrue($this->configFactory->get('purge_processor_test.status')->get('c'));
-    $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['id' => 'purge_processor_test.d'], ['op' => t('Add')]);
-    $this->assertTrue($this->configFactory->get('purge_processor_test.status')->get('d'));
-    $this->drupalGet(Url::fromRoute($this->route));
-    $this->assertResponse(404);
+    $this->assertEqual('closeDialog', $json[1]['command']);
+    $this->assertEqual('redirect', $json[2]['command']);
+    $this->assertTrue($this->configFactory->get('purge_processor_test.status')->get('c'));
   }
 
 }

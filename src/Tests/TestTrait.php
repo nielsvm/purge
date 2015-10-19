@@ -116,8 +116,8 @@ trait TestTrait {
     }
     if (!is_null($plugin_id)) {
       if ($persistent) {
-        $this->purgePurgers->reload();
-        $this->purgeQueue->setPluginsEnabled([$plugin_ids]);
+        $this->purgeQueue->reload();
+        $this->purgeQueue->setPluginsEnabled([$plugin_id]);
       }
       else {
         $this->purgeQueue->setPluginsEnabledSimpletestByPass([$plugin_id]);
@@ -166,6 +166,16 @@ trait TestTrait {
       $set[] = $this->purgeInvalidationFactory->get('everything');
     }
     return ($number === 1) ? $set[0] : $set;
+  }
+
+  /**
+   * Switch to the memory queue backend.
+   */
+  public function setMemoryQueue() {
+    $this->configFactory = $this->container->get('config.factory');
+    $this->config('purge.plugins')
+      ->set('queue', 'memory')
+      ->save();
   }
 
 }

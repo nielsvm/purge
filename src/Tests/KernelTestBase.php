@@ -28,11 +28,19 @@ abstract class KernelTestBase extends RealKernelTestBase {
 
   /**
    * Set up the test object.
+   *
+   * @param $switch_to_memory_queue
+   *   Whether to switch the default queue to the memory backend or not.
+   *
    */
-  function setUp() {
+  function setUp($switch_to_memory_queue = TRUE) {
     parent::setUp();
     $this->installConfig(['purge']);
-    $this->configFactory = $this->container->get('config.factory');
+
+    // The default 'database' queue backend gives issues, switch to 'memory'.
+    if ($switch_to_memory_queue) {
+      $this->setMemoryQueue();
+    }
   }
 
 }

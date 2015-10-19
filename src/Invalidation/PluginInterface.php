@@ -84,7 +84,7 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
   /**
    * Set the state of the invalidation.
    *
-   * @param $state
+   * @param int $state
    *   Integer matching to any of the PluginInterface::STATE_* constants.
    *
    * @throws \Drupal\purge\Invalidation\Exception\InvalidStateException

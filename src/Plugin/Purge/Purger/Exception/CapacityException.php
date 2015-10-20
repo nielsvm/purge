@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\Exception\ResourceException.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException.
  */
 
 namespace Drupal\purge\Plugin\Purge\Purger\Exception;

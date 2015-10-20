@@ -39,6 +39,12 @@ interface SharedInterface {
    *   external caching system, and gets instantiated by the service
    *   'purge.invalidation.factory', either directly or through a queue claim.
    *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException
+   *   When the capacity tracker's global resource limit returns zero, it is no
+   *   longer allowed to conduct cache invalidations. Any claimed objects should
+   *   be released back to the queue (or will expire naturally) and your code
+   *   should depend on the next processing window.
+   *
    * @throws \Drupal\purge\Purger\Exception\BadPluginBehaviorException
    *   Exception thrown by \Drupal\purge\Purger\SharedInterface::invalidate
    *   when the incoming $invalidation object's state is not any of these:
@@ -85,6 +91,15 @@ interface SharedInterface {
    *   Non-associative array of invalidation objects that each describe what
    *   needs to be invalidated by the external caching system. These objects can
    *   come from the queue or from the 'purge.invalidation.factory' service.
+   *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
+   *   Thrown when the $invalidations parameter is empty.
+   *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException
+   *   Thrown when the capacity tracker's global resource limit returns zero or
+   *   when more $invalidations are given exceeding this limit. Any claimed
+   *   objects should be released back to the queue (or will expire naturally)
+   *   and your code should depend on the next processing window.
    *
    * @throws \Drupal\purge\Purger\Exception\BadPluginBehaviorException
    *   Thrown by \Drupal\purge\Purger\SharedInterface::invalidateMultiple when

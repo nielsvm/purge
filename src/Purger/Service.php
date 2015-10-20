@@ -12,6 +12,8 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Capacity\Tracker;
 use Drupal\purge\Purger\ServiceInterface;
 use Drupal\purge\Invalidation\Exception\InvalidStateException;
@@ -330,6 +332,11 @@ class Service extends ServiceBase implements ServiceInterface {
     $types = $this->getTypes();
     $results = [];
 
+    // Stop any attempt when there is no available capacity.
+    if (!$this->capacityTracker()->getLimit()) {
+      throw new CapacityException('No capacity available or resource limits exceeded.');
+    }
+
     // Test $invalidation's inbound object state.
     $initialstate = $invalidation->getState();
     if (!in_array($initialstate, $this->states_inbound)) {
@@ -364,9 +371,15 @@ class Service extends ServiceBase implements ServiceInterface {
     $initialstates = [];
     $results = [];
 
-    // Fail early if no objects we're given.
+    // Throw exceptions for various unsupported conditions.
     if (empty($invalidations)) {
-      return;
+      throw new BadBehaviorException('Given $invalidations array is empty.');
+    }
+    if (!$this->capacityTracker()->getLimit()) {
+      throw new CapacityException('No capacity available or resource limits exceeded.');
+    }
+    if (count($invalidations) > $this->capacityTracker()->getLimit()) {
+      throw new CapacityException('Given $invalidations has more items than the capacity limit allows.');
     }
 
     // Test each invalidation object to see if its in a valid inbound state.

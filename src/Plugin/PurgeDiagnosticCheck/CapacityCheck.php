@@ -65,17 +65,21 @@ class CapacityCheck extends PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function run() {
-    $this->value = $this->purgePurgers->capacityTracker()->getLimit();
+    $tracker = $this->purgePurgers->capacityTracker();
+    $this->value = $tracker->getLimit();
+    $ideal_limit = $tracker->getIdealConditionsLimit();
+    $placeholders = ['@limit' => $this->value, '@ideallimit' => $ideal_limit];
+
     if ($this->value === 0) {
       $this->recommendation = $this->t("There is no purging capacity available.");
       return SELF::SEVERITY_WARNING;
     }
-    elseif ($this->value < 3) {
-      $this->recommendation = $this->t("There is not much capacity available, this means that Drupal might be attempting purges at higher rate then your configuration is able to catch up. Expect your queue to build up quickly.");
+    elseif ($this->value < 5) {
+      $this->recommendation = $this->t("Your system invalidates just @limit items through webserver-initated processing. If you notice that purge cannot keep up with its queue, reconsider your configuration.", $placeholders);
       return SELF::SEVERITY_WARNING;
     }
     else {
-      $this->recommendation = $this->t("Your system can invalidate @number items per Drupal request.", ['@number' => $this->value]);
+      $this->recommendation = $this->t("Your system can invalidate @limit items when you're processing through webserver-initated requests. Under ideal conditions - for example via Drush - the capacity would be @ideallimit.", $placeholders);
       return SELF::SEVERITY_OK;
     }
   }

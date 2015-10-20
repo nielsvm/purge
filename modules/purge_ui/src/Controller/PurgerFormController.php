@@ -97,7 +97,8 @@ class PurgerFormController extends ControllerBase {
   public function configFormTitle($id) {
     if ($definition = $this->getPurgerPluginDefinition($id)) {
       if (isset($definition['configform']) && !empty($definition['configform'])) {
-        return $this->t('Configure @label', ['@label' => $definition['label']]);
+        $label = $this->purgePurgers->getLabels()[$id];
+        return $this->t('Configure @label', ['@label' => $label]);
       }
     }
     return $this->t('Configure');

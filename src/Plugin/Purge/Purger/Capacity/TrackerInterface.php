@@ -77,11 +77,11 @@ interface TrackerInterface {
    *
    * The first time ::getLimit() gets called, it calculates how many cache
    * invalidations can take during request lifetime. Its decision is based upon
-   * ::getMaxExecutionTime() and all individual purger implementations of
-   * ::getIdealConditionsLimit(). Once it figured out how many objects are
-   * allowed to be purged during this request, it will always return the latest
-   * limit as it stands during request lifetime. When it returns zero, no more
-   * items can be claimed from the queue or fed to the purgers service.
+   * ::getMaxExecutionTime() and ::getIdealConditionsLimit(). Once it figured
+   * out how many objects are allowed to be purged during this request, it will
+   * always return the latest limit as it stands during request lifetime. When
+   * it returns zero, no more items can be claimed from the queue or fed to the
+   * purgers service.
    *
    * In order to track this global limit, ::decrementLimit() gets called every
    * time the purgers service attempted one or more invalidations until the
@@ -98,6 +98,33 @@ interface TrackerInterface {
   public function decrementLimit($amount = 1);
 
   /**
+   * Get the maximum number of invalidations that can be processed.
+   *
+   * External cache invalidation is expensive and can become exponentially more
+   * expensive when multiple platforms are being invalidated. To assure that we
+   * don't purge more than Drupal's request lifetime allows for, ::getTimeHint()
+   * gives us the highest number of seconds a cache invalidation could take.
+   *
+   * The first time ::getLimit() gets called, it calculates how many cache
+   * invalidations can take during request lifetime. Its decision is based upon
+   * ::getMaxExecutionTime() and ::getIdealConditionsLimit(). Once it figured
+   * out how many objects are allowed to be purged during this request, it will
+   * always return the latest limit as it stands during request lifetime. When
+   * it returns zero, no more items can be claimed from the queue or fed to the
+   * purgers service.
+   *
+   * In order to track this global limit, ::decrementLimit() gets called every
+   * time the purgers service attempted one or more invalidations until the
+   * value becomes zero.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getIdealConditionsLimit()
+   *
+   * @return int
+   *   The number of invalidations that can be processed under ideal conditions.
+   */
+  public function getIdealConditionsLimit();
+
+  /**
    * Get the remaining number of allowed cache invalidations for this request.
    *
    * External cache invalidation is expensive and can become exponentially more
@@ -107,11 +134,11 @@ interface TrackerInterface {
    *
    * The first time ::getLimit() gets called, it calculates how many cache
    * invalidations can take during request lifetime. Its decision is based upon
-   * ::getMaxExecutionTime() and all individual purger implementations of
-   * ::getIdealConditionsLimit(). Once it figured out how many objects are
-   * allowed to be purged during this request, it will always return the latest
-   * limit as it stands during request lifetime. When it returns zero, no more
-   * items can be claimed from the queue or fed to the purgers service.
+   * ::getMaxExecutionTime() and ::getIdealConditionsLimit(). Once it figured
+   * out how many objects are allowed to be purged during this request, it will
+   * always return the latest limit as it stands during request lifetime. When
+   * it returns zero, no more items can be claimed from the queue or fed to the
+   * purgers service.
    *
    * In order to track this global limit, ::decrementLimit() gets called every
    * time the purgers service attempted one or more invalidations until the
@@ -119,7 +146,7 @@ interface TrackerInterface {
    *
    * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::decrementLimit()
    * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHint()
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getIdealConditionsLimit()
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getIdealConditionsLimit()
    *
    * @return int
    *   The remaining number of allowed cache invalidations during the remainder

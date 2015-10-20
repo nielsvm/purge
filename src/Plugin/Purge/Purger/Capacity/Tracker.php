@@ -58,6 +58,13 @@ class Tracker implements TrackerInterface {
   protected $counterUnsupported;
 
   /**
+   * The number of invalidations that can be processed under ideal conditions.
+   *
+   * @var int
+   */
+  protected $idealConditionsLimit;
+
+  /**
    * The maximum number of seconds available to cache invalidation. Zero means
    * that PHP has no fixed execution time limit, for instance on the CLI.
    *
@@ -148,6 +155,21 @@ class Tracker implements TrackerInterface {
   /**
    * {@inheritdoc}
    */
+  public function getIdealConditionsLimit() {
+    if (is_null($this->idealConditionsLimit)) {
+      // Find the lowest emitted ideal conditions limit.
+      $this->idealConditionsLimit = [];
+      foreach ($this->purgers as $purger) {
+        $this->idealConditionsLimit[] = $purger->getIdealConditionsLimit();
+      }
+      $this->idealConditionsLimit = (int) min($this->idealConditionsLimit);
+    }
+    return $this->idealConditionsLimit;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getLimit() {
     if (is_null($this->counterLimit)) {
 
@@ -157,19 +179,12 @@ class Tracker implements TrackerInterface {
         return $this->counterLimit->get();
       }
 
-      // Find the lowest emitted ideal conditions limit.
-      $ideal_conditions_limit = [];
-      foreach ($this->purgers as $purger) {
-        $ideal_conditions_limit[] = $purger->getIdealConditionsLimit();
-      }
-      $ideal_conditions_limit = (int) min($ideal_conditions_limit);
-
       // When the maximum execution time is zero, Drupal is given a lot more
       // power to finish its request. However, we cannot just run for several
       // hours, therefore we take the lowest ideal conditions limit as value.
       $max_execution_time = $this->getMaxExecutionTime();
       if ($max_execution_time === 0) {
-        $this->counterLimit = new Counter($ideal_conditions_limit);
+        $this->counterLimit = new Counter($this->getIdealConditionsLimit());
         return $this->counterLimit->get();
       }
 
@@ -179,14 +194,16 @@ class Tracker implements TrackerInterface {
 
       // In the rare case the runtime limit exceeds the ideal conditions limit,
       // we lower the runtime limit to the ideal conditions limit.
-      if ($runtime_limit > $ideal_conditions_limit) {
-        $runtime_limit = $ideal_conditions_limit;
+      if ($runtime_limit > $this->getIdealConditionsLimit()) {
+        $runtime_limit = $this->getIdealConditionsLimit();
       }
 
       // Wrap the runtime limit into a (non-persistent) counter object.
       $this->counterLimit = new Counter($runtime_limit);
     }
 
+    // We don't expose the object but just return its value. This protects us
+    // from public calls attempting to overwrite or reset our limit.
     return $this->counterLimit->get();
   }
 

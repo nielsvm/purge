@@ -7,99 +7,124 @@
 
 namespace Drupal\purge_purger_http\Tests;
 
-use Drupal\Core\Url;
-use Drupal\purge\Tests\WebTestBase;
+use Drupal\Core\Form\FormState;
+use Drupal\purge_ui\Tests\PurgerConfigFormTestBase;
 
 /**
  * Tests \Drupal\purge_purger_http\Form\ConfigurationForm.
  *
  * @group purge
  */
-class ConfigurationFormTest extends WebTestBase {
-
-  /**
-   * User account with suitable permission to access the form.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  protected $admin_user;
+class ConfigurationFormTest extends PurgerConfigFormTestBase {
 
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = ['purge_noqueuer_test', 'purge_ui', 'purge_purger_http'];
+  public static $modules = ['purge_purger_http'];
 
   /**
-   * The route to a purgers configuration form (takes argument 'purger').
+   * The plugin ID of the purger this form is for.
    *
-   * @var string|\Drupal\Core\Url
+   * @var string
    */
-  protected $route = 'purge_ui.purger_config_form';
+  protected $purger = 'http';
 
   /**
-   * {@inheritdoc}
+   * The full class of the form being tested.
+   *
+   * @var string
    */
-  public function setUp() {
-    parent::setUp();
-    $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
-    $this->initializePurgersService(['testid' => 'http']);
-    if (is_string($this->route)) {
-      $this->route = Url::fromRoute($this->route, ['id' => 'testid']);
-      $this->route->setAbsolute(FALSE);
-    }
-  }
+  protected $formClass = 'Drupal\purge_purger_http\Form\ConfigurationForm';
 
   /**
-   * Test the HTTP purger settings form.
+   * Verify that the form contains all fields we require.
    */
-  public function testHttpPurgerSettings() {
+  public function testFieldExistence() {
     $this->drupalLogin($this->admin_user);
-
-    // Verify if we can successfully access the HTTP purger form.
     $this->drupalGet($this->route);
-    $this->assertResponse(200);
-    $this->assertTitle(t('Configure HTTP Purger | Drupal'));
     $this->assertField('edit-invalidationtype');
-
     // Verify every HTTP settings field exists.
     $this->assertField('edit-hostname');
     $this->assertField('edit-port');
     $this->assertField('edit-path');
     $this->assertField('edit-request-method');
-
     // Validate HTTP settings form values.
     $this->assertFieldById('edit-hostname', 'localhost');
     $this->assertFieldById('edit-port', 80);
     $this->assertFieldById('edit-path', '');
     $this->assertOptionSelected('edit-request-method', 0);
-
     // Verify every performance field exists.
     $this->assertField('edit-timeout');
     $this->assertField('edit-connect-timeout');
     $this->assertField('edit-max-requests');
     $this->assertField('edit-execution-time-consumption');
-
     // Validate performance form values.
     $this->assertFieldById('edit-timeout', 3);
     $this->assertFieldById('edit-connect-timeout', 1.5);
     $this->assertFieldById('edit-max-requests', 50);
     $this->assertFieldById('edit-execution-time-consumption', 0.75);
+  }
 
-    // Verify that there's no access bypass.
-    $this->drupalLogout();
-    $this->drupalGet($this->route);
-    $this->assertResponse(403);
+  /**
+   * Test validating the data.
+   */
+  public function testFormValidation() {
+    // Assert that valid timeout values don't cause validation errors.
+    $form_state = new FormState();
+    $form_state->addBuildInfo('args', [$this->formArgs]);
+    $form_state->setValues([
+        'connect_timeout' => 0.3,
+        'timeout' => 0.2
+      ]);
+    $form = $this->getFormInstance();
+    $this->formBuilder->submitForm($form, $form_state);
+    $this->assertEqual(0, count($form_state->getErrors()));
+    $form_state = new FormState();
+    $form_state->addBuildInfo('args', [$this->formArgs]);
+    $form_state->setValues([
+        'connect_timeout' => 2.3,
+        'timeout' => 7.7
+      ]);
+    $form = $this->getFormInstance();
+    $this->formBuilder->submitForm($form, $form_state);
+    $this->assertEqual(0, count($form_state->getErrors()));
+    // Submit timeout values that are too low and confirm the validation error.
+    $form_state = new FormState();
+    $form_state->addBuildInfo('args', [$this->formArgs]);
+    $form_state->setValues([
+        'connect_timeout' => 0.2,
+        'timeout' => 0.2
+      ]);
+    $form = $this->getFormInstance();
+    $this->formBuilder->submitForm($form, $form_state);
+    $errors = $form_state->getErrors();
+    $this->assertEqual(2, count($errors));
+    $this->assertTrue(isset($errors['timeout']));
+    $this->assertTrue(isset($errors['connect_timeout']));
+    $this->assertEqual('', $errors['connect_timeout']);
+    // Submit timeout values that are too high and confirm the validation error.
+    $form_state = new FormState();
+    $form_state->addBuildInfo('args', [$this->formArgs]);
+    $form_state->setValues([
+        'connect_timeout' => 2.4,
+        'timeout' => 7.7
+      ]);
+    $form = $this->getFormInstance();
+    $this->formBuilder->submitForm($form, $form_state);
+    $errors = $form_state->getErrors();
+    $this->assertEqual(2, count($errors));
+    $this->assertTrue(isset($errors['timeout']));
+    $this->assertTrue(isset($errors['connect_timeout']));
+    $this->assertEqual('', $errors['connect_timeout']);
   }
 
   /**
    * Test posting data to the HTTP Purger settings form.
    */
-  public function testHttpPurgerSettingsPost() {
+  public function testFormSubmit() {
     $this->drupalLogin($this->admin_user);
-
-    // Post form with new values.
     $edit = [
       'invalidationtype' => 'wildcardurl',
       'hostname' => 'example.com',
@@ -112,17 +137,14 @@ class ConfigurationFormTest extends WebTestBase {
       'execution_time_consumption' => 0.25,
     ];
     $this->drupalPostForm($this->route, $edit, t('Save configuration'));
-
-    // Load settings form page and test for new values.
     $this->drupalGet($this->route);
+    // Load settings form page and test for new values.
     $this->assertFieldById('edit-invalidationtype', $edit['invalidationtype']);
-
     // HTTP settings
     $this->assertFieldById('edit-hostname', $edit['hostname']);
     $this->assertFieldById('edit-port', $edit['port']);
     $this->assertFieldById('edit-path', $edit['path']);
     $this->assertFieldById('edit-request-method', $edit['request_method']);
-
     // Performance
     $this->assertFieldById('edit-timeout', $edit['timeout']);
     $this->assertFieldById('edit-connect-timeout', $edit['connect_timeout']);

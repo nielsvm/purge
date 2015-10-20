@@ -9,13 +9,13 @@ namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\Core\State\StateInterface;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
-use Drupal\purge\Plugin\Purge\Purger\ResourceCounterInterface;
+use Drupal\purge\Plugin\Purge\Purger\ResourcePersistingCounterInterface;
 use Drupal\purge\Plugin\Purge\Purger\ResourceCounter;
 
 /**
  * Provides a numeric counter stored in state storage.
  */
-class ResourcePersistingCounter extends ResourceCounter implements ResourceCounterInterface {
+class ResourcePersistingCounter extends ResourceCounter implements ResourcePersistingCounterInterface {
 
   /**
    * The state key value store.

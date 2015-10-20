@@ -37,7 +37,6 @@ class Null extends PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function invalidate(Invalidation $invalidation) {
-    $this->numberFailed += 1;
     $invalidation->setState(Invalidation::STATE_FAILED);
   }
 
@@ -46,7 +45,6 @@ class Null extends PluginBase implements PluginInterface {
    */
   public function invalidateMultiple(array $invalidations) {
     foreach ($invalidations as $invalidation) {
-      $this->numberFailed += 1;
       $invalidation->setState(Invalidation::STATE_FAILED);
     }
   }
@@ -54,15 +52,8 @@ class Null extends PluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function getCapacityLimit() {
-    return 0;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getClaimTimeHint() {
-    return 1;
+  public function getTimeHint() {
+    return 1.0;
   }
 
 }

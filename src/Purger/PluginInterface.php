@@ -8,15 +8,16 @@
 namespace Drupal\purge\Purger;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface;
 use Drupal\purge\Purger\SharedInterface;
 
 /**
  * Describes a purger - the cache invalidation executor.
  */
-interface PluginInterface extends ContainerFactoryPluginInterface, SharedInterface {
+interface PluginInterface extends ContainerFactoryPluginInterface, SharedInterface, TrackerPurgerInterface {
 
   /**
-   * Retrieve the unique instance ID for this purger.
+   * Retrieve the unique instance ID for this purger instance.
    *
    * Every purger has a unique instance identifier set by the purgers service,
    * whether it is multi-instantiable or not. Plugins with 'multi_instance' set
@@ -31,7 +32,7 @@ interface PluginInterface extends ContainerFactoryPluginInterface, SharedInterfa
   public function getId();
 
   /**
-   * Generate a user-readable label for this purger (instance).
+   * Retrieve the user-readable label for this purger instance.
    *
    * @see \Drupal\purge\Annotation\PurgePurger::$label
    *

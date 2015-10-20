@@ -418,57 +418,6 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function getNumberPurged() {
-    // @todo
-    $successes = 0;
-    foreach ($this->purgers as $purger) {
-      $purger_successes = $purger->getNumberPurged();
-      if (!is_int($purger_successes)) {
-        throw new BadPluginBehaviorException(
-          "The purger '$plugin_id' did not return an integer on getNumberPurged().");
-      }
-      $successes += $purger_successes;
-    }
-    return $successes;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getNumberFailed() {
-    // @todo
-    $failures = 0;
-    foreach ($this->purgers as $purger) {
-      $purger_failures = $purger->getNumberFailed();
-      if (!is_int($purger_failures)) {
-        throw new BadPluginBehaviorException(
-          "The purger '$plugin_id' did not return an integer on getNumberFailed().");
-      }
-      $failures += $purger_failures;
-    }
-    return $failures;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getNumberPurging() {
-    // @todo
-    $purging = 0;
-    foreach ($this->purgers as $purger) {
-      $purger_purging = $purger->getNumberPurging();
-      if (!is_int($purger_purging)) {
-        throw new BadPluginBehaviorException(
-          "The purger '$plugin_id' did not return an integer on getNumberPurging().");
-      }
-      $purging += $purger_purging;
-    }
-    return $purging;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function resolveInvalidationState(Invalidation $invalidation, array $states) {
     // No results indicate no purgers touched it, so it is not supported.
     if (empty($states)) {

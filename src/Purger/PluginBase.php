@@ -24,27 +24,6 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   protected $id;
 
   /**
-   * The number of successfully processed invalidations for this instance.
-   *
-   * @var int
-   */
-  protected $numberPurged = 0;
-
-  /**
-   * The number of actively on-going purges.
-   *
-   * @var int
-   */
-  protected $numberPurging = 0;
-
-  /**
-   * The number of failed invalidations for this instance.
-   *
-   * @var int
-   */
-  protected $numberFailed = 0;
-
-  /**
    * Constructs a \Drupal\Component\Plugin\PluginBase derivative.
    *
    * @param array $configuration
@@ -89,38 +68,13 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function getCapacityLimit() {
-    $max_execution_time = (int) ini_get('max_execution_time');
-    $time_per_invalidation = $this->getClaimTimeHint();
-
-    // Since we are in PluginBase, this limit is a wild guess as we have no idea
-    // what derived purgers do and how they perform. Plugins that wipe directly
-    // from memory on localhost, can do with much higher limits whereas slow
-    // CDNs are likely to lower this quite a bit. Derivatives do have to
-    // provide ::getClaimTimeHint, which is far more important and indicative.
-    $limit = 100;
-
-    // When PHP's max_execution_time equals 0, the system is given carte blanche
-    // for how long it can run. Since looping endlessly is out of the question,
-    // use a hard fixed limit.
-    if ($max_execution_time === 0) {
-      return $limit;
-    }
-
-    // But when it is not, we have to lower expectations to protect stability.
-    $max_execution_time = intval(0.75 * $max_execution_time);
-
-    // Now calculate the minimum of invalidations we should be able to process.
-    $suggested = intval($max_execution_time / $time_per_invalidation);
-
-    // In the case our conservative calculation would be higher than the set
-    // limit, return the hard limit as our capacity limit.
-    if ($suggested > $limit) {
-      return (int) $limit;
-    }
-    else {
-      return (int) $suggested;
-    }
+  public function getIdealConditionsLimit() {
+    // We don't know how much invalidations our derivatives can process under
+    // ideal circumstances, it can range from low numbers on inefficient CDNs to
+    // literally thousands when connecting to efficient systems over a local
+    // socket. Purger implementations are definitely encouraged to overload this
+    // method with a value that is as accurately approached as possible.
+    return 100;
   }
 
   /**
@@ -148,27 +102,6 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
    */
   public function getTypes() {
     return $this->getPluginDefinition()['types'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getNumberPurged() {
-    return $this->numberPurged;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getNumberPurging() {
-    return $this->numberPurging;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getNumberFailed() {
-    return $this->numberFailed;
   }
 
 }

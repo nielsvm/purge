@@ -74,39 +74,6 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
   public function getLabels($include_fallback = TRUE);
 
   /**
-   * Reports the number of successful purges that this purger did.
-   *
-   * @return int
-   *   Integer, defaults to 0 if nothing was successfully purged during runtime.
-   */
-  public function getNumberPurged();
-
-  /**
-   * Reports the number of failed attempts that this purger tried purging.
-   *
-   * @return int
-   *   Integer, defaulting to 0 if nothing was purged during runtime.
-   */
-  public function getNumberFailed();
-
-  /**
-   * Reports how many items are *currently* actively being purged.
-   *
-   * @warning
-   *   This method will - for most transactional purgers - return 0 and is
-   *   intended for complex external cache systems (e.g. CDNs) that process
-   *   wipe-requests on thousands of servers and therefore take longer than a
-   *   few seconds to process each. The purger changes the state of the
-   *   invalidation object to STATE_PURGING and cause them to be released back
-   *   to the queue. During the next processing iteration these purgers can mark
-   *   these as STATE_PURGED.
-   *
-   * @return int
-   *   The current number of invalidation objects being processed.
-   */
-  public function getNumberPurging();
-
-  /**
    * Retrieve the plugin_ids of purgers that can be enabled.
    *
    * This method takes into account that purger plugins that are not
@@ -169,4 +136,5 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
    * @return void
    */
   public function resolveInvalidationState(Invalidation $invalidation, array $states);
+
 }

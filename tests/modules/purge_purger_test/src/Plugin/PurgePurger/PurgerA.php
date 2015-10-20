@@ -24,14 +24,14 @@ class PurgerA extends Null {
   /**
    * {@inheritdoc}
    */
-  public function getCapacityLimit() {
-    return 10;
+  public function getIdealConditionsLimit() {
+    return 100;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getClaimTimeHint() {
+  public function getTimeHint() {
     return 1;
   }
 

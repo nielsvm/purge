@@ -26,7 +26,6 @@ class GoodPurger extends Null {
    * {@inheritdoc}
    */
   public function invalidate(Invalidation $invalidation) {
-    $this->numberPurged += 1;
     $invalidation->setState(Invalidation::STATE_PURGED);
   }
 
@@ -35,7 +34,6 @@ class GoodPurger extends Null {
    */
   public function invalidateMultiple(array $invalidations) {
     foreach ($invalidations as $invalidation) {
-      $this->numberPurged += 1;
       $invalidation->setState(Invalidation::STATE_PURGED);
     }
   }
@@ -43,14 +41,14 @@ class GoodPurger extends Null {
   /**
    * {@inheritdoc}
    */
-  public function getCapacityLimit() {
-    return 10;
+  public function getIdealConditionsLimit() {
+    return 100;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getClaimTimeHint() {
+  public function getTimeHint() {
     return 1;
   }
 

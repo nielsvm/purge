@@ -214,7 +214,7 @@ class Tracker implements TrackerInterface {
       foreach ($this->purgers as $id => $purger) {
         $plugin_id = $purger->getPluginId();
         $hint = $purger->getTimeHint();
-        var_dump($hint);
+
         // Be strict about what values are accepted, better throwing exceptions
         // than having a crashing website because it is trashing.
         if (!is_float($hint)) {

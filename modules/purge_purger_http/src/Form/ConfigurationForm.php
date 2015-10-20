@@ -166,17 +166,6 @@ class ConfigurationForm extends PurgerConfigFormBase {
       '#required' => TRUE,
       '#description' => $this->t('Maximum number of HTTP requests that can be made during the runtime of one request (including CLI). The higher this number is set, the more - CLI based - scripts can process but this can also badly influence your end-user performance when using runtime-based queue processors.')
     ];
-    $form['performance']['execution_time_consumption'] = [
-      '#type' => 'number',
-      '#step' => 0.01,
-      '#min' => 0.20,
-      '#max' => 0.90,
-      '#field_suffix' => '%',
-      '#title' => $this->t('Execution time consumption'),
-      '#default_value' => $settings->execution_time_consumption,
-      '#required' => TRUE,
-      '#description' => $this->t("Percentage of PHP's maximum execution time that can be allocated to processing. When PHP's setting is set to 0 (e.g. on CLI), the max requests setting will be used for capacity limiting. Whenever you notice Drupal requests timing out, lower this percentage.")
-    ];
 
     // @todo Implement repeatable rows with two text fields for HEADER -> VALUE
     $form['headers'] = [
@@ -234,7 +223,6 @@ class ConfigurationForm extends PurgerConfigFormBase {
     $settings->timeout = $form_state->getValue('timeout');
     $settings->connect_timeout = $form_state->getValue('connect_timeout');
     $settings->max_requests = $form_state->getValue('max_requests');
-    $settings->execution_time_consumption = $form_state->getValue('execution_time_consumption');
     $settings->save();
     return parent::submitForm($form, $form_state);
   }

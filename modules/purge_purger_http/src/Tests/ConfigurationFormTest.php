@@ -59,12 +59,10 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
     $this->assertField('edit-timeout');
     $this->assertField('edit-connect-timeout');
     $this->assertField('edit-max-requests');
-    $this->assertField('edit-execution-time-consumption');
     // Validate performance form values.
     $this->assertFieldById('edit-timeout', 3);
     $this->assertFieldById('edit-connect-timeout', 1.5);
-    $this->assertFieldById('edit-max-requests', 50);
-    $this->assertFieldById('edit-execution-time-consumption', 0.75);
+    $this->assertFieldById('edit-max-requests', 100);
   }
 
   /**
@@ -134,7 +132,6 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
       'timeout' => 6,
       'connect_timeout' => 0.5,
       'max_requests' => 25,
-      'execution_time_consumption' => 0.25,
     ];
     $this->drupalPostForm($this->route, $edit, t('Save configuration'));
     $this->drupalGet($this->route);
@@ -149,7 +146,6 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
     $this->assertFieldById('edit-timeout', $edit['timeout']);
     $this->assertFieldById('edit-connect-timeout', $edit['connect_timeout']);
     $this->assertFieldById('edit-max-requests', $edit['max_requests']);
-    $this->assertFieldById('edit-execution-time-consumption', $edit['execution_time_consumption']);
   }
 
 }

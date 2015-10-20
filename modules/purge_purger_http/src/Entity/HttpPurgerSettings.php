@@ -81,16 +81,6 @@ class HttpPurgerSettings extends SettingsBase implements SettingsInterface {
    *
    * @var int
    */
-  public $max_requests = 50;
-
-  /**
-   * Percentage of PHP's maximum execution time that can be allocated to
-   * processing. When PHP's setting is set to 0 (e.g. on CLI), the max requests
-   * setting will be used for capacity limiting. Whenever you notice Drupal
-   * requests timing out, lower this percentage.
-   *
-   * @var float
-   */
-  public $execution_time_consumption = 0.75;
+  public $max_requests = 100;
 
 }

@@ -9,7 +9,10 @@ namespace Drupal\purge\Purger;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\purge\ServiceBase;
+use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
+use Drupal\purge\Plugin\Purge\Purger\Capacity\Tracker;
 use Drupal\purge\Purger\ServiceInterface;
 use Drupal\purge\Invalidation\Exception\InvalidStateException;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
@@ -25,6 +28,11 @@ class Service extends ServiceBase implements ServiceInterface {
   const FALLBACK_PLUGIN = 'null';
 
   /**
+   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface
+   */
+  protected $capacityTracker;
+
+  /**
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
@@ -32,16 +40,23 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * Holds all generated user-readable purger labels per instance ID.
    *
-   * @var array
+   * @var string[]
    */
   protected $labels;
 
   /**
-   * Holds all loaded external cache purgers.
+   * Holds all loaded purgers plugins.
    *
-   * @var array
+   * @var \Drupal\purge\Purger\PluginInterface[]
    */
   protected $purgers;
+
+  /**
+   * The state key value store.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
 
   /**
    * Valid Invalidation object states that can be fed to the purger service.
@@ -87,13 +102,26 @@ class Service extends ServiceBase implements ServiceInterface {
    *   The plugin manager for this service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
+   * @param \Drupal\Core\State\StateInterface $state
+   *   The state key value store.
    */
-  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory) {
+  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory, StateInterface $state) {
     $this->pluginManager = $pluginManager;
     $this->configFactory = $config_factory;
+    $this->state = $state;
 
     // Instantiate all the purgers and let them configure themselves.
     $this->initializePurgers();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function capacityTracker() {
+    if (is_null($this->capacityTracker)) {
+      $this->capacityTracker = new Tracker($this->purgers, $this->state);
+    }
+    return $this->capacityTracker;
   }
 
   /**
@@ -305,7 +333,7 @@ class Service extends ServiceBase implements ServiceInterface {
     // Test $invalidation's inbound object state.
     $initialstate = $invalidation->getState();
     if (!in_array($initialstate, $this->states_inbound)) {
-      throw new InvalidStateException("Only STATE_NEW, STATE_PURGING, STATE_FAILED and STATE_UNSUPPORTED are valid inbound states.");
+      throw new BadPluginBehaviorException("Only STATE_NEW, STATE_PURGING, STATE_FAILED and STATE_UNSUPPORTED are valid inbound states.");
     }
 
     // Iterate the purger instances and only execute for supported types.
@@ -316,7 +344,7 @@ class Service extends ServiceBase implements ServiceInterface {
         $invalidation->setState($initialstate);
         $purger->invalidate($invalidation);
         if (!in_array($invalidation->getState(), $this->states_outbound)) {
-          throw new InvalidStateException("Only STATE_PURGED, STATE_PURGING and STATE_FAILED are valid return states.");
+          throw new BadPluginBehaviorException("Only STATE_PURGED, STATE_PURGING and STATE_FAILED are valid return states.");
         }
         $results[] = $invalidation->getState();
       }
@@ -336,12 +364,17 @@ class Service extends ServiceBase implements ServiceInterface {
     $initialstates = [];
     $results = [];
 
+    // Fail early if no objects we're given.
+    if (empty($invalidations)) {
+      return;
+    }
+
     // Test each invalidation object to see if its in a valid inbound state.
     foreach ($invalidations as $i => $invalidation) {
       $invalidation_types[$i] = $invalidation->getPluginId();
       $initialstates[$i] = $invalidation->getState();
       if (!in_array($initialstates[$i], $this->states_inbound)) {
-        throw new InvalidStateException("Only STATE_NEW, STATE_PURGING, STATE_FAILED and STATE_UNSUPPORTED are valid inbound states.");
+        throw new BadPluginBehaviorException("Only STATE_NEW, STATE_PURGING, STATE_FAILED and STATE_UNSUPPORTED are valid inbound states.");
       }
     }
 
@@ -371,7 +404,7 @@ class Service extends ServiceBase implements ServiceInterface {
         $state = $invalidation->getState();
         $results[$i][] = $state;
         if (!in_array($state, $this->states_outbound)) {
-          throw new InvalidStateException("Only STATE_PURGED, STATE_PURGING and STATE_FAILED are valid return states.");
+          throw new BadPluginBehaviorException("Only STATE_PURGED, STATE_PURGING and STATE_FAILED are valid return states.");
         }
       }
     }
@@ -385,73 +418,13 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function getCapacityLimit() {
-    static $limit;
-
-    // As the limit gets cached during this request, calculate it only once.
-    if (is_null($limit)) {
-      $purgers = count($this->purgers);
-      $limits = [];
-
-      // Ask all purgers to estimate how many invalidations they can process.
-      foreach ($this->purgers as $purger) {
-        if (!is_int($limits[] = $purger->getCapacityLimit())) {
-          throw new InvalidPurgerBehaviorException(
-            "The purger '$plugin_id' did not return an integer on getCapacityLimit().");
-        }
-      }
-
-      // Directly use its limit for just one loaded purger, lower it otherwise.
-      if ($purgers === 1) {
-        $limit = current($limits);
-      }
-      else {
-        $limit = (int) floor(array_sum($limits) / $purgers / $purgers);
-        if ($limit < 1) {
-          $limit = 1;
-        }
-      }
-    }
-
-    return $limit;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getClaimTimeHint() {
-    static $seconds;
-
-    // We are caching the hint value so that it gets calculated just once.
-    if (is_null($seconds)) {
-      $seconds = 0;
-
-      foreach ($this->purgers as $purger) {
-        $purger_seconds = $purger->getClaimTimeHint();
-        if (!is_int($purger_seconds)) {
-          throw new InvalidPurgerBehaviorException(
-            "The purger '$plugin_id' did not return an integer on getClaimTimeHint().");
-        }
-        elseif ($purger_seconds === 0) {
-          throw new InvalidPurgerBehaviorException(
-            "The purger '$plugin_id' cannot report a 0 seconds claim time on getClaimTimeHint().");
-        }
-        $seconds += $purger_seconds;
-      }
-    }
-
-    return $seconds;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getNumberPurged() {
+    // @todo
     $successes = 0;
     foreach ($this->purgers as $purger) {
       $purger_successes = $purger->getNumberPurged();
       if (!is_int($purger_successes)) {
-        throw new InvalidPurgerBehaviorException(
+        throw new BadPluginBehaviorException(
           "The purger '$plugin_id' did not return an integer on getNumberPurged().");
       }
       $successes += $purger_successes;
@@ -463,11 +436,12 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function getNumberFailed() {
+    // @todo
     $failures = 0;
     foreach ($this->purgers as $purger) {
       $purger_failures = $purger->getNumberFailed();
       if (!is_int($purger_failures)) {
-        throw new InvalidPurgerBehaviorException(
+        throw new BadPluginBehaviorException(
           "The purger '$plugin_id' did not return an integer on getNumberFailed().");
       }
       $failures += $purger_failures;
@@ -479,11 +453,12 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function getNumberPurging() {
+    // @todo
     $purging = 0;
     foreach ($this->purgers as $purger) {
       $purger_purging = $purger->getNumberPurging();
       if (!is_int($purger_purging)) {
-        throw new InvalidPurgerBehaviorException(
+        throw new BadPluginBehaviorException(
           "The purger '$plugin_id' did not return an integer on getNumberPurging().");
       }
       $purging += $purger_purging;

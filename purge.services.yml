@@ -69,7 +69,7 @@ services:
   # The executive service which lets enabled purgers invalidate external caches.
   purge.purgers:
     class: Drupal\purge\Purger\Service
-    arguments: ['@plugin.manager.purge.purgers', '@config.factory']
+    arguments: ['@plugin.manager.purge.purgers', '@config.factory', '@state']
   plugin.manager.purge.purgers:
     class: Drupal\purge\Purger\PluginManager
     parent: default_plugin_manager

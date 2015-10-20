@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\ResourceTracking\CounterInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger\ResourceTracking;
+namespace Drupal\purge\Plugin\Purge\Purger\Capacity;
 
 /**
  * Describes a numeric counter.
@@ -15,15 +15,13 @@ interface CounterInterface {
   /**
    * Construct a counter object.
    *
-   * @param int $id
-   *   A unique identifier which describes this counter.
    * @param int $value
    *   The initial positive number the counter starts its life with.
    *
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
-   *   Thrown when $id is empty and when $value is negative or not a integer.
+   *   Thrown when $value is negative or not a integer.
    */
-  public function __construct($id, $value = 0);
+  public function __construct($value = 0);
 
   /**
    * Get the current value.

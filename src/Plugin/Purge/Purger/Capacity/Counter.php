@@ -2,25 +2,18 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\ResourceTracking\Counter.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\Capacity\Counter.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger\ResourceTracking;
+namespace Drupal\purge\Plugin\Purge\Purger\Capacity;
 
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
-use Drupal\purge\Plugin\Purge\Purger\ResourceTracking\CounterInterface;
+use Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface;
 
 /**
  * Provides a numeric counter.
  */
 class Counter implements CounterInterface {
-
-  /**
-   * A unique identifier which describes this counter.
-   *
-   * @var string
-   */
-  protected $id;
 
   /**
    * The value of the counter.
@@ -32,10 +25,7 @@ class Counter implements CounterInterface {
   /**
    * {@inheritdoc}
    */
-  public function __construct($id, $value = 0) {
-    if (empty($id)) {
-      throw new BadBehaviorException('Given $id parameter is empty.');
-    }
+  public function __construct($value = 0) {
     if (!is_int($value)) {
       throw new BadBehaviorException('Given $value is not a integer.');
     }
@@ -43,7 +33,6 @@ class Counter implements CounterInterface {
       throw new BadBehaviorException('Given $value can only be positive.');
     }
     $this->value = $value;
-    $this->id = $id;
   }
 
   /**

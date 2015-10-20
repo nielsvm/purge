@@ -12,6 +12,6 @@ namespace Drupal\purge\Plugin\Purge\Purger\Exception;
  *
  * @see \Drupal\purge\Purger\SharedInterface::invalidate().
  * @see \Drupal\purge\Purger\SharedInterface::invalidateMultiple().
- * @see \Drupal\purge\Plugin\Purge\Purger\ResourceTracking\TrackerInterface::getTimeHint().
+ * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHint().
  */
 class BadPluginBehaviorException extends \Exception {}

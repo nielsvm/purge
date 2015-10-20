@@ -2,13 +2,13 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\ResourceTracking\PersistentCounterInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger\ResourceTracking;
+namespace Drupal\purge\Plugin\Purge\Purger\Capacity;
 
 use Drupal\Core\State\StateInterface;
-use Drupal\purge\Plugin\Purge\Purger\ResourceTracking\CounterInterface;
+use Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface;
 
 /**
  * Describes a numeric counter stored in state storage.
@@ -21,11 +21,13 @@ interface PersistentCounterInterface extends CounterInterface {
   public function setFromState();
 
   /**
-   * Inject the state API for storing the counter persistently.
+   * Inject the state API and its storage key.
    *
    * @param \Drupal\Core\State\StateInterface $state
    *   The state key value store.
+   * @param string $id
+   *   A unique identifier which describes this counter.
    */
-  public function setState(StateInterface $state);
+  public function setStateAndId(StateInterface $state, $id);
 
 }

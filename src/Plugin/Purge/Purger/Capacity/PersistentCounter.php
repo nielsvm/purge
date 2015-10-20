@@ -2,20 +2,27 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\ResourceTracking\PersistentCounter.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounter.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger\ResourceTracking;
+namespace Drupal\purge\Plugin\Purge\Purger\Capacity;
 
 use Drupal\Core\State\StateInterface;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
-use Drupal\purge\Plugin\Purge\Purger\ResourceTracking\PersistentCounterInterface;
-use Drupal\purge\Plugin\Purge\Purger\ResourceTracking\Counter;
+use Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface;
+use Drupal\purge\Plugin\Purge\Purger\Capacity\Counter;
 
 /**
  * Provides a numeric counter stored in state storage.
  */
 class PersistentCounter extends Counter implements PersistentCounterInterface {
+
+  /**
+   * A unique identifier which describes this counter.
+   *
+   * @var string
+   */
+  protected $id;
 
   /**
    * The state key value store.
@@ -29,7 +36,7 @@ class PersistentCounter extends Counter implements PersistentCounterInterface {
    */
   public function get() {
     if (is_null($this->state)) {
-      throw new BadBehaviorException('::setState() has to be called first!');
+      throw new BadBehaviorException('::setStateAndId() has to be called!');
     }
     return parent::get();
   }
@@ -39,7 +46,7 @@ class PersistentCounter extends Counter implements PersistentCounterInterface {
    */
   public function set($value) {
     if (is_null($this->state)) {
-      throw new BadBehaviorException('::setState() has to be called first!');
+      throw new BadBehaviorException('::setStateAndId() has to be called!');
     }
     parent::set($value);
     $this->state->set($this->id, $value);
@@ -50,19 +57,20 @@ class PersistentCounter extends Counter implements PersistentCounterInterface {
    */
   public function setFromState() {
     if (is_null($this->state)) {
-      throw new BadBehaviorException('::setState() has to be called first!');
+      throw new BadBehaviorException('::setStateAndId() has to be called!');
     }
     $this->value = (int) $this->state->get($this->id, $this->value);
   }
 
   /**
-   * Inject the state API for storing the counter persistently.
-   *
-   * @param \Drupal\Core\State\StateInterface $state
-   *   The state key value store.
+   * {@inheritdoc}
    */
-  public function setState(StateInterface $state) {
+  public function setStateAndId(StateInterface $state, $id) {
+    if (empty($id)) {
+      throw new BadBehaviorException('Given $id parameter is empty.');
+    }
     $this->state = $state;
+    $this->id = $id;
   }
 
   /**
@@ -70,7 +78,7 @@ class PersistentCounter extends Counter implements PersistentCounterInterface {
    */
   public function decrement($amount = 1) {
     if (is_null($this->state)) {
-      throw new BadBehaviorException('::setState() has to be called first!');
+      throw new BadBehaviorException('::setStateAndId() has to be called!');
     }
     parent::decrement($amount);
   }
@@ -80,7 +88,7 @@ class PersistentCounter extends Counter implements PersistentCounterInterface {
    */
   public function increment($amount = 1) {
     if (is_null($this->state)) {
-      throw new BadBehaviorException('::setState() has to be called first!');
+      throw new BadBehaviorException('::setStateAndId() has to be called!');
     }
     parent::increment($amount);
   }

@@ -2,13 +2,13 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\ResourceTracking\TrackerPurgerInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger\ResourceTracking;
+namespace Drupal\purge\Plugin\Purge\Purger\Capacity;
 
 /**
- * Describes what the resource tracker API expects from purger implementations.
+ * Describes what the capacity tracking API expects from purger implementations.
  */
 interface TrackerPurgerInterface {
 
@@ -28,7 +28,7 @@ interface TrackerPurgerInterface {
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
    *   Thrown when the returned value is not a integer or when it equals to 0.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\ResourceTracking\TrackerInterface::getLimit()
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getLimit()
    *
    * @return int
    *   The number of invalidations you can process under ideal conditions.
@@ -65,7 +65,7 @@ interface TrackerPurgerInterface {
    *   Thrown when the returned floating point value is lower than 0.2, higher
    *   than 10 or is not returned as floating point value.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\ResourceTracking\TrackerInterface::getTimeHint()
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHint()
    *
    * @return float
    *   The maximum number of seconds - as a float - it takes you to process.

@@ -58,20 +58,19 @@ class HttpPurgerSettings extends SettingsBase implements SettingsInterface {
   public $request_method = 'BAN';
 
   /**
-   * Float describing the timeout of the request in seconds. Use 0 to wait
-   * indefinitely (the default behavior).
+   * Float describing the timeout of the request in seconds.
    *
    * @var float
    */
-  public $timeout = 3.0;
+  public $timeout = 0.5;
 
   /**
    * Float describing the number of seconds to wait while trying to connect to
-   * a server. Use 0 to wait indefinitely (the default behavior).
+   * a server.
    *
    * @var float
    */
-  public $connect_timeout = 1.5;
+  public $connect_timeout = 0.2;
 
   /**
    * Maximum number of HTTP requests that can be made during the runtime of

@@ -65,9 +65,7 @@ class CapacityCheck extends PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function run() {
-    $this->value = $this->purgePurgers->getCapacityLimit();
-
-    // When the capacity is zero - this would be problematic.
+    $this->value = $this->purgePurgers->capacityTracker()->getLimit();
     if ($this->value === 0) {
       $this->recommendation = $this->t("There is no purging capacity available.");
       return SELF::SEVERITY_WARNING;

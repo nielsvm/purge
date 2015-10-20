@@ -45,9 +45,9 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
    * Claims a invalidation object from the queue for immediate purging.
    *
    * @param int $lease_time
-   *   The expected (maximum) time needed to process this claim. Its encouraged
-   *   to use \Drupal\purge\Purger\Service::getClaimTimeHint for this parameter
-   *   as it gives you a safe number of seconds.
+   *   The expected time needed to process this claim. Use the mandatory
+   *   \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHint()
+   *   as input parameter as it gives the best informed number of seconds.
    *
    *   After the lease_time expires, another running request or CLI process can
    *   also claim this item and process it, therefore too short lease times are
@@ -70,9 +70,9 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
    *   as much items as it can.
    * @param int $lease_time
    *   The expected (maximum) time needed per claim, which will get multiplied
-   *   for you by the number of claims you request. Its encouraged to use the
-   *   value returned by \Drupal\purge\Purger\Service::getClaimTimeHint as this
-   *   gets you a stable number of seconds.
+   *   for you by the number of claims you request. It is mandatory to use
+   *   \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHint()
+   *   as input parameter as it gives the best informed number of seconds.
    *
    *   After the lease_time expires, another running request or CLI process can
    *   also claim the items and process them, therefore too short lease times

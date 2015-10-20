@@ -87,7 +87,6 @@ class Http extends PluginBase implements PluginInterface {
    */
   public function invalidate(Invalidation $invalidation) {
     // @todo: this obviously needs to be implemented.
-    $this->numberFailed += 1;
     $invalidation->setState(Invalidation::STATE_FAILED);
   }
 
@@ -97,7 +96,6 @@ class Http extends PluginBase implements PluginInterface {
   public function invalidateMultiple(array $invalidations) {
     // @todo: this obviously needs to be implemented.
     foreach ($invalidations as $invalidation) {
-      $this->numberFailed += 1;
       $invalidation->setState(Invalidation::STATE_FAILED);
     }
   }
@@ -138,16 +136,9 @@ class Http extends PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function getClaimTimeHint() {
-
-    // Take the HTTP timeout configured, add 10% margin and round up to seconds.
-    return (int) ceil($this->settings->timeout * 1.1);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getNumberPurging() {
-    throw new \Exception("Sorry, Not yet implemented!");
+    // Theoretically connection timeouts and general timeouts can add up, so
+    // we add up our assumption of the worst possible time it takes as well.
+    return $this->settings->connect_timeout + $this->settings->timeout;
   }
 
   /**

@@ -139,7 +139,8 @@ class ConfigurationForm extends PurgerConfigFormBase {
     $form['performance']['timeout'] = [
       '#type' => 'number',
       '#step' => 0.1,
-      '#min' => 1,
+      '#min' => 0.2,
+      '#max' => 8,
       '#title' => $this->t('Timeout'),
       '#default_value' => $settings->timeout,
       '#required' => TRUE,
@@ -148,7 +149,8 @@ class ConfigurationForm extends PurgerConfigFormBase {
     $form['performance']['connect_timeout'] = [
       '#type' => 'number',
       '#step' => 0.1,
-      '#min' => 0.5,
+      '#min' => 0.2,
+      '#max' => 4,
       '#title' => $this->t('Connection timeout'),
       '#default_value' => $settings->connect_timeout,
       '#required' => TRUE,
@@ -200,6 +202,23 @@ class ConfigurationForm extends PurgerConfigFormBase {
     ];
 
     return parent::buildForm($form, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+
+    // Validate that our timeouts stay between the boundaries purge demands.
+    $timeout = $form_state->getValue('connect_timeout') + $form_state->getValue('timeout');
+    if ($timeout > 10) {
+      $form_state->setErrorByName('connect_timeout');
+      $form_state->setErrorByName('timeout', $this->t('The sum of both timeouts cannot be higher than 10.00 as this would affect performance too negatively.'));
+    }
+    elseif ($timeout < 0.5) {
+      $form_state->setErrorByName('connect_timeout');
+      $form_state->setErrorByName('timeout', $this->t('The sum of both timeouts cannot be lower as 0.5 as this can lead to too many failures under real usage conditions.'));
+    }
   }
 
   /**

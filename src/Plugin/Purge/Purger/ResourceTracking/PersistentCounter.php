@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\ResourcePersistingCounter.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\ResourceTracking\PersistentCounter.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger;
+namespace Drupal\purge\Plugin\Purge\Purger\ResourceTracking;
 
 use Drupal\Core\State\StateInterface;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
-use Drupal\purge\Plugin\Purge\Purger\ResourcePersistingCounterInterface;
-use Drupal\purge\Plugin\Purge\Purger\ResourceCounter;
+use Drupal\purge\Plugin\Purge\Purger\ResourceTracking\PersistentCounterInterface;
+use Drupal\purge\Plugin\Purge\Purger\ResourceTracking\Counter;
 
 /**
  * Provides a numeric counter stored in state storage.
  */
-class ResourcePersistingCounter extends ResourceCounter implements ResourcePersistingCounterInterface {
+class PersistentCounter extends Counter implements PersistentCounterInterface {
 
   /**
    * The state key value store.

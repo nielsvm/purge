@@ -2,18 +2,18 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\ResourcePersistingCounterInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\ResourceTracking\PersistentCounterInterface.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger;
+namespace Drupal\purge\Plugin\Purge\Purger\ResourceTracking;
 
 use Drupal\Core\State\StateInterface;
-use Drupal\purge\Plugin\Purge\Purger\ResourceCounterInterface;
+use Drupal\purge\Plugin\Purge\Purger\ResourceTracking\CounterInterface;
 
 /**
  * Describes a numeric counter stored in state storage.
  */
-interface ResourcePersistingCounterInterface extends ResourceCounterInterface {
+interface PersistentCounterInterface extends CounterInterface {
 
   /**
    * Overwrite the counter value if the object already exists in state storage.

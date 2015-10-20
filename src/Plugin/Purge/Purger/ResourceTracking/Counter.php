@@ -2,18 +2,18 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\ResourceCounter.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\ResourceTracking\Counter.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger;
+namespace Drupal\purge\Plugin\Purge\Purger\ResourceTracking;
 
-use Drupal\purge\Plugin\Purge\Purger\ResourceCounterInterface;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
+use Drupal\purge\Plugin\Purge\Purger\ResourceTracking\CounterInterface;
 
 /**
  * Provides a numeric counter.
  */
-class ResourceCounter implements ResourceCounterInterface {
+class Counter implements CounterInterface {
 
   /**
    * A unique identifier which describes this counter.

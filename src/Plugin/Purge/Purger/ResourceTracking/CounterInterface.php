@@ -2,15 +2,15 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\ResourceCounterInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\ResourceTracking\CounterInterface.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger;
+namespace Drupal\purge\Plugin\Purge\Purger\ResourceTracking;
 
 /**
  * Describes a numeric counter.
  */
-interface ResourceCounterInterface {
+interface CounterInterface {
 
   /**
    * Construct a counter object.

@@ -168,15 +168,13 @@ class LateRuntimeProcessor implements ProcessorInterface, EventSubscriberInterfa
       }
     }
 
-    // Claim as many invalidation objects as we can.
-    $claims = $this->purgeQueue->claimMultiple(
-      $this->purgePurgers->getCapacityLimit(),
-      $this->purgePurgers->getClaimTimeHint()
-    );
-
-    // Let the purgers process and then let the queue figure out the results.
-    $this->purgePurgers->invalidateMultiple($claims);
-    $this->purgeQueue->deleteOrReleaseMultiple($claims);
+    // Claim a chunk of invalidations, process and let the queue handle results.
+    $capacity = $this->purgePurgers->capacityTracker();
+    if ($limit = $capacity->getLimit()) {
+      $claims = $this->purgeQueue->claimMultiple($limit, $capacity->getTimeHint());
+      $this->purgePurgers->invalidateMultiple($claims);
+      $this->purgeQueue->deleteOrReleaseMultiple($claims);
+    }
   }
 
   /**

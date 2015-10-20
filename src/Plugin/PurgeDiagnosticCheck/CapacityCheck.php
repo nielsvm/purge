@@ -72,7 +72,7 @@ class CapacityCheck extends PluginBase implements PluginInterface {
 
     if ($this->value === 0) {
       $this->recommendation = $this->t("There is no purging capacity available.");
-      return SELF::SEVERITY_WARNING;
+      return SELF::SEVERITY_ERROR;
     }
     elseif ($this->value < 5) {
       $this->recommendation = $this->t("Your system invalidates just @limit items through webserver-initated processing. If you notice that purge cannot keep up with its queue, reconsider your configuration.", $placeholders);

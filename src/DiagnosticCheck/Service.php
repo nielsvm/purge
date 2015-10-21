@@ -122,7 +122,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function getPluginsEnabled() {
-    if (!empty($this->plugins_enabled)) {
+    if (!is_null($this->plugins_enabled)) {
       return $this->plugins_enabled;
     }
 

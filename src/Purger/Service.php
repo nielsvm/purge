@@ -193,7 +193,7 @@ class Service extends ServiceBase implements ServiceInterface {
    *   Associative array with enabled purgers: id => plugin_id.
    */
   public function getPluginsEnabled($include_fallback = TRUE) {
-    if (empty($this->plugins_enabled)) {
+    if (is_null($this->plugins_enabled)) {
       $enabled = $this->configFactory->get('purge.plugins')->get('purgers');
       $plugin_ids = array_keys($this->getPlugins());
 

@@ -78,7 +78,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * {@inheritdoc}
    */
   public function getPlugins() {
-    if (empty($this->plugins)) {
+    if (is_null($this->plugins)) {
       $this->plugins = $this->pluginManager->getDefinitions();
       unset($this->plugins[SELF::FALLBACK_PLUGIN]);
     }
@@ -89,7 +89,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    * {@inheritdoc}
    */
   public function getPluginsEnabled() {
-    if (empty($this->plugins_enabled)) {
+    if (is_null($this->plugins_enabled)) {
       $plugin_ids = array_keys($this->getPlugins());
 
       // The queue service always interacts with just one underlying queue,

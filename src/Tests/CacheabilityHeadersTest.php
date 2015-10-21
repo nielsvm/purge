@@ -16,7 +16,6 @@ use Drupal\purge\Tests\WebTestBase;
  */
 class CacheabilityHeadersTest extends WebTestBase {
   public function testHeaderPresence() {
-    $this->assertTrue(TRUE);
     $this->drupalGet('');
     $this->assertEqual($this->drupalGetHeader('X-Drupal-Cache'), 'MISS');
     $header = $this->drupalGetHeader('X-Drupal-Cache-Tags');

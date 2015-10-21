@@ -84,7 +84,7 @@ services:
 
   # LOGGER.CHANNEL.PURGE
   #
-  # Unified logger channel for the purge module and all its submodule. The core
+  # Unified logger channel for the purge module and all its submodules. The core
   # purge APIs won't log anything at all, but leaves that up to purgers,
   # processing policies and other submodules.
   logger.channel.purge:

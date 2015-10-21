@@ -127,6 +127,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    */
   public function reload() {
     parent::reload();
+    $this->commit();
     $this->configFactory = \Drupal::configFactory();
     $this->queue = NULL;
     $this->buffer->deleteEverything();

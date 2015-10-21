@@ -20,8 +20,6 @@ use Drupal\purge\Queue\Service as QueueService;
 trait TestTrait {
 
   /**
-   * Stores the configuration factory.
-   *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;

@@ -27,7 +27,7 @@ class AlwaysWarningCheck extends PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function run() {
-    $this->recommendation = "This is a warning for testing.";
+    $this->recommendation = $this->t("This is a warning for testing.");
     return SELF::SEVERITY_WARNING;
   }
 }

@@ -42,10 +42,7 @@ class ServiceSmokeAndFireTest extends KernelServiceTestBase {
     if ($this->assertTrue(is_bool($this->service->isSystemOnFire()))) {
       $this->assertFalse($this->service->isSystemOnFire());
     }
-    $this->assertFalse(is_object($this->service->isSystemShowingSmoke()));
-    if ($this->assertTrue(is_bool($this->service->isSystemShowingSmoke()))) {
-      $this->assertFalse($this->service->isSystemShowingSmoke());
-    }
+    $this->assertTrue(is_object($this->service->isSystemShowingSmoke()));
   }
 
 }

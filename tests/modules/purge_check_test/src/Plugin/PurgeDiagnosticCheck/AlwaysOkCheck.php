@@ -27,7 +27,7 @@ class AlwaysOkCheck extends PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function run() {
-    $this->recommendation = "This is an ok for testing.";
+    $this->recommendation = $this->t("This is an ok for testing.");
     return SELF::SEVERITY_OK;
   }
 

@@ -7,7 +7,7 @@
 
 namespace Drupal\purge\Tests\Invalidation;
 
-use Drupal\Core\StringTranslation\TranslationWrapper;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 use Drupal\purge\Invalidation\PluginBase;
 use Drupal\purge\Invalidation\Exception\InvalidPropertyException;
@@ -170,9 +170,9 @@ abstract class PluginTestBase extends KernelTestBase {
     $d = $i->getPluginDefinition();
     $this->assertTrue(is_array($d));
     $this->assertTrue(is_array($d['examples']));
-    $this->assertTrue($d['label'] instanceof TranslationWrapper);
+    $this->assertTrue($d['label'] instanceof TranslatableMarkup);
     $this->assertFalse(empty((string) $d['label']));
-    $this->assertTrue($d['description'] instanceof TranslationWrapper);
+    $this->assertTrue($d['description'] instanceof TranslatableMarkup);
     $this->assertFalse(empty((string) $d['description']));
     $this->assertTrue(isset($d['expression_required']));
     $this->assertTrue(isset($d['expression_can_be_empty']));

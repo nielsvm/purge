@@ -60,8 +60,8 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
     $this->assertField('edit-connect-timeout');
     $this->assertField('edit-max-requests');
     // Validate performance form values.
-    $this->assertFieldById('edit-timeout', 3);
-    $this->assertFieldById('edit-connect-timeout', 1.5);
+    $this->assertFieldById('edit-timeout', 0.5);
+    $this->assertFieldById('edit-connect-timeout', 0.2);
     $this->assertFieldById('edit-max-requests', 100);
   }
 

@@ -27,7 +27,7 @@ class AlwaysErrorCheck extends PluginBase implements PluginInterface {
    * {@inheritdoc}
    */
   public function run() {
-    $this->recommendation = "This is an error for testing.";
+    $this->recommendation = $this->t("This is an error for testing.");
     return SELF::SEVERITY_ERROR;
   }
 }

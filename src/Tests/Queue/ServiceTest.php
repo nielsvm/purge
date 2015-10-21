@@ -33,7 +33,7 @@ class ServiceTest extends KernelServiceTestBase {
   function setUp() {
     parent::setUp();
     $this->installSchema('system', ['queue']);
-    $this->initializeQueueService('database');
+    $this->initializeQueueService();
     $this->purgeQueue->emptyQueue();
     $this->initializeInvalidationFactoryService();
   }
@@ -116,19 +116,22 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests that states going in, come out exactly the same.
+   * Tests:
+   *   - \Drupal\purge\Queue\Service::reload
+   *   - \Drupal\purge\Queue\Service::commit
+   *   - \Drupal\purge\Queue\Service::claimMultiple
    */
   public function testStateConsistency() {
+    $this->purgeQueue->setPluginsEnabled(['database']);
+    // Add four objects to the queue. reload it, and verify they're the same.
     $i = $this->getInvalidations(4);
     $i[0]->setState(Invalidation::STATE_NEW);
     $i[1]->setState(Invalidation::STATE_PURGING);
     $i[2]->setState(Invalidation::STATE_FAILED);
     $i[3]->setState(Invalidation::STATE_UNSUPPORTED);
     $this->purgeQueue->addMultiple($i);
-
     // Reload so that \Drupal\purge\Queue\Service::$buffer gets cleaned too.
     $this->purgeQueue->reload();
-
     // Now it has to refetch all objects, assure their states.
     $claims = $this->purgeQueue->claimMultiple(3, 1);
     $this->assertEqual(Invalidation::STATE_NEW, $claims[0]->getState());

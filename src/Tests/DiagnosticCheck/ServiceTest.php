@@ -7,6 +7,7 @@
 
 namespace Drupal\purge\Tests\DiagnosticCheck;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\purge\Tests\KernelTestBase;
 use Drupal\purge\Tests\KernelServiceTestBase;
 use Drupal\purge\DiagnosticCheck\ServiceInterface;
@@ -22,6 +23,7 @@ use Drupal\purge\DiagnosticCheck\PluginInterface as Check;
 class ServiceTest extends KernelServiceTestBase {
   protected $serviceId = 'purge.diagnostics';
   public static $modules = [
+    'purge_noqueuer_test',
     'purge_purger_test',
     'purge_processor_test',
     'purge_check_test',
@@ -105,7 +107,7 @@ class ServiceTest extends KernelServiceTestBase {
   public function testCount() {
     $this->initializeService();
     $this->assertTrue($this->service instanceof \Countable);
-    $this->assertEqual(8, count($this->service));
+    $this->assertEqual(9, count($this->service));
   }
 
   /**
@@ -125,7 +127,7 @@ class ServiceTest extends KernelServiceTestBase {
       $this->assertTrue($check instanceof Check);
       $items++;
     }
-    $this->assertEqual(8, $items);
+    $this->assertEqual(9, $items);
     $this->assertFalse($this->service->current());
     $this->assertFalse($this->service->valid());
     $this->assertNull($this->service->rewind());
@@ -142,13 +144,13 @@ class ServiceTest extends KernelServiceTestBase {
     $this->initializeRequirementSeverities();
     $this->initializeService();
     $requirements = $this->service->getHookRequirementsArray();
-    $this->assertEqual(8, count($requirements));
+    $this->assertEqual(9, count($requirements));
     foreach ($requirements as $id => $requirement) {
       $this->assertTrue(is_string($id));
       $this->assertFalse(empty($id));
-      $this->assertTrue(is_string($requirement['title']));
+      $this->assertTrue($requirement['title'] instanceof TranslatableMarkup, "$id's title is a TranslatableMarkup object.");
       $this->assertFalse(empty($requirement['title']));
-      $this->assertTrue(is_string($requirement['description']));
+      $this->assertTrue($requirement['description'] instanceof TranslatableMarkup, "$id's description is a TranslatableMarkup object.");
       $this->assertFalse(empty($requirement['description']));
       $this->assertTrue(in_array($requirement['severity'], $this->requirementSeverities));
     }
@@ -169,7 +171,7 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testIsSystemShowingSmoke() {
     $this->assertTrue($this->service->isSystemShowingSmoke() instanceof Check);
-    $possibilities = ['alwayswarning', 'capacity'];
+    $possibilities = ['alwayswarning', 'capacity', 'queuersavailable'];
     $this->assertTrue(in_array($this->service->isSystemShowingSmoke()->getPluginId(), $possibilities));
   }
 

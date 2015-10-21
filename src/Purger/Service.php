@@ -25,11 +25,6 @@ use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 class Service extends ServiceBase implements ServiceInterface {
 
   /**
-   * The plugin ID of the fallback backend.
-   */
-  const FALLBACK_PLUGIN = 'null';
-
-  /**
    * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface
    */
   protected $capacityTracker;
@@ -42,9 +37,9 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * Holds all generated user-readable purger labels per instance ID.
    *
-   * @var string[]
+   * @var null|string[]
    */
-  protected $labels;
+  protected $labels = NULL;
 
   /**
    * Holds all loaded purgers plugins.
@@ -86,16 +81,16 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * The list of supported invalidation types across all purgers.
    *
-   * @var string[]
+   * @var null|string[]
    */
-  protected $types = [];
+  protected $types = NULL;
 
   /**
    * The list of supported invalidation types per purger plugin.
    *
-   * @var array[]
+   * @var null|array[]
    */
-  protected $types_by_purger = [];
+  protected $types_by_purger = NULL;
 
   /**
    * Instantiate the purgers service.
@@ -154,36 +149,14 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function getLabels($include_fallback = TRUE) {
-    if (empty($this->labels)) {
+  public function getLabels() {
+    if (is_null($this->labels)) {
+      $this->labels = [];
       foreach ($this->getPluginsEnabled() as $id => $plugin_id) {
         $this->labels[$id] = $this->purgers[$id]->getLabel();
       }
     }
-    if ($include_fallback) {
-      return $this->labels;
-    }
-    else {
-      $labels = [];
-      foreach ($this->labels as $id => $plugin_id) {
-        if ($id !== SELF::FALLBACK_PLUGIN) {
-          $labels[$id] = $plugin_id;
-        }
-      }
-      return $labels;
-    }
     return $this->labels;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getPlugins() {
-    if (empty($this->plugins)) {
-      $this->plugins = $this->pluginManager->getDefinitions();
-      unset($this->plugins[SELF::FALLBACK_PLUGIN]);
-    }
-    return $this->plugins;
   }
 
   /**
@@ -192,16 +165,14 @@ class Service extends ServiceBase implements ServiceInterface {
    * @return string[]
    *   Associative array with enabled purgers: id => plugin_id.
    */
-  public function getPluginsEnabled($include_fallback = TRUE) {
+  public function getPluginsEnabled() {
     if (is_null($this->plugins_enabled)) {
+      $this->plugins_enabled = [];
       $enabled = $this->configFactory->get('purge.plugins')->get('purgers');
       $plugin_ids = array_keys($this->getPlugins());
 
       foreach ($enabled as $id => $plugin_id) {
-        if ($plugin_id === SELF::FALLBACK_PLUGIN) {
-          continue;
-        }
-        elseif (!in_array($plugin_id, $plugin_ids)) {
+        if (!in_array($plugin_id, $plugin_ids)) {
           // When a third-party provided purger was configured and its module
           // got uninstalled, the configuration renders invalid. Instead of
           // rewriting config or breaking hard, we ignore silently. The
@@ -212,25 +183,8 @@ class Service extends ServiceBase implements ServiceInterface {
           $this->plugins_enabled[$id] = $plugin_id;
         }
       }
-
-      // The public API always has to be reliable and always requires a purger
-      // backend. Therefore we load the 'null' backend in unfunctional setups.
-      if (empty($this->plugins_enabled)) {
-        $this->plugins_enabled[SELF::FALLBACK_PLUGIN] = SELF::FALLBACK_PLUGIN;
-      }
     }
-    if ($include_fallback) {
-      return $this->plugins_enabled;
-    }
-    else {
-      $plugins = [];
-      foreach ($this->plugins_enabled as $id => $plugin_id) {
-        if ($plugin_id !== SELF::FALLBACK_PLUGIN) {
-          $plugins[$id] = $plugin_id;
-        }
-      }
-      return $plugins;
-    }
+    return $this->plugins_enabled;
   }
 
   /**
@@ -256,7 +210,8 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function getTypes() {
-    if (empty($this->types)) {
+    if (is_null($this->types)) {
+      $this->types = [];
       foreach ($this->purgers as $purger) {
         foreach ($purger->getTypes() as $type) {
           if (!in_array($type, $this->types)) {
@@ -272,7 +227,8 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function getTypesByPurger() {
-    if (empty($this->types_by_purger)) {
+    if (is_null($this->types_by_purger)) {
+      $this->types_by_purger = [];
       foreach ($this->getPluginsEnabled(FALSE) as $id => $plugin_id) {
         $this->types_by_purger[$id] = $this->purgers[$id]->getTypes();
       }
@@ -284,7 +240,6 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function setPluginsEnabled(array $plugin_ids) {
-    unset($plugin_ids[SELF::FALLBACK_PLUGIN]);
     foreach ($plugin_ids as $id => $plugin_id) {
       if (!is_string($id) || empty($id)) {
         throw new \LogicException('Invalid instance ID (key).');
@@ -304,8 +259,9 @@ class Service extends ServiceBase implements ServiceInterface {
     parent::reload();
     $this->configFactory = \Drupal::configFactory();
     $this->purgers = NULL;
-    $this->types = [];
-    $this->types_by_purger = [];
+    $this->labels = NULL;
+    $this->types = NULL;
+    $this->types_by_purger = NULL;
     $this->initializePurgers();
   }
 
@@ -318,6 +274,7 @@ class Service extends ServiceBase implements ServiceInterface {
     }
 
     // Iterate each purger plugin we should load and instantiate them.
+    $this->purgers = [];
     foreach ($this->getPluginsEnabled() as $id => $plugin_id) {
       $this->purgers[$id] = $this->pluginManager->createInstance($plugin_id, ['id' => $id]);
     }

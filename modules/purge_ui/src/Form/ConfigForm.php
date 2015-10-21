@@ -334,8 +334,8 @@ class ConfigForm extends ConfigFormBase {
   protected function buildFormPurgers(array &$form, FormStateInterface $form_state) {
     $all = $this->purgePurgers->getPlugins();
     $available = $this->purgePurgers->getPluginsAvailable();
-    $enabled = $this->purgePurgers->getPluginsEnabled(FALSE);
-    $enabledlabels = $this->purgePurgers->getLabels(FALSE);
+    $enabled = $this->purgePurgers->getPluginsEnabled();
+    $enabledlabels = $this->purgePurgers->getLabels();
     $types_by_purger = $this->purgePurgers->getTypesByPurger();
 
     // Include the ajax library as we'll need it.

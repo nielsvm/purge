@@ -62,16 +62,13 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
   /**
    * Retrieve all user-readable labels for all enabled purger instances.
    *
-   * @param bool $include_fallback
-   *   Whether to include the default fallback backend in the listing.
-   *
    * @see \Drupal\purge\Purger\PluginInterface::getId()
    * @see \Drupal\purge\Purger\PluginInterface::getLabel()
    *
    * @return \Drupal\Core\StringTranslation\TranslationWrapper[]
    *   Associative array with instance ID's in the key and the label as value.
    */
-  public function getLabels($include_fallback = TRUE);
+  public function getLabels();
 
   /**
    * Retrieve the plugin_ids of purgers that can be enabled.
@@ -89,13 +86,10 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
   /**
    * Retrieve the configured plugin_ids that the service will use.
    *
-   * @param bool $include_fallback
-   *   Whether to include the default fallback backend in the listing.
-   *
    * @return string[]
    *   Array with the plugin_ids of the enabled plugins.
    */
-  public function getPluginsEnabled($include_fallback = TRUE);
+  public function getPluginsEnabled();
 
   /**
    * Retrieve the list of supported invalidation types per purger instance.

@@ -7,7 +7,7 @@
 
 namespace Drupal\purge_purger_test\Plugin\PurgePurger;
 
-use Drupal\purge\Plugin\PurgePurger\Null;
+use Drupal\purge_purger_test\Null;
 
 /**
  * Test PurgerWithForm.

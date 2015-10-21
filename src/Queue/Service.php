@@ -91,6 +91,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   public function getPluginsEnabled() {
     if (is_null($this->plugins_enabled)) {
       $plugin_ids = array_keys($this->getPlugins());
+      $this->plugins_enabled = [];
 
       // The queue service always interacts with just one underlying queue,
       // which is stored in configuration. When configuration is invalid - which

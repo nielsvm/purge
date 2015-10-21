@@ -7,8 +7,8 @@
 
 namespace Drupal\purge_purger_test\Plugin\PurgePurger;
 
-use Drupal\purge\Plugin\PurgePurger\Null;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge_purger_test\Null;
 
 /**
  * A purger that always succeeds.
@@ -36,20 +36,6 @@ class GoodPurger extends Null {
     foreach ($invalidations as $invalidation) {
       $invalidation->setState(Invalidation::STATE_PURGED);
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getIdealConditionsLimit() {
-    return 100;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getTimeHint() {
-    return 1;
   }
 
 }

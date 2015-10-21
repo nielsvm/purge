@@ -2,31 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\PurgePurger\Null.
+ * Contains \Drupal\purge_purger_test\Null.
  */
 
-namespace Drupal\purge\Plugin\PurgePurger;
+namespace Drupal\purge_purger_test;
 
 use Drupal\purge\Purger\PluginBase;
 use Drupal\purge\Purger\PluginInterface;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 
 /**
- * API-compliant null purger back-end.
- *
- * This plugin is not intended for usage but gets loaded during module
- * installation, when configuration rendered invalid or when no other plugins
- * are available. Because its API compliant, Drupal won't crash visibly.
- *
- * @PurgePurger(
- *   id = "null",
- *   label = @Translation("Null"),
- *   description = @Translation("API-compliant null purger back-end."),
- *   types = {},
- *   multi_instance = FALSE,
- * )
+ * Ever failing null purger backend.
  */
-class Null extends PluginBase implements PluginInterface {
+abstract class Null extends PluginBase implements PluginInterface {
 
   /**
    * {@inheritdoc}
@@ -47,6 +35,13 @@ class Null extends PluginBase implements PluginInterface {
     foreach ($invalidations as $invalidation) {
       $invalidation->setState(Invalidation::STATE_FAILED);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getIdealConditionsLimit() {
+    return 100;
   }
 
   /**

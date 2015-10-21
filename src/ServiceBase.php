@@ -34,7 +34,7 @@ abstract class ServiceBase extends ServiceProviderBase implements ServiceInterfa
    *
    * @var null|array
    */
-  protected $plugins_enabled = [];
+  protected $plugins_enabled = NULL;
 
   /**
    * {@inheritdoc}

@@ -139,6 +139,7 @@ class Service extends ServiceBase implements ServiceInterface {
       }
       return FALSE;
     };
+    $this->plugins_enabled = [];
     foreach ($this->getPlugins() as $plugin) {
       if (!empty($plugin['dependent_queue_plugins'])) {
         if (!$load($plugin['dependent_queue_plugins'], $this->getQueue()->getPluginsEnabled())) {

@@ -13,7 +13,6 @@ use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface;
 use Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounter;
 use Drupal\purge\Plugin\Purge\Purger\Capacity\Counter;
-use Drupal\purge\Purger\Service;
 
 /**
  * Provides a capacity tracker.
@@ -157,6 +156,13 @@ class Tracker implements TrackerInterface {
    */
   public function getIdealConditionsLimit() {
     if (is_null($this->idealConditionsLimit)) {
+
+      // Fail early when no purgers are loaded.
+      if (empty($this->purgers)) {
+        $this->idealConditionsLimit = 0;
+        return $this->idealConditionsLimit;
+      }
+
       // Find the lowest emitted ideal conditions limit.
       $this->idealConditionsLimit = [];
       foreach ($this->purgers as $purger) {
@@ -174,8 +180,8 @@ class Tracker implements TrackerInterface {
     if (is_null($this->counterLimit)) {
 
       // Fail early when no purgers are loaded.
-      if (isset($this->purgers[Service::FALLBACK_PLUGIN])) {
-        $this->counterLimit = new Counter();
+      if (empty($this->purgers)) {
+        $this->counterLimit = new Counter(0);
         return $this->counterLimit->get();
       }
 
@@ -226,8 +232,15 @@ class Tracker implements TrackerInterface {
    */
   public function getTimeHint() {
     if (is_null($this->timeHint)) {
+
+      // Fail early when no purgers are loaded.
+      if (empty($this->purgers)) {
+        $this->timeHint = 1.0;
+        return $this->timeHint;
+      }
+
+      // Iterate the purgers and gather ::getTimeHint()'s results.
       $hint_per_type = [];
-      $this->timeHint = 1.0;
       foreach ($this->purgers as $id => $purger) {
         $plugin_id = $purger->getPluginId();
         $hint = $purger->getTimeHint();
@@ -260,9 +273,7 @@ class Tracker implements TrackerInterface {
       }
 
       // Take the highest time hint, which means we take the least risk.
-      if (count($hint_per_type)) {
-        $this->timeHint = max($hint_per_type);
-      }
+      $this->timeHint = max($hint_per_type);
     }
     return $this->timeHint;
   }

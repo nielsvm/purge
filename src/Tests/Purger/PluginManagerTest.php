@@ -33,6 +33,7 @@ class PluginManagerTest extends KernelServiceTestBase {
     'id',
     'label',
     'description',
+    'types',
     'multi_instance',
     'configform',
   ];
@@ -43,7 +44,6 @@ class PluginManagerTest extends KernelServiceTestBase {
    * @var string[]
    */
   protected $plugins = [
-    'null',
     'purger_a',
     'purger_b',
     'purger_c',

@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Processor\ProcessorInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Processor\ProcessorInterface.
  */
 
-namespace Drupal\purge\Processor;
+namespace Drupal\purge\Plugin\Purge\Processor;
 
 /**
  * Describe services that process invalidation objects.

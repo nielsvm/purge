@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queuer\ServiceInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Queuer\ServiceInterface.
  */
 
-namespace Drupal\purge\Queuer;
+namespace Drupal\purge\Plugin\Purge\Queuer;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Drupal\purge\ServiceInterface as PurgeServiceInterface;
@@ -21,21 +21,21 @@ interface ServiceInterface extends PurgeServiceInterface, ContainerAwareInterfac
    * @param string $id
    *   The container id of the queuer to retrieve.
    *
-   * @return \Drupal\purge\Queuer\QueuerInterface|null
+   * @return \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface|null
    */
   public function get($id);
 
   /**
    * Get the disabled queuers.
    *
-   * @return \Drupal\purge\Queuer\QueuerInterface[]
+   * @return \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface[]
    */
   public function getDisabled();
 
   /**
    * Get the enabled queuers.
    *
-   * @return \Drupal\purge\Queuer\QueuerInterface[]
+   * @return \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface[]
    */
   public function getEnabled();
 

@@ -21,7 +21,7 @@ trait TestTrait {
   protected $configFactory;
 
   /**
-   * @var \Drupal\purge\Processor\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Processor\ServiceInterface
    */
   protected $purgeProcessors;
 
@@ -41,7 +41,7 @@ trait TestTrait {
   protected $purgeQueue;
 
   /**
-   * @var \Drupal\purge\Queuer\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Queuer\ServiceInterface
    */
   protected $purgeQueuers;
 

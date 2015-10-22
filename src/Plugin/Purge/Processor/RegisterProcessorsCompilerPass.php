@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Processor\RegisterProcessorsCompilerPass.
+ * Contains \Drupal\purge\Plugin\Purge\Processor\RegisterProcessorsCompilerPass.
  */
 
-namespace Drupal\purge\Processor;
+namespace Drupal\purge\Plugin\Purge\Processor;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;

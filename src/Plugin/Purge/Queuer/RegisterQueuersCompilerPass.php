@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queuer\RegisterQueuersCompilerPass.
+ * Contains \Drupal\purge\Plugin\Purge\Queuer\RegisterQueuersCompilerPass.
  */
 
-namespace Drupal\purge\Queuer;
+namespace Drupal\purge\Plugin\Purge\Queuer;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;

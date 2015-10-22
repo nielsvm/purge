@@ -9,7 +9,7 @@ namespace Drupal\purge_processor_test;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\purge\Processor\ProcessorInterface;
+use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 
 /**

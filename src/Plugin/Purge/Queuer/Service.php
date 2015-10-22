@@ -2,13 +2,13 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queuer\Service.
+ * Contains \Drupal\purge\Plugin\Purge\Queuer\Service.
  */
 
-namespace Drupal\purge\Queuer;
+namespace Drupal\purge\Plugin\Purge\Queuer;
 
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Drupal\purge\Queuer\ServiceInterface;
+use Drupal\purge\Plugin\Purge\Queuer\ServiceInterface;
 use Drupal\purge\ServiceBase;
 
 /**
@@ -36,7 +36,7 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * All registered queuers.
    *
-   * @var \Drupal\purge\Queuer\QueuerInterface[]
+   * @var \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface[]
    */
   protected $queuers = [];
 

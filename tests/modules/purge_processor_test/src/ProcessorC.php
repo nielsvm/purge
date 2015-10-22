@@ -7,7 +7,7 @@
 
 namespace Drupal\purge_processor_test;
 
-use Drupal\purge\Processor\ProcessorInterface;
+use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
 use Drupal\purge_processor_test\ProcessorA;
 
 /**

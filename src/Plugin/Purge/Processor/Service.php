@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Processor\Service.
+ * Contains \Drupal\purge\Plugin\Purge\Processor\Service.
  */
 
-namespace Drupal\purge\Processor;
+namespace Drupal\purge\Plugin\Purge\Processor;
 
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Drupal\purge\ServiceBase;
-use Drupal\purge\Processor\ServiceInterface;
+use Drupal\purge\Plugin\Purge\Processor\ServiceInterface;
 
 /**
  * Provides the service that gives access to registered processing policies.
@@ -36,7 +36,7 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * All registered processing policies.
    *
-   * @var \Drupal\purge\Processor\ProcessorInterface[]
+   * @var \Drupal\purge\Plugin\Purge\Processor\ProcessorInterface[]
    */
   protected $processors = [];
 

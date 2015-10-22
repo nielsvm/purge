@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queuer\QueuerInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface.
  */
 
-namespace Drupal\purge\Queuer;
+namespace Drupal\purge\Plugin\Purge\Queuer;
 
 /**
  * Describes services that queue invalidation objects upon certain events.

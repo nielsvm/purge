@@ -10,7 +10,7 @@ namespace Drupal\purge_ui\Controller;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\purge\Queuer\ServiceInterface as QueuerService;
+use Drupal\purge\Plugin\Purge\Queuer\ServiceInterface as QueuerService;
 
 /**
  * Controller for:
@@ -20,14 +20,14 @@ use Drupal\purge\Queuer\ServiceInterface as QueuerService;
 class QueuerFormController extends ControllerBase {
 
   /**
-   * @var \Drupal\purge\Queuer\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Queuer\ServiceInterface
    */
   protected $purgeQueuers;
 
   /**
    * Construct the QueuerFormController.
    *
-   * @param \Drupal\purge\Queuer\ServiceInterface $purge_queuers
+   * @param \Drupal\purge\Plugin\Purge\Queuer\ServiceInterface $purge_queuers
    *   The purge queuers registry service.
    */
   function __construct(QueuerService $purge_queuers) {

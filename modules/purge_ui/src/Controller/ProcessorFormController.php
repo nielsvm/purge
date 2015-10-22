@@ -10,7 +10,7 @@ namespace Drupal\purge_ui\Controller;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\purge\Processor\ServiceInterface as ProcessorService;
+use Drupal\purge\Plugin\Purge\Processor\ServiceInterface as ProcessorService;
 
 /**
  * Controller for:
@@ -20,14 +20,14 @@ use Drupal\purge\Processor\ServiceInterface as ProcessorService;
 class ProcessorFormController extends ControllerBase {
 
   /**
-   * @var \Drupal\purge\Processor\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Processor\ServiceInterface
    */
   protected $purgeProcessors;
 
   /**
    * Construct the ProcessorFormController.
    *
-   * @param \Drupal\purge\Processor\ServiceInterface $purge_processors
+   * @param \Drupal\purge\Plugin\Purge\Processor\ServiceInterface $purge_processors
    *   The purge processors registry.
    */
   function __construct(ProcessorService $purge_processors) {

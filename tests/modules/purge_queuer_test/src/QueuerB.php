@@ -7,7 +7,7 @@
 
 namespace Drupal\purge_queuer_test;
 
-use Drupal\purge\Queuer\QueuerInterface;
+use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
 use Drupal\purge_queuer_test\QueuerA;
 
 /**

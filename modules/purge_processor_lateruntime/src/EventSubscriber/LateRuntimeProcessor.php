@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
-use Drupal\purge\Processor\ProcessorInterface;
+use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
 
 /**
  * Processes queue items at the end of every request.

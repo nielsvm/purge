@@ -14,10 +14,10 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
-use Drupal\purge\Processor\ServiceInterface as ProcessorsServiceInterface;
+use Drupal\purge\Plugin\Purge\Processor\ServiceInterface as ProcessorsServiceInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
-use Drupal\purge\Queuer\ServiceInterface as QueuersServiceInterface;
+use Drupal\purge\Plugin\Purge\Queuer\ServiceInterface as QueuersServiceInterface;
 
 /**
  * Configure the Purge pipeline for this site.
@@ -39,7 +39,7 @@ class ConfigForm extends ConfigFormBase {
   protected $purgeInvalidationFactory;
 
   /**
-   * @var \Drupal\purge\Processor\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Processor\ServiceInterface
    */
   protected $purgeProcessors;
 
@@ -54,7 +54,7 @@ class ConfigForm extends ConfigFormBase {
   protected $purgeQueue;
 
   /**
-   * @var \Drupal\purge\Queuer\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Queuer\ServiceInterface
    */
   protected $purgeQueuers;
 
@@ -65,13 +65,13 @@ class ConfigForm extends ConfigFormBase {
    *   Diagnostics service that reports any preliminary issues regarding purge.
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface $purge_invalidation_factory
    *   The invalidation objects factory service.
-   * @param \Drupal\purge\Processor\ServiceInterface $purge_processors
+   * @param \Drupal\purge\Plugin\Purge\Processor\ServiceInterface $purge_processors
    *   The purge processors registry service.
    * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
    *   The purger service.
    * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $purge_queue
    *   The purge queue service.
-   * @param \Drupal\purge\Queuer\ServiceInterface $purge_queuers
+   * @param \Drupal\purge\Plugin\Purge\Queuer\ServiceInterface $purge_queuers
    *   The purge queuers registry service.
    */
   public function __construct(DiagnosticsServiceInterface $purge_diagnostics, InvalidationsServiceInterface $purge_invalidation_factory, ProcessorsServiceInterface $purge_processors, PurgersServiceInterface $purge_purgers, QueueServiceInterface $purge_queue, QueuersServiceInterface $purge_queuers) {

@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Processor\ServiceInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Processor\ServiceInterface.
  */
 
-namespace Drupal\purge\Processor;
+namespace Drupal\purge\Plugin\Purge\Processor;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Drupal\purge\ServiceInterface as PurgeServiceInterface;
@@ -21,21 +21,21 @@ interface ServiceInterface extends PurgeServiceInterface, ContainerAwareInterfac
    * @param string $id
    *   The container id of the processor to retrieve.
    *
-   * @return \Drupal\purge\Processor\ProcessorInterface|null
+   * @return \Drupal\purge\Plugin\Purge\Processor\ProcessorInterface|null
    */
   public function get($id);
 
   /**
    * Get the disabled processing policies available .
    *
-   * @return \Drupal\purge\Processor\ProcessorInterface[]
+   * @return \Drupal\purge\Plugin\Purge\Processor\ProcessorInterface[]
    */
   public function getDisabled();
 
   /**
    * Get the enabled processing policies object.
    *
-   * @return \Drupal\purge\Processor\ProcessorInterface[]
+   * @return \Drupal\purge\Plugin\Purge\Processor\ProcessorInterface[]
    */
   public function getEnabled();
 

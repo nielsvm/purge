@@ -12,7 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
-use Drupal\purge\Queuer\ServiceInterface;
+use Drupal\purge\Plugin\Purge\Queuer\ServiceInterface;
 use Drupal\purge_ui\Form\CloseDialogTrait;
 use Drupal\purge_ui\Form\ReloadConfigFormCommand;
 
@@ -23,21 +23,21 @@ class QueuerDisableForm extends ConfirmFormBase {
   use CloseDialogTrait;
 
   /**
-   * @var \Drupal\purge\Queuer\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Queuer\ServiceInterface
    */
   protected $purgeQueuers;
 
   /**
    * The queuer object to be disabled.
    *
-   * @var \Drupal\purge\Queuer\QueuerInterface
+   * @var \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface
    */
   protected $queuer;
 
   /**
    * Constructs a QueuerDisableForm object.
    *
-   * @param \Drupal\purge\Queuer\ServiceInterface $purge_queuers
+   * @param \Drupal\purge\Plugin\Purge\Queuer\ServiceInterface $purge_queuers
    *   The purge queuers registry service.
    *
    * @return void

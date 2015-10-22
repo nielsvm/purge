@@ -12,7 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
-use Drupal\purge\Processor\ServiceInterface;
+use Drupal\purge\Plugin\Purge\Processor\ServiceInterface;
 use Drupal\purge_ui\Form\CloseDialogTrait;
 use Drupal\purge_ui\Form\ReloadConfigFormCommand;
 
@@ -23,14 +23,14 @@ class ProcessorEnableForm extends ConfigFormBase {
   use CloseDialogTrait;
 
   /**
-   * @var \Drupal\purge\Processor\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Processor\ServiceInterface
    */
   protected $purgeProcessors;
 
   /**
    * Constructs a ProcessorEnableForm object.
    *
-   * @param \Drupal\purge\Processor\ServiceInterface $purge_processors
+   * @param \Drupal\purge\Plugin\Purge\Processor\ServiceInterface $purge_processors
    *   The purge processors registry service.
    *
    * @return void

@@ -13,11 +13,11 @@ services:
   # Manages services tagged 'purge_queuer' by exposing them in end-user
   # interfaces and allowing users to disable/enable them.
   purge.queuers:
-    class: Drupal\purge\Queuer\Service
+    class: Drupal\purge\Plugin\Purge\Queuer\Service
     calls:
     - [setContainer, ['@service_container']]
   purge.queuers.cache_tags:
-    class: Drupal\purge\Queuer\CacheTagsQueuer
+    class: Drupal\purge\Plugin\Purge\Queuer\CacheTagsQueuer
     arguments: ['@config.factory', '@purge.queue', '@purge.invalidation.factory']
     tags:
       - { name: cache_tags_invalidator }
@@ -68,7 +68,7 @@ services:
   # Processing policies work the queue and put purgers actively to work. These
   # are services tagged 'purge_processor' provided by submodules.
   purge.processors:
-    class: Drupal\purge\Processor\Service
+    class: Drupal\purge\Plugin\Purge\Processor\Service
     calls:
     - [setContainer, ['@service_container']]
 

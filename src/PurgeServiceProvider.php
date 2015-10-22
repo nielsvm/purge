@@ -9,8 +9,8 @@ namespace Drupal\purge;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceProviderInterface;
-use Drupal\purge\Processor\RegisterProcessorsCompilerPass;
-use Drupal\purge\Queuer\RegisterQueuersCompilerPass;
+use Drupal\purge\Plugin\Purge\Processor\RegisterProcessorsCompilerPass;
+use Drupal\purge\Plugin\Purge\Queuer\RegisterQueuersCompilerPass;
 
 /**
  * The Purge service provider.

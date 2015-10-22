@@ -9,7 +9,7 @@ namespace Drupal\purge_queuer_test;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\purge\Queuer\QueuerInterface;
+use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 

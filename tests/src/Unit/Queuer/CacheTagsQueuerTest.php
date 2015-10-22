@@ -7,11 +7,11 @@
 
 namespace Drupal\Tests\purge\Unit\Queuer;
 
-use Drupal\purge\Queuer\CacheTagsQueuer;
+use Drupal\purge\Plugin\Purge\Queuer\CacheTagsQueuer;
 use Drupal\Tests\UnitTestCase;
 
 /**
- * @coversDefaultClass \Drupal\purge\Queuer\CacheTagsQueuer
+ * @coversDefaultClass \Drupal\purge\Plugin\Purge\Queuer\CacheTagsQueuer
  * @group purge
  */
 class CacheTagsQueuerTest extends UnitTestCase {
@@ -19,7 +19,7 @@ class CacheTagsQueuerTest extends UnitTestCase {
   /**
    * The tested cache tags queuer.
    *
-   * @var \Drupal\purge\Queuer\CacheTagsQueuer
+   * @var \Drupal\purge\Plugin\Purge\Queuer\CacheTagsQueuer
    */
   protected $cacheTagsQueuer;
 

@@ -2,16 +2,16 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queuer\CacheTagsQueuer.
+ * Contains \Drupal\purge\Plugin\Purge\Queuer\CacheTagsQueuer.
  */
 
-namespace Drupal\purge\Queuer;
+namespace Drupal\purge\Plugin\Purge\Queuer;
 
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\purge\Queuer\QueuerInterface;
+use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 

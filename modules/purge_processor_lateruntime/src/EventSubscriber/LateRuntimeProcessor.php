@@ -172,8 +172,10 @@ class LateRuntimeProcessor implements ProcessorInterface, EventSubscriberInterfa
     $capacity = $this->purgePurgers->capacityTracker();
     if ($limit = $capacity->getLimit()) {
       $claims = $this->purgeQueue->claimMultiple($limit, $capacity->getTimeHint());
-      $this->purgePurgers->invalidateMultiple($claims);
-      $this->purgeQueue->deleteOrReleaseMultiple($claims);
+      if (count($claims)) {
+        $this->purgePurgers->invalidateMultiple($claims);
+        $this->purgeQueue->deleteOrReleaseMultiple($claims);
+      }
     }
   }
 

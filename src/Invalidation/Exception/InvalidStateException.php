@@ -22,7 +22,7 @@ namespace Drupal\purge\Invalidation\Exception;
  *    \Drupal\purge\Invalidation\PluginInterface object.
  *
  * @see \Drupal\purge\Invalidation\PluginInterface::setState
- * @see \Drupal\purge\Purger\ServiceInterface::purge
- * @see \Drupal\purge\Purger\ServiceInterface::purgeMultiple
+ * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::purge
+ * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::purgeMultiple
  */
 class InvalidStateException extends \Exception {}

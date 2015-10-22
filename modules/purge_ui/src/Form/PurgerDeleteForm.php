@@ -12,7 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
-use Drupal\purge\Purger\ServiceInterface;
+use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge_ui\Form\CloseDialogTrait;
 use Drupal\purge_ui\Form\ReloadConfigFormCommand;
 
@@ -39,19 +39,19 @@ class PurgerDeleteForm extends ConfirmFormBase {
   /**
    * The purge executive service, which wipes content from external caches.
    *
-   * @var \Drupal\purge\Purger\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
    */
   protected $purgePurgers;
 
   /**
    * Constructs a DeletePurgerForm object.
    *
-   * @param \Drupal\purge\Purger\ServiceInterface $purge_purgers
+   * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
    *   The purger service.
    *
    * @return void
    */
-  public function __construct(ServiceInterface $purge_purgers) {
+  public function __construct(PurgersServiceInterface $purge_purgers) {
     $this->purgePurgers = $purge_purgers;
   }
 

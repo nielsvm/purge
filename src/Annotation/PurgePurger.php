@@ -46,9 +46,9 @@ class PurgePurger extends Plugin {
    * instance 'tag', 'path' or 'url'. The plugin will only receive invalidation
    * requests for the given types, others fail with state STATE_UNSUPPORTED. It
    * is possible to dynamically provide this list by overloading the base
-   * implementation of \Drupal\purge\Purger\SharedInterface::getTypes().
+   * implementation of \Drupal\purge\Plugin\Purge\Purger\SharedInterface::getTypes().
    *
-   * @see \Drupal\purge\Purger\SharedInterface::getTypes()
+   * @see \Drupal\purge\Plugin\Purge\Purger\SharedInterface::getTypes()
    *
    * @var string[]
    */
@@ -59,7 +59,7 @@ class PurgePurger extends Plugin {
    *
    * When you set 'multi_instance = TRUE' in your plugin annotation, it
    * becomes possible for end-users to create multiple instances of your
-   * purger. With \Drupal\purge\Purger\PluginInterface::getId(), you can read
+   * purger. With \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getId(), you can read
    * the unique identifier of your instance to keep multiple instances apart.
    *
    * @var bool

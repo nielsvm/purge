@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purger\Service.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\PurgersService.
  */
 
-namespace Drupal\purge\Purger;
+namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -15,14 +15,14 @@ use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Capacity\Tracker;
-use Drupal\purge\Purger\ServiceInterface;
+use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Invalidation\Exception\InvalidStateException;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 
 /**
  * Provides the service that distributes access to one or more purgers.
  */
-class Service extends ServiceBase implements ServiceInterface {
+class PurgersService extends ServiceBase implements PurgersServiceInterface {
 
   /**
    * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface
@@ -44,7 +44,7 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * Holds all loaded purgers plugins.
    *
-   * @var \Drupal\purge\Purger\PluginInterface[]
+   * @var \Drupal\purge\Plugin\Purge\Purger\PurgerInterface[]
    */
   protected $purgers;
 

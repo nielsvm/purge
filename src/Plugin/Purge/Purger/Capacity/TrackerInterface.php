@@ -28,8 +28,8 @@ interface TrackerInterface {
   /**
    * Construct a capacity tracker.
    *
-   * @param \Drupal\purge\Purger\PluginInterface[] $purgers
-   *   All purger plugins instantiated by \Drupal\purge\Purger\ServiceInterface.
+   * @param \Drupal\purge\Plugin\Purge\Purger\PurgerInterface[] $purgers
+   *   All purger plugins instantiated by \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface.
    * @param \Drupal\Core\State\StateInterface $state
    *   The state key value store.
    */
@@ -173,7 +173,7 @@ interface TrackerInterface {
    * will cause purge to take it a lot easier and to pull less items from the
    * queue per request.
    *
-   * @throws \Drupal\purge\Purger\Exception\BadPluginBehaviorException
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
    *   Thrown when the returned floating point value is lower than 0.2, higher
    *   than 10 or is not returned as float.
    *

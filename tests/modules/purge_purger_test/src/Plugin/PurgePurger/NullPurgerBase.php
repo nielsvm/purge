@@ -7,14 +7,14 @@
 
 namespace Drupal\purge_purger_test\Plugin\PurgePurger;
 
-use Drupal\purge\Purger\PluginBase;
-use Drupal\purge\Purger\PluginInterface;
+use Drupal\purge\Plugin\Purge\Purger\PurgerBase;
+use Drupal\purge\Plugin\Purge\Purger\PurgerInterface;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 
 /**
  * Ever failing null purger plugin base.
  */
-abstract class NullPurgerBase extends PluginBase implements PluginInterface {
+abstract class NullPurgerBase extends PurgerBase implements PurgerInterface {
 
   /**
    * {@inheritdoc}

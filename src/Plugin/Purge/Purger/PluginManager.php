@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purger\PluginManager.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\PluginManager.
  */
 
-namespace Drupal\purge\Purger;
+namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
@@ -32,9 +32,9 @@ class PluginManager extends DefaultPluginManager {
       'Plugin/PurgePurger',
       $namespaces,
       $module_handler,
-      'Drupal\purge\Purger\PluginInterface',
+      'Drupal\purge\Plugin\Purge\Purger\PurgerInterface',
       'Drupal\purge\Annotation\PurgePurger');
     $this->setCacheBackend($cache_backend, 'purge_purger_plugins');
   }
-  
+
 }

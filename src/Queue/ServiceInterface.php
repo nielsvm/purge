@@ -146,8 +146,8 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
    * @throws \Drupal\purge\Queue\Exception\UnexpectedServiceConditionException
    *   Exception thrown when the object state doesn't make any sense.
    *
-   * @see \Drupal\purge\Purger\Service::invalidate
-   * @see \Drupal\purge\Purger\Service::invalidateMultiple
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersService::invalidate
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersService::invalidateMultiple
    *
    * @return void
    */
@@ -160,8 +160,8 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
    *   The invalidation objects after the 'purge.purgers' service attempted
    *   their invalidation.
    *
-   * @see \Drupal\purge\Purger\Service::invalidate
-   * @see \Drupal\purge\Purger\Service::invalidateMultiple
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersService::invalidate
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersService::invalidateMultiple
    *
    * @return void
    */

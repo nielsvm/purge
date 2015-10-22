@@ -10,8 +10,8 @@ namespace Drupal\purge_purger_http\Plugin\PurgePurger;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\purge\Purger\PluginBase;
-use Drupal\purge\Purger\PluginInterface;
+use Drupal\purge\Plugin\Purge\Purger\PurgerBase;
+use Drupal\purge\Plugin\Purge\Purger\PurgerInterface;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
 use Drupal\purge_purger_http\Entity\HttpPurgerSettings;
 
@@ -31,7 +31,7 @@ use Drupal\purge_purger_http\Entity\HttpPurgerSettings;
  *   multi_instance = TRUE,
  * )
  */
-class HttpPurger extends PluginBase implements PluginInterface {
+class HttpPurger extends PurgerBase implements PurgerInterface {
 
   /**
    * @var \GuzzleHttp\Client

@@ -2,25 +2,25 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purger\ServiceInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface.
  */
 
-namespace Drupal\purge\Purger;
+namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
-use Drupal\purge\ServiceInterface as PurgeServiceInterface;
+use Drupal\purge\ServiceInterface;
 use Drupal\purge\ModifiableServiceInterface;
-use Drupal\purge\Purger\SharedInterface;
+use Drupal\purge\Plugin\Purge\Purger\SharedInterface;
 
 /**
  * Describes a service that distributes access to one or more purgers.
  */
-interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInterface, SharedInterface {
+interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInterface, SharedInterface {
 
   /**
    * Get the capacity tracker.
    *
-   * Implementations of \Drupal\purge\Purger\ServiceInterface always hold a
+   * Implementations of \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface always hold a
    * single capacity tracker instance. The capacity tracker tracks runtime
    * resource consumption and maintains activity counters.
    *
@@ -35,7 +35,7 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
    * whether it is multi-instantiable or not. This helper creates a unique,
    * random string, 10 characters long.
    *
-   * @see \Drupal\purge\Purger\PluginInterface::getId()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getId()
    *
    * @return string
    */
@@ -44,7 +44,7 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
   /**
    * Disable the given purger plugin instances.
    *
-   * Just before, it calls \Drupal\purge\Purger\PluginInterface::delete()
+   * Just before, it calls \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::delete()
    * on the purger(s) being disabled allowing the plugin to clean up.
    *
    * @param string[] $ids
@@ -53,7 +53,7 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
    * @throws \LogicException
    *   Thrown when any of the ids given isn't valid or when $ids is empty.
    *
-   * @see \Drupal\purge\Purger\PluginInterface::delete()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::delete()
    *
    * @return void
    */
@@ -62,8 +62,8 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
   /**
    * Retrieve all user-readable labels for all enabled purger instances.
    *
-   * @see \Drupal\purge\Purger\PluginInterface::getId()
-   * @see \Drupal\purge\Purger\PluginInterface::getLabel()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getId()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getLabel()
    *
    * @return \Drupal\Core\StringTranslation\TranslationWrapper[]
    *   Associative array with instance ID's in the key and the label as value.
@@ -95,7 +95,7 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
    * Retrieve the list of supported invalidation types per purger instance.
    *
    * @see \Drupal\purge\Annotation\PurgePurger::$types.
-   * @see \Drupal\purge\Purger\PluginInterface::getId().
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getId().
    *
    * @return string[]
    *   Array with the purger instance ID as key, and list of invalidation types.
@@ -105,8 +105,8 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
   /**
    * Set the final invalidation state after one or more purgers invalidated it.
    *
-   * Callers of \Drupal\purge\Purger\ServiceInterface::invalidate() and
-   * \Drupal\purge\Purger\ServiceInterface::invalidateMultiple() do not know
+   * Callers of \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidate() and
+   * \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidateMultiple() do not know
    * that multiple purgers can invalidate their objects. This is by design and
    * allows very flexible and powerful configuration. However, it also leads to
    * a problem. What if one purger fails to invalidate a tag invalidation while
@@ -118,8 +118,8 @@ interface ServiceInterface extends PurgeServiceInterface, ModifiableServiceInter
    *
    * This method should not be called directly from outside this service.
    *
-   * @see \Drupal\purge\Purger\ServiceInterface::invalidate()
-   * @see \Drupal\purge\Purger\ServiceInterface::invalidateMultiple()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidate()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidateMultiple()
    * @see \Drupal\purge\Invalidation\PluginInterface::setState()
    *
    * @param \Drupal\purge\Invalidation\PluginInterface $invalidation

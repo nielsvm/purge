@@ -15,7 +15,7 @@ use Drupal\Core\Url;
 use Drupal\purge\DiagnosticCheck\ServiceInterface as DiagnosticsInterface;
 use Drupal\purge\Invalidation\ServiceInterface as InvalidationInterface;
 use Drupal\purge\Processor\ServiceInterface as ProcessorsServiceInterface;
-use Drupal\purge\Purger\ServiceInterface as PurgersServiceInterface;
+use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
 use Drupal\purge\Queuer\ServiceInterface as QueuersServiceInterface;
 
@@ -44,7 +44,7 @@ class ConfigForm extends ConfigFormBase {
   protected $purgeProcessors;
 
   /**
-   * @var \Drupal\purge\Purger\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
    */
   protected $purgePurgers;
 
@@ -67,7 +67,7 @@ class ConfigForm extends ConfigFormBase {
    *   The invalidation objects factory service.
    * @param \Drupal\purge\Processor\ServiceInterface $purge_processors
    *   The purge processors registry service.
-   * @param \Drupal\purge\Purger\ServiceInterface $purge_purgers
+   * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
    *   The purger service.
    * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
    *   The purge queue service.

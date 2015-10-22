@@ -10,7 +10,7 @@ namespace Drupal\purge\Plugin\PurgeDiagnosticCheck;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\Queue\PluginInterface as Queue;
-use Drupal\purge\Purger\ServiceInterface as PurgersService;
+use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\DiagnosticCheck\PluginInterface;
 use Drupal\purge\DiagnosticCheck\PluginBase;
 
@@ -35,7 +35,7 @@ class PurgersAvailableDiagnosticCheck extends PluginBase implements PluginInterf
   /**
    * The purge executive service, which wipes content from external caches.
    *
-   * @var \Drupal\purge\Purger\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
    */
   protected $purgePurgers;
 
@@ -50,10 +50,10 @@ class PurgersAvailableDiagnosticCheck extends PluginBase implements PluginInterf
    *   The plugin implementation definition.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\purge\Purger\PurgerServiceInterface $purge_purgers
+   * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
    *   The purge executive service, which wipes content from external caches.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, PurgersService $purge_purgers) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, PurgersServiceInterface $purge_purgers) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
     $this->purgePurgers = $purge_purgers;

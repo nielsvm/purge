@@ -7,8 +7,8 @@
 
 namespace Drupal\purge_purger_http\Entity;
 
-use Drupal\purge\Purger\SettingsBase;
-use Drupal\purge\Purger\SettingsInterface;
+use Drupal\purge\Plugin\Purge\Purger\PurgerSettingsBase;
+use Drupal\purge\Plugin\Purge\Purger\PurgerSettingsInterface;
 
 /**
  * Defines the HTTP purger settings entity.
@@ -20,7 +20,7 @@ use Drupal\purge\Purger\SettingsInterface;
  *   entity_keys = {"id" = "id"},
  * )
  */
-class HttpPurgerSettings extends SettingsBase implements SettingsInterface {
+class HttpPurgerSettings extends PurgerSettingsBase implements PurgerSettingsInterface {
 
   /**
    * The invalidation plugin ID that this instance is configured to invalidate.

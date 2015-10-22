@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purger\PluginInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\PurgerInterface.
  */
 
-namespace Drupal\purge\Purger;
+namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface;
-use Drupal\purge\Purger\SharedInterface;
+use Drupal\purge\Plugin\Purge\Purger\SharedInterface;
 
 /**
  * Describes a purger - the cache invalidation executor.
  */
-interface PluginInterface extends ContainerFactoryPluginInterface, SharedInterface, TrackerPurgerInterface {
+interface PurgerInterface extends ContainerFactoryPluginInterface, SharedInterface, TrackerPurgerInterface {
 
   /**
    * Retrieve the unique instance ID for this purger instance.
@@ -24,7 +24,7 @@ interface PluginInterface extends ContainerFactoryPluginInterface, SharedInterfa
    * to TRUE in their annotations, are likely to require the use of this method
    * to differentiate their purger instance (e.g. through configuration).
    *
-   * @see \Drupal\purge\Purger\ServiceInterface::createId()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::createId()
    *
    * @return string
    *   The unique identifier for this purger instance.
@@ -48,7 +48,7 @@ interface PluginInterface extends ContainerFactoryPluginInterface, SharedInterfa
    * this gets useful as it allows to remove configuration and perform cleanup
    * prior to when the instance gets uninstalled.
    *
-   * @see \Drupal\purge\Purger\ServiceInterface::deletePluginsEnabled()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::deletePluginsEnabled()
    *
    * @return void
    */

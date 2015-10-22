@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purger\PluginBase.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\PurgerBase.
  */
 
-namespace Drupal\purge\Purger;
+namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Plugin\PluginBase as CorePluginBase;
-use Drupal\purge\Purger\PluginInterface;
+use Drupal\Core\Plugin\PluginBase;
+use Drupal\purge\Plugin\Purge\Purger\PurgerInterface;
 
 /**
  * Provides a base class for all purgers - the cache invalidation executors.
  */
-abstract class PluginBase extends CorePluginBase implements PluginInterface {
+abstract class PurgerBase extends PluginBase implements PurgerInterface {
 
   /**
    * Unique instance ID for this purger.

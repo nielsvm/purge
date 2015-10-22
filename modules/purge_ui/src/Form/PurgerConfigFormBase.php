@@ -52,7 +52,7 @@ abstract class PurgerConfigFormBase extends ConfigFormBase {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    *
-   * @see \Drupal\purge\Purger\PluginInterface::getId()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getId()
    *
    * @return string
    *   The unique identifier for this purger instance.

@@ -2,18 +2,18 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purger\SettingsBase.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\PurgerSettingsBase.
  */
 
-namespace Drupal\purge\Purger;
+namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
-use Drupal\purge\Purger\SettingsInterface;
+use Drupal\purge\Plugin\Purge\Purger\PurgerSettingsInterface;
 
 /**
  * Provides an interface for purgers storing settings through config entities.
  */
-abstract class SettingsBase extends ConfigEntityBase implements SettingsInterface {
+abstract class PurgerSettingsBase extends ConfigEntityBase implements PurgerSettingsInterface {
 
   /**
    * Unique purger instance ID.

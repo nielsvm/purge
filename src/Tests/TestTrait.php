@@ -7,10 +7,6 @@
 
 namespace Drupal\purge\Tests;
 
-use Drupal\purge\Processor\ServiceInterface as ProcessorsService;
-use Drupal\purge\Purger\Service as PurgersService;
-use Drupal\purge\Queue\Service as QueueService;
-
 /**
  * Several helper properties and methods for purge tests.
  *
@@ -30,7 +26,7 @@ trait TestTrait {
   protected $purgeProcessors;
 
   /**
-   * @var \Drupal\purge\Purger\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
    */
   protected $purgePurgers;
 

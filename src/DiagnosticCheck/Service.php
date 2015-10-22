@@ -46,7 +46,7 @@ class Service extends ServiceBase implements ServiceInterface {
    *
    * Do not access this property directly, use ::getPurgers.
    *
-   * @var \Drupal\purge\Purger\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
    */
   private $purgePurgers;
 
@@ -159,7 +159,7 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * Retrieve the 'purge.purgers' service - lazy loaded.
    *
-   * @return \Drupal\purge\Purger\ServiceInterface
+   * @return \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
    */
   protected function getPurgers() {
     if (is_null($this->purgePurgers)) {

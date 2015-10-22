@@ -58,7 +58,7 @@ class LateRuntimeProcessor implements ProcessorInterface, EventSubscriberInterfa
   /**
    * The purge executive service, which wipes content from external caches.
    *
-   * @var \Drupal\purge\Purger\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
    */
   protected $purgePurgers;
 

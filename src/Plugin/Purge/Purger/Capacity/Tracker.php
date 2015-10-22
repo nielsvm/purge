@@ -74,7 +74,7 @@ class Tracker implements TrackerInterface {
   /**
    * Holds all loaded purgers plugins.
    *
-   * @var \Drupal\purge\Purger\PluginInterface[]
+   * @var \Drupal\purge\Plugin\Purge\Purger\PurgerInterface[]
    */
   protected $purgers;
 

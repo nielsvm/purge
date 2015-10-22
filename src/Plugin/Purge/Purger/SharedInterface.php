@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purger\SharedInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\SharedInterface.
  */
 
-namespace Drupal\purge\Purger;
+namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
@@ -30,7 +30,7 @@ interface SharedInterface {
    * future (via the queue presumably). That means that incoming $invalidation
    * objects have to be checked for the STATE_PURGING in these cases as well.
    *
-   * Implementations of \Drupal\purge\Purger\ServiceInterface::invalidate() can
+   * Implementations of \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidate() can
    * also set the state to STATE_UNSUPPORTED when available purgers cannot
    * invalidate the type of $invalidation given.
    *
@@ -45,15 +45,15 @@ interface SharedInterface {
    *   be released back to the queue (or will expire naturally) and your code
    *   should depend on the next processing window.
    *
-   * @throws \Drupal\purge\Purger\Exception\BadPluginBehaviorException
-   *   Exception thrown by \Drupal\purge\Purger\SharedInterface::invalidate
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
+   *   Exception thrown by \Drupal\purge\Plugin\Purge\Purger\SharedInterface::invalidate
    *   when the incoming $invalidation object's state is not any of these:
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_NEW
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGING
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_FAILED
    *
-   * @throws \Drupal\purge\Purger\Exception\BadPluginBehaviorException
-   *   Exception thrown by \Drupal\purge\Purger\SharedInterface::invalidate
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
+   *   Exception thrown by \Drupal\purge\Plugin\Purge\Purger\SharedInterface::invalidate
    *   when the invalidation object processed by the purger plugin, is not in
    *   any of the following states:
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGED
@@ -83,7 +83,7 @@ interface SharedInterface {
    * future (via the queue presumably). That means that incoming $invalidation
    * objects have to be checked for the STATE_PURGING in these cases as well.
    *
-   * \Drupal\purge\Purger\ServiceInterface::invalidateMultiple() implementations
+   * \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidateMultiple() implementations
    * can also set the state to STATE_UNSUPPORTED when available purgers cannot
    * invalidate the type of $invalidation given.
    *
@@ -101,16 +101,16 @@ interface SharedInterface {
    *   objects should be released back to the queue (or will expire naturally)
    *   and your code should depend on the next processing window.
    *
-   * @throws \Drupal\purge\Purger\Exception\BadPluginBehaviorException
-   *   Thrown by \Drupal\purge\Purger\SharedInterface::invalidateMultiple when
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
+   *   Thrown by \Drupal\purge\Plugin\Purge\Purger\SharedInterface::invalidateMultiple when
    *   any of the incoming invalidation objects does not have any of the
    *   following states:
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_NEW
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGING
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_FAILED
    *
-   * @throws \Drupal\purge\Purger\Exception\BadPluginBehaviorException
-   *   Thrown by \Drupal\purge\Purger\SharedInterface::invalidateMultiple when
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
+   *   Thrown by \Drupal\purge\Plugin\Purge\Purger\SharedInterface::invalidateMultiple when
    *   any of the invalidation objects returning from the purger plugin are not
    *   in one of these states:
    *    - \Drupal\purge\Invalidation\PluginInterface::STATE_PURGED

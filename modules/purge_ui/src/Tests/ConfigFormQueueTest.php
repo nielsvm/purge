@@ -40,10 +40,10 @@ class ConfigFormQueueTest extends ConfigFormTestBase {
     $this->purgeQueue->reload();
     $this->assertEqual(['memory'], $this->purgeQueue->getPluginsEnabled());
     // Test that changing the queue plugin, gets reflected in the config.
-    $edit = ['queue_plugin' => 'queue_b'];
+    $edit = ['queue_plugin' => 'b'];
     $this->drupalPostForm($this->route, $edit, t('Save configuration'));
     $this->purgeQueue->reload();
-    $this->assertEqual(['queue_b'], $this->purgeQueue->getPluginsEnabled());
+    $this->assertEqual(['b'], $this->purgeQueue->getPluginsEnabled());
   }
 
 }

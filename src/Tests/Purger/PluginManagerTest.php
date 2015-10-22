@@ -44,11 +44,11 @@ class PluginManagerTest extends KernelServiceTestBase {
    * @var string[]
    */
   protected $plugins = [
-    'purger_a',
-    'purger_b',
-    'purger_c',
-    'goodpurger',
-    'purger_withform'
+    'a',
+    'b',
+    'c',
+    'good',
+    'withform'
   ];
 
   /**

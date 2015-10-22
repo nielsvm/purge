@@ -8,19 +8,19 @@
 namespace Drupal\purge_purger_test\Plugin\PurgePurger;
 
 use Drupal\purge\Invalidation\PluginInterface as Invalidation;
-use Drupal\purge_purger_test\Null;
+use Drupal\purge_purger_test\Plugin\PurgePurger\NullPurgerBase;
 
 /**
  * A purger that always succeeds.
  *
  * @PurgePurger(
- *   id = "goodpurger",
+ *   id = "good",
  *   label = @Translation("Good Purger"),
  *   description = @Translation("A purger that always succeeds."),
  *   types = {"tag", "path", "domain"},
  * )
  */
-class GoodPurger extends Null {
+class GoodPurger extends NullPurgerBase {
 
   /**
    * {@inheritdoc}

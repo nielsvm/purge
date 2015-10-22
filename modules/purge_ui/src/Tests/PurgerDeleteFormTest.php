@@ -48,7 +48,7 @@ class PurgerDeleteFormTest extends WebTestBase {
    * Tests permissions, the form controller and general form returning.
    */
   public function testAccess() {
-    $this->initializePurgersService(['id3' => 'purger_c']);
+    $this->initializePurgersService(['id3' => 'c']);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id3']));
     $this->assertResponse(403);
     $this->drupalLogin($this->admin_user);
@@ -67,7 +67,7 @@ class PurgerDeleteFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testNo() {
-    $this->initializePurgersService(['id3' => 'purger_c']);
+    $this->initializePurgersService(['id3' => 'c']);
     $this->drupalLogin($this->admin_user);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id3']));
     $this->assertRaw(t('No'));
@@ -83,11 +83,11 @@ class PurgerDeleteFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::deletePurger
    */
   public function testDelete() {
-    $this->initializePurgersService(['id3' => 'purger_c']);
+    $this->initializePurgersService(['id3' => 'c']);
     $this->drupalLogin($this->admin_user);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id3']));
     $this->assertRaw(t('Yes, remove this purger!'));
-    $this->assertEqual(['id3' => 'purger_c'], $this->purgePurgers->getPluginsEnabled());
+    $this->assertEqual(['id3' => 'c'], $this->purgePurgers->getPluginsEnabled());
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'id3'])->toString(), [], ['op' => t('Yes, remove this purger!')]);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual('redirect', $json[2]['command']);

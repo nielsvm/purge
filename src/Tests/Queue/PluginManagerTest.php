@@ -45,9 +45,9 @@ class PluginManagerTest extends KernelServiceTestBase {
     'database',
     'memory',
     'null',
-    'queue_a',
-    'queue_b',
-    'queue_c'
+    'a',
+    'b',
+    'c'
   ];
 
   /**

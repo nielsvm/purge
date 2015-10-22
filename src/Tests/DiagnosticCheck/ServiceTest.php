@@ -131,9 +131,9 @@ class ServiceTest extends KernelServiceTestBase {
     $this->assertFalse($this->service->current());
     $this->assertFalse($this->service->valid());
     $this->assertNull($this->service->rewind());
-    $this->assertEqual('queuersavailable', $this->service->current()->getPluginId());
-    $this->assertNull($this->service->next());
     $this->assertEqual('capacity', $this->service->current()->getPluginId());
+    $this->assertNull($this->service->next());
+    $this->assertEqual('processorsavailable', $this->service->current()->getPluginId());
     $this->assertTrue($this->service->valid());
   }
 
@@ -160,7 +160,7 @@ class ServiceTest extends KernelServiceTestBase {
    * Tests \Drupal\purge\DiagnosticCheck\Service::isSystemOnFire.
    */
   public function testIsSystemOnFire() {
-    $this->initializePurgersService(['ida' => 'purger_a']);
+    $this->initializePurgersService(['ida' => 'a']);
     $this->service->reload();
     $this->assertTrue($this->service->isSystemOnFire() instanceof Check);
     $this->assertEqual('alwayserror', $this->service->isSystemOnFire()->getPluginId());

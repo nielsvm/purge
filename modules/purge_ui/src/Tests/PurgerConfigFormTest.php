@@ -30,7 +30,7 @@ class PurgerConfigFormTest extends WebTestBase {
    *
    * @var string
    */
-  protected $purger = 'purger_withform';
+  protected $purger = 'withform';
 
   /**
    * The route to a purgers configuration form (takes argument 'id').
@@ -79,7 +79,7 @@ class PurgerConfigFormTest extends WebTestBase {
    */
   function setUp() {
     parent::setUp();
-    $this->initializePurgersService(['bad' => 'purger_c', 'good' => $this->purger]);
+    $this->initializePurgersService(['bad' => 'c', 'good' => $this->purger]);
     $this->urlValid = Url::fromRoute($this->route, ['id' => 'good']);
     $this->urlValidDialog = Url::fromRoute($this->route_dialog, ['id' => 'good']);
     $this->urlInvalid = Url::fromRoute($this->route, ['id' => 'bad']);

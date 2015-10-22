@@ -70,11 +70,11 @@ class PurgerAddFormTest extends WebTestBase {
     $this->drupalGet($this->route);
     $this->assertRaw(t('Add'));
     $this->assertEqual([], $this->purgePurgers->getPluginsEnabled());
-    $json = $this->drupalPostAjaxForm($this->route->toString(), ['plugin_id' => 'purger_c'], ['op' => t('Add')]);
+    $json = $this->drupalPostAjaxForm($this->route->toString(), ['plugin_id' => 'c'], ['op' => t('Add')]);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual('redirect', $json[2]['command']);
     $this->purgePurgers->reload();
-    $this->assertTrue(in_array('purger_c', $this->purgePurgers->getPluginsEnabled()));
+    $this->assertTrue(in_array('c', $this->purgePurgers->getPluginsEnabled()));
     $this->assertEqual(3, count($json));
   }
 
@@ -101,7 +101,7 @@ class PurgerAddFormTest extends WebTestBase {
    */
   public function testNoAvailablePurgers() {
     $this->drupalLogin($this->admin_user);
-    $this->initializePurgersService(['id1' => 'purger_a', 'id2' => 'purger_b', 'id3' => 'purger_c', 'id4' => 'purger_withform', 'id5' => 'goodpurger']);
+    $this->initializePurgersService(['id1' => 'a', 'id2' => 'b', 'id3' => 'c', 'id4' => 'withform', 'id5' => 'good']);
     $this->drupalGet($this->route);
     $this->assertNoFieldByName('plugin_id');
     $this->assertFieldByName('op', t('Cancel'));
@@ -114,7 +114,7 @@ class PurgerAddFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\PurgerConfigFormBase::buildForm
    */
   public function testTwoAvailablePurgers() {
-    $this->initializePurgersService(['id3' => 'purger_c', 'id4' => 'purger_withform']);
+    $this->initializePurgersService(['id3' => 'c', 'id4' => 'withform']);
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->route);
     $this->assertFieldByName('plugin_id');

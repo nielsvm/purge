@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface.
+ * Contains \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface.
  */
 
 namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
@@ -13,7 +13,7 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
 /**
  * Describes a diagnostic check that checks a specific purging requirement.
  */
-interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPluginInterface {
+interface DiagnosticCheckInterface extends PluginInspectionInterface, ContainerFactoryPluginInterface {
 
   /**
    * Non-blocking severity -- Informational message only.
@@ -56,7 +56,7 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    *
    * @warning
    *   As diagnostic checks can be expensive, this method is called as rarely as
-   *   possible. Checks derived from \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase
+   *   possible. Checks derived from \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckBase
    *   will only see the check getting executed when any of the get* methods are
    *   called.
    *
@@ -65,10 +65,10 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    *
    * @return int
    *   Integer, matching either of the following constants:
-   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO
-   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_OK
-   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING
-   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_INFO
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_OK
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_WARNING
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_ERROR
    */
   public function run();
 
@@ -91,10 +91,10 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    *
    * @return int
    *   Integer, matching either of the following constants:
-   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO
-   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_OK
-   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING
-   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_INFO
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_OK
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_WARNING
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_ERROR
    */
   public function getSeverity();
 

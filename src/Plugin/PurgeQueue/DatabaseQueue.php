@@ -10,11 +10,11 @@ namespace Drupal\purge\Plugin\PurgeQueue;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Queue\QueueDatabaseFactory;
-use Drupal\purge\Plugin\Purge\Queue\PluginInterface as Queue;
-use Drupal\purge\Plugin\Purge\Queue\PluginBase;
+use Drupal\purge\Plugin\Purge\Queue\QueueInterface;
+use Drupal\purge\Plugin\Purge\Queue\QueueBase;
 
 /**
- * A \Drupal\purge\Plugin\Purge\Queue\PluginInterface compliant database backed queue.
+ * A \Drupal\purge\Plugin\Purge\Queue\QueueInterface compliant database backed queue.
  *
  * @PurgeQueue(
  *   id = "database",
@@ -22,7 +22,7 @@ use Drupal\purge\Plugin\Purge\Queue\PluginBase;
  *   description = @Translation("A scalable database backed queue."),
  * )
  */
-class DatabaseQueue extends PluginBase implements Queue {
+class DatabaseQueue extends QueueBase implements QueueInterface {
 
   /**
    * @var \Drupal\Core\Database\Connection

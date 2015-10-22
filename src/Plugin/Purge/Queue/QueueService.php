@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Queue\Service.
+ * Contains \Drupal\purge\Plugin\Purge\Queue\QueueService.
  */
 
 namespace Drupal\purge\Plugin\Purge\Queue;
@@ -11,17 +11,17 @@ use Drupal\Core\DestructableInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceBase;
-use Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface as InvalidationService;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Queue\Exception\UnexpectedServiceConditionException;
-use Drupal\purge\Plugin\Purge\Queue\PluginInterface;
+use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 use Drupal\purge\Plugin\Purge\Queue\TxBuffer;
 use Drupal\purge\Plugin\Purge\Queue\ProxyItem;
 
 /**
  * Provides the service that lets invalidations interact with a queue backend.
  */
-class Service extends ServiceBase implements ServiceInterface, DestructableInterface {
+class QueueService extends ServiceBase implements QueueServiceInterface, DestructableInterface {
 
   /**
    * @var \Drupal\Core\Config\ConfigFactoryInterface
@@ -31,14 +31,14 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   /**
    * The service that generates invalidation objects on-demand.
    *
-   * @var \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface
    */
   protected $purgeInvalidationFactory;
 
   /**
    * The Queue (plugin) object in which all items are stored.
    *
-   * @var \Drupal\purge\Plugin\Purge\Queue\PluginInterface
+   * @var \Drupal\purge\Plugin\Purge\Queue\QueueInterface
    */
   protected $queue;
 
@@ -61,10 +61,10 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    *   The plugin manager for this service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface $purge_invalidation_factory
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface $purge_invalidation_factory
    *   The service that instantiates invalidation objects for queue items.
    */
-  function __construct(PluginManagerInterface $plugin_manager, ConfigFactoryInterface $config_factory, InvalidationService $purge_invalidation_factory) {
+  function __construct(PluginManagerInterface $plugin_manager, ConfigFactoryInterface $config_factory, InvalidationsServiceInterface $purge_invalidation_factory) {
     $this->pluginManager = $plugin_manager;
     $this->configFactory = $config_factory;
     $this->purgeInvalidationFactory = $purge_invalidation_factory;
@@ -150,7 +150,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   /**
    * {@inheritdoc}
    */
-  public function add(Invalidation $invalidation) {
+  public function add(InvalidationInterface $invalidation) {
     if (!$this->buffer->has($invalidation)) {
       $this->buffer->set($invalidation, TxBuffer::ADDING);
     }
@@ -229,7 +229,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   /**
    * {@inheritdoc}
    */
-  public function release(Invalidation $invalidation) {
+  public function release(InvalidationInterface $invalidation) {
     $this->buffer->set($invalidation, TxBuffer::RELEASING);
   }
 
@@ -243,7 +243,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   /**
    * {@inheritdoc}
    */
-  public function delete(Invalidation $invalidation) {
+  public function delete(InvalidationInterface $invalidation) {
     $this->buffer->set($invalidation, TxBuffer::DELETING);
   }
 
@@ -257,7 +257,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   /**
    * {@inheritdoc}
    */
-  public function deleteOrRelease(Invalidation $invalidation) {
+  public function deleteOrRelease(InvalidationInterface $invalidation) {
     $this->deleteOrReleaseMultiple([$invalidation]);
   }
 
@@ -267,13 +267,13 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   public function deleteOrReleaseMultiple(array $invalidations) {
     foreach($invalidations as $invalidation) {
       switch ($invalidation->getState()) {
-        case Invalidation::STATE_PURGED:
+        case InvalidationInterface::STATE_PURGED:
           $this->buffer->set($invalidation, TxBuffer::DELETING);
           break;
-        case Invalidation::STATE_NEW:
-        case Invalidation::STATE_PURGING:
-        case Invalidation::STATE_FAILED:
-        case Invalidation::STATE_UNSUPPORTED:
+        case InvalidationInterface::STATE_NEW:
+        case InvalidationInterface::STATE_PURGING:
+        case InvalidationInterface::STATE_FAILED:
+        case InvalidationInterface::STATE_UNSUPPORTED:
           if (!$this->buffer->has($invalidation)) {
             $this->buffer->set($invalidation, TxBuffer::ADDING);
           }

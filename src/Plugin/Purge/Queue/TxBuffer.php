@@ -7,7 +7,7 @@
 
 namespace Drupal\purge\Plugin\Purge\Queue;
 
-use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
 
 /**
@@ -18,7 +18,7 @@ class TxBuffer implements TxBufferInterface {
   /**
    * Instances listing holding copies of each Invalidation object.
    *
-   * @var \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface[]
+   * @var \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[]
    */
   private $instances = [];
 
@@ -115,7 +115,7 @@ class TxBuffer implements TxBufferInterface {
   /**
    * {@inheritdoc}
    */
-  public function getState(Invalidation $invalidation) {
+  public function getState(InvalidationInterface $invalidation) {
     if (!$this->has($invalidation)) {
       return NULL;
     }
@@ -125,7 +125,7 @@ class TxBuffer implements TxBufferInterface {
   /**
    * {@inheritdoc}
    */
-  public function getProperty(Invalidation $invalidation, $property, $default = NULL) {
+  public function getProperty(InvalidationInterface $invalidation, $property, $default = NULL) {
     if (!isset($this->properties[$invalidation->getId()][$property])) {
       return $default;
     }
@@ -135,7 +135,7 @@ class TxBuffer implements TxBufferInterface {
   /**
    * {@inheritdoc}
    */
-  public function has(Invalidation $invalidation) {
+  public function has(InvalidationInterface $invalidation) {
     return isset($this->instances[$invalidation->getId()]);
   }
 
@@ -184,7 +184,7 @@ class TxBuffer implements TxBufferInterface {
   /**
    * {@inheritdoc}
    */
-  public function setProperty(Invalidation $invalidation, $property, $value) {
+  public function setProperty(InvalidationInterface $invalidation, $property, $value) {
     if ($this->has($invalidation)) {
       $this->properties[$invalidation->getId()][$property] = $value;
     }

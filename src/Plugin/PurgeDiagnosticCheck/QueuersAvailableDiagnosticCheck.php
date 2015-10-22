@@ -8,8 +8,8 @@
 namespace Drupal\purge\Plugin\PurgeDiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckBase;
 use Drupal\purge\Queuer\ServiceInterface;
 
 /**
@@ -27,7 +27,7 @@ use Drupal\purge\Queuer\ServiceInterface;
  *   dependent_purger_plugins = {}
  * )
  */
-class QueuersAvailableDiagnosticCheck extends PluginBase implements PluginInterface {
+class QueuersAvailableDiagnosticCheck extends DiagnosticCheckBase implements DiagnosticCheckInterface {
 
   /**
    * @var \Drupal\purge\Queuer\ServiceInterface

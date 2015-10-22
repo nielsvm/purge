@@ -7,8 +7,8 @@
 
 namespace Drupal\purge\Plugin\PurgeDiagnosticCheck;
 
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckBase;
 
 /**
  * Issues a warning on how unreliable the memory queue is for day-day use.
@@ -21,7 +21,7 @@ use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase;
  *   dependent_purger_plugins = {}
  * )
  */
-class MemoryQueueDiagnosticCheck extends PluginBase implements PluginInterface {
+class MemoryQueueDiagnosticCheck extends DiagnosticCheckBase implements DiagnosticCheckInterface {
 
   /**
    * {@inheritdoc}

@@ -15,7 +15,7 @@ use Drupal\purge\Tests\Queue\PluginTestBase;
  * Tests \Drupal\purge\Plugin\PurgeQueue\FileQueue.
  *
  * @group purge
- * @see \Drupal\purge\Plugin\Purge\Queue\PluginInterface
+ * @see \Drupal\purge\Plugin\Purge\Queue\QueueInterface
  */
 class FileQueueTest extends PluginTestBase {
   protected $plugin_id = 'file';

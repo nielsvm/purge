@@ -32,7 +32,7 @@ class PluginManager extends DefaultPluginManager {
       'Plugin/PurgeInvalidation',
       $namespaces,
       $module_handler,
-      'Drupal\purge\Plugin\Purge\Invalidation\PluginInterface',
+      'Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface',
       'Drupal\purge\Annotation\PurgeInvalidation');
     $this->setCacheBackend($cache_backend, 'purge_invalidation_plugins');
   }

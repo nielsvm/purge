@@ -7,8 +7,8 @@
 
 namespace Drupal\purge_check_test\Plugin\PurgeDiagnosticCheck;
 
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckBase;
 
 /**
  * Checks if there is a purger plugin that invalidates an external cache.
@@ -21,7 +21,7 @@ use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase;
  *   dependent_purger_plugins = {}
  * )
  */
-class AlwaysInfoDiagnosticCheck extends PluginBase implements PluginInterface {
+class AlwaysInfoDiagnosticCheck extends DiagnosticCheckBase implements DiagnosticCheckInterface {
 
   /**
    * {@inheritdoc}

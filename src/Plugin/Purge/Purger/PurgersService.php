@@ -17,7 +17,7 @@ use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Capacity\Tracker;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 
 /**
  * Provides the service that distributes access to one or more purgers.
@@ -61,10 +61,10 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * @var int[]
    */
   protected $states_inbound = [
-    Invalidation::STATE_NEW,
-    Invalidation::STATE_PURGING,
-    Invalidation::STATE_FAILED,
-    Invalidation::STATE_UNSUPPORTED,
+    InvalidationInterface::STATE_NEW,
+    InvalidationInterface::STATE_PURGING,
+    InvalidationInterface::STATE_FAILED,
+    InvalidationInterface::STATE_UNSUPPORTED,
   ];
 
   /**
@@ -73,9 +73,9 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * @var int[]
    */
   protected $states_outbound = [
-    Invalidation::STATE_PURGED,
-    Invalidation::STATE_PURGING,
-    Invalidation::STATE_FAILED
+    InvalidationInterface::STATE_PURGED,
+    InvalidationInterface::STATE_PURGING,
+    InvalidationInterface::STATE_FAILED
   ];
 
   /**
@@ -283,7 +283,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function invalidate(Invalidation $invalidation) {
+  public function invalidate(InvalidationInterface $invalidation) {
     $invalidation_type = $invalidation->getPluginId();
     $types_by_purger = $this->getTypesByPurger();
     $types = $this->getTypes();
@@ -388,10 +388,10 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function resolveInvalidationState(Invalidation $invalidation, array $states) {
+  public function resolveInvalidationState(InvalidationInterface $invalidation, array $states) {
     // No results indicate no purgers touched it, so it is not supported.
     if (empty($states)) {
-      $invalidation->setState(Invalidation::STATE_UNSUPPORTED);
+      $invalidation->setState(InvalidationInterface::STATE_UNSUPPORTED);
     }
 
     // When there is just one result, we take it as final state.
@@ -404,22 +404,22 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
 
     // With multiple results, determine what the final result will be.
     else {
-      if (in_array(Invalidation::STATE_UNSUPPORTED, $states)) {
-        $invalidation->setState(Invalidation::STATE_UNSUPPORTED);
+      if (in_array(InvalidationInterface::STATE_UNSUPPORTED, $states)) {
+        $invalidation->setState(InvalidationInterface::STATE_UNSUPPORTED);
       }
-      elseif (in_array(Invalidation::STATE_FAILED, $states)) {
-        $invalidation->setState(Invalidation::STATE_FAILED);
+      elseif (in_array(InvalidationInterface::STATE_FAILED, $states)) {
+        $invalidation->setState(InvalidationInterface::STATE_FAILED);
       }
-      elseif (in_array(Invalidation::STATE_PURGING, $states)) {
-        $invalidation->setState(Invalidation::STATE_PURGING);
+      elseif (in_array(InvalidationInterface::STATE_PURGING, $states)) {
+        $invalidation->setState(InvalidationInterface::STATE_PURGING);
       }
-      elseif (in_array(Invalidation::STATE_NEW, $states)) {
-        $invalidation->setState(Invalidation::STATE_NEW);
+      elseif (in_array(InvalidationInterface::STATE_NEW, $states)) {
+        $invalidation->setState(InvalidationInterface::STATE_NEW);
       }
 
       // Only really succeed when no other scenario exists.
       else {
-        $invalidation->setState(Invalidation::STATE_PURGED);
+        $invalidation->setState(InvalidationInterface::STATE_PURGED);
       }
     }
   }

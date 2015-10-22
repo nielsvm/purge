@@ -12,7 +12,7 @@ use GuzzleHttp\ClientInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgerBase;
 use Drupal\purge\Plugin\Purge\Purger\PurgerInterface;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge_purger_http\Entity\HttpPurgerSettings;
 
 /**
@@ -85,9 +85,9 @@ class HttpPurger extends PurgerBase implements PurgerInterface {
   /**
    * {@inheritdoc}
    */
-  public function invalidate(Invalidation $invalidation) {
+  public function invalidate(InvalidationInterface $invalidation) {
     // @todo: this obviously needs to be implemented.
-    $invalidation->setState(Invalidation::STATE_FAILED);
+    $invalidation->setState(InvalidationInterface::STATE_FAILED);
   }
 
   /**
@@ -96,7 +96,7 @@ class HttpPurger extends PurgerBase implements PurgerInterface {
   public function invalidateMultiple(array $invalidations) {
     // @todo: this obviously needs to be implemented.
     foreach ($invalidations as $invalidation) {
-      $invalidation->setState(Invalidation::STATE_FAILED);
+      $invalidation->setState(InvalidationInterface::STATE_FAILED);
     }
   }
 

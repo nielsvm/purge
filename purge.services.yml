@@ -30,7 +30,7 @@ services:
   # purgers, but can also be instantiated through the factory and get fed to the
   # purger straight away.
   purge.invalidation.factory:
-    class: Drupal\purge\Plugin\Purge\Invalidation\Service
+    class: Drupal\purge\Plugin\Purge\Invalidation\InvalidationsService
     arguments: ['@plugin.manager.purge.invalidation']
   plugin.manager.purge.invalidation:
     class: Drupal\purge\Plugin\Purge\Invalidation\PluginManager
@@ -41,7 +41,7 @@ services:
   # The queue service which stores, claims, releases and accepts invalidation
   # objects returning from 'purge.purgers'.
   purge.queue:
-    class: Drupal\purge\Plugin\Purge\Queue\Service
+    class: Drupal\purge\Plugin\Purge\Queue\QueueService
     arguments: ['@plugin.manager.purge.queue', '@config.factory', '@purge.invalidation.factory']
     tags:
       - { name: needs_destruction }
@@ -55,7 +55,7 @@ services:
   # that can occur during purging. When it detects severe issues, it will
   # prevent all purges in the first place.
   purge.diagnostics:
-    class: Drupal\purge\Plugin\Purge\DiagnosticCheck\Service
+    class: Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService
     arguments: ['@plugin.manager.purge.diagnostics']
     calls:
     - [setContainer, ['@service_container']]

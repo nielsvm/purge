@@ -8,7 +8,7 @@
 namespace Drupal\purge\Tests\Queue;
 
 use Drupal\purge\Tests\KernelTestBase;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Queue\Exception\InvalidPropertyException;
 use Drupal\purge\Plugin\Purge\Queue\ProxyItem;
 use Drupal\purge\Plugin\Purge\Queue\TxBuffer;
@@ -55,10 +55,10 @@ class ProxyItemTest extends KernelTestBase {
     // Test the 'data' array property and its peculiar format.
     $this->assertTrue(is_array($p->data));
     $this->assertEqual($i->getPluginId(), $p->data[0]);
-    $this->assertEqual(Invalidation::STATE_NEW, $p->data[1]);
+    $this->assertEqual(InvalidationInterface::STATE_NEW, $p->data[1]);
     $this->assertEqual($i->getExpression(), $p->data[1]);
-    $i->setState(Invalidation::STATE_UNSUPPORTED);
-    $this->assertEqual(Invalidation::STATE_UNSUPPORTED, $p->data[1]);
+    $i->setState(InvalidationInterface::STATE_UNSUPPORTED);
+    $this->assertEqual(InvalidationInterface::STATE_UNSUPPORTED, $p->data[1]);
 
     // Test the 'created' property and changing it directly on the buffer.
     $this->assertNull($p->created);

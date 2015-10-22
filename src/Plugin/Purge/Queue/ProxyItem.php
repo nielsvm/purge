@@ -7,7 +7,7 @@
 
 namespace Drupal\purge\Plugin\Purge\Queue;
 
-use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Queue\Exception\InvalidPropertyException;
 use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
 
@@ -19,12 +19,12 @@ class ProxyItem {
   /**
    * The proxied invalidation object.
    *
-   * @var \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface
+   * @var \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
    */
   protected $invalidation;
 
   /**
-   * The actively used TxBuffer object by \Drupal\purge\Plugin\Purge\Queue\Service.
+   * The actively used TxBuffer object by \Drupal\purge\Plugin\Purge\Queue\QueueService.
    *
    * @var \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface
    */
@@ -74,7 +74,7 @@ class ProxyItem {
    * Once constructed, these objects act as if they were natively created by
    * any of the \Drupal\Core\Queue\QueueInterface methods. The data properties
    * such as 'data', 'item_id' and 'created' are writeable and readable, but
-   * under the hood interfacing with \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface
+   * under the hood interfacing with \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
    * and \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface takes place.
    *
    * @see \Drupal\Core\Queue\QueueInterface::createItem
@@ -82,12 +82,12 @@ class ProxyItem {
    * @see \Drupal\Core\Queue\QueueInterface::deleteItem
    * @see \Drupal\Core\Queue\QueueInterface::releaseItem
    *
-   * @param \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface $invalidation
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface $invalidation
    *   Invalidation object being proxied.
    * @param \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface $buffer
-   *   The actively used TxBuffer object by \Drupal\purge\Plugin\Purge\Queue\Service.
+   *   The actively used TxBuffer object by \Drupal\purge\Plugin\Purge\Queue\QueueService.
    */
-  public function __construct(Invalidation $invalidation, TxBufferInterface $buffer) {
+  public function __construct(InvalidationInterface $invalidation, TxBufferInterface $buffer) {
     $this->invalidation = $invalidation;
     $this->buffer = $buffer;
   }
@@ -101,7 +101,7 @@ class ProxyItem {
     }
 
     // The 'data' property describes the purge queue item in such a way that
-    // \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface is able to recreate it.
+    // \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface is able to recreate it.
     if ($name === 'data') {
       return [
         $this->invalidation->getPluginId(),

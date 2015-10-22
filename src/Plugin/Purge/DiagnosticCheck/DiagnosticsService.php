@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service.
+ * Contains \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService.
  */
 
 namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
@@ -10,13 +10,13 @@ namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceBase;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\ServiceInterface;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface as Check;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 
 /**
  * Provides a service that interacts with diagnostic checks.
  */
-class Service extends ServiceBase implements ServiceInterface {
+class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterface {
   use ContainerAwareTrait;
 
   /**
@@ -30,7 +30,7 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * Keeps all instantiated checks.
    *
-   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface[]
+   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface[]
    */
   protected $checks = [];
 
@@ -55,12 +55,12 @@ class Service extends ServiceBase implements ServiceInterface {
    *
    * Do not access this property directly, use ::getQueue.
    *
-   * @var \Drupal\purge\Plugin\Purge\Queue\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface
    */
   private $purgeQueue;
 
   /**
-   * Construct \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service.
+   * Construct \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService.
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
    *   The plugin manager for this service.
@@ -183,7 +183,7 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * Retrieve the 'purge.queue' service - lazy loaded.
    *
-   * @return \Drupal\purge\Plugin\Purge\Queue\ServiceInterface
+   * @return \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface
    */
   protected function getQueue() {
     if (is_null($this->purgeQueue)) {
@@ -198,7 +198,7 @@ class Service extends ServiceBase implements ServiceInterface {
   public function isSystemOnFire() {
     $this->initializeChecks();
     foreach ($this as $check) {
-      if ($check->getSeverity() === Check::SEVERITY_ERROR) {
+      if ($check->getSeverity() === DiagnosticCheckInterface::SEVERITY_ERROR) {
         return $check;
       }
     }
@@ -211,7 +211,7 @@ class Service extends ServiceBase implements ServiceInterface {
   public function isSystemShowingSmoke() {
     $this->initializeChecks();
     foreach ($this as $check) {
-      if ($check->getSeverity() === Check::SEVERITY_WARNING) {
+      if ($check->getSeverity() === DiagnosticCheckInterface::SEVERITY_WARNING) {
         return $check;
       }
     }

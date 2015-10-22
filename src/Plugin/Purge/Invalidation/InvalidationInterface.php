@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface.
  */
 
 namespace Drupal\purge\Plugin\Purge\Invalidation;
@@ -13,7 +13,7 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
 /**
  * Describes the invalidation: which instructs the purger what to invalidate.
  */
-interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPluginInterface {
+interface InvalidationInterface extends PluginInspectionInterface, ContainerFactoryPluginInterface {
 
   /**
    * Invalidation object just got instantiated.
@@ -69,7 +69,7 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    * Get the current state of the invalidation.
    *
    * @return int
-   *   Integer matching to one of the PluginInterface::STATE_* constants.
+   *   Integer matching to one of the InvalidationInterface::STATE_* constants.
    */
   public function getState();
 
@@ -85,7 +85,7 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    * Set the state of the invalidation.
    *
    * @param int $state
-   *   Integer matching to any of the PluginInterface::STATE_* constants.
+   *   Integer matching to any of the InvalidationInterface::STATE_* constants.
    *
    * @throws \Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException
    *   Thrown when the given value doesn't match any of the STATE_ constants.

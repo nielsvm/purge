@@ -12,11 +12,11 @@ use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\ServiceInterface as DiagnosticsInterface;
-use Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface as InvalidationInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Processor\ServiceInterface as ProcessorsServiceInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
-use Drupal\purge\Plugin\Purge\Queue\ServiceInterface as QueueServiceInterface;
+use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 use Drupal\purge\Queuer\ServiceInterface as QueuersServiceInterface;
 
 /**
@@ -27,14 +27,14 @@ class ConfigForm extends ConfigFormBase {
   /**
    * Diagnostics service that reports any preliminary issues regarding purge.
    *
-   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
    */
   protected $purgeDiagnostics;
 
   /**
    * The service that generates invalidation objects on-demand.
    *
-   * @var \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface
    */
   protected $purgeInvalidationFactory;
 
@@ -49,7 +49,7 @@ class ConfigForm extends ConfigFormBase {
   protected $purgePurgers;
 
   /**
-   * @var \Drupal\purge\Plugin\Purge\Queue\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface
    */
   protected $purgeQueue;
 
@@ -61,20 +61,20 @@ class ConfigForm extends ConfigFormBase {
   /**
    * Constructs a PurgeConfigForm object.
    *
-   * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\ServiceInterface $purge_diagnostics
+   * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface $purge_diagnostics
    *   Diagnostics service that reports any preliminary issues regarding purge.
-   * @param \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface $purge_invalidation_factory
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface $purge_invalidation_factory
    *   The invalidation objects factory service.
    * @param \Drupal\purge\Processor\ServiceInterface $purge_processors
    *   The purge processors registry service.
    * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
    *   The purger service.
-   * @param \Drupal\purge\Plugin\Purge\Queue\ServiceInterface $purge_queue
+   * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $purge_queue
    *   The purge queue service.
    * @param \Drupal\purge\Queuer\ServiceInterface $purge_queuers
    *   The purge queuers registry service.
    */
-  public function __construct(DiagnosticsInterface $purge_diagnostics, InvalidationInterface $purge_invalidation_factory, ProcessorsServiceInterface $purge_processors, PurgersServiceInterface $purge_purgers, QueueServiceInterface $purge_queue, QueuersServiceInterface $purge_queuers) {
+  public function __construct(DiagnosticsServiceInterface $purge_diagnostics, InvalidationsServiceInterface $purge_invalidation_factory, ProcessorsServiceInterface $purge_processors, PurgersServiceInterface $purge_purgers, QueueServiceInterface $purge_queue, QueuersServiceInterface $purge_queuers) {
     $this->purgeDiagnostics = $purge_diagnostics;
     $this->purgeInvalidationFactory = $purge_invalidation_factory;
     $this->purgeProcessors = $purge_processors;

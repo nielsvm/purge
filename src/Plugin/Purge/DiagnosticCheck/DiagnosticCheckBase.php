@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase.
+ * Contains \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckBase.
  */
 
 namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Plugin\PluginBase as CorePluginBase;
+use Drupal\Core\Plugin\PluginBase;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\Exception\CheckNotImplementedCorrectly;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 
 /**
  * Describes a diagnostic check that tests a specific purging requirement.
  */
-abstract class PluginBase extends CorePluginBase implements PluginInterface {
+abstract class DiagnosticCheckBase extends PluginBase implements DiagnosticCheckInterface {
 
   /**
    * The title of the check as described in the plugin's metadata.
@@ -33,10 +33,10 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
 
   /**
    * The severity of the outcome of this check, maps to any of these constants:
-   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO
-   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_OK
-   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING
-   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_INFO
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_OK
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_WARNING
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_ERROR
    *
    * @var int
    */
@@ -68,7 +68,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   }
 
   /**
-   * Assures that \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::run() is executed
+   * Assures that \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::run() is executed
    * and that the severity gets set on the object. Tests for invalid responses.
    */
   protected function runCheck() {

@@ -12,8 +12,8 @@ use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\purge\Queuer\QueuerInterface;
-use Drupal\purge\Plugin\Purge\Queue\ServiceInterface as QueueServiceInterface;
-use Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface as InvalidationServiceInterface;
+use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 
 /**
  * Queues invalidated cache tags.
@@ -43,12 +43,12 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface, QueuerInterface 
   /**
    * The purge queue service.
    *
-   * @var \Drupal\purge\Plugin\Purge\Queue\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface
    */
   protected $purgeQueue;
 
   /**
-   * @var \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface
    */
   protected $purgeInvalidationFactory;
 
@@ -73,12 +73,12 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface, QueuerInterface 
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The configuration factory.
-   * @param \Drupal\purge\Plugin\Purge\Queue\ServiceInterface $purge_queue
+   * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $purge_queue
    *   The purge queue service.
-   * @param \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface $purge_invalidation_factory
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface $purge_invalidation_factory
    *   The invalidation objects factory service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, QueueServiceInterface $purge_queue, InvalidationServiceInterface $purge_invalidation_factory) {
+  public function __construct(ConfigFactoryInterface $config_factory, QueueServiceInterface $purge_queue, InvalidationsServiceInterface $purge_invalidation_factory) {
     $this->configFactory = $config_factory;
     $this->status = $this->configFactory->get('purge.cache_tags_queuer')->get('status');
     $this->purgeInvalidationFactory = $purge_invalidation_factory;

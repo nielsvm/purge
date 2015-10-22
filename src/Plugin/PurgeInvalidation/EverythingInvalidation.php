@@ -7,8 +7,8 @@
 
 namespace Drupal\purge\Plugin\PurgeInvalidation;
 
-use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginBase;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase;
 
 /**
  * Describes that everything is to be invalidated.
@@ -20,4 +20,4 @@ use Drupal\purge\Plugin\Purge\Invalidation\PluginBase;
  *   expression_required = FALSE
  * )
  */
-class EverythingInvalidation extends PluginBase implements PluginInterface {}
+class EverythingInvalidation extends InvalidationBase implements InvalidationInterface {}

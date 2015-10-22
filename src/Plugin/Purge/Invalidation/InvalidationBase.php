@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Invalidation\PluginBase.
+ * Contains \Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase.
  */
 
 namespace Drupal\purge\Plugin\Purge\Invalidation;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Plugin\PluginBase as CorePluginBase;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface;
+use Drupal\Core\Plugin\PluginBase;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException;
@@ -17,7 +17,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException;
 /**
  * Base invalidation type: which instructs the purger what to invalidate.
  */
-abstract class PluginBase extends CorePluginBase implements PluginInterface {
+abstract class InvalidationBase extends PluginBase implements InvalidationInterface {
 
   /**
    * Unique integer ID for this object instance (during runtime).
@@ -39,7 +39,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   protected $state = NULL;
 
   /**
-   * Constructs a \Drupal\purge\Plugin\Purge\Invalidation\PluginBase object.
+   * Constructs a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase object.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.

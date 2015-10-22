@@ -32,7 +32,7 @@ class PluginManager extends DefaultPluginManager {
       'Plugin/PurgeQueue',
       $namespaces,
       $module_handler,
-      'Drupal\purge\Plugin\Purge\Queue\PluginInterface',
+      'Drupal\purge\Plugin\Purge\Queue\QueueInterface',
       'Drupal\purge\Annotation\PurgeQueue');
     $this->setCacheBackend($cache_backend, 'purge_queue_plugins');
   }

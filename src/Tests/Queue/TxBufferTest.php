@@ -8,7 +8,7 @@
 namespace Drupal\purge\Tests\Queue;
 
 use Drupal\purge\Tests\KernelTestBase;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Queue\TxBuffer;
 use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
 
@@ -69,7 +69,7 @@ class TxBufferTest extends KernelTestBase {
     $this->assertFalse($this->buffer->current());
     $this->buffer->set($objects, TxBufferInterface::CLAIMED);
     $c = $this->buffer->current();
-    $this->assertTrue($c instanceof Invalidation);
+    $this->assertTrue($c instanceof InvalidationInterface);
     $this->assertEqual($objects[0]->getId(), $c->getId());
   }
 
@@ -112,7 +112,7 @@ class TxBufferTest extends KernelTestBase {
     $this->assertFalse($this->buffer->getByProperty('find', 'you'));
     $this->assertFalse($this->buffer->getByProperty('find', 0));
     $match = $this->buffer->getByProperty('find', 'me');
-    $this->assertTrue($match instanceof Invalidation);
+    $this->assertTrue($match instanceof InvalidationInterface);
     $this->assertEqual($i->getId(), $match->getId());
   }
 
@@ -202,7 +202,7 @@ class TxBufferTest extends KernelTestBase {
 
     // Test that iterating the buffer works as expected.
     foreach ($this->buffer as $id => $i) {
-      $this->assertTrue($i instanceof Invalidation);
+      $this->assertTrue($i instanceof InvalidationInterface);
       $found = FALSE;
       foreach ($objects as $i) {
         if ($i->getId() === $id) {

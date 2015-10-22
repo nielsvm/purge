@@ -7,8 +7,8 @@
 
 namespace Drupal\purge\Plugin\PurgeInvalidation;
 
-use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginBase;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
@@ -24,7 +24,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
  *   expression_must_be_string = TRUE
  * )
  */
-class PathInvalidation extends PluginBase implements PluginInterface {
+class PathInvalidation extends InvalidationBase implements InvalidationInterface {
 
   /**
    * {@inheritdoc}

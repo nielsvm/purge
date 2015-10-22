@@ -9,8 +9,8 @@ namespace Drupal\purge\Plugin\PurgeDiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckBase;
 
 /**
  * Checks if there is purging capacity available.
@@ -23,7 +23,7 @@ use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase;
  *   dependent_purger_plugins = {}
  * )
  */
-class CapacityDiagnosticCheck extends PluginBase implements PluginInterface {
+class CapacityDiagnosticCheck extends DiagnosticCheckBase implements DiagnosticCheckInterface {
 
   /**
    * The purge executive service, which wipes content from external caches.

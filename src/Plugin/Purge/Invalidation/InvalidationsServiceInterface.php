@@ -2,17 +2,17 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface.
  */
 
 namespace Drupal\purge\Plugin\Purge\Invalidation;
 
-use Drupal\purge\ServiceInterface as PurgeServiceInterface;
+use Drupal\purge\ServiceInterface;
 
 /**
  * Describes a service that instantiates invalidation objects on-demand.
  */
-interface ServiceInterface extends PurgeServiceInterface {
+interface InvalidationsServiceInterface extends ServiceInterface {
 
   /**
    * Create a new invalidation object of the given type.
@@ -31,7 +31,7 @@ interface ServiceInterface extends PurgeServiceInterface {
    *   Exception thrown when plugin got instantiated with an expression that is
    *   not deemed valid for the type of invalidation.
    *
-   * @return \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface
+   * @return \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
    */
   public function get($plugin_id, $expression = NULL);
 
@@ -48,7 +48,7 @@ interface ServiceInterface extends PurgeServiceInterface {
    *   Exception thrown when plugin got instantiated with an expression that is
    *   not deemed valid for the type of invalidation.
    *
-   * @return \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface
+   * @return \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
    */
   public function getFromQueueData($item_data);
 

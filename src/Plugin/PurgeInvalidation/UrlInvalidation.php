@@ -8,9 +8,9 @@
 namespace Drupal\purge\Plugin\PurgeInvalidation;
 
 use Drupal\Component\Utility\UrlHelper;
-use Drupal\Core\Url as UrlType;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginBase;
+use Drupal\Core\Url;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
@@ -25,7 +25,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
  *   expression_can_be_empty = FALSE
  * )
  */
-class UrlInvalidation extends PluginBase implements PluginInterface {
+class UrlInvalidation extends InvalidationBase implements InvalidationInterface {
 
   /**
    * Url object (absolute) or string describing Uri of what needs invalidation.
@@ -52,13 +52,13 @@ class UrlInvalidation extends PluginBase implements PluginInterface {
     }
     if (is_string($this->expression)) {
       try {
-        $this->url = UrlType::fromUri($this->expression, ['absolute' => TRUE]);
+        $this->url = Url::fromUri($this->expression, ['absolute' => TRUE]);
       }
       catch (\InvalidArgumentException $e) {
         throw new InvalidExpressionException($e->getMessage());
       }
     }
-    elseif ($this->expression instanceof UrlType) {
+    elseif ($this->expression instanceof Url) {
       $this->url = $this->expression;
       $this->url->setAbsolute();
     }

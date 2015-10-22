@@ -13,7 +13,7 @@ use Drupal\purge\Tests\Invalidation\PluginTestBase;
  * Tests \Drupal\purge\Plugin\PurgeInvalidation\EverythingInvalidation.
  *
  * @group purge
- * @see \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface
+ * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
  */
 class EverythingInvalidationTest extends PluginTestBase {
   protected $plugin_id = 'everything';

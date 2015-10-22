@@ -8,8 +8,7 @@
 namespace Drupal\purge\Plugin\PurgeInvalidation;
 
 use Drupal\purge\Plugin\PurgeInvalidation\UrlInvalidation;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginBase;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
@@ -24,7 +23,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
  *   expression_can_be_empty = FALSE
  * )
  */
-class WildcardUrlInvalidation extends UrlInvalidation implements PluginInterface {
+class WildcardUrlInvalidation extends UrlInvalidation implements InvalidationInterface {
 
   /**
    * {@inheritdoc}

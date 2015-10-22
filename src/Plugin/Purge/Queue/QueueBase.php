@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Queue\PluginBase.
+ * Contains \Drupal\purge\Plugin\Purge\Queue\QueueBase.
  */
 
 namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Plugin\PluginBase as CorePluginBase;
-use Drupal\purge\Plugin\Purge\Queue\PluginInterface;
+use Drupal\Core\Plugin\PluginBase;
+use Drupal\purge\Plugin\Purge\Queue\QueueInterface;
 
 /**
  * Provides a ReliableQueueInterface compliant queue that holds queue items.
  */
-abstract class PluginBase extends CorePluginBase implements PluginInterface {
+abstract class QueueBase extends PluginBase implements QueueInterface {
 
   /**
    * {@inheritdoc}
@@ -99,5 +99,5 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
     }
     return $failures;
   }
-  
+
 }

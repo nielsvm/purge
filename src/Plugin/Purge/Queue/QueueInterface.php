@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Queue\PluginInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Queue\QueueInterface.
  */
 
 namespace Drupal\purge\Plugin\Purge\Queue;
@@ -14,7 +14,7 @@ use Drupal\Core\Queue\ReliableQueueInterface;
 /**
  * Describes a ReliableQueueInterface compliant queue that can hold queue items.
  */
-interface PluginInterface extends ReliableQueueInterface, ContainerFactoryPluginInterface {
+interface QueueInterface extends ReliableQueueInterface, ContainerFactoryPluginInterface {
 
   /**
    * Add multiple items to the queue and store them efficiently.

@@ -8,8 +8,8 @@
 namespace Drupal\purge\Tests\Invalidation;
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
-use Drupal\purge\Plugin\Purge\Invalidation\PluginBase;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidPropertyException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException;
@@ -19,7 +19,7 @@ use Drupal\purge\Tests\KernelTestBase;
 /**
  * Provides an abstract test class to thoroughly test invalidation types.
  *
- * @see \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface
+ * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
  */
 abstract class PluginTestBase extends KernelTestBase {
 
@@ -63,29 +63,29 @@ abstract class PluginTestBase extends KernelTestBase {
    * Tests the code contract strictly enforced on invalidation type plugins.
    */
   function testCodeContract() {
-    $this->assertTrue($this->getInstance() instanceof Invalidation);
-    $this->assertTrue($this->getInstance() instanceof PluginBase);
+    $this->assertTrue($this->getInstance() instanceof InvalidationInterface);
+    $this->assertTrue($this->getInstance() instanceof InvalidationBase);
   }
 
   /**
    * Test if setting and getting the object state goes well.
    *
-   * @see \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface::setState
-   * @see \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface::getState
-   * @see \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface::getStateString
+   * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState
+   * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getState
+   * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getStateString
    */
   function testState() {
     $i = $this->getInstance();
     $test_states = [
-      Invalidation::STATE_NEW           => 'NEW',
-      Invalidation::STATE_PURGING       => 'PURGING',
-      Invalidation::STATE_PURGED        => 'PURGED',
-      Invalidation::STATE_FAILED        => 'FAILED',
-      Invalidation::STATE_UNSUPPORTED   => 'UNSUPPORTED',
+      InvalidationInterface::STATE_NEW           => 'NEW',
+      InvalidationInterface::STATE_PURGING       => 'PURGING',
+      InvalidationInterface::STATE_PURGED        => 'PURGED',
+      InvalidationInterface::STATE_FAILED        => 'FAILED',
+      InvalidationInterface::STATE_UNSUPPORTED   => 'UNSUPPORTED',
     ];
 
     // Test the initial state of the invalidation object.
-    $this->assertEqual($i->getState(), Invalidation::STATE_NEW, 'getState: STATE_NEW');
+    $this->assertEqual($i->getState(), InvalidationInterface::STATE_NEW, 'getState: STATE_NEW');
     $this->assertEqual($i->getStateString(), 'NEW', 'getStateString: NEW');
 
     // Test setting, getting and getting the string version of each state.
@@ -95,7 +95,7 @@ abstract class PluginTestBase extends KernelTestBase {
       $this->assertEqual($i->getStateString(), $string, "getStateString(): $string");
     }
 
-    // Test \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface::setState catches bad input.
+    // Test \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState catches bad input.
     foreach(['2', 'NEW', -1, 5, 100] as $badstate) {
       $thrown = FALSE;
       try {
@@ -112,7 +112,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Test if typecasting invalidation objects to strings gets us a string.
    *
-   * @see \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface::__toString
+   * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::__toString
    */
   function testStringExpression() {
     $this->assertEqual( (string)$this->getInstance(), $this->expressions[0],
@@ -122,7 +122,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Test if all valid string expressions properly instantiate the object.
    *
-   * @see \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface::__construct
+   * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::__construct
    */
   function testValidExpressions() {
     if (is_null($this->expressions)) {
@@ -138,7 +138,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Test if all invalid string expressions fail to instantiate the object.
    *
-   * @see \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface::__construct
+   * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::__construct
    */
   function testInvalidExpressions($expressions = NULL) {
     foreach ($this->expressionsInvalid as $exp) {
@@ -161,8 +161,8 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Test retrieving the plugin ID and definition.
    *
-   * @see \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface::getPluginId
-   * @see \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface::getPluginDefinition
+   * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getPluginId
+   * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getPluginDefinition
    */
   function testPluginIdAndDefinition() {
     $i = $this->getInstance();

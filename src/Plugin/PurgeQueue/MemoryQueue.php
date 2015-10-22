@@ -7,11 +7,11 @@
 
 namespace Drupal\purge\Plugin\PurgeQueue;
 
-use Drupal\purge\Plugin\Purge\Queue\PluginInterface;
-use Drupal\purge\Plugin\Purge\Queue\PluginBase;
+use Drupal\purge\Plugin\Purge\Queue\QueueInterface;
+use Drupal\purge\Plugin\Purge\Queue\QueueBase;
 
 /**
- * A \Drupal\purge\Plugin\Purge\Queue\PluginInterface compliant volatile memory buffer queue.
+ * A \Drupal\purge\Plugin\Purge\Queue\QueueInterface compliant volatile memory buffer queue.
  *
  * @warning
  * This queue does not extend core's Memory queue on purpose, as it does not
@@ -23,7 +23,7 @@ use Drupal\purge\Plugin\Purge\Queue\PluginBase;
  *   description = @Translation("A non-persistent, per-request memory queue (not useful on production systems)."),
  * )
  */
-class MemoryQueue extends PluginBase implements PluginInterface {
+class MemoryQueue extends QueueBase implements QueueInterface {
 
   /**
    * Whether the buffer has been initialized or not.

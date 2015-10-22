@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Purger\ServiceInterface
+ * Contains \Drupal\purge\Purger\ServiceInterface.
  */
 
 namespace Drupal\purge\Purger;

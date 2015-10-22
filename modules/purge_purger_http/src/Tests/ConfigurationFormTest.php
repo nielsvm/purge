@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_purger_http\Tests\ConfigurationFormTest;
+ * Contains \Drupal\purge_purger_http\Tests\ConfigurationFormTest.
  */
 
 namespace Drupal\purge_purger_http\Tests;

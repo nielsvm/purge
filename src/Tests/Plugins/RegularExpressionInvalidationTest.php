@@ -10,7 +10,7 @@ namespace Drupal\purge\Tests\Plugins;
 use Drupal\purge\Tests\Invalidation\PluginTestBase;
 
 /**
- * Tests \Drupal\purge\Plugin\PurgeInvalidation\RegularExpressionInvalidation.
+ * Tests \Drupal\purge\Plugin\Purge\Invalidation\RegularExpressionInvalidation.
  *
  * @group purge
  * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface

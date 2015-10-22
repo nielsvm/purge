@@ -29,12 +29,12 @@ class PluginManager extends DefaultPluginManager {
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct(
-      'Plugin/PurgeDiagnosticCheck',
+      'Plugin/Purge/DiagnosticCheck',
       $namespaces,
       $module_handler,
       'Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface',
       'Drupal\purge\Annotation\PurgeDiagnosticCheck');
     $this->setCacheBackend($cache_backend, 'purge_diagnosticcheck_plugins');
   }
-  
+
 }

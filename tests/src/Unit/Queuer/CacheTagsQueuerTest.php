@@ -52,7 +52,7 @@ class CacheTagsQueuerTest extends UnitTestCase {
    * @dataProvider providerTestInvalidateTags()
    */
   public function testInvalidateTags(array $tag_invalidations, $invalidation_instantiations, array $queue_additions) {
-    $tag_invalidation = $this->getMockBuilder('\Drupal\purge\Plugin\PurgeInvalidation\Tag')
+    $tag_invalidation = $this->getMockBuilder('\Drupal\purge\Plugin\Purge\Invalidation\Tag')
       ->disableOriginalConstructor();
     $this->invalidationFactory->expects($this->exactly($invalidation_instantiations))
       ->method('get')

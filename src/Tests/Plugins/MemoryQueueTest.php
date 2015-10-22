@@ -10,7 +10,7 @@ namespace Drupal\purge\Tests\Plugins;
 use Drupal\purge\Tests\Queue\PluginTestBase;
 
 /**
- * Tests \Drupal\purge\Plugin\PurgeQueue\MemoryQueue.
+ * Tests \Drupal\purge\Plugin\Purge\Queue\MemoryQueue.
  *
  * @group purge
  * @see \Drupal\purge\Plugin\Purge\Queue\QueueInterface

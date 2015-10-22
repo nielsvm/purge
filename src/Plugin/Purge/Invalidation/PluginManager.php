@@ -29,12 +29,12 @@ class PluginManager extends DefaultPluginManager {
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct(
-      'Plugin/PurgeInvalidation',
+      'Plugin/Purge/Invalidation',
       $namespaces,
       $module_handler,
       'Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface',
       'Drupal\purge\Annotation\PurgeInvalidation');
     $this->setCacheBackend($cache_backend, 'purge_invalidation_plugins');
   }
-  
+
 }

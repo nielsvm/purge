@@ -11,7 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\purge_ui\Form\PurgerConfigFormBase;
 
 /**
- * @see \Drupal\purge_purger_test\Plugin\PurgePurger\PurgerWithForm.
+ * @see \Drupal\purge_purger_test\Plugin\Purge\Purger\PurgerWithForm.
  */
 class PurgerConfigForm extends PurgerConfigFormBase {
 

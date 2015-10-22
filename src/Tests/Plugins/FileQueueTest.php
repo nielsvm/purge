@@ -12,7 +12,7 @@ use Drupal\Core\StreamWrapper\PublicStream;
 use Drupal\purge\Tests\Queue\PluginTestBase;
 
 /**
- * Tests \Drupal\purge\Plugin\PurgeQueue\FileQueue.
+ * Tests \Drupal\purge\Plugin\Purge\Queue\FileQueue.
  *
  * @group purge
  * @see \Drupal\purge\Plugin\Purge\Queue\QueueInterface
@@ -23,7 +23,7 @@ class FileQueueTest extends PluginTestBase {
   /**
    * The file path to which the queue buffer gets written to.
    *
-   * @see \Drupal\purge\Plugin\PurgeQueue\File::$file
+   * @see \Drupal\purge\Plugin\Purge\Queue\File::$file
    */
   protected $file = 'public://purge-queue-file';
 
@@ -38,10 +38,10 @@ class FileQueueTest extends PluginTestBase {
   /**
    * Tests if the buffer gets written to disk properly.
    *
-   * @see \Drupal\purge\Plugin\PurgeQueue\File::bufferInitialize
-   * @see \Drupal\purge\Plugin\PurgeQueue\File::bufferCommit
-   * @see \Drupal\purge\Plugin\PurgeQueue\File::deleteQueue
-   * @see \Drupal\purge\Plugin\PurgeQueue\File::destruct
+   * @see \Drupal\purge\Plugin\Purge\Queue\File::bufferInitialize
+   * @see \Drupal\purge\Plugin\Purge\Queue\File::bufferCommit
+   * @see \Drupal\purge\Plugin\Purge\Queue\File::deleteQueue
+   * @see \Drupal\purge\Plugin\Purge\Queue\File::destruct
    */
   function testBufferReadingAndWriting() {
     $this->assertTrue($this->queue instanceof DestructableInterface);

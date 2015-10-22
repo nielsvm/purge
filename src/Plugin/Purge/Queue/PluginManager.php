@@ -29,12 +29,12 @@ class PluginManager extends DefaultPluginManager {
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct(
-      'Plugin/PurgeQueue',
+      'Plugin/Purge/Queue',
       $namespaces,
       $module_handler,
       'Drupal\purge\Plugin\Purge\Queue\QueueInterface',
       'Drupal\purge\Annotation\PurgeQueue');
     $this->setCacheBackend($cache_backend, 'purge_queue_plugins');
   }
-  
+
 }

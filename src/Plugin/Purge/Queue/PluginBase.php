@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queue\PluginBase.
+ * Contains \Drupal\purge\Plugin\Purge\Queue\PluginBase.
  */
 
-namespace Drupal\purge\Queue;
+namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\PluginBase as CorePluginBase;
-use Drupal\purge\Queue\PluginInterface;
+use Drupal\purge\Plugin\Purge\Queue\PluginInterface;
 
 /**
  * Provides a ReliableQueueInterface compliant queue that holds queue items.

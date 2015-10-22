@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Invalidation\ServiceInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface.
  */
 
-namespace Drupal\purge\Invalidation;
+namespace Drupal\purge\Plugin\Purge\Invalidation;
 
 use Drupal\purge\ServiceInterface as PurgeServiceInterface;
 
@@ -24,14 +24,14 @@ interface ServiceInterface extends PurgeServiceInterface {
    *   when the type of invalidation doesn't require $expression. Types usually
    *   validate the given expression and throw exceptions for bad input.
    *
-   * @throws \Drupal\purge\Invalidation\Exception\MissingExpressionException
+   * @throws \Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException
    *   Thrown when plugin defined expression_required = TRUE and when it is
    *   instantiated without expression (NULL).
-   * @throws \Drupal\purge\Invalidation\Exception\InvalidExpressionException
+   * @throws \Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException
    *   Exception thrown when plugin got instantiated with an expression that is
    *   not deemed valid for the type of invalidation.
    *
-   * @return \Drupal\purge\Invalidation\PluginInterface
+   * @return \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface
    */
   public function get($plugin_id, $expression = NULL);
 
@@ -41,14 +41,14 @@ interface ServiceInterface extends PurgeServiceInterface {
    * @param string $item_data
    *   Arbitrary PHP data structured that was stored into the queue.
    *
-   * @throws \Drupal\purge\Invalidation\Exception\MissingExpressionException
+   * @throws \Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException
    *   Thrown when plugin defined expression_required = TRUE and when it is
    *   instantiated without expression (NULL).
-   * @throws \Drupal\purge\Invalidation\Exception\InvalidExpressionException
+   * @throws \Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException
    *   Exception thrown when plugin got instantiated with an expression that is
    *   not deemed valid for the type of invalidation.
    *
-   * @return \Drupal\purge\Invalidation\PluginInterface
+   * @return \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface
    */
   public function getFromQueueData($item_data);
 

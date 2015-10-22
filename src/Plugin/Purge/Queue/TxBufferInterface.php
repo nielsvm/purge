@@ -2,12 +2,12 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queue\TxBufferInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface.
  */
 
-namespace Drupal\purge\Queue;
+namespace Drupal\purge\Plugin\Purge\Queue;
 
-use Drupal\purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
 
 /**
  * Describes the transaction buffer.
@@ -47,10 +47,10 @@ interface TxBufferInterface extends \Countable, \Iterator {
   /**
    * Constructs the TxBuffer object.
    *
-   * The transaction buffer is used internally by \Drupal\purge\Queue\Service
-   * and holds \Drupal\purge\Invalidation\PluginInterface objects. For each
+   * The transaction buffer is used internally by \Drupal\purge\Plugin\Purge\Queue\Service
+   * and holds \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface objects. For each
    * object, it maintains state and properties about the object in relation to
-   * the queue. This helps \Drupal\purge\Queue\Service to commit objects as
+   * the queue. This helps \Drupal\purge\Plugin\Purge\Queue\Service to commit objects as
    * rarely and efficiently as possible to its underlying back-end.
    */
   public function __construct();
@@ -58,7 +58,7 @@ interface TxBufferInterface extends \Countable, \Iterator {
   /**
    * Delete the given invalidation object from the buffer.
    *
-   * @param array|\Drupal\purge\Invalidation\PluginInterface $invalidations
+   * @param array|\Drupal\purge\Plugin\Purge\Invalidation\PluginInterface $invalidations
    *   Invalidation object or array with objects.
    *
    * @return void
@@ -81,7 +81,7 @@ interface TxBufferInterface extends \Countable, \Iterator {
    *   The (unique) value of the property that has to be stored in the buffer
    *   in order to return the object.
    *
-   * @return \Drupal\purge\Invalidation\PluginInterface|false
+   * @return \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface|false
    *   The matched invalidation object or FALSE when there was no combination
    *   found of the property and value.
    */
@@ -92,38 +92,38 @@ interface TxBufferInterface extends \Countable, \Iterator {
    *
    * @param int|array $states
    *   Individual state or array with one of the following states:
-   *     - \Drupal\purge\Queue\TxBufferInterface::CLAIMED
-   *     - \Drupal\purge\Queue\TxBufferInterface::ADDING
-   *     - \Drupal\purge\Queue\TxBufferInterface::ADDED
-   *     - \Drupal\purge\Queue\TxBufferInterface::RELEASING
-   *     - \Drupal\purge\Queue\TxBufferInterface::RELEASED
-   *     - \Drupal\purge\Queue\TxBufferInterface::DELETING
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::CLAIMED
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::ADDING
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::ADDED
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::RELEASING
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::RELEASED
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::DELETING
    *
-   * @return \Drupal\purge\Invalidation\PluginInterface[]
+   * @return \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface[]
    */
   public function getFiltered($states);
 
   /**
    * Request the in-buffer set state for the given invalidation object.
    *
-   * @param \Drupal\purge\Invalidation\PluginInterface $invalidation
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface $invalidation
    *   Invalidation object.
    *
    * @return int|null
    *   The state of the given object or NULL when not found.
-   *     - \Drupal\purge\Queue\TxBufferInterface::CLAIMED
-   *     - \Drupal\purge\Queue\TxBufferInterface::ADDING
-   *     - \Drupal\purge\Queue\TxBufferInterface::ADDED
-   *     - \Drupal\purge\Queue\TxBufferInterface::RELEASING
-   *     - \Drupal\purge\Queue\TxBufferInterface::RELEASED
-   *     - \Drupal\purge\Queue\TxBufferInterface::DELETING
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::CLAIMED
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::ADDING
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::ADDED
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::RELEASING
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::RELEASED
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::DELETING
    */
   public function getState(Invalidation $invalidation);
 
   /**
    * Retrieve a stored property for the given invalidation object.
    *
-   * @param \Drupal\purge\Invalidation\PluginInterface $invalidation
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface $invalidation
    *   Invalidation object.
    * @param string $property
    *   The string key of the stored property you want to receive.
@@ -138,7 +138,7 @@ interface TxBufferInterface extends \Countable, \Iterator {
   /**
    * Check if the given object is already in buffer our not.
    *
-   * @param \Drupal\purge\Invalidation\PluginInterface $invalidation
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface $invalidation
    *   Invalidation object.
    *
    * @return TRUE|FALSE
@@ -148,16 +148,16 @@ interface TxBufferInterface extends \Countable, \Iterator {
   /**
    * Set the given state on one or multiple invalidation objects.
    *
-   * @param array|\Drupal\purge\Invalidation\PluginInterface $invalidations
+   * @param array|\Drupal\purge\Plugin\Purge\Invalidation\PluginInterface $invalidations
    *   Invalidation object or array with objects.
    * @param int $state
    *   One of the following states:
-   *     - \Drupal\purge\Queue\TxBufferInterface::CLAIMED
-   *     - \Drupal\purge\Queue\TxBufferInterface::ADDING
-   *     - \Drupal\purge\Queue\TxBufferInterface::ADDED
-   *     - \Drupal\purge\Queue\TxBufferInterface::RELEASING
-   *     - \Drupal\purge\Queue\TxBufferInterface::RELEASED
-   *     - \Drupal\purge\Queue\TxBufferInterface::DELETING
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::CLAIMED
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::ADDING
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::ADDED
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::RELEASING
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::RELEASED
+   *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::DELETING
    *
    * @return void
    */
@@ -166,7 +166,7 @@ interface TxBufferInterface extends \Countable, \Iterator {
   /**
    * Store a named property for the given invalidation object.
    *
-   * @param \Drupal\purge\Invalidation\PluginInterface $invalidation
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface $invalidation
    *   Invalidation object.
    * @param string $property
    *   The string key of the property you want to store.

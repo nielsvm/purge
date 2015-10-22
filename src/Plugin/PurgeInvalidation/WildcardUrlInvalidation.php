@@ -8,9 +8,9 @@
 namespace Drupal\purge\Plugin\PurgeInvalidation;
 
 use Drupal\purge\Plugin\PurgeInvalidation\UrlInvalidation;
-use Drupal\purge\Invalidation\PluginInterface;
-use Drupal\purge\Invalidation\PluginBase;
-use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginBase;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
  * Describes wildcard URL based invalidation, e.g. "http://site.com/node/*".

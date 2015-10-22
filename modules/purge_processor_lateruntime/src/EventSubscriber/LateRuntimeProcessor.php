@@ -12,7 +12,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
+use Drupal\purge\Plugin\Purge\Queue\ServiceInterface as QueueServiceInterface;
 use Drupal\purge\Processor\ProcessorInterface;
 
 /**
@@ -51,7 +51,7 @@ class LateRuntimeProcessor implements ProcessorInterface, EventSubscriberInterfa
   /**
    * Diagnostics service that reports any preliminary issues before purging.
    *
-   * @var \Drupal\purge\DiagnosticCheck\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\ServiceInterface
    */
   protected $purgeDiagnostics;
 
@@ -65,7 +65,7 @@ class LateRuntimeProcessor implements ProcessorInterface, EventSubscriberInterfa
   /**
    * The queue in which to store, claim and release invalidation objects from.
    *
-   * @var \Drupal\purge\Queue\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Queue\ServiceInterface
    */
   protected $purgeQueue;
 

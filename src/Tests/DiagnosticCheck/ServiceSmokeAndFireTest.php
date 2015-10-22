@@ -10,11 +10,11 @@ namespace Drupal\purge\Tests\DiagnosticCheck;
 use Drupal\purge\Tests\KernelServiceTestBase;
 
 /**
- * Tests \Drupal\purge\DiagnosticCheck\Service.
+ * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service.
  *
  * @group purge
- * @see \Drupal\purge\DiagnosticCheck\Service
- * @see \Drupal\purge\DiagnosticCheck\ServiceInterface
+ * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service
+ * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\ServiceInterface
  */
 class ServiceSmokeAndFireTest extends KernelServiceTestBase {
   protected $serviceId = 'purge.diagnostics';
@@ -32,8 +32,8 @@ class ServiceSmokeAndFireTest extends KernelServiceTestBase {
 
   /**
    * Tests:
-   *   - \Drupal\purge\DiagnosticCheck\Service::isSystemOnFire()
-   *   - \Drupal\purge\DiagnosticCheck\Service::isSystemShowingSmoke()
+   *   - \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service::isSystemOnFire()
+   *   - \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service::isSystemShowingSmoke()
    */
   public function testIsSystemOnFireOrShowingSmoke() {
     $this->initializePurgersService(['ida' => 'a']);

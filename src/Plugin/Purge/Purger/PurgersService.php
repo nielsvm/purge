@@ -16,8 +16,8 @@ use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Capacity\Tracker;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
-use Drupal\purge\Invalidation\Exception\InvalidStateException;
-use Drupal\purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
 
 /**
  * Provides the service that distributes access to one or more purgers.

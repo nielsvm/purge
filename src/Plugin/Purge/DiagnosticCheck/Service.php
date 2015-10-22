@@ -2,16 +2,16 @@
 
 /**
  * @file
- * Contains \Drupal\purge\DiagnosticCheck\Service.
+ * Contains \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service.
  */
 
-namespace Drupal\purge\DiagnosticCheck;
+namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceBase;
-use Drupal\purge\DiagnosticCheck\ServiceInterface;
-use Drupal\purge\DiagnosticCheck\PluginInterface as Check;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\ServiceInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface as Check;
 
 /**
  * Provides a service that interacts with diagnostic checks.
@@ -30,14 +30,14 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * Keeps all instantiated checks.
    *
-   * @var \Drupal\purge\DiagnosticCheck\PluginInterface[]
+   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface[]
    */
   protected $checks = [];
 
   /**
    * The plugin manager for checks.
    *
-   * @var \Drupal\purge\DiagnosticCheck\PluginManager
+   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginManager
    */
   protected $pluginManager;
 
@@ -55,12 +55,12 @@ class Service extends ServiceBase implements ServiceInterface {
    *
    * Do not access this property directly, use ::getQueue.
    *
-   * @var \Drupal\purge\Queue\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Queue\ServiceInterface
    */
   private $purgeQueue;
 
   /**
-   * Construct \Drupal\purge\DiagnosticCheck\Service.
+   * Construct \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service.
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
    *   The plugin manager for this service.
@@ -183,7 +183,7 @@ class Service extends ServiceBase implements ServiceInterface {
   /**
    * Retrieve the 'purge.queue' service - lazy loaded.
    *
-   * @return \Drupal\purge\Queue\ServiceInterface
+   * @return \Drupal\purge\Plugin\Purge\Queue\ServiceInterface
    */
   protected function getQueue() {
     if (is_null($this->purgeQueue)) {

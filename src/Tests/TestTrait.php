@@ -31,12 +31,12 @@ trait TestTrait {
   protected $purgePurgers;
 
   /**
-   * @var \Drupal\purge\Invalidation\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface
    */
   protected $purgeInvalidationFactory;
 
   /**
-   * @var \Drupal\purge\Queue\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Queue\ServiceInterface
    */
   protected $purgeQueue;
 
@@ -46,7 +46,7 @@ trait TestTrait {
   protected $purgeQueuers;
 
   /**
-   * @var \Drupal\purge\DiagnosticCheck\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\ServiceInterface
    */
   protected $purgeDiagnostics;
 
@@ -137,7 +137,7 @@ trait TestTrait {
    * @param int $number
    *   The number of objects to generate.
    *
-   * @return array|\Drupal\purge\Invalidation\PluginInterface
+   * @return array|\Drupal\purge\Plugin\Purge\Invalidation\PluginInterface
    */
   public function getInvalidations($number) {
     $this->initializeInvalidationFactoryService();

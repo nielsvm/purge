@@ -7,11 +7,11 @@
 
 namespace Drupal\purge\Plugin\PurgeQueue;
 
-use Drupal\purge\Queue\PluginInterface;
-use Drupal\purge\Queue\PluginBase;
+use Drupal\purge\Plugin\Purge\Queue\PluginInterface;
+use Drupal\purge\Plugin\Purge\Queue\PluginBase;
 
 /**
- * A \Drupal\purge\Queue\PluginInterface compliant volatile memory buffer queue.
+ * A \Drupal\purge\Plugin\Purge\Queue\PluginInterface compliant volatile memory buffer queue.
  *
  * @warning
  * This queue does not extend core's Memory queue on purpose, as it does not

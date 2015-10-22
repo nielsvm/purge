@@ -8,10 +8,10 @@
 namespace Drupal\purge\Tests\Queue;
 
 use Drupal\purge\Tests\KernelTestBase;
-use Drupal\purge\Invalidation\PluginInterface as Invalidation;
-use Drupal\purge\Queue\Exception\InvalidPropertyException;
-use Drupal\purge\Queue\ProxyItem;
-use Drupal\purge\Queue\TxBuffer;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Queue\Exception\InvalidPropertyException;
+use Drupal\purge\Plugin\Purge\Queue\ProxyItem;
+use Drupal\purge\Plugin\Purge\Queue\TxBuffer;
 
 /**
  * Tests \Drupal\purge\Tests\Queue\ProxyItem.
@@ -23,7 +23,7 @@ class ProxyItemTest extends KernelTestBase {
   /**
    * The TxBuffer object in which state and properties get stored.
    *
-   * @var \Drupal\purge\Queue\TxBuffer
+   * @var \Drupal\purge\Plugin\Purge\Queue\TxBuffer
    */
   protected $buffer;
 
@@ -36,7 +36,7 @@ class ProxyItemTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\ProxyItem::__get
+   * Tests \Drupal\purge\Plugin\Purge\Queue\ProxyItem::__get
    */
   public function testGet() {
     $i = $this->getInvalidations(1);
@@ -79,7 +79,7 @@ class ProxyItemTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\ProxyItem::__set
+   * Tests \Drupal\purge\Plugin\Purge\Queue\ProxyItem::__set
    */
   public function testSet() {
     $i = $this->getInvalidations(1);

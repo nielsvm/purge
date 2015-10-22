@@ -17,7 +17,7 @@ use Drupal\simpletest\WebTestBase;
 class StatusReportTest extends WebTestBase {
 
   /**
-   * @var \Drupal\purge\DiagnosticCheck\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\ServiceInterface
    */
   protected $purgeDiagnostics;
 

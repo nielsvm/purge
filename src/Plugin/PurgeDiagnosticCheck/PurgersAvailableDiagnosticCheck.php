@@ -9,10 +9,10 @@ namespace Drupal\purge\Plugin\PurgeDiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\purge\Queue\PluginInterface as Queue;
+use Drupal\purge\Plugin\Purge\Queue\PluginInterface as Queue;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
-use Drupal\purge\DiagnosticCheck\PluginInterface;
-use Drupal\purge\DiagnosticCheck\PluginBase;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase;
 
 /**
  * Checks if there is a purger plugin that invalidates an external cache.

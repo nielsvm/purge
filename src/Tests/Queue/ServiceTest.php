@@ -8,14 +8,14 @@
 namespace Drupal\purge\Tests\Queue;
 
 use Drupal\purge\Tests\KernelServiceTestBase;
-use Drupal\purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
 
 /**
- * Tests \Drupal\purge\Queue\Service.
+ * Tests \Drupal\purge\Plugin\Purge\Queue\Service.
  *
  * @group purge
- * @see \Drupal\purge\Queue\Service
- * @see \Drupal\purge\Queue\ServiceInterface
+ * @see \Drupal\purge\Plugin\Purge\Queue\Service
+ * @see \Drupal\purge\Plugin\Purge\Queue\ServiceInterface
  */
 class ServiceTest extends KernelServiceTestBase {
   protected $serviceId = 'purge.queue';
@@ -39,7 +39,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\Service::getPlugins
+   * Tests \Drupal\purge\Plugin\Purge\Queue\Service::getPlugins
    */
   public function testGetPlugins() {
     $this->assertTrue(is_array($this->purgeQueue->getPlugins()));
@@ -51,9 +51,9 @@ class ServiceTest extends KernelServiceTestBase {
 
   /**
    * Tests:
-   *   - \Drupal\purge\Queue\Service::getPluginsEnabled
-   *   - \Drupal\purge\Queue\Service::setPluginsEnabled
-   *   - \Drupal\purge\Queue\Service::reload
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::getPluginsEnabled
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::setPluginsEnabled
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::reload
    */
   public function testSettingAndGettingPlugins() {
     $this->purgeQueue->setPluginsEnabled(['file']);
@@ -79,7 +79,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\Service::add, \Drupal\purge\Queue\Service::claim
+   * Tests \Drupal\purge\Plugin\Purge\Queue\Service::add, \Drupal\purge\Plugin\Purge\Queue\Service::claim
    */
   public function testAddClaim() {
     $this->assertFalse($this->purgeQueue->claim());
@@ -91,7 +91,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\Service::emptyQueue
+   * Tests \Drupal\purge\Plugin\Purge\Queue\Service::emptyQueue
    */
   public function testEmptyQueue() {
     $this->purgeQueue->addMultiple($this->getInvalidations(10));
@@ -102,8 +102,8 @@ class ServiceTest extends KernelServiceTestBase {
 
   /**
    * Tests:
-   *   - \Drupal\purge\Queue\Service::addMultiple
-   *   - \Drupal\purge\Queue\Service::claimMultiple
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::addMultiple
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::claimMultiple
    */
   public function testAddMultipleClaimMultiple() {
     $i = $this->getInvalidations(50);
@@ -117,9 +117,9 @@ class ServiceTest extends KernelServiceTestBase {
 
   /**
    * Tests:
-   *   - \Drupal\purge\Queue\Service::reload
-   *   - \Drupal\purge\Queue\Service::commit
-   *   - \Drupal\purge\Queue\Service::claimMultiple
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::reload
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::commit
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::claimMultiple
    */
   public function testStateConsistency() {
     $this->purgeQueue->setPluginsEnabled(['database']);
@@ -130,7 +130,7 @@ class ServiceTest extends KernelServiceTestBase {
     $i[2]->setState(Invalidation::STATE_FAILED);
     $i[3]->setState(Invalidation::STATE_UNSUPPORTED);
     $this->purgeQueue->addMultiple($i);
-    // Reload so that \Drupal\purge\Queue\Service::$buffer gets cleaned too.
+    // Reload so that \Drupal\purge\Plugin\Purge\Queue\Service::$buffer gets cleaned too.
     $this->purgeQueue->reload();
     // Now it has to refetch all objects, assure their states.
     $claims = $this->purgeQueue->claimMultiple(3, 1);
@@ -142,8 +142,8 @@ class ServiceTest extends KernelServiceTestBase {
 
   /**
    * Tests:
-   *   - \Drupal\purge\Queue\Service::release
-   *   - \Drupal\purge\Queue\Service::releaseMultiple
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::release
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::releaseMultiple
    */
   public function testReleaseReleaseMultiple() {
     $this->assertFalse($this->purgeQueue->claim());
@@ -165,8 +165,8 @@ class ServiceTest extends KernelServiceTestBase {
 
   /**
    * Tests:
-   *   - \Drupal\purge\Queue\Service::delete
-   *   - \Drupal\purge\Queue\Service::deleteMultiple
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::delete
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::deleteMultiple
    */
   public function testDeleteDeleteMultiple() {
     $this->assertFalse($this->purgeQueue->claim());
@@ -183,8 +183,8 @@ class ServiceTest extends KernelServiceTestBase {
 
   /**
    * Tests:
-   *   - \Drupal\purge\Queue\Service::deleteOrRelease
-   *   - \Drupal\purge\Queue\Service::deleteOrReleaseMultiple
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::deleteOrRelease
+   *   - \Drupal\purge\Plugin\Purge\Queue\Service::deleteOrReleaseMultiple
    */
   public function testsDeleteOrReleaseDeleteOrReleaseMultiple() {
     $this->purgeQueue->addMultiple($this->getInvalidations(5));

@@ -9,7 +9,7 @@ namespace Drupal\purge_purger_test\Plugin\PurgePurger;
 
 use Drupal\purge\Plugin\Purge\Purger\PurgerBase;
 use Drupal\purge\Plugin\Purge\Purger\PurgerInterface;
-use Drupal\purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
 
 /**
  * Ever failing null purger plugin base.

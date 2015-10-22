@@ -7,8 +7,8 @@
 
 namespace Drupal\purge_check_test\Plugin\PurgeDiagnosticCheck;
 
-use Drupal\purge\DiagnosticCheck\PluginInterface;
-use Drupal\purge\DiagnosticCheck\PluginBase;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase;
 
 /**
  * Checks if there is a purger plugin that invalidates an external cache.

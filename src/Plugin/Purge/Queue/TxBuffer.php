@@ -2,13 +2,13 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queue\TxBuffer.
+ * Contains \Drupal\purge\Plugin\Purge\Queue\TxBuffer.
  */
 
-namespace Drupal\purge\Queue;
+namespace Drupal\purge\Plugin\Purge\Queue;
 
-use Drupal\purge\Invalidation\PluginInterface as Invalidation;
-use Drupal\purge\Queue\TxBufferInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
 
 /**
  * Provides the transaction buffer.
@@ -18,7 +18,7 @@ class TxBuffer implements TxBufferInterface {
   /**
    * Instances listing holding copies of each Invalidation object.
    *
-   * @var \Drupal\purge\Invalidation\PluginInterface[]
+   * @var \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface[]
    */
   private $instances = [];
 

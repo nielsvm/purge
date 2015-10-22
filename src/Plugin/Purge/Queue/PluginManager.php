@@ -2,17 +2,17 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Invalidation\PluginManager.
+ * Contains \Drupal\purge\Plugin\Purge\Queue\PluginManager.
  */
 
-namespace Drupal\purge\Invalidation;
+namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * The invalidation type plugin manager.
+ * The queue plugin manager.
  */
 class PluginManager extends DefaultPluginManager {
 
@@ -29,12 +29,12 @@ class PluginManager extends DefaultPluginManager {
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct(
-      'Plugin/PurgeInvalidation',
+      'Plugin/PurgeQueue',
       $namespaces,
       $module_handler,
-      'Drupal\purge\Invalidation\PluginInterface',
-      'Drupal\purge\Annotation\PurgeInvalidation');
-    $this->setCacheBackend($cache_backend, 'purge_invalidation_plugins');
+      'Drupal\purge\Plugin\Purge\Queue\PluginInterface',
+      'Drupal\purge\Annotation\PurgeQueue');
+    $this->setCacheBackend($cache_backend, 'purge_queue_plugins');
   }
   
 }

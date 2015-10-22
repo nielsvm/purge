@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Invalidation\Service.
+ * Contains \Drupal\purge\Plugin\Purge\Invalidation\Service.
  */
 
-namespace Drupal\purge\Invalidation;
+namespace Drupal\purge\Plugin\Purge\Invalidation;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceBase;
-use Drupal\purge\Invalidation\ServiceInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface;
 
 /**
  * Provides a service that instantiates invalidation objects on-demand.
@@ -24,7 +24,7 @@ class Service extends ServiceBase implements ServiceInterface {
   protected $instance_counter = 0;
 
   /**
-   * Instantiates a \Drupal\purge\Invalidation\Service.
+   * Instantiates a \Drupal\purge\Plugin\Purge\Invalidation\Service.
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
    *   The plugin manager for this service.

@@ -9,9 +9,9 @@ namespace Drupal\purge\Plugin\PurgeInvalidation;
 
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Url as UrlType;
-use Drupal\purge\Invalidation\PluginInterface;
-use Drupal\purge\Invalidation\PluginBase;
-use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginBase;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
  * Describes URL based invalidation, e.g. "http://site.com/node/1".

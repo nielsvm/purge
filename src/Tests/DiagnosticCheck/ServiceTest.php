@@ -10,15 +10,15 @@ namespace Drupal\purge\Tests\DiagnosticCheck;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\purge\Tests\KernelTestBase;
 use Drupal\purge\Tests\KernelServiceTestBase;
-use Drupal\purge\DiagnosticCheck\ServiceInterface;
-use Drupal\purge\DiagnosticCheck\PluginInterface as Check;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\ServiceInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface as Check;
 
 /**
- * Tests \Drupal\purge\DiagnosticCheck\Service.
+ * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service.
  *
  * @group purge
- * @see \Drupal\purge\DiagnosticCheck\Service
- * @see \Drupal\purge\DiagnosticCheck\ServiceInterface
+ * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service
+ * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\ServiceInterface
  */
 class ServiceTest extends KernelServiceTestBase {
   protected $serviceId = 'purge.diagnostics';
@@ -34,10 +34,10 @@ class ServiceTest extends KernelServiceTestBase {
   /**
    * The supported test severities.
    *
-   * @see \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO
-   * @see \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_OK
-   * @see \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING
-   * @see \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR
+   * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO
+   * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_OK
+   * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING
+   * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR
    */
   protected $severities = [
     Check::SEVERITY_INFO,
@@ -82,8 +82,8 @@ class ServiceTest extends KernelServiceTestBase {
   /**
    * Tests lazy loading of the 'purge.purger' and 'purge.queue' services.
    *
-   * @see \Drupal\purge\DiagnosticCheck\Service::__construct
-   * @see \Drupal\purge\DiagnosticCheck\Service::initializeChecks
+   * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service::__construct
+   * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service::initializeChecks
    */
   public function testLazyLoadingOfDependencies() {
     $this->assertFalse($this->container->initialized('purge.purgers'));
@@ -102,7 +102,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\DiagnosticCheck\Service::count
+   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service::count
    */
   public function testCount() {
     $this->initializeService();
@@ -113,11 +113,11 @@ class ServiceTest extends KernelServiceTestBase {
   /**
    * Tests the \Iterator implementation.
    *
-   * @see \Drupal\purge\DiagnosticCheck\Service::current
-   * @see \Drupal\purge\DiagnosticCheck\Service::key
-   * @see \Drupal\purge\DiagnosticCheck\Service::next
-   * @see \Drupal\purge\DiagnosticCheck\Service::rewind
-   * @see \Drupal\purge\DiagnosticCheck\Service::valid
+   * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service::current
+   * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service::key
+   * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service::next
+   * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service::rewind
+   * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service::valid
    */
   public function testIteration() {
     $this->initializeService();
@@ -138,7 +138,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\DiagnosticCheck\Service::getHookRequirementsArray
+   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service::getHookRequirementsArray
    */
   public function testGetHookRequirementsArray() {
     $this->initializeRequirementSeverities();
@@ -157,7 +157,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\DiagnosticCheck\Service::isSystemOnFire.
+   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service::isSystemOnFire.
    */
   public function testIsSystemOnFire() {
     $this->initializePurgersService(['ida' => 'a']);
@@ -167,7 +167,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\DiagnosticCheck\Service::isSystemShowingSmoke.
+   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\Service::isSystemShowingSmoke.
    */
   public function testIsSystemShowingSmoke() {
     $this->assertTrue($this->service->isSystemShowingSmoke() instanceof Check);

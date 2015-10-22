@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queue\PluginInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Queue\PluginInterface.
  */
 
-namespace Drupal\purge\Queue;
+namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;

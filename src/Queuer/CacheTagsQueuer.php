@@ -12,8 +12,8 @@ use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\purge\Queuer\QueuerInterface;
-use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
-use Drupal\purge\Invalidation\ServiceInterface as InvalidationServiceInterface;
+use Drupal\purge\Plugin\Purge\Queue\ServiceInterface as QueueServiceInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface as InvalidationServiceInterface;
 
 /**
  * Queues invalidated cache tags.
@@ -43,12 +43,12 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface, QueuerInterface 
   /**
    * The purge queue service.
    *
-   * @var \Drupal\purge\Queue\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Queue\ServiceInterface
    */
   protected $purgeQueue;
 
   /**
-   * @var \Drupal\purge\Invalidation\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface
    */
   protected $purgeInvalidationFactory;
 
@@ -73,9 +73,9 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface, QueuerInterface 
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The configuration factory.
-   * @param \Drupal\purge\Queue\ServiceInterface $purge_queue
+   * @param \Drupal\purge\Plugin\Purge\Queue\ServiceInterface $purge_queue
    *   The purge queue service.
-   * @param \Drupal\purge\Invalidation\ServiceInterface $purge_invalidation_factory
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface $purge_invalidation_factory
    *   The invalidation objects factory service.
    */
   public function __construct(ConfigFactoryInterface $config_factory, QueueServiceInterface $purge_queue, InvalidationServiceInterface $purge_invalidation_factory) {

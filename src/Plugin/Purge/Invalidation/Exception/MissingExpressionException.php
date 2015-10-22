@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Invalidation\Exception\MissingExpressionException.
+ * Contains \Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException.
  */
 
-namespace Drupal\purge\Invalidation\Exception;
+namespace Drupal\purge\Plugin\Purge\Invalidation\Exception;
 
 /**
  * Thrown when invalidations are instantiated without required expression.

@@ -10,10 +10,10 @@ namespace Drupal\purge\Plugin\PurgeQueue;
 use Drupal\Core\DestructableInterface;
 use Drupal\Core\StreamWrapper\PublicStream;
 use Drupal\purge\Plugin\PurgeQueue\MemoryQueue;
-use Drupal\purge\Queue\PluginInterface;
+use Drupal\purge\Plugin\Purge\Queue\PluginInterface;
 
 /**
- * A \Drupal\purge\Queue\PluginInterface compliant file-based queue.
+ * A \Drupal\purge\Plugin\Purge\Queue\PluginInterface compliant file-based queue.
  *
  * @PurgeQueue(
  *   id = "file",
@@ -98,7 +98,7 @@ class FileQueue extends MemoryQueue implements PluginInterface, DestructableInte
   /**
    * {@inheritdoc}
    *
-   * @see \Drupal\purge\Queue\Service::reload()
+   * @see \Drupal\purge\Plugin\Purge\Queue\Service::reload()
    */
   public function destruct() {
     if ($this->bufferInitialized) {

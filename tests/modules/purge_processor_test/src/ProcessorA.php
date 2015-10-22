@@ -10,8 +10,8 @@ namespace Drupal\purge_processor_test;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\purge\Processor\ProcessorInterface;
-use Drupal\purge\Queue\ServiceInterface as QueueServiceInterface;
-use Drupal\purge\Invalidation\ServiceInterface as InvalidationServiceInterface;
+use Drupal\purge\Plugin\Purge\Queue\ServiceInterface as QueueServiceInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface as InvalidationServiceInterface;
 
 /**
  * Testing processor A.

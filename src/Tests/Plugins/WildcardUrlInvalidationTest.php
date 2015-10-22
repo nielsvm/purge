@@ -13,7 +13,7 @@ use Drupal\purge\Tests\Invalidation\PluginTestBase;
  * Tests \Drupal\purge\Plugin\PurgeInvalidation\WildcardUrlInvalidation.
  *
  * @group purge
- * @see \Drupal\purge\Invalidation\PluginInterface
+ * @see \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface
  */
 class WildcardUrlInvalidationTest extends PluginTestBase {
   protected $plugin_id = 'wildcardurl';

@@ -13,7 +13,7 @@ use Drupal\purge\Tests\Invalidation\PluginTestBase;
  * Tests \Drupal\purge\Plugin\PurgeInvalidation\UrlInvalidation.
  *
  * @group purge
- * @see \Drupal\purge\Invalidation\PluginInterface
+ * @see \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface
  */
 class UrlInvalidationTest extends PluginTestBase {
   protected $plugin_id = 'url';

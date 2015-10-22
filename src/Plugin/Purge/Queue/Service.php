@@ -2,21 +2,21 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queue\Service.
+ * Contains \Drupal\purge\Plugin\Purge\Queue\Service.
  */
 
-namespace Drupal\purge\Queue;
+namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Drupal\Core\DestructableInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceBase;
-use Drupal\purge\Invalidation\ServiceInterface as InvalidationService;
-use Drupal\purge\Invalidation\PluginInterface as Invalidation;
-use Drupal\purge\Queue\Exception\UnexpectedServiceConditionException;
-use Drupal\purge\Queue\PluginInterface;
-use Drupal\purge\Queue\TxBuffer;
-use Drupal\purge\Queue\ProxyItem;
+use Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface as InvalidationService;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Queue\Exception\UnexpectedServiceConditionException;
+use Drupal\purge\Plugin\Purge\Queue\PluginInterface;
+use Drupal\purge\Plugin\Purge\Queue\TxBuffer;
+use Drupal\purge\Plugin\Purge\Queue\ProxyItem;
 
 /**
  * Provides the service that lets invalidations interact with a queue backend.
@@ -31,21 +31,21 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
   /**
    * The service that generates invalidation objects on-demand.
    *
-   * @var \Drupal\purge\Invalidation\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface
    */
   protected $purgeInvalidationFactory;
 
   /**
    * The Queue (plugin) object in which all items are stored.
    *
-   * @var \Drupal\purge\Queue\PluginInterface
+   * @var \Drupal\purge\Plugin\Purge\Queue\PluginInterface
    */
   protected $queue;
 
   /**
    * The transaction buffer in which invalidation objects temporarily stay.
    *
-   * @var \Drupal\purge\Queue\TxBuffer
+   * @var \Drupal\purge\Plugin\Purge\Queue\TxBuffer
    */
   protected $buffer;
 
@@ -61,7 +61,7 @@ class Service extends ServiceBase implements ServiceInterface, DestructableInter
    *   The plugin manager for this service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\purge\Invalidation\ServiceInterface $purge_invalidation_factory
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface $purge_invalidation_factory
    *   The service that instantiates invalidation objects for queue items.
    */
   function __construct(PluginManagerInterface $plugin_manager, ConfigFactoryInterface $config_factory, InvalidationService $purge_invalidation_factory) {

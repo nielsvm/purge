@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Invalidation\PluginInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface.
  */
 
-namespace Drupal\purge\Invalidation;
+namespace Drupal\purge\Plugin\Purge\Invalidation;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
@@ -87,7 +87,7 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    * @param int $state
    *   Integer matching to any of the PluginInterface::STATE_* constants.
    *
-   * @throws \Drupal\purge\Invalidation\Exception\InvalidStateException
+   * @throws \Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException
    *   Thrown when the given value doesn't match any of the STATE_ constants.
    *
    * @return void
@@ -97,10 +97,10 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
   /**
    * Validate the expression given to the invalidation during instantiation.
    *
-   * @throws \Drupal\purge\Invalidation\Exception\MissingExpressionException
+   * @throws \Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException
    *   Thrown when plugin defined expression_required = TRUE and when it is
    *   instantiated without expression (NULL).
-   * @throws \Drupal\purge\Invalidation\Exception\InvalidExpressionException
+   * @throws \Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException
    *   Exception thrown when plugin got instantiated with an expression that is
    *   not deemed valid for the type of invalidation.
    *

@@ -9,8 +9,8 @@ namespace Drupal\purge\Plugin\PurgeDiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
-use Drupal\purge\DiagnosticCheck\PluginInterface;
-use Drupal\purge\DiagnosticCheck\PluginBase;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase;
 
 /**
  * Checks if there is purging capacity available.

@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Invalidation\Exception\InvalidExpressionException.
+ * Contains \Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException.
  */
 
-namespace Drupal\purge\Invalidation\Exception;
+namespace Drupal\purge\Plugin\Purge\Invalidation\Exception;
 
 /**
  * Thrown when invalidations are instantiated with a incorrect expression.

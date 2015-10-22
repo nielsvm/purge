@@ -8,10 +8,10 @@
 namespace Drupal\purge_queue_test\Plugin\PurgeQueue;
 
 use Drupal\purge\Plugin\PurgeQueue\MemoryQueue;
-use Drupal\purge\Queue\PluginInterface;
+use Drupal\purge\Plugin\Purge\Queue\PluginInterface;
 
 /**
- * A \Drupal\purge\Queue\PluginInterface compliant memory queue for testing.
+ * A \Drupal\purge\Plugin\Purge\Queue\PluginInterface compliant memory queue for testing.
  *
  * @PurgeQueue(
  *   id = "a",

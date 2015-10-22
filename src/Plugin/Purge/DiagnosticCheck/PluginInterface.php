@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\DiagnosticCheck\PluginInterface.
+ * Contains \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface.
  */
 
-namespace Drupal\purge\DiagnosticCheck;
+namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
@@ -56,19 +56,19 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    *
    * @warning
    *   As diagnostic checks can be expensive, this method is called as rarely as
-   *   possible. Checks derived from \Drupal\purge\DiagnosticCheck\PluginBase
+   *   possible. Checks derived from \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase
    *   will only see the check getting executed when any of the get* methods are
    *   called.
    *
-   * @throws \Drupal\purge\DiagnosticCheck\Exception\CheckNotImplementedCorrectly
+   * @throws \Drupal\purge\Plugin\Purge\DiagnosticCheck\Exception\CheckNotImplementedCorrectly
    *   Thrown when the return value is incorrect.
    *
    * @return int
    *   Integer, matching either of the following constants:
-   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO
-   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_OK
-   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING
-   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_OK
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR
    */
   public function run();
 
@@ -91,10 +91,10 @@ interface PluginInterface extends PluginInspectionInterface, ContainerFactoryPlu
    *
    * @return int
    *   Integer, matching either of the following constants:
-   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO
-   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_OK
-   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING
-   *    - \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_INFO
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_OK
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING
+   *    - \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR
    */
   public function getSeverity();
 

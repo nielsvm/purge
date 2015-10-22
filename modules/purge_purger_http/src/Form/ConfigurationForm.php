@@ -10,7 +10,7 @@ namespace Drupal\purge_purger_http\Form;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\purge\Invalidation\ServiceInterface as InvalidationInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface as InvalidationInterface;
 use Drupal\purge_ui\Form\PurgerConfigFormBase;
 use Drupal\purge_purger_http\Entity\HttpPurgerSettings;
 
@@ -22,7 +22,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
   /**
    * The service that generates invalidation objects on-demand.
    *
-   * @var \Drupal\purge\Invalidation\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface
    */
   protected $purgeInvalidationFactory;
 
@@ -42,7 +42,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\purge\Invalidation\ServiceInterface $purge_invalidation_factory
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface $purge_invalidation_factory
    *   The invalidation objects factory service.
    */
   public function __construct(ConfigFactoryInterface $config_factory, InvalidationInterface $purge_invalidation_factory) {

@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Queue\Exception\InvalidPropertyException.
+ * Contains \Drupal\purge\Plugin\Purge\Queue\Exception\InvalidPropertyException.
  */
 
-namespace Drupal\purge\Queue\Exception;
+namespace Drupal\purge\Plugin\Purge\Queue\Exception;
 
 /**
  * Exception thrown when a data property on a ProxyItem object is called

@@ -7,7 +7,7 @@
 
 namespace Drupal\purge\Plugin\PurgeQueue;
 
-use Drupal\purge\Queue\PluginInterface;
+use Drupal\purge\Plugin\Purge\Queue\PluginInterface;
 use Drupal\purge\Plugin\PurgeQueue\MemoryQueue;
 
 /**

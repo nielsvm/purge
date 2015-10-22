@@ -8,9 +8,9 @@
 namespace Drupal\purge\Tests\Queue;
 
 use Drupal\purge\Tests\KernelTestBase;
-use Drupal\purge\Invalidation\PluginInterface as Invalidation;
-use Drupal\purge\Queue\TxBuffer;
-use Drupal\purge\Queue\TxBufferInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Queue\TxBuffer;
+use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
 
 /**
  * Tests \Drupal\purge\Tests\Queue\TxBufferTest.
@@ -26,7 +26,7 @@ class TxBufferTest extends KernelTestBase {
   /**
    * The tested TxBuffer object.
    *
-   * @var \Drupal\purge\Queue\TxBuffer
+   * @var \Drupal\purge\Plugin\Purge\Queue\TxBuffer
    */
   protected $buffer;
 
@@ -51,7 +51,7 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\TxBuffer::count
+   * Tests \Drupal\purge\Plugin\Purge\Queue\TxBuffer::count
    */
   public function testCount() {
     $this->assertEqual(0, count($this->buffer));
@@ -62,7 +62,7 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\TxBuffer::current
+   * Tests \Drupal\purge\Plugin\Purge\Queue\TxBuffer::current
    */
   public function testCurrent() {
     $objects = $this->getInvalidations(5);
@@ -74,7 +74,7 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\TxBuffer::delete
+   * Tests \Drupal\purge\Plugin\Purge\Queue\TxBuffer::delete
    */
   public function testDelete() {
     $objects = $this->getInvalidations(5);
@@ -94,7 +94,7 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\TxBuffer::deleteEverything
+   * Tests \Drupal\purge\Plugin\Purge\Queue\TxBuffer::deleteEverything
    */
   public function testDeleteEverything() {
     $this->buffer->set($this->getInvalidations(5), TxBufferInterface::CLAIMED);
@@ -103,7 +103,7 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\TxBuffer::getByProperty
+   * Tests \Drupal\purge\Plugin\Purge\Queue\TxBuffer::getByProperty
    */
   public function testGetByProperty() {
     $i = $this->getInvalidations(1);
@@ -117,7 +117,7 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\TxBuffer::getFiltered
+   * Tests \Drupal\purge\Plugin\Purge\Queue\TxBuffer::getFiltered
    */
   public function testGetFiltered() {
     $this->assertEqual(0, count($this->buffer->getFiltered(TxBufferInterface::CLAIMED)));
@@ -132,7 +132,7 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\TxBuffer::getState
+   * Tests \Drupal\purge\Plugin\Purge\Queue\TxBuffer::getState
    */
   public function testGetState() {
     $i = $this->getInvalidations(1);
@@ -147,8 +147,8 @@ class TxBufferTest extends KernelTestBase {
 
   /**
    * Tests:
-   *   - \Drupal\purge\Queue\TxBuffer::setProperty
-   *   - \Drupal\purge\Queue\TxBuffer::getProperty
+   *   - \Drupal\purge\Plugin\Purge\Queue\TxBuffer::setProperty
+   *   - \Drupal\purge\Plugin\Purge\Queue\TxBuffer::getProperty
    */
   public function testSetAndGetProperty() {
     $i = $this->getInvalidations(1);
@@ -175,7 +175,7 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\TxBuffer::has
+   * Tests \Drupal\purge\Plugin\Purge\Queue\TxBuffer::has
    */
   public function testHas() {
     $i = $this->getInvalidations(1);
@@ -187,7 +187,7 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\TxBuffer::key, \Drupal\purge\Queue\TxBuffer::next
+   * Tests \Drupal\purge\Plugin\Purge\Queue\TxBuffer::key, \Drupal\purge\Plugin\Purge\Queue\TxBuffer::next
    */
   public function testKeyAndNext() {
     $objects = $this->getInvalidations(5);
@@ -215,7 +215,7 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\TxBuffer::rewind
+   * Tests \Drupal\purge\Plugin\Purge\Queue\TxBuffer::rewind
    */
   public function testRewind() {
     $objects = $this->getInvalidations(5);
@@ -232,7 +232,7 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\TxBuffer::set
+   * Tests \Drupal\purge\Plugin\Purge\Queue\TxBuffer::set
    */
   public function testSet() {
     $objects = $this->getInvalidations(4);
@@ -258,7 +258,7 @@ class TxBufferTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Queue\TxBuffer::valid
+   * Tests \Drupal\purge\Plugin\Purge\Queue\TxBuffer::valid
    */
   public function testValid() {
     $this->assertFalse($this->buffer->valid());

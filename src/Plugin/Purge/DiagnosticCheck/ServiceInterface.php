@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\DiagnosticCheck\ServiceInterface.
+ * Contains \Drupal\purge\Plugin\Purge\DiagnosticCheck\ServiceInterface.
  */
 
-namespace Drupal\purge\DiagnosticCheck;
+namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
@@ -21,7 +21,7 @@ interface ServiceInterface extends PurgeServiceInterface, ContainerAwareInterfac
    *
    * @warning
    *   Although it shares the same name, this method doesn't return a individual
-   *   item array as \Drupal\purge\DiagnosticCheck\PluginInterface::
+   *   item array as \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::
    *     getHookRequirementsArray() does. It returns a full array (as
    *   hook_requirements() expects) for all checks.
    *
@@ -66,11 +66,11 @@ interface ServiceInterface extends PurgeServiceInterface, ContainerAwareInterfac
    * Reports if any of the diagnostic checks report a SEVERITY_ERROR severity.
    *
    * This method provides a simple - boolean evaluable - way to determine if
-   * a \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR severity
+   * a \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_ERROR severity
    * was reported by one of the checks. If SEVERITY_ERROR was reported, purging
    * cannot continue and should happen once all problems are resolved.
    *
-   * @return false|\Drupal\purge\DiagnosticCheck\PluginInterface
+   * @return false|\Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface
    *   The SEVERITY_ERROR reporting check, or FALSE when everything was fine.
    */
   public function isSystemOnFire();
@@ -79,11 +79,11 @@ interface ServiceInterface extends PurgeServiceInterface, ContainerAwareInterfac
    * Reports if any of the diagnostic checks report a SEVERITY_WARNING severity.
    *
    * This method provides a - boolean evaluable - way to determine if a check
-   * reported a \Drupal\purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING.
+   * reported a \Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface::SEVERITY_WARNING.
    * If SEVERITY_WARNING was reported, cache invalidation can continue but it is
    * important that the site administrator gets notified.
    *
-   * @return false|\Drupal\purge\DiagnosticCheck\PluginInterface
+   * @return false|\Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface
    *   The SEVERITY_WARNING reporting check, or FALSE when everything was fine.
    */
   public function isSystemShowingSmoke();

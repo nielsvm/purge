@@ -7,7 +7,7 @@
 
 namespace Drupal\purge\Plugin\Purge\Purger;
 
-use Drupal\purge\Invalidation\PluginInterface as Invalidation;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface as Invalidation;
 use Drupal\purge\ServiceInterface;
 use Drupal\purge\ModifiableServiceInterface;
 use Drupal\purge\Plugin\Purge\Purger\SharedInterface;
@@ -120,12 +120,12 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
    *
    * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidate()
    * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidateMultiple()
-   * @see \Drupal\purge\Invalidation\PluginInterface::setState()
+   * @see \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface::setState()
    *
-   * @param \Drupal\purge\Invalidation\PluginInterface $invalidation
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface $invalidation
    *   The invalidation object as just returned by one or more purgers.
    * @param int[] $states
-   *   One or more \Drupal\purge\Invalidation\PluginInterface::STATE_* contants.
+   *   One or more \Drupal\purge\Plugin\Purge\Invalidation\PluginInterface::STATE_* contants.
    *
    * @return void
    */

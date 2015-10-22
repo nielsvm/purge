@@ -13,7 +13,7 @@ use Drupal\Component\Plugin\Discovery\CachedDiscoveryInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 
 /**
- * Tests \Drupal\purge\Queue\PluginManager.
+ * Tests \Drupal\purge\Plugin\Purge\Queue\PluginManager.
  *
  * @group purge
  * @see \Drupal\Core\Plugin\DefaultPluginManager

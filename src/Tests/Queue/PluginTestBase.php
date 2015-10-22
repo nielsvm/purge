@@ -12,7 +12,7 @@ use Drupal\purge\Tests\KernelTestBase;
 /**
  * Provides a abstract test class to aid thorough tests for queue plugins.
  *
- * @see \Drupal\purge\Queue\PluginInterface
+ * @see \Drupal\purge\Plugin\Purge\Queue\PluginInterface
  */
 abstract class PluginTestBase extends KernelTestBase {
 
@@ -33,14 +33,14 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * The plugin manager for queues ('plugin.manager.purge.queue').
    *
-   * @var \Drupal\purge\Queue\PluginManager
+   * @var \Drupal\purge\Plugin\Purge\Queue\PluginManager
    */
   protected $pluginManagerPurgeQueue;
 
   /**
    * The queue plugin being tested.
    *
-   * @var \Drupal\purge\Queue\PluginInterface
+   * @var \Drupal\purge\Plugin\Purge\Queue\PluginInterface
    */
   protected $queue;
 

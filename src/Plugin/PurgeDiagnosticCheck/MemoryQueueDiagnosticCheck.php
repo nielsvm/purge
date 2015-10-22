@@ -7,8 +7,8 @@
 
 namespace Drupal\purge\Plugin\PurgeDiagnosticCheck;
 
-use Drupal\purge\DiagnosticCheck\PluginInterface;
-use Drupal\purge\DiagnosticCheck\PluginBase;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginBase;
 
 /**
  * Issues a warning on how unreliable the memory queue is for day-day use.

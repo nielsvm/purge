@@ -7,9 +7,9 @@
 
 namespace Drupal\purge\Plugin\PurgeInvalidation;
 
-use Drupal\purge\Invalidation\PluginInterface;
-use Drupal\purge\Invalidation\PluginBase;
-use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginBase;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
  * Describes path based invalidation, e.g. "news/article-1".

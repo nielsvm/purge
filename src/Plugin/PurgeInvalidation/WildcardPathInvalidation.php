@@ -8,8 +8,8 @@
 namespace Drupal\purge\Plugin\PurgeInvalidation;
 
 use Drupal\purge\Plugin\PurgeInvalidation\PathInvalidation;
-use Drupal\purge\Invalidation\PluginInterface;
-use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
  * Describes wildcardpath based invalidation, e.g. "news/*".

@@ -26,14 +26,14 @@ class CacheTagsQueuerTest extends UnitTestCase {
   /**
    * The mocked queue.
    *
-   * @var \PHPUnit_Framework_MockObject_MockObject|\Drupal\purge\Queue\ServiceInterface
+   * @var \PHPUnit_Framework_MockObject_MockObject|\Drupal\purge\Plugin\Purge\Queue\ServiceInterface
    */
   protected $queue;
 
   /**
    * The mocked invalidation object factory.
    *
-   * @var \PHPUnit_Framework_MockObject_MockObject|\Drupal\purge\Invalidation\ServiceInterface
+   * @var \PHPUnit_Framework_MockObject_MockObject|\Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface
    */
   protected $invalidationFactory;
 
@@ -41,8 +41,8 @@ class CacheTagsQueuerTest extends UnitTestCase {
    * {@inheritdoc}
    */
   protected function setUp() {
-    $this->queue = $this->getMock('\Drupal\purge\Queue\ServiceInterface');
-    $this->invalidationFactory = $this->getMock('\Drupal\purge\Invalidation\ServiceInterface');
+    $this->queue = $this->getMock('\Drupal\purge\Plugin\Purge\Queue\ServiceInterface');
+    $this->invalidationFactory = $this->getMock('\Drupal\purge\Plugin\Purge\Invalidation\ServiceInterface');
     $this->cacheTagsQueuer = new CacheTagsQueuer($this->queue, $this->invalidationFactory);
   }
 

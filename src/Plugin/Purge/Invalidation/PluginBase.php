@@ -2,17 +2,17 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Invalidation\PluginBase.
+ * Contains \Drupal\purge\Plugin\Purge\Invalidation\PluginBase.
  */
 
-namespace Drupal\purge\Invalidation;
+namespace Drupal\purge\Plugin\Purge\Invalidation;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\PluginBase as CorePluginBase;
-use Drupal\purge\Invalidation\PluginInterface;
-use Drupal\purge\Invalidation\Exception\InvalidExpressionException;
-use Drupal\purge\Invalidation\Exception\MissingExpressionException;
-use Drupal\purge\Invalidation\Exception\InvalidStateException;
+use Drupal\purge\Plugin\Purge\Invalidation\PluginInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException;
 
 /**
  * Base invalidation type: which instructs the purger what to invalidate.
@@ -39,7 +39,7 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
   protected $state = NULL;
 
   /**
-   * Constructs a \Drupal\purge\Invalidation\PluginBase object.
+   * Constructs a \Drupal\purge\Plugin\Purge\Invalidation\PluginBase object.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
@@ -152,5 +152,5 @@ abstract class PluginBase extends CorePluginBase implements PluginInterface {
       throw new InvalidExpressionException($this->t("String argument required for @type invalidation.", $topt));
     }
   }
-  
+
 }

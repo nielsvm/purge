@@ -57,9 +57,9 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testSettingAndGettingPlugins() {
     $this->purgeQueue->setPluginsEnabled(['file']);
-    $this->assertEqual(['file'], $this->purgeQueue->getPluginsEnabled());
+    $this->assertTrue(in_array('file', $this->purgeQueue->getPluginsEnabled()));
     $this->purgeQueue->setPluginsEnabled(['memory']);
-    $this->assertEqual(['memory'], $this->purgeQueue->getPluginsEnabled());
+    $this->assertTrue(in_array('memory', $this->purgeQueue->getPluginsEnabled()));
     $thrown = FALSE;
     try {
       $this->purgeQueue->setPluginsEnabled(['DOESNOTEXIST']);
@@ -87,7 +87,7 @@ class ServiceTest extends KernelServiceTestBase {
     $this->purgeQueue->add($i);
     $c = $this->purgeQueue->claim();
     $this->assertTrue($c instanceof Invalidation);
-    $this->assertEqual($i->getId(), $c->getId());
+    $this->assertTrue($i->getId() === $c->getId());
   }
 
   /**
@@ -111,8 +111,8 @@ class ServiceTest extends KernelServiceTestBase {
     $this->purgeQueue->addMultiple($i);
     $c = $this->purgeQueue->claim();
     $this->assertTrue($c instanceof Invalidation);
-    $this->assertEqual(49, count($this->purgeQueue->claimMultiple(49)));
-    $this->assertEqual(0, count($this->purgeQueue->claimMultiple(49)));
+    $this->assertTrue(49 === count($this->purgeQueue->claimMultiple(49)));
+    $this->assertTrue(0 === count($this->purgeQueue->claimMultiple(49)));
   }
 
   /**
@@ -134,10 +134,10 @@ class ServiceTest extends KernelServiceTestBase {
     $this->purgeQueue->reload();
     // Now it has to refetch all objects, assure their states.
     $claims = $this->purgeQueue->claimMultiple(3, 1);
-    $this->assertEqual(Invalidation::STATE_NEW, $claims[0]->getState());
-    $this->assertEqual(Invalidation::STATE_PURGING, $claims[1]->getState());
-    $this->assertEqual(Invalidation::STATE_FAILED, $claims[2]->getState());
-    $this->assertEqual(Invalidation::STATE_UNSUPPORTED, $this->purgeQueue->claim()->getState());
+    $this->assertTrue(Invalidation::STATE_NEW === $claims[0]->getState());
+    $this->assertTrue(Invalidation::STATE_PURGING === $claims[1]->getState());
+    $this->assertTrue(Invalidation::STATE_FAILED === $claims[2]->getState());
+    $this->assertTrue(Invalidation::STATE_UNSUPPORTED === $this->purgeQueue->claim()->getState());
   }
 
   /**
@@ -154,13 +154,13 @@ class ServiceTest extends KernelServiceTestBase {
     $claim4 = $this->purgeQueue->claim();
     $this->assertFalse($this->purgeQueue->claim());
     $this->purgeQueue->release($claim1);
-    $this->assertEqual(1, count($this->purgeQueue->claimMultiple(4, 1)));
+    $this->assertTrue(1 === count($this->purgeQueue->claimMultiple(4, 1)));
     $this->purgeQueue->releaseMultiple([$claim2, $claim3, $claim4]);
-    $this->assertEqual(3, count($this->purgeQueue->claimMultiple(4, 1)));
+    $this->assertTrue(3 === count($this->purgeQueue->claimMultiple(4, 1)));
 
     // Assert that the claims become available again after our 1*4=4s expired.
     sleep(5);
-    $this->assertEqual(4, count($this->purgeQueue->claimMultiple()));
+    $this->assertTrue(4 === count($this->purgeQueue->claimMultiple()));
   }
 
   /**
@@ -175,7 +175,7 @@ class ServiceTest extends KernelServiceTestBase {
     $this->purgeQueue->delete(array_pop($claims));
     sleep(4);
     $claims = $this->purgeQueue->claimMultiple(3, 1);
-    $this->assertEqual(2, count($claims));
+    $this->assertTrue(2 === count($claims));
     $this->purgeQueue->deleteMultiple($claims);
     sleep(4);
     $this->assertFalse($this->purgeQueue->claim());
@@ -197,14 +197,14 @@ class ServiceTest extends KernelServiceTestBase {
 
     // Claim for 2s, mark all as not-successfull and assert releases.
     $claims = $this->purgeQueue->claimMultiple(10, 2);
-    $this->assertEqual(4, count($claims));
+    $this->assertTrue(4 === count($claims));
     $claims[0]->setState(Invalidation::STATE_NEW);
     $claims[1]->setState(Invalidation::STATE_PURGING);
     $claims[2]->setState(Invalidation::STATE_FAILED);
     $claims[3]->setState(Invalidation::STATE_UNSUPPORTED);
     $this->purgeQueue->deleteOrReleaseMultiple($claims);
     sleep(4);
-    $this->assertEqual(4, count($this->purgeQueue->claimMultiple()));
+    $this->assertTrue(4 === count($this->purgeQueue->claimMultiple()));
   }
 
 }

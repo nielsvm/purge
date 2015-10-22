@@ -38,12 +38,11 @@ class ConfigFormQueueTest extends ConfigFormTestBase {
     // Test that just submitting the form, results in the exact same config.
     $this->drupalPostForm($this->route, [], t('Save configuration'));
     $this->purgeQueue->reload();
-    $this->assertEqual(['memory'], $this->purgeQueue->getPluginsEnabled());
+    $this->assertTrue(in_array('memory', $this->purgeQueue->getPluginsEnabled()));
     // Test that changing the queue plugin, gets reflected in the config.
-    $edit = ['queue_plugin' => 'b'];
-    $this->drupalPostForm($this->route, $edit, t('Save configuration'));
+    $this->drupalPostForm($this->route, ['queue_plugin' => 'b'], t('Save configuration'));
     $this->purgeQueue->reload();
-    $this->assertEqual(['b'], $this->purgeQueue->getPluginsEnabled());
+    $this->assertTrue(in_array('b', $this->purgeQueue->getPluginsEnabled()));
   }
 
 }

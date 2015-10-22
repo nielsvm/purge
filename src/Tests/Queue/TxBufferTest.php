@@ -168,7 +168,8 @@ class TxBufferTest extends KernelTestBase {
     $this->buffer->setProperty($i, 'prop', 5.5);
     $this->assertEqual(5.5, $this->buffer->getProperty($i, 'prop'));
     $this->buffer->setProperty($i, 'prop', [1]);
-    $this->assertEqual([1], $this->buffer->getProperty($i, 'prop'));
+    $this->assertTrue(is_array($this->buffer->getProperty($i, 'prop')));
+    $this->assertTrue(current($this->buffer->getProperty($i, 'prop')) === 1);
     $this->buffer->delete($i);
     $this->assertNull($this->buffer->getProperty($i, 'prop'));
   }

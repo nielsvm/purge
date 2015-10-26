@@ -10,7 +10,7 @@ namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckBase;
-use Drupal\purge\Plugin\Purge\Queuer\ServiceInterface;
+use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
 
 /**
  * Checks if there's a service actively adding items to the queue.
@@ -30,14 +30,14 @@ use Drupal\purge\Plugin\Purge\Queuer\ServiceInterface;
 class QueuersAvailableDiagnosticCheck extends DiagnosticCheckBase implements DiagnosticCheckInterface {
 
   /**
-   * @var \Drupal\purge\Plugin\Purge\Queuer\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface
    */
   protected $purgeQueuers;
 
   /**
    * Constructs a \Drupal\purge\Plugin\Purge\DiagnosticCheck\PurgerAvailableCheck object.
    *
-   * @param \Drupal\purge\Plugin\Purge\Queuer\ServiceInterface $purge_queuers
+   * @param \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface $purge_queuers
    *   The purge queuers registry service.
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
@@ -46,7 +46,7 @@ class QueuersAvailableDiagnosticCheck extends DiagnosticCheckBase implements Dia
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(ServiceInterface $purge_queuers, array $configuration, $plugin_id, $plugin_definition) {
+  public function __construct(QueuersServiceInterface $purge_queuers, array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->purgeQueuers = $purge_queuers;
   }

@@ -2,18 +2,18 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Processor\ServiceInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface.
  */
 
 namespace Drupal\purge\Plugin\Purge\Processor;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Drupal\purge\ServiceInterface as PurgeServiceInterface;
+use Drupal\purge\ServiceInterface;
 
 /**
  * Describes a service that provides access to registered processing policies.
  */
-interface ServiceInterface extends PurgeServiceInterface, ContainerAwareInterface, \Iterator {
+interface ProcessorsServiceInterface extends ServiceInterface, ContainerAwareInterface, \Iterator {
 
   /**
    * Get the requested processor object.

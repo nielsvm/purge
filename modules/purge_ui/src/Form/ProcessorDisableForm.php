@@ -12,7 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
-use Drupal\purge\Plugin\Purge\Processor\ServiceInterface;
+use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
 use Drupal\purge_ui\Form\CloseDialogTrait;
 use Drupal\purge_ui\Form\ReloadConfigFormCommand;
 
@@ -23,7 +23,7 @@ class ProcessorDisableForm extends ConfirmFormBase {
   use CloseDialogTrait;
 
   /**
-   * @var \Drupal\purge\Plugin\Purge\Processor\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface
    */
   protected $purgeProcessors;
 
@@ -37,12 +37,12 @@ class ProcessorDisableForm extends ConfirmFormBase {
   /**
    * Constructs a ProcessorDisableForm object.
    *
-   * @param \Drupal\purge\Plugin\Purge\Processor\ServiceInterface $purge_processors
+   * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface $purge_processors
    *   The purge processors registry service.
    *
    * @return void
    */
-  public function __construct(ServiceInterface $purge_processors) {
+  public function __construct(ProcessorsServiceInterface $purge_processors) {
     $this->purgeProcessors = $purge_processors;
   }
 

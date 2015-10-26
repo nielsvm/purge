@@ -2,18 +2,18 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Queuer\ServiceInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface.
  */
 
 namespace Drupal\purge\Plugin\Purge\Queuer;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Drupal\purge\ServiceInterface as PurgeServiceInterface;
+use Drupal\purge\ServiceInterface;
 
 /**
  * Describes a service that provides access to the container registered queuers.
  */
-interface ServiceInterface extends PurgeServiceInterface, ContainerAwareInterface, \Iterator {
+interface QueuersServiceInterface extends ServiceInterface, ContainerAwareInterface, \Iterator {
 
   /**
    * Get the requested queuer object.

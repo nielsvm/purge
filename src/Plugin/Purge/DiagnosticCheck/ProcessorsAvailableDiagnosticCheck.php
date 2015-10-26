@@ -10,7 +10,7 @@ namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckBase;
-use Drupal\purge\Plugin\Purge\Processor\ServiceInterface;
+use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
 
 /**
  * Checks if there's a service enabled that puts purgers actively to work
@@ -30,14 +30,14 @@ use Drupal\purge\Plugin\Purge\Processor\ServiceInterface;
 class ProcessorsAvailableDiagnosticCheck extends DiagnosticCheckBase implements DiagnosticCheckInterface {
 
   /**
-   * @var \Drupal\purge\Plugin\Purge\Processor\ServiceInterface
+   * @var \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface
    */
   protected $purgeProcessors;
 
   /**
    * Constructs a ProcessorsAvailableCheck object.
    *
-   * @param \Drupal\purge\Plugin\Purge\Processor\ServiceInterface $purge_processors
+   * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface $purge_processors
    *   The purge processors registry service.
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
@@ -46,7 +46,7 @@ class ProcessorsAvailableDiagnosticCheck extends DiagnosticCheckBase implements 
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(ServiceInterface $purge_processors, array $configuration, $plugin_id, $plugin_definition) {
+  public function __construct(ProcessorsServiceInterface $purge_processors, array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->purgeProcessors = $purge_processors;
   }

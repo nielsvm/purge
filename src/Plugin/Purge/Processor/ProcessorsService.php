@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Queuer\Service.
+ * Contains \Drupal\purge\Plugin\Purge\Processor\ProcessorsService.
  */
 
-namespace Drupal\purge\Plugin\Purge\Queuer;
+namespace Drupal\purge\Plugin\Purge\Processor;
 
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Drupal\purge\Plugin\Purge\Queuer\ServiceInterface;
 use Drupal\purge\ServiceBase;
+use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
 
 /**
- * Provides the service that keeps a registry of queuers and facilitates access.
+ * Provides the service that gives access to registered processing policies.
  */
-class Service extends ServiceBase implements ServiceInterface {
+class ProcessorsService extends ServiceBase implements ProcessorsServiceInterface {
   use ContainerAwareTrait;
 
   /**
@@ -34,25 +34,25 @@ class Service extends ServiceBase implements ServiceInterface {
   protected $idmap = [];
 
   /**
-   * All registered queuers.
+   * All registered processing policies.
    *
-   * @var \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface[]
+   * @var \Drupal\purge\Plugin\Purge\Processor\ProcessorInterface[]
    */
-  protected $queuers = [];
+  protected $processors = [];
 
   /**
-   * Retrieve all queuer instances as soon as we can.
+   * Retrieve all processing policies.
    *
    * @return void
    */
-  protected function retrieveQueuers() {
-    if (empty($this->queuers)) {
+  protected function retrieveProcessors() {
+    if (empty($this->processors)) {
       $i = 0;
-      foreach ($this->container->getParameter('purge_queuers') as $id) {
-        $this->queuers[$i] = $this->container->get($id);
+      foreach ($this->container->getParameter('purge_processors') as $id) {
+        $this->processors[$i] = $this->container->get($id);
         $this->idmap[$id] = $i;
-        if (!$this->queuers[$i]->getId()) {
-          $this->queuers[$i]->setId($id);
+        if (!$this->processors[$i]->getId()) {
+          $this->processors[$i]->setId($id);
         }
         $i++;
       }
@@ -63,8 +63,8 @@ class Service extends ServiceBase implements ServiceInterface {
    * {@inheritdoc}
    */
   public function get($id) {
-    $this->retrieveQueuers();
-    return isset($this->idmap[$id]) ? $this->queuers[$this->idmap[$id]] : NULL;
+    $this->retrieveProcessors();
+    return isset($this->idmap[$id]) ? $this->processors[$this->idmap[$id]] : NULL;
   }
 
   /**
@@ -72,9 +72,9 @@ class Service extends ServiceBase implements ServiceInterface {
    */
   public function getDisabled() {
     $available = [];
-    foreach ($this as $id => $queuer) {
-      if (!$queuer->isEnabled()) {
-        $available[$id] = $queuer;
+    foreach ($this as $id => $processor) {
+      if (!$processor->isEnabled()) {
+        $available[$id] = $processor;
       }
     }
     return $available;
@@ -85,9 +85,9 @@ class Service extends ServiceBase implements ServiceInterface {
    */
   public function getEnabled() {
     $enabled = [];
-    foreach ($this as $id => $queuer) {
-      if ($queuer->isEnabled()) {
-        $enabled[$id] = $queuer;
+    foreach ($this as $id => $processor) {
+      if ($processor->isEnabled()) {
+        $enabled[$id] = $processor;
       }
     }
     return $enabled;
@@ -98,7 +98,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * @ingroup iterator
    */
   public function key() {
-    $this->retrieveQueuers();
+    $this->retrieveProcessors();
     foreach ($this->idmap as $id => $i) {
       if ($this->position === $i) {
         return $id;
@@ -112,7 +112,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * @ingroup iterator
    */
   public function next() {
-    $this->retrieveQueuers();
+    $this->retrieveProcessors();
     ++$this->position;
   }
 
@@ -121,7 +121,7 @@ class Service extends ServiceBase implements ServiceInterface {
    */
   public function reload() {
     $this->position = 0;
-    $this->queuers = [];
+    $this->processors = [];
     $this->idmap = [];
   }
 
@@ -130,9 +130,9 @@ class Service extends ServiceBase implements ServiceInterface {
    * @ingroup iterator
    */
   public function current() {
-    $this->retrieveQueuers();
+    $this->retrieveProcessors();
     if ($this->valid()) {
-      return $this->queuers[$this->position];
+      return $this->processors[$this->position];
     }
     return FALSE;
   }
@@ -142,7 +142,7 @@ class Service extends ServiceBase implements ServiceInterface {
    * @ingroup iterator
    */
   public function rewind() {
-    $this->retrieveQueuers();
+    $this->retrieveProcessors();
     $this->position = 0;
   }
 
@@ -151,8 +151,8 @@ class Service extends ServiceBase implements ServiceInterface {
    * @ingroup iterator
    */
   public function valid() {
-    $this->retrieveQueuers();
-    return isset($this->queuers[$this->position]);
+    $this->retrieveProcessors();
+    return isset($this->processors[$this->position]);
   }
 
 }

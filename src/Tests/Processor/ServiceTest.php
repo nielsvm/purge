@@ -9,15 +9,15 @@ namespace Drupal\purge\Tests\Processor;
 
 use Drupal\purge\Tests\KernelTestBase;
 use Drupal\purge\Tests\KernelServiceTestBase;
-use Drupal\purge\Plugin\Purge\Processor\ServiceInterface;
+use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
 
 /**
- * Tests \Drupal\purge\Plugin\Purge\Processor\Service.
+ * Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsService.
  *
  * @group purge
- * @see \Drupal\purge\Plugin\Purge\Processor\Service
- * @see \Drupal\purge\Plugin\Purge\Processor\ServiceInterface
+ * @see \Drupal\purge\Plugin\Purge\Processor\ProcessorsService
+ * @see \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface
  */
 class ServiceTest extends KernelServiceTestBase {
   protected $serviceId = 'purge.processors';
@@ -38,11 +38,11 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testWholeService() {
     $this->initializeService();
-    // Tests \Drupal\purge\Plugin\Purge\Processor\ServiceInterface::current
-    // Tests \Drupal\purge\Plugin\Purge\Processor\ServiceInterface::key
-    // Tests \Drupal\purge\Plugin\Purge\Processor\ServiceInterface::next
-    // Tests \Drupal\purge\Plugin\Purge\Processor\ServiceInterface::rewind
-    // Tests \Drupal\purge\Plugin\Purge\Processor\ServiceInterface::valid
+    // Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface::current
+    // Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface::key
+    // Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface::next
+    // Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface::rewind
+    // Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface::valid
     $this->assertTrue($this->service instanceof \Iterator);
     $items = 0;
     foreach ($this->service as $id => $processor) {
@@ -62,12 +62,12 @@ class ServiceTest extends KernelServiceTestBase {
     $this->assertNull($this->service->next());
     $this->assertEqual('purge_processor_test.b', $this->service->current()->getId());
     $this->assertTrue($this->service->valid());
-    // Tests \Drupal\purge\Plugin\Purge\Processor\ServiceInterface::getEnabled.
+    // Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface::getEnabled.
     $this->assertEqual(2, count($this->service->getEnabled()));
     foreach ($this->service->getEnabled() as $id => $processor) {
       $this->assertTrue(in_array($id, ['purge_processor_test.a', 'purge_processor_test.b']), $id);
     }
-    // Tests \Drupal\purge\Plugin\Purge\Processor\ServiceInterface::getDisabled
+    // Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface::getDisabled
     $this->assertEqual(2, count($this->service->getDisabled()));
     foreach ($this->service->getDisabled() as $id => $processor) {
       $this->assertTrue(in_array($id, ['purge_processor_test.c', 'purge_processor_test.d']), $id);

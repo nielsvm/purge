@@ -7,7 +7,6 @@
 
 namespace Drupal\purge\Plugin\Purge\Purger;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 
 /**

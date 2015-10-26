@@ -70,7 +70,7 @@ class ProcessorsAvailableDiagnosticCheck extends DiagnosticCheckBase implements 
     $processors = $this->purgeProcessors->getEnabled();
     if (empty($processors)) {
       $this->value = '';
-      $this->recommendation = $this->t("There are no processors enabled, which means that your queue builds up but will not invalidated.");
+      $this->recommendation = $this->t("There are no processors enabled, which means that your queue builds up without being processed.");
       return SELF::SEVERITY_WARNING;
     }
     elseif (count($processors) === 1) {

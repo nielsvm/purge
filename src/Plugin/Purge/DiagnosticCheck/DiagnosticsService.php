@@ -10,6 +10,7 @@ namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceBase;
+use Drupal\purge\IteratingServiceBaseTrait;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 
@@ -18,21 +19,7 @@ use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
  */
 class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterface {
   use ContainerAwareTrait;
-
-  /**
-   * Current iterator position.
-   *
-   * @var int
-   * @ingroup iterator
-   */
-  protected $position = 0;
-
-  /**
-   * Keeps all instantiated checks.
-   *
-   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface[]
-   */
-  protected $checks = [];
+  use IteratingServiceBaseTrait;
 
   /**
    * The plugin manager for checks.
@@ -70,40 +57,12 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
   }
 
   /**
-   * Load all the plugins that should run and gather them in $this->checks.
-   *
-   * @return void
-   */
-  protected function initializeChecks() {
-    if (!empty($this->checks)) {
-      return;
-    }
-
-    // Iterate each check that we should load and instantiate.
-    foreach ($this->getPluginsEnabled() as $plugin_id) {
-      $this->checks[] = $this->pluginManager->createInstance($plugin_id);
-    }
-  }
-
-  /**
    * {@inheritdoc}
    * @ingroup countable
    */
   public function count() {
     $this->initializeChecks();
     return count($this->checks);
-  }
-
-  /**
-   * {@inheritdoc}
-   * @ingroup iterator
-   */
-  public function current() {
-    $this->initializeChecks();
-    if ($this->valid()) {
-      return $this->checks[$this->position];
-    }
-    return FALSE;
   }
 
   /**
@@ -172,7 +131,7 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
    * {@inheritdoc}
    */
   public function getRequirementsArray() {
-    $this->initializeChecks();
+    $this->initializePluginInstances();
     $requirements = [];
     foreach ($this as $check) {
       $requirements[$check->getPluginId()] = $check->getRequirementsArray();
@@ -196,7 +155,7 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
    * {@inheritdoc}
    */
   public function isSystemOnFire() {
-    $this->initializeChecks();
+    $this->initializePluginInstances();
     foreach ($this as $check) {
       if ($check->getSeverity() === DiagnosticCheckInterface::SEVERITY_ERROR) {
         return $check;
@@ -209,7 +168,7 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
    * {@inheritdoc}
    */
   public function isSystemShowingSmoke() {
-    $this->initializeChecks();
+    $this->initializePluginInstances();
     foreach ($this as $check) {
       if ($check->getSeverity() === DiagnosticCheckInterface::SEVERITY_WARNING) {
         return $check;
@@ -220,49 +179,12 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
 
   /**
    * {@inheritdoc}
-   * @ingroup iterator
-   */
-  public function key() {
-    $this->initializeChecks();
-    return $this->position;
-  }
-
-  /**
-   * {@inheritdoc}
-   * @ingroup iterator
-   */
-  public function next() {
-    $this->initializeChecks();
-    ++$this->position;
-  }
-
-  /**
-   * {@inheritdoc}
    */
   public function reload() {
     parent::reload();
+    $this->reloadIterator();
     $this->purgePurgers = NULL;
     $this->purgeQueue = NULL;
-    $this->position = 0;
-    $this->checks = [];
-  }
-
-  /**
-   * {@inheritdoc}
-   * @ingroup iterator
-   */
-  public function rewind() {
-    $this->initializeChecks();
-    $this->position = 0;
-  }
-
-  /**
-   * {@inheritdoc}
-   * @ingroup iterator
-   */
-  public function valid() {
-    $this->initializeChecks();
-    return isset($this->checks[$this->position]);
   }
 
 }

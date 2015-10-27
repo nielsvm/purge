@@ -8,6 +8,7 @@
 namespace Drupal\purge_queuer_test\Plugin\Purge\Queuer;
 
 use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
+use Drupal\purge\Plugin\Purge\Queuer\QueuerBase;
 
  /**
   * Test queuer C.
@@ -20,6 +21,6 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
   *   configform = "",
   * )
   */
- class CQueuer implements QueuerInterface {
+ class CQueuer extends QueuerBase implements QueuerInterface {
 
  }

@@ -8,6 +8,7 @@
 namespace Drupal\purge_queuer_test\Plugin\Purge\Queuer;
 
 use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
+use Drupal\purge\Plugin\Purge\Queuer\QueuerBase;
 
  /**
   * Test queuer with a configuration form.
@@ -20,6 +21,6 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
   *   configform = "\Drupal\purge_queuer_test\Form\QueuerConfigForm",
   * )
   */
- class WithFormQueuer implements QueuerInterface {
+ class WithFormQueuer extends QueuerBase implements QueuerInterface {
 
  }

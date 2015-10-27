@@ -8,6 +8,7 @@
 namespace Drupal\purge_processor_test\Plugin\Purge\Processor;
 
 use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
+use Drupal\purge\Plugin\Purge\Processor\ProcessorBase;
 
 /**
  * Test processor with a configuration form.
@@ -20,6 +21,6 @@ use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
  *   configform = "\Drupal\purge_processor_test\Form\ProcessorConfigForm",
  * )
  */
-class WithFormProcessor implements ProcessorInterface {
+class WithFormProcessor extends ProcessorBase implements ProcessorInterface {
 
 }

@@ -23,7 +23,6 @@ use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 class ServiceTest extends KernelServiceTestBase {
   protected $serviceId = 'purge.diagnostics';
   public static $modules = [
-    'purge_noqueuer_test',
     'purge_purger_test',
     'purge_processor_test',
     'purge_check_test',

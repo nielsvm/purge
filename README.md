@@ -19,16 +19,15 @@ transparent.
 
 When editing content of any kind, Drupal will transparently and efficiently
 invalidate cached pages in Drupal's own **anonymous page cache**. When Drupal
-renders a page, it lists all the rendered items on the page in a special HTTP
-response header named ``X-Drupal-Cache-Tags``. For example, this allows all
+renders a page, it can lists all the rendered items on the page in a special
+HTTP response header named ``X-Drupal-Cache-Tags``. For example, this allows all
 cached pages with the ``node:1`` Cache-Tag in their headers to be invalidated,
 when that particular node (node/1) is changed.
 
-Purge ships with the ``CacheTagsQueuer``, a mechanism which puts Drupal's
-invalidated Cache-Tags into Purge's queue. So, when Drupal clears rendered
-items from its own page cache, Purge will add a _invalidation_ object to its
-queue so that it gets cleared remotely as well. When this is undesired behavior,
-take a look at ``tests/modules/purge_noqueuer_test/``.
+Purge ships with the **Core tags queuer**, which replicates everything Drupal
+core invalidated onto Purge's queue. So, when Drupal clears rendered items from
+its own page cache, Purge will add a _invalidation_ object to its queue so that
+it gets cleared remotely as well.
 
 #### Queue
 Queueing is an inevitable and important part of Purge as it makes cache

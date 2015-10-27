@@ -32,10 +32,7 @@ abstract class ConfigFormTestBase extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = [
-    'purge_noqueuer_test',
-    'purge_ui'
-  ];
+  public static $modules = ['purge_ui'];
 
   /**
    * Setup the test.

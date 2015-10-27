@@ -15,7 +15,7 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuerBase;
   *
   * @PurgeQueuer(
   *   id = "coretags",
-  *   label = @Translation("Core Tags"),
+  *   label = @Translation("Core tags queuer"),
   *   description = @Translation("Queues every tag that Drupal invalidates internally."),
   *   enable_by_default = true,
   *   configform = "\Drupal\purge_queuer_coretags\Form\ConfigurationForm",

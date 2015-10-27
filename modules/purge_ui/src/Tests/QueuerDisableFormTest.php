@@ -36,7 +36,6 @@ class QueuerDeleteFormTest extends WebTestBase {
    */
   public static $modules = [
     'purge_ui',
-    'purge_noqueuer_test',
     'purge_queuer_test',
   ];
 

@@ -34,7 +34,7 @@ class PurgerAddFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_noqueuer_test', 'purge_purger_test', 'purge_ui'];
+  public static $modules = ['purge_purger_test', 'purge_ui'];
 
   /**
    * Setup the test.

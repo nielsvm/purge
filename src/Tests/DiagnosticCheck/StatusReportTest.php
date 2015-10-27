@@ -32,7 +32,6 @@ class StatusReportTest extends WebTestBase {
    * @var array
    */
   public static $modules = [
-    'purge_noqueuer_test',
     'purge_check_test',
     'purge_check_error_test',
     'purge_check_warning_test',

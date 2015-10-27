@@ -25,7 +25,7 @@ class ServiceTest extends KernelServiceTestBase {
    *
    * @var array
    */
-  public static $modules = ['system', 'purge_noqueuer_test'];
+  public static $modules = ['system'];
 
   /**
    * {@inheritdoc}

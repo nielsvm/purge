@@ -36,7 +36,6 @@ class ProcessorAddFormTest extends WebTestBase {
    */
   public static $modules = [
     'purge_ui',
-    'purge_noqueuer_test',
     'purge_processor_test'
   ];
 

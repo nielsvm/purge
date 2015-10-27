@@ -28,7 +28,7 @@ abstract class PurgerConfigFormTestBase extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_noqueuer_test', 'purge_ui'];
+  public static $modules = ['purge_ui'];
 
   /**
    * The route to a purgers configuration form (takes argument 'purger').

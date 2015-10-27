@@ -1,6 +1,6 @@
-name: Purge runtime processor
+name: Late runtime processor
 type: module
-description: 'Processes purge queue items during the same request, only for high-performance purgers!'
+description: 'Process the queue on every request, this is only recommended on high latency configuration.'
 package: "Purge - processors"
 version: VERSION
 core: 8.x

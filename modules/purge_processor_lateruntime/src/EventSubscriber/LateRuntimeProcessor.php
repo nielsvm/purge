@@ -11,42 +11,19 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
-use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
 
 /**
  * Processes queue items at the end of every request.
  */
-class LateRuntimeProcessor implements ProcessorInterface, EventSubscriberInterface, ContainerAwareInterface {
+class LateRuntimeProcessor implements EventSubscriberInterface, ContainerAwareInterface {
   use ContainerAwareTrait;
-  use StringTranslationTrait;
 
   /**
-   * The container id of this processor.
+   * The processor plugin or FALSE when disabled.
    *
-   * @var string
+   * @var false|\Drupal\purge_processor_lateruntime\Plugin\Purge\Processor\LateRuntimeProcessor
    */
-  protected $id;
-
-  /**
-   * The ImmutableConfig object 'purge_processor_lateruntime.settings'.
-   *
-   * @var \Drupal\Core\Config\ImmutableConfig
-   */
-  protected $config;
-
-  /**
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected $configFactory;
-
-  /**
-   * The purge logger channel.
-   *
-   * @var \Psr\Log\LoggerInterface
-   */
-  protected $logger;
+  protected $processor;
 
   /**
    * Diagnostics service that reports any preliminary issues before purging.
@@ -70,54 +47,6 @@ class LateRuntimeProcessor implements ProcessorInterface, EventSubscriberInterfa
   protected $purgeQueue;
 
   /**
-   * Make both the immutable config object and the factory available.
-   */
-  protected function initializeConfig() {
-    if (is_null($this->configFactory)) {
-      $this->configFactory = $this->container->get('config.factory');
-      $this->config = $this->configFactory->get('purge_processor_lateruntime.settings');
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function disable() {
-    $this->initializeConfig();
-    $this->configFactory->getEditable('purge_processor_lateruntime.settings')->set('status', FALSE)->save();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function enable() {
-    $this->initializeConfig();
-    $this->configFactory->getEditable('purge_processor_lateruntime.settings')->set('status', TRUE)->save();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isEnabled() {
-    $this->initializeConfig();
-    return $this->config->get('status');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getDescription() {
-    return $this->t("Processes purge queue items during the same request, only for high-performance purgers!");
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getId() {
-    return $this->id;
-  }
-
-  /**
    * {@inheritdoc}
    */
   static function getSubscribedEvents() {
@@ -126,10 +55,23 @@ class LateRuntimeProcessor implements ProcessorInterface, EventSubscriberInterfa
   }
 
   /**
-   * {@inheritdoc}
+   * Initialize the services.
+   *
+   * @return bool
+   *   TRUE when everything is available, FALSE when our plugin is disabled.
    */
-  public function getTitle() {
-    return $this->t("Late runtime processor");
+  protected function initialize() {
+    if (is_null($this->processor)) {
+      // If the lateruntime processor plugin doesn't load, this object is not
+      // allowed to operate and thus loads the least possible dependencies.
+      $this->processor = $this->container->get('purge.processors')->get('lateruntime');
+      if ($this->processor !== FALSE) {
+        $this->purgeDiagnostics = $this->container->get('purge.diagnostics');
+        $this->purgePurgers = $this->container->get('purge.purgers');
+        $this->purgeQueue = $this->container->get('purge.queue');
+      }
+    }
+    return $this->processor !== FALSE;
   }
 
   /**
@@ -141,31 +83,15 @@ class LateRuntimeProcessor implements ProcessorInterface, EventSubscriberInterfa
    * @return void
    */
   public function onKernelFinishRequest(FinishRequestEvent $event) {
-    if (!$this->isEnabled()) {
+
+    // Immediately stop if our plugin is disabled.
+    if (!$this->initialize()) {
       return;
     }
-    $this->logger = $this->container->get('logger.channel.purge');
-    $this->purgeDiagnostics = $this->container->get('purge.diagnostics');
-    $this->purgePurgers = $this->container->get('purge.purgers');
-    $this->purgeQueue = $this->container->get('purge.queue');
-    $this->processQueue();
-  }
-
-  /**
-   * Process a reasonable number of items from the queue when there's any.
-   */
-  protected function processQueue() {
 
     // When the system is showing fire, immediately stop attempting to purge.
     if ($fire = $this->purgeDiagnostics->isSystemOnFire()) {
-      return $this->logger->error($fire->getRecommendation());
-    }
-
-    // If the system shows signs of smoke, warn the user and continue purging.
-    if ($this->config->get('log_warnings')) {
-      if ($smoke = $this->purgeDiagnostics->isSystemShowingSmoke()) {
-        $this->logger->warning($smoke->getRecommendation());
-      }
+      return;
     }
 
     // Claim a chunk of invalidations, process and let the queue handle results.
@@ -177,13 +103,6 @@ class LateRuntimeProcessor implements ProcessorInterface, EventSubscriberInterfa
         $this->purgeQueue->deleteOrReleaseMultiple($claims);
       }
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setId($id) {
-    $this->id = $id;
   }
 
 }

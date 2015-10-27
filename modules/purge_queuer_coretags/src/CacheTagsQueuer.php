@@ -55,7 +55,7 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface, ContainerAwareIn
    * Initialize the invalidation factory and queue service.
    *
    * @return bool
-   *   TRUE when everything is available, FALSE when we're disabled.
+   *   TRUE when everything is available, FALSE when our plugin is disabled.
    */
   protected function initialize() {
     if (is_null($this->queuer)) {

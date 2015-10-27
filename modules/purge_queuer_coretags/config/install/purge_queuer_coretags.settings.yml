@@ -1,0 +1,3 @@
+blacklist:
+  - 'config:'
+  - '4xx-response'

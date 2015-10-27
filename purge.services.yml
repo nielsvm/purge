@@ -14,14 +14,10 @@ services:
   # interfaces and allowing users to disable/enable them.
   purge.queuers:
     class: Drupal\purge\Plugin\Purge\Queuer\QueuersService
-    calls:
-    - [setContainer, ['@service_container']]
-  purge.queuers.cache_tags:
-    class: Drupal\purge\Plugin\Purge\Queuer\CacheTagsQueuer
-    arguments: ['@config.factory', '@purge.queue', '@purge.invalidation.factory']
-    tags:
-      - { name: cache_tags_invalidator }
-      - { name: purge_queuer }
+    arguments: ['@plugin.manager.purge.queuers', '@config.factory']
+  plugin.manager.purge.queuers:
+    class: Drupal\purge\Plugin\Purge\Queuer\PluginManager
+    parent: default_plugin_manager
 
   # PURGE.INVALIDATION.FACTORY
   #

@@ -17,6 +17,7 @@ use Drupal\purge_purger_test\Plugin\Purge\Purger\NullPurgerBase;
  *   id = "good",
  *   label = @Translation("Good Purger"),
  *   description = @Translation("A purger that always succeeds."),
+ *   configform = "",
  *   types = {"tag", "path", "domain"},
  * )
  */

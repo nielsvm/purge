@@ -16,6 +16,7 @@ use Drupal\purge_purger_test\Plugin\Purge\Purger\NullPurgerBase;
  *   id = "b",
  *   label = @Translation("Purger B"),
  *   description = @Translation("Test purger B."),
+ *   configform = "",
  *   types = {"regex", "url"},
  * )
  */

@@ -16,7 +16,7 @@ use Drupal\purge\Plugin\Purge\Processor\ProcessorBase;
  * @PurgeProcessor(
  *   id = "lateruntime",
  *   label = @Translation("Late runtime processor"),
- *   description = @Translation("Process the queue on every request, this is only recommended on high latency configuration."),
+ *   description = @Translation("Process the queue on every request, this is only recommended on high latency configurations."),
  *   enable_by_default = true,
  *   configform = "",
  * )

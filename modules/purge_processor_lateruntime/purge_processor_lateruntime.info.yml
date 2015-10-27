@@ -1,6 +1,6 @@
 name: Late runtime processor
 type: module
-description: 'Process the queue on every request, this is only recommended on high latency configuration.'
+description: 'Process the queue on every request, this is only recommended on high latency configurations.'
 package: "Purge - processors"
 version: VERSION
 core: 8.x

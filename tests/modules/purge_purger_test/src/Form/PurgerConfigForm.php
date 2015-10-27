@@ -44,8 +44,8 @@ class PurgerConfigForm extends PurgerConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
-    return parent::submitForm($form, $form_state);
+  public function submitFormSuccess(array &$form, FormStateInterface $form_state) {
+    // Nothing to do here.
   }
 
 }

@@ -213,7 +213,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitFormSuccess(array &$form, FormStateInterface $form_state) {
     $settings = HttpPurgerSettings::load($this->getId($form_state));
     $settings->invalidationtype = $form_state->getValue('invalidationtype');
     $settings->hostname = $form_state->getValue('hostname');
@@ -224,7 +224,6 @@ class ConfigurationForm extends PurgerConfigFormBase {
     $settings->connect_timeout = $form_state->getValue('connect_timeout');
     $settings->max_requests = $form_state->getValue('max_requests');
     $settings->save();
-    return parent::submitForm($form, $form_state);
   }
 
 }

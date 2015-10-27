@@ -197,7 +197,7 @@ class ConfigForm extends ConfigFormBase {
     if (count($this->purgeQueuers)) {
       $add_delete_link = function(&$links, $id) {
         $links['delete'] = $this->getDialogButton(
-          $this->t("Remove"),
+          $this->t("Delete"),
           Url::fromRoute('purge_ui.queuer_delete_form',
           ['id' => $id]),
           '40%'
@@ -304,7 +304,7 @@ class ConfigForm extends ConfigFormBase {
     if (count($this->purgeProcessors)) {
       $add_delete_link = function(&$links, $id) {
         $links['delete'] = $this->getDialogButton(
-          $this->t("Remove"),
+          $this->t("Delete"),
           Url::fromRoute('purge_ui.processor_delete_form',
           ['id' => $id]),
           '40%'
@@ -380,7 +380,7 @@ class ConfigForm extends ConfigFormBase {
     // If purgers have been enabled, we build up a type-purgers matrix table.
     if (count($enabled)) {
       $add_delete_link = function(&$links, $id, $definition) {
-        $links['delete'] = $this->getDialogButton($this->t("Remove"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]), '40%');
+        $links['delete'] = $this->getDialogButton($this->t("Delete"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]), '40%');
       };
       $add_configure_link = function(&$links, $id, $definition) {
         if (isset($definition['configform']) && !empty($definition['configform'])) {

@@ -17,13 +17,22 @@ use Drupal\purge\ServiceInterface;
 interface ModifiableServiceInterface {
 
   /**
-   * Configure the plugins to be used by the service and reload the service.
+   * Retrieve the plugin IDs of plugins that can be enabled.
+   *
+   * @see \Drupal\purge\ModifiableServiceInterface::setPluginsEnabled().
+   *
+   * @return string[]
+   *   Unassociative array with plugin IDs that are available to be enabled.
+   */
+  public function getPluginsAvailable();
+
+  /**
+   * Set the plugins used by the service and reload it.
    *
    * @param string[] $plugin_ids
-   *   Array with the plugin ids to be enabled in its value.
+   *   Unassociative array with plugin IDs to be enabled.
    *
-   * @throws \LogicException
-   *   Thrown when the parameter $plugin_ids doesn't make any sense.
+   * @see \Drupal\purge\ModifiableServiceInterface::getPluginsAvailable().
    *
    * @return void
    */

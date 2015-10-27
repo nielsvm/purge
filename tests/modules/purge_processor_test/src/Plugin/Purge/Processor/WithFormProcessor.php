@@ -16,7 +16,7 @@ use Drupal\purge\Plugin\Purge\Processor\ProcessorBase;
  * @PurgeProcessor(
  *   id = "withform",
  *   label = @Translation("Processor with form"),
- *   description = @Translation("Test processor a configuration form."),
+ *   description = @Translation("Test processor with a configuration form."),
  *   enable_by_default = false,
  *   configform = "\Drupal\purge_processor_test\Form\ProcessorConfigForm",
  * )

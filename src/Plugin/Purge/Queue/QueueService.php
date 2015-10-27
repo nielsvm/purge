@@ -11,6 +11,7 @@ use Drupal\Core\DestructableInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceBase;
+use Drupal\purge\ModifiableServiceBaseTrait;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Queue\Exception\UnexpectedServiceConditionException;
@@ -22,6 +23,7 @@ use Drupal\purge\Plugin\Purge\Queue\ProxyItem;
  * Provides the service that lets invalidations interact with a queue backend.
  */
 class QueueService extends ServiceBase implements QueueServiceInterface, DestructableInterface {
+  use ModifiableServiceBaseTrait;
 
   /**
    * @var \Drupal\Core\Config\ConfigFactoryInterface

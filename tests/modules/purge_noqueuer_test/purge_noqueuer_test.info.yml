@@ -1,8 +1,0 @@
-name: 'Disable Cache Tag Queuer'
-type: module
-description: 'Disables the "purge.queuers.cache_tags" service for testing purposes.'
-package: Testing
-version: VERSION
-core: 8.x
-dependencies:
-  - purge

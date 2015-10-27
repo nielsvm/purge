@@ -62,7 +62,7 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
    */
   public function count() {
     $this->initializeChecks();
-    return count($this->checks);
+    return count($this->instances);
   }
 
   /**

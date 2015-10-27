@@ -7,152 +7,140 @@
 
 namespace Drupal\purge\Plugin\Purge\Queuer;
 
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
+use Drupal\purge\IteratingServiceBaseTrait;
+use Drupal\purge\ModifiableServiceBaseTrait;
 use Drupal\purge\ServiceBase;
 
 /**
- * Provides the service that keeps a registry of queuers and facilitates access.
+ * Provides a service that provides access to loaded queuers.
  */
 class QueuersService extends ServiceBase implements QueuersServiceInterface {
-  use ContainerAwareTrait;
+  use IteratingServiceBaseTrait;
+  use ModifiableServiceBaseTrait;
 
   /**
-   * Current iterator position.
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * The plugin manager for queuers.
    *
-   * @var int
-   * @ingroup iterator
+   * @var \Drupal\purge\Plugin\Purge\Queuer\PluginManager
    */
-  protected $position = 0;
+  protected $pluginManager;
 
   /**
-   * Mapping of container ids to the iterator indexes.
+   * Construct \Drupal\purge\Plugin\Purge\Processor\ProcessorsService.
    *
-   * @var string[]
-   * @ingroup iterator
+   * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
+   *   The plugin manager for this service.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
    */
-  protected $idmap = [];
+  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory) {
+    $this->pluginManager = $pluginManager;
+    $this->configFactory = $config_factory;
+  }
 
   /**
-   * All registered queuers.
-   *
-   * @var \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface[]
+   * {@inheritdoc}
+   * @ingroup countable
    */
-  protected $queuers = [];
+  public function count() {
+    $this->initializePluginInstances();
+    return count($this->instances);
+  }
 
   /**
-   * Retrieve all queuer instances as soon as we can.
-   *
-   * @return void
+   * {@inheritdoc}
    */
-  protected function retrieveQueuers() {
-    if (empty($this->queuers)) {
-      $i = 0;
-      foreach ($this->container->getParameter('purge_queuers') as $id) {
-        $this->queuers[$i] = $this->container->get($id);
-        $this->idmap[$id] = $i;
-        if (!$this->queuers[$i]->getId()) {
-          $this->queuers[$i]->setId($id);
-        }
-        $i++;
+  public function get($plugin_id) {
+    $this->initializePluginInstances();
+    foreach ($this as $queuer) {
+      if ($queuer->getPluginId() === $plugin_id) {
+        return $queuer;
       }
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function get($id) {
-    $this->retrieveQueuers();
-    return isset($this->idmap[$id]) ? $this->queuers[$this->idmap[$id]] : NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getDisabled() {
-    $available = [];
-    foreach ($this as $id => $queuer) {
-      if (!$queuer->isEnabled()) {
-        $available[$id] = $queuer;
-      }
-    }
-    return $available;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getEnabled() {
-    $enabled = [];
-    foreach ($this as $id => $queuer) {
-      if ($queuer->isEnabled()) {
-        $enabled[$id] = $queuer;
-      }
-    }
-    return $enabled;
-  }
-
-  /**
-   * {@inheritdoc}
-   * @ingroup iterator
-   */
-  public function key() {
-    $this->retrieveQueuers();
-    foreach ($this->idmap as $id => $i) {
-      if ($this->position === $i) {
-        return $id;
-      }
-    }
-    return $this->position;
-  }
-
-  /**
-   * {@inheritdoc}
-   * @ingroup iterator
-   */
-  public function next() {
-    $this->retrieveQueuers();
-    ++$this->position;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function reload() {
-    $this->position = 0;
-    $this->queuers = [];
-    $this->idmap = [];
-  }
-
-  /**
-   * {@inheritdoc}
-   * @ingroup iterator
-   */
-  public function current() {
-    $this->retrieveQueuers();
-    if ($this->valid()) {
-      return $this->queuers[$this->position];
     }
     return FALSE;
   }
 
   /**
    * {@inheritdoc}
-   * @ingroup iterator
    */
-  public function rewind() {
-    $this->retrieveQueuers();
-    $this->position = 0;
+  public function getPluginsEnabled() {
+    if (is_null($this->plugins_enabled)) {
+
+      // Build a mapping of all plugins and whether they are enabled by default.
+      $this->plugins_enabled = [];
+      foreach ($this->getPlugins() as $plugin_id => $definition) {
+        $enable_by_default = ($definition['enable_by_default'] === TRUE);
+        $this->plugins_enabled[$plugin_id] = $enable_by_default;
+      }
+
+      // Override the mapping with information stored in CMI, then filter out
+      // everything that isn't enabled and finally flip the array with just ids.
+      foreach ($this->configFactory->get('purge.plugins')->get('queuers') as $inst) {
+        if (isset($this->plugins_enabled[$inst['plugin_id']])) {
+          $this->plugins_enabled[$inst['plugin_id']] = $inst['enabled'];
+        }
+      }
+      foreach ($this->plugins_enabled as $plugin_id => $enabled) {
+        if (!$enabled) {
+          unset($this->plugins_enabled[$plugin_id]);
+        }
+      }
+      $this->plugins_enabled = array_keys($this->plugins_enabled);
+    }
+    return $this->plugins_enabled;
   }
 
   /**
    * {@inheritdoc}
-   * @ingroup iterator
    */
-  public function valid() {
-    $this->retrieveQueuers();
-    return isset($this->queuers[$this->position]);
+  public function reload() {
+    parent::reload();
+    $this->reloadIterator();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setPluginsEnabled(array $plugin_ids) {
+    $definitions = $this->pluginManager->getDefinitions();
+
+    // Gather all plugins mentioned in CMI and those available right now, set
+    // them disabled first. Then flip the switch for given plugin_ids.
+    $setting_assoc = [];
+    foreach ($this->configFactory->get('purge.plugins')->get('queuers') as $inst) {
+      $setting_assoc[$inst['plugin_id']] = FALSE;
+    }
+    foreach ($definitions as $definition) {
+      $setting_assoc[$definition['id']] = FALSE;
+    }
+    foreach ($plugin_ids as $plugin_id) {
+      if (!isset($definitions[$plugin_id])) {
+        throw new \LogicException('Invalid plugin_id.');
+      }
+      $setting_assoc[$plugin_id] = TRUE;
+    }
+
+    // Convert the array to the CMI storage format and commit.
+    $setting = [];
+    foreach ($setting_assoc as $plugin_id => $enabled) {
+      $setting[] = [
+        'plugin_id' => $plugin_id,
+        'enabled' => $enabled
+      ];
+    }
+    $this->configFactory
+      ->getEditable('purge.plugins')
+      ->set('queuers', $setting)
+      ->save();
+    $this->reload();
   }
 
 }

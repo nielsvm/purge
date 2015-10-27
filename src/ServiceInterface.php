@@ -34,6 +34,16 @@ interface ServiceInterface extends ServiceProviderInterface, ServiceModifierInte
   public function getPluginsEnabled();
 
   /**
+   * Find out whether the given plugin_id is enabled.
+   *
+   * @param string $plugin_id
+   *   The plugin_id of the plugin you want to check for.
+   *
+   * @return true|false
+   */
+  public function isPluginEnabled($plugin_id);
+
+  /**
    * Reload the service and reinstantiate all enabled plugins.
    *
    * @warning

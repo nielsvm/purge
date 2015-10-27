@@ -1,2 +1,4 @@
-queue: 'database'
 purgers: {}
+processors: {}
+queuers: {}
+queue: 'database'

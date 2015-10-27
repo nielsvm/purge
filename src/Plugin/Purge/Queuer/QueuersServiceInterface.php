@@ -7,36 +7,22 @@
 
 namespace Drupal\purge\Plugin\Purge\Queuer;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Drupal\purge\ServiceInterface;
+use Drupal\purge\ModifiableServiceInterface;
 
 /**
- * Describes a service that provides access to the container registered queuers.
+ * Describes a service that provides access to loaded queuers.
  */
-interface QueuersServiceInterface extends ServiceInterface, ContainerAwareInterface, \Iterator {
+interface QueuersServiceInterface extends ServiceInterface, ModifiableServiceInterface, \Iterator, \Countable {
 
   /**
-   * Get the requested queuer object.
+   * Get the requested queuer instance.
    *
-   * @param string $id
-   *   The container id of the queuer to retrieve.
+   * @param string $plugin_id
+   *   The plugin ID of the queuer you want to retrieve.
    *
-   * @return \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface|null
+   * @return \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface|false
    */
-  public function get($id);
-
-  /**
-   * Get the disabled queuers.
-   *
-   * @return \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface[]
-   */
-  public function getDisabled();
-
-  /**
-   * Get the enabled queuers.
-   *
-   * @return \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface[]
-   */
-  public function getEnabled();
+  public function get($plugin_id);
 
 }

@@ -67,8 +67,8 @@ class PurgePurger extends Plugin {
   public $multi_instance = FALSE;
 
   /**
-   * Full class name of the configuration form of your purger. The class must
-   * extend \Drupal\purge_ui\Form\PurgerConfigFormBase.
+   * Full class name of the configuration form of your purger, with leading
+   * backslash. Class must extend \Drupal\purge_ui\Form\PurgerConfigFormBase.
    *
    * @var string
    */

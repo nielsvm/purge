@@ -61,12 +61,13 @@ services:
 
   # PURGE.PROCESSORS
   #
-  # Processing policies work the queue and put purgers actively to work. These
-  # are services tagged 'purge_processor' provided by submodules.
+  # Processors pull items from the queue and initiate purging activity.
   purge.processors:
     class: Drupal\purge\Plugin\Purge\Processor\ProcessorsService
-    calls:
-    - [setContainer, ['@service_container']]
+    arguments: ['@plugin.manager.purge.processors', '@config.factory']
+  plugin.manager.purge.processors:
+    class: Drupal\purge\Plugin\Purge\Processor\PluginManager
+    parent: default_plugin_manager
 
   # PURGE.PURGERS:
   #

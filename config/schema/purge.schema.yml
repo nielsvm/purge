@@ -3,22 +3,40 @@ purge.plugins:
   type: config_object
   label: 'Purge plugins'
   mapping:
+    purgers:
+      label: 'Enabled purger plugin instances.'
+      type: sequence
+      translatable: false
+      sequence:
+        type: mapping
+        mapping:
+          instance_id:
+            type: string
+          plugin_id:
+            type: string
+    processors:
+      label: 'All known processor plugins (including disabled).'
+      type: sequence
+      translatable: false
+      sequence:
+        type: mapping
+        mapping:
+          plugin_id:
+            type: string
+          enabled:
+            type: bool
+    queuers:
+      label: 'All known queuer plugins (including disabled).'
+      type: sequence
+      translatable: false
+      sequence:
+        type: mapping
+        mapping:
+          plugin_id:
+            type: string
+          enabled:
+            type: bool
     queue:
       type: string
-      label: 'Queue plugin ID.'
-      translatable: false
-    purgers:
-      type: sequence
-      label: 'Enabled purgers.'
-      sequence:
-        - type: string
-          label: 'Plugin ID'
-      translatable: false
-purge.cache_tags_queuer:
-  type: config_object
-  label: 'Purge cache tags queuer'
-  mapping:
-    status:
-      type: boolean
-      label: 'Whether the cache tags queuer is enabled or not.'
+      label: 'The currently active queue plugin.'
       translatable: false

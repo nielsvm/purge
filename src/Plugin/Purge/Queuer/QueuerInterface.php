@@ -7,62 +7,25 @@
 
 namespace Drupal\purge\Plugin\Purge\Queuer;
 
+use Drupal\Component\Plugin\PluginInspectionInterface;
+
 /**
- * Describes services that queue invalidation objects upon certain events.
+ * Describes a plugin that queues invalidation objects.
  */
-interface QueuerInterface {
+interface QueuerInterface extends PluginInspectionInterface {
 
   /**
-   * Disables the queuer upon end-user request.
+   * Retrieve the title of this queuer.
    *
-   * @return void
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    */
-  public function disable();
+  public function getLabel();
 
   /**
-   * Enables the queuer upon end-user request.
+   * Retrieve the description of this queuer.
    *
-   * @return void
-   */
-  public function enable();
-
-  /**
-   * Describes whether the queuer has its behavior activated or not.
-   *
-   * @return bool
-   */
-  public function isEnabled();
-
-  /**
-   * Get the container id of the queuer.
-   *
-   * @return string
-   *   The container id of the queuer.
-   */
-  public function getId();
-
-  /**
-   * Retrieve the title of this queuing service.
-   *
-   * @return \Drupal\Core\StringTranslation\TranslationWrapper
-   */
-  public function getTitle();
-
-  /**
-   * Retrieve a description of what this queuer, queues.
-   *
-   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    */
   public function getDescription();
-
-  /**
-   * Set the container id of the queuer.
-   *
-   * @param string $id
-   *   The container id of the queuer.
-   *
-   * @return void
-   */
-  public function setId($id);
 
 }

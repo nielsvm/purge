@@ -13,16 +13,12 @@ use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckBase;
 use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
 
 /**
- * Checks if there's a service actively adding items to the queue.
- *
- * This test exists because it is possible to disable the cache tags queuer for
- * pure API use cases, but, doing so does 'break' functionality for users. So
- * by flagging this up, users are at least made aware.
+ * Queuers.
  *
  * @PurgeDiagnosticCheck(
  *   id = "queuersavailable",
  *   title = @Translation("Queuers"),
- *   description = @Translation("Checks if there are active queuing services."),
+ *   description = @Translation("Checks if there is a queuer that propagates the queue."),
  *   dependent_queue_plugins = {},
  *   dependent_purger_plugins = {}
  * )
@@ -38,7 +34,7 @@ class QueuersAvailableDiagnosticCheck extends DiagnosticCheckBase implements Dia
    * Constructs a \Drupal\purge\Plugin\Purge\DiagnosticCheck\PurgerAvailableCheck object.
    *
    * @param \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface $purge_queuers
-   *   The purge queuers registry service.
+   *   The purge queuers service.
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
@@ -67,22 +63,22 @@ class QueuersAvailableDiagnosticCheck extends DiagnosticCheckBase implements Dia
    * {@inheritdoc}
    */
   public function run() {
-    $queuers = $this->purgeQueuers->getEnabled();
-    if (empty($queuers)) {
+    if (count($this->purgeQueuers) === 0) {
       $this->value = '';
       $this->recommendation = $this->t("There are no queuing services enabled, this means that you can only invalidate external caches manually or programmatically.");
       return SELF::SEVERITY_WARNING;
     }
-    elseif (count($queuers) === 1) {
-      $id = key($queuers);
-      $this->value = $queuers[$id]->getTitle();
-      $this->recommendation = $queuers[$id]->getDescription();
+    elseif (count($this->purgeQueuers) === 1) {
+      $plugin_id = current($this->purgeQueuers->getPluginsEnabled());
+      $queuer = $this->purgeQueuers->get($plugin_id);
+      $this->value = $queuer->getLabel();
+      $this->recommendation = $queuer->getDescription();
       return SELF::SEVERITY_OK;
     }
     else {
       $this->value = [];
-      foreach ($queuers as $queuer) {
-        $this->value[] = $queuer->getTitle();
+      foreach ($this->purgeQueuers as $queuer) {
+        $this->value[] = $queuer->getLabel();
       }
       $this->value = implode(', ', $this->value);
       $this->recommendation = $this->t("You have multiple queueing services configured.");

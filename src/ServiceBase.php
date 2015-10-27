@@ -59,6 +59,13 @@ abstract class ServiceBase extends ServiceProviderBase implements ServiceInterfa
   /**
    * {@inheritdoc}
    */
+  public function isPluginEnabled($plugin_id) {
+    return in_array($plugin_id, $this->getPluginsEnabled());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function reload() {
     $this->plugins = NULL;
     $this->plugins_enabled = NULL;

@@ -167,20 +167,18 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    */
   public function getPluginsEnabled() {
     if (is_null($this->plugins_enabled)) {
-      $this->plugins_enabled = [];
-      $enabled = $this->configFactory->get('purge.plugins')->get('purgers');
+      $setting = $this->configFactory->get('purge.plugins')->get('purgers');
       $plugin_ids = array_keys($this->getPlugins());
-
-      foreach ($enabled as $id => $plugin_id) {
-        if (!in_array($plugin_id, $plugin_ids)) {
+      $this->plugins_enabled = [];
+      foreach ($setting as $inst) {
+        if (!in_array($inst['plugin_id'], $plugin_ids)) {
           // When a third-party provided purger was configured and its module
           // got uninstalled, the configuration renders invalid. Instead of
-          // rewriting config or breaking hard, we ignore silently. The
-          // diagnostic checks take care of getting this visualized to the user.
+          // rewriting config or breaking hard, we ignore this silently.
           continue;
         }
         else {
-          $this->plugins_enabled[$id] = $plugin_id;
+          $this->plugins_enabled[$inst['instance_id']] = $inst['plugin_id'];
         }
       }
     }
@@ -189,6 +187,11 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * This method takes into account that purger plugins that are not
+   * multi-instantiable, can only be loaded once and are no longer available if
+   * they are already available. Plugins that are multi-instantiable, will
+   * always be listed.
    */
   public function getPluginsAvailable() {
     $enabled = $this->getPluginsEnabled();
@@ -240,15 +243,23 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * {@inheritdoc}
    */
   public function setPluginsEnabled(array $plugin_ids) {
-    foreach ($plugin_ids as $id => $plugin_id) {
-      if (!is_string($id) || empty($id)) {
+    $setting = [];
+    foreach ($plugin_ids as $instance_id => $plugin_id) {
+      if (!is_string($instance_id) || empty($instance_id)) {
         throw new \LogicException('Invalid instance ID (key).');
       }
       if (!isset($this->pluginManager->getDefinitions()[$plugin_id])) {
         throw new \LogicException('Invalid plugin_id.');
       }
+      $setting[] = [
+        'instance_id' => $instance_id,
+        'plugin_id' => $plugin_id
+      ];
     }
-    $this->configFactory->getEditable('purge.plugins')->set('purgers', $plugin_ids)->save();
+    $this->configFactory
+      ->getEditable('purge.plugins')
+      ->set('purgers', $setting)
+      ->save();
     $this->reload();
   }
 

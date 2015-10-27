@@ -8,9 +8,9 @@
 namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
+use Drupal\purge\Plugin\Purge\Purger\SharedInterface;
 use Drupal\purge\ServiceInterface;
 use Drupal\purge\ModifiableServiceInterface;
-use Drupal\purge\Plugin\Purge\Purger\SharedInterface;
 
 /**
  * Describes a service that distributes access to one or more purgers.
@@ -69,27 +69,6 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
    *   Associative array with instance ID's in the key and the label as value.
    */
   public function getLabels();
-
-  /**
-   * Retrieve the plugin_ids of purgers that can be enabled.
-   *
-   * This method takes into account that purger plugins that are not
-   * multi-instantiable, can only be loaded once and are no longer available if
-   * they are already available. Plugins that are multi-instantiable, will
-   * always be listed.
-   *
-   * @return string[]
-   *   Array with the plugin_ids of the plugins that can be enabled.
-   */
-  public function getPluginsAvailable();
-
-  /**
-   * Retrieve the configured plugin_ids that the service will use.
-   *
-   * @return string[]
-   *   Array with the plugin_ids of the enabled plugins.
-   */
-  public function getPluginsEnabled();
 
   /**
    * Retrieve the list of supported invalidation types per purger instance.

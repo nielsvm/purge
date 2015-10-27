@@ -14,8 +14,8 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
 
 /**
  * Controller for:
- *  - \Drupal\purge_ui\Form\QueuerDisableForm.
- *  - \Drupal\purge_ui\Form\QueuerEnableForm.
+ *  - \Drupal\purge_ui\Form\QueuerDeleteForm.
+ *  - \Drupal\purge_ui\Form\QueuerAddForm.
  */
 class QueuerFormController extends ControllerBase {
 
@@ -28,7 +28,7 @@ class QueuerFormController extends ControllerBase {
    * Construct the QueuerFormController.
    *
    * @param \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface $purge_queuers
-   *   The purge queuers registry service.
+   *   The purge queuers service.
    */
   function __construct(QueuersServiceInterface $purge_queuers) {
     $this->purgeQueuers = $purge_queuers;
@@ -42,17 +42,26 @@ class QueuerFormController extends ControllerBase {
   }
 
   /**
-   * Render the queuer disable form.
+   * Render the queuer configuration form.
    *
    * @param string $id
-   *   The container id of the queuer to retrieve.
+   *   The plugin id of the queuer to retrieve.
+   * @param bool $dialog
+   *   Determines if the modal dialog variant of the form should be rendered.
    *
    * @return array
    */
-  public function disableForm($id) {
-    if ($queuer = $this->purgeQueuers->get($id)) {
-      if ($this->purgeQueuers->get($id)->isEnabled()) {
-        return $this->formBuilder()->getForm("\Drupal\purge_ui\Form\QueuerDisableForm", $id);
+  public function configForm($id, $dialog) {
+    if ($this->purgeQueuers->isPluginEnabled($id)) {
+      $definition = $this->purgeQueuers->getPlugins()[$id];
+      if (isset($definition['configform']) && !empty($definition['configform'])) {
+        return $this->formBuilder()->getForm(
+          $definition['configform'],
+          [
+            'id' => $id,
+            'dialog' => $dialog
+          ]
+        );
       }
     }
     throw new NotFoundHttpException();
@@ -62,26 +71,61 @@ class QueuerFormController extends ControllerBase {
    * Route title callback.
    *
    * @param string $id
-   *   The container id of the queuer to retrieve.
+   *   The plugin id of the queuer to retrieve.
    *
    * @return \Drupal\Core\StringTranslation\TranslationWrapper
    *   The page title.
    */
-  public function disableFormTitle($id) {
-    if ($queuer = $this->purgeQueuers->get($id)) {
-      return $this->t('Disable @label', ['@label' => $queuer->getTitle()]);
+  public function configFormTitle($id) {
+    if ($this->purgeQueuers->isPluginEnabled($id)) {
+      $definition = $this->purgeQueuers->getPlugins()[$id];
+      if (isset($definition['configform']) && !empty($definition['configform'])) {
+        return $this->t('Configure @label', ['@label' => $definition['label']]);
+      }
     }
-    return $this->t('Disable');
+    return $this->t('Configure');
   }
 
   /**
-   * Render the queuer enable form.
+   * Render the queuer delete form.
+   *
+   * @param string $id
+   *   The plugin id of the queuer to retrieve.
    *
    * @return array
    */
-  public function enableForm() {
-    if ($this->purgeQueuers->getDisabled()) {
-      return $this->formBuilder()->getForm("Drupal\purge_ui\Form\QueuerEnableForm");
+  public function deleteForm($id) {
+    if ($this->purgeQueuers->isPluginEnabled($id)) {
+      return $this->formBuilder()->getForm("\Drupal\purge_ui\Form\QueuerDeleteForm", $id);
+    }
+    throw new NotFoundHttpException();
+  }
+
+  /**
+   * Route title callback.
+   *
+   * @param string $id
+   *   The plugin id of the queuer to retrieve.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   *   The page title.
+   */
+  public function deleteFormTitle($id) {
+    if ($this->purgeQueuers->isPluginEnabled($id)) {
+      $label = $this->purgeQueuers->getPlugins()[$id]['label'];
+      return $this->t('Delete @label', ['@label' => $label]);
+    }
+    return $this->t('Delete');
+  }
+
+  /**
+   * Render the queuer add form.
+   *
+   * @return array
+   */
+  public function addForm() {
+    if (count($this->purgeQueuers->getPluginsAvailable())) {
+      return $this->formBuilder()->getForm("Drupal\purge_ui\Form\QueuerAddForm");
     }
     throw new NotFoundHttpException();
   }

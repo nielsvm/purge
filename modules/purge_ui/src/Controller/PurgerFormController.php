@@ -61,6 +61,23 @@ class PurgerFormController extends ControllerBase {
   }
 
   /**
+   * Retrieve the plugin definition for the given instance ID.
+   *
+   * @param string $id
+   *   Unique instance ID for the purger instance requested.
+   *
+   * @return array|false
+   *   The definition or FALSE when it doesn't exist.
+   */
+  protected function getPluginDefinition($id, $service) {
+    $enabled = $this->purgePurgers->getPluginsEnabled();
+    if (!isset($enabled[$id])) {
+      return FALSE;
+    }
+    return $this->purgePurgers->getPlugins()[$enabled[$id]];
+  }
+
+  /**
    * Render the purger configuration form.
    *
    * @param string $id

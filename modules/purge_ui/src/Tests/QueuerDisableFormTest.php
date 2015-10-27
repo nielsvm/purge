@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\QueuerDisableFormTest.
+ * Contains \Drupal\purge_ui\Tests\QueuerDeleteFormTest.
  */
 
 namespace Drupal\purge_ui\Tests;
@@ -11,11 +11,11 @@ use Drupal\Core\Url;
 use Drupal\purge\Tests\WebTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Form\QueuerDisableForm.
+ * Tests \Drupal\purge_ui\Form\QueuerDeleteForm.
  *
  * @group purge_ui
  */
-class QueuerDisableFormTest extends WebTestBase {
+class QueuerDeleteFormTest extends WebTestBase {
 
   /**
    * @var \Drupal\user\Entity\User
@@ -27,7 +27,7 @@ class QueuerDisableFormTest extends WebTestBase {
    *
    * @var string
    */
-  protected $route = 'purge_ui.queuer_disable_form';
+  protected $route = 'purge_ui.queuer_delete_form';
 
   /**
    * Modules to enable.
@@ -66,7 +66,7 @@ class QueuerDisableFormTest extends WebTestBase {
   /**
    * Tests that the "No" cancel button closes the dialog.
    *
-   * @see \Drupal\purge_ui\Form\QueuerDisableForm::buildForm
+   * @see \Drupal\purge_ui\Form\QueuerDeleteForm::buildForm
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testNo() {
@@ -81,7 +81,7 @@ class QueuerDisableFormTest extends WebTestBase {
   /**
    * Tests that 'Yes, disable..', disables the queuer and closes the window.
    *
-   * @see \Drupal\purge_ui\Form\QueuerDisableForm::buildForm
+   * @see \Drupal\purge_ui\Form\QueuerDeleteForm::buildForm
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testDisableQueuer() {

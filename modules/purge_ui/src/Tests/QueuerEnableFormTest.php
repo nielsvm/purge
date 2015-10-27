@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\QueuerEnableFormTest.
+ * Contains \Drupal\purge_ui\Tests\QueuerAddFormTest.
  */
 
 namespace Drupal\purge_ui\Tests;
@@ -11,11 +11,11 @@ use Drupal\Core\Url;
 use Drupal\purge\Tests\WebTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Form\QueuerEnableForm.
+ * Tests \Drupal\purge_ui\Form\QueuerAddForm.
  *
  * @group purge_ui
  */
-class QueuerEnableFormTest extends WebTestBase {
+class QueuerAddFormTest extends WebTestBase {
 
   /**
    * @var \Drupal\user\Entity\User
@@ -27,7 +27,7 @@ class QueuerEnableFormTest extends WebTestBase {
    *
    * @var string
    */
-  protected $route = 'purge_ui.queuer_enable_form';
+  protected $route = 'purge_ui.queuer_add_form';
 
   /**
    * Modules to enable.
@@ -72,12 +72,12 @@ class QueuerEnableFormTest extends WebTestBase {
   /**
    * Tests that the "Cancel" cancel button closes the dialog.
    *
-   * @see \Drupal\purge_ui\Form\QueuerEnableForm::buildForm
+   * @see \Drupal\purge_ui\Form\QueuerAddForm::buildForm
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testCancel() {
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet(Url::fromRoute('purge_ui.queuer_enable_form'));
+    $this->drupalGet(Url::fromRoute('purge_ui.queuer_add_form'));
     $this->assertRaw(t('Cancel'));
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('Cancel')]);
     $this->assertEqual('closeDialog', $json[1]['command']);
@@ -87,7 +87,7 @@ class QueuerEnableFormTest extends WebTestBase {
   /**
    * Tests that the cancel button closes the dialog.
    *
-   * @see \Drupal\purge_ui\Form\QueuerEnableForm::buildForm
+   * @see \Drupal\purge_ui\Form\QueuerAddForm::buildForm
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testEnableQueuer() {

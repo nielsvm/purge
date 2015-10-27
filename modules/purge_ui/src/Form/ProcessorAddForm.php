@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Form\ProcessorDisableForm.
+ * Contains \Drupal\purge_ui\Form\ProcessorAddForm.
  */
 
 namespace Drupal\purge_ui\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\ConfirmFormBase;
+use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
@@ -17,9 +17,9 @@ use Drupal\purge_ui\Form\CloseDialogTrait;
 use Drupal\purge_ui\Form\ReloadConfigFormCommand;
 
 /**
- * Disable the {id} processor service.
+ * Add a processor.
  */
-class ProcessorDisableForm extends ConfirmFormBase {
+class ProcessorAddForm extends ConfigFormBase {
   use CloseDialogTrait;
 
   /**
@@ -28,17 +28,10 @@ class ProcessorDisableForm extends ConfirmFormBase {
   protected $purgeProcessors;
 
   /**
-   * The processor object to be disabled.
-   *
-   * @var \Drupal\purge\Plugin\Purge\Processor\ProcessorInterface
-   */
-  protected $processor;
-
-  /**
-   * Constructs a ProcessorDisableForm object.
+   * Constructs a ProcessorAddForm object.
    *
    * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface $purge_processors
-   *   The purge processors registry service.
+   *   The purge processors service.
    *
    * @return void
    */
@@ -53,6 +46,7 @@ class ProcessorDisableForm extends ConfirmFormBase {
     return new static($container->get('purge.processors'));
   }
 
+
   /**
    * {@inheritdoc}
    */
@@ -64,29 +58,42 @@ class ProcessorDisableForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getFormID() {
-    return 'purge_ui.processor_disable_form';
+    return 'purge_ui.processor_add_form';
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $this->processor = $this->purgeProcessors->get($form_state->getBuildInfo()['args'][0]);
+    $definitions = $this->purgeProcessors->getPlugins();
     $form = parent::buildForm($form, $form_state);
-
-    // This is rendered as a modal dialog, so we need to set some extras.
     $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
+
+    // List all available processors.
+    $options = [];
+    foreach ($this->purgeProcessors->getPluginsAvailable() as $plugin_id) {
+      $options[$plugin_id] = t("@label: @description", [
+        '@label' => $definitions[$plugin_id]['label'],
+        '@description' => $definitions[$plugin_id]['description']
+      ]);
+    }
+    $form['id'] = [
+      '#default_value' => count($options) ? key($options) : NULL,
+      '#type' => 'radios',
+      '#options' => $options
+    ];
 
     // Update the buttons and bind callbacks.
     $form['actions']['submit'] = [
+      '#access' => count($options),
       '#type' => 'submit',
       '#button_type' => 'primary',
-      '#value' => $this->getConfirmText(),
-      '#ajax' => ['callback' => '::disableProcessor']
+      '#value' => $this->t("Add"),
+      '#ajax' => ['callback' => '::addProcessor']
     ];
     $form['actions']['cancel'] = [
       '#type' => 'submit',
-      '#value' => $this->t('No'),
+      '#value' => $this->t('Cancel'),
       '#weight' => -10,
       '#ajax' => ['callback' => '::closeDialog']
     ];
@@ -94,33 +101,7 @@ class ProcessorDisableForm extends ConfirmFormBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getConfirmText() {
-    return $this->t('Yes, disable this processor!');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getQuestion() {
-    return $this->t('Are you sure you want to disable the @label processor?', ['@label' => $this->processor->getTitle()]);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCancelUrl() {
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function submitForm(array &$form, FormStateInterface $form_state) {}
-
-  /**
-   * Disable the processor.
+   * Add the processor.
    *
    * @param array $form
    *   An associative array containing the structure of the form.
@@ -129,11 +110,16 @@ class ProcessorDisableForm extends ConfirmFormBase {
    *
    * @return \Drupal\Core\Ajax\AjaxResponse
    */
-  public function disableProcessor(array &$form, FormStateInterface $form_state) {
+  public function addProcessor(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
+    $id = $form_state->getValue('id');
     $response->addCommand(new CloseModalDialogCommand());
-    $response->addCommand(new ReloadConfigFormCommand('edit-processors'));
-    $this->processor->disable();
+    if (in_array($id, $this->purgeProcessors->getPluginsAvailable())) {
+      $enabled = $this->purgeProcessors->getPluginsEnabled();
+      $enabled[] = $id;
+      $this->purgeProcessors->setPluginsEnabled($enabled);
+      $response->addCommand(new ReloadConfigFormCommand('edit-processors'));
+    }
     return $response;
   }
 

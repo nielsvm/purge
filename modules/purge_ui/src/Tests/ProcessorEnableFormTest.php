@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\ProcessorEnableFormTest.
+ * Contains \Drupal\purge_ui\Tests\ProcessorAddFormTest.
  */
 
 namespace Drupal\purge_ui\Tests;
@@ -11,11 +11,11 @@ use Drupal\Core\Url;
 use Drupal\purge\Tests\WebTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Form\ProcessorEnableForm.
+ * Tests \Drupal\purge_ui\Form\ProcessorAddForm.
  *
  * @group purge_ui
  */
-class ProcessorEnableFormTest extends WebTestBase {
+class ProcessorAddFormTest extends WebTestBase {
 
   /**
    * @var \Drupal\user\Entity\User
@@ -27,7 +27,7 @@ class ProcessorEnableFormTest extends WebTestBase {
    *
    * @var string
    */
-  protected $route = 'purge_ui.processor_enable_form';
+  protected $route = 'purge_ui.processor_add_form';
 
   /**
    * Modules to enable.
@@ -71,7 +71,7 @@ class ProcessorEnableFormTest extends WebTestBase {
   /**
    * Tests that the cancel button closes the dialog.
    *
-   * @see \Drupal\purge_ui\Form\ProcessorEnableForm::buildForm
+   * @see \Drupal\purge_ui\Form\ProcessorAddForm::buildForm
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testCancelAndEnabling() {

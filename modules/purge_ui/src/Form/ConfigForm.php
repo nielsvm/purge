@@ -66,13 +66,13 @@ class ConfigForm extends ConfigFormBase {
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface $purge_invalidation_factory
    *   The invalidation objects factory service.
    * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface $purge_processors
-   *   The purge processors registry service.
+   *   The purge processors service.
    * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
    *   The purger service.
    * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $purge_queue
    *   The purge queue service.
    * @param \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface $purge_queuers
-   *   The purge queuers registry service.
+   *   The purge queuers service.
    */
   public function __construct(DiagnosticsServiceInterface $purge_diagnostics, InvalidationsServiceInterface $purge_invalidation_factory, ProcessorsServiceInterface $purge_processors, PurgersServiceInterface $purge_purgers, QueueServiceInterface $purge_queue, QueuersServiceInterface $purge_queuers) {
     $this->purgeDiagnostics = $purge_diagnostics;
@@ -177,7 +177,7 @@ class ConfigForm extends ConfigFormBase {
   }
 
   /**
-   * Visualize the queuers that are registered and adding things to the queue.
+   * Visualize enabled queuers.
    *
    * @param array &$form
    *   An associative array containing the structure of the form.
@@ -187,33 +187,48 @@ class ConfigForm extends ConfigFormBase {
    * @return void
    */
   protected function buildFormQueuers(array &$form, FormStateInterface $form_state) {
-    $available = $this->purgeQueuers->getDisabled();
-    $enabled = $this->purgeQueuers->getEnabled();
+    $available = $this->purgeQueuers->getPluginsAvailable();
     $form['queuers'] = [
       '#description' => '<p>' . $this->t('Queuers queue items in the queue upon certain events.') . '</p>',
       '#type' => 'details',
       '#title' => t('Queuers'),
-      '#open' => $this->getRequest()->get('edit-queuers', FALSE) || (!count($enabled)),
+      '#open' => $this->getRequest()->get('edit-queuers', FALSE) || (!count($this->purgeQueuers)),
     ];
-    if (count($enabled)) {
+    if (count($this->purgeQueuers)) {
+      $add_delete_link = function(&$links, $id) {
+        $links['delete'] = $this->getDialogButton(
+          $this->t("Remove"),
+          Url::fromRoute('purge_ui.queuer_delete_form',
+          ['id' => $id]),
+          '40%'
+        );
+      };
+      $add_configure_link = function(&$links, $queuer) {
+        $definition = $queuer->getPluginDefinition();
+        if (isset($definition['configform']) && !empty($definition['configform'])) {
+          $url = Url::fromRoute('purge_ui.queuer_config_dialog_form', ['id' => $queuer->getPluginId()]);
+          $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
+        }
+      };
       $form['queuers']['table'] = [
         '#type' => 'table',
         '#responsive' => TRUE,
         '#header' => [
           'title' => $this->t('Queuer'),
-          'id' => ['data' => $this->t('Container ID'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
           'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
           'operations' => $this->t('Operations'),
         ],
       ];
-      foreach ($enabled as $id => $queuer) {
+      foreach ($this->purgeQueuers as $queuer) {
+        $id = $queuer->getPluginId();
+        $ops = [];
+        $add_delete_link($ops, $id);
+        $add_configure_link($ops, $queuer);
         $form['queuers']['table']['#rows'][$id] = [
-          'id' => $id,
           'data' => [
-            'title' => ['data' => ['#markup' => $queuer->getTitle()]],
-            'id' => ['data' => ['#markup' => SafeMarkup::checkPlain($id)]],
+            'title' => ['data' => ['#markup' => $queuer->getLabel()]],
             'description' => ['data' => ['#markup' => $queuer->getDescription()]],
-            'operations' => ['data' => ['#type' => 'operations', '#links' => ['disable' => $this->getDialogButton($this->t("Disable"), Url::fromRoute('purge_ui.queuer_disable_form', ['id' => $id]), '40%')]]],
+            'operations' => ['data' => ['#type' => 'operations', '#links' => $ops]],
           ],
         ];
       }
@@ -221,10 +236,10 @@ class ConfigForm extends ConfigFormBase {
     if (count($available)) {
       $form['queuers']['add'] = [
         '#type' => 'operations',
-        '#links' => [$this->getDialogButton($this->t("Add queuer"), Url::fromRoute('purge_ui.queuer_enable_form'), '40%')]
+        '#links' => [$this->getDialogButton($this->t("Add queuer"), Url::fromRoute('purge_ui.queuer_add_form'), '40%')]
       ];
     }
-    elseif (!count($enabled)) {
+    elseif (!count($this->purgeQueuers)) {
       $form['queuers']['#description'] = '<p><b>' . $this->t("No queuers available, install module(s) that provide them!") . '</b></p>';
     }
   }
@@ -269,7 +284,7 @@ class ConfigForm extends ConfigFormBase {
   }
 
   /**
-   * List all enabled processors.
+   * Visualize enabled processors.
    *
    * @param array &$form
    *   An associative array containing the structure of the form.
@@ -279,33 +294,48 @@ class ConfigForm extends ConfigFormBase {
    * @return void
    */
   protected function buildFormProcessors(array &$form, FormStateInterface $form_state) {
-    $available = $this->purgeProcessors->getDisabled();
-    $enabled = $this->purgeProcessors->getEnabled();
+    $available = $this->purgeProcessors->getPluginsAvailable();
     $form['processors'] = [
       '#description' => '<p>' . $this->t('Processors queue items in the queue upon certain events.') . '</p>',
       '#type' => 'details',
       '#title' => t('Processors'),
-      '#open' => $this->getRequest()->get('edit-processors', FALSE) || (!count($enabled)),
+      '#open' => $this->getRequest()->get('edit-processors', FALSE) || (!count($this->purgeProcessors)),
     ];
-    if (count($enabled)) {
+    if (count($this->purgeProcessors)) {
+      $add_delete_link = function(&$links, $id) {
+        $links['delete'] = $this->getDialogButton(
+          $this->t("Remove"),
+          Url::fromRoute('purge_ui.processor_delete_form',
+          ['id' => $id]),
+          '40%'
+        );
+      };
+      $add_configure_link = function(&$links, $processor) {
+        $definition = $processor->getPluginDefinition();
+        if (isset($definition['configform']) && !empty($definition['configform'])) {
+          $url = Url::fromRoute('purge_ui.processor_config_dialog_form', ['id' => $processor->getPluginId()]);
+          $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
+        }
+      };
       $form['processors']['table'] = [
         '#type' => 'table',
         '#responsive' => TRUE,
         '#header' => [
           'title' => $this->t('Processor'),
-          'id' => ['data' => $this->t('Container ID'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
           'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
           'operations' => $this->t('Operations'),
         ],
       ];
-      foreach ($enabled as $id => $processor) {
+      foreach ($this->purgeProcessors as $processor) {
+        $id = $processor->getPluginId();
+        $ops = [];
+        $add_delete_link($ops, $id);
+        $add_configure_link($ops, $processor);
         $form['processors']['table']['#rows'][$id] = [
-          'id' => $id,
           'data' => [
-            'title' => ['data' => ['#markup' => $processor->getTitle()]],
-            'id' => ['data' => ['#markup' => SafeMarkup::checkPlain($id)]],
+            'title' => ['data' => ['#markup' => $processor->getLabel()]],
             'description' => ['data' => ['#markup' => $processor->getDescription()]],
-            'operations' => ['data' => ['#type' => 'operations', '#links' => ['disable' => $this->getDialogButton($this->t("Disable"), Url::fromRoute('purge_ui.processor_disable_form', ['id' => $id]), '40%')]]],
+            'operations' => ['data' => ['#type' => 'operations', '#links' => $ops]],
           ],
         ];
       }
@@ -313,10 +343,10 @@ class ConfigForm extends ConfigFormBase {
     if (count($available)) {
       $form['processors']['add'] = [
         '#type' => 'operations',
-        '#links' => [$this->getDialogButton($this->t("Add processor"), Url::fromRoute('purge_ui.processor_enable_form'), '40%')]
+        '#links' => [$this->getDialogButton($this->t("Add processor"), Url::fromRoute('purge_ui.processor_add_form'), '40%')]
       ];
     }
-    elseif (!count($enabled)) {
+    elseif (!count($this->purgeProcessors)) {
       $form['processors']['#description'] = '<p><b>' . $this->t("No processors available, install module(s) that provide them!") . '</b></p>';
     }
   }

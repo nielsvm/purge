@@ -14,8 +14,8 @@ use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
 
 /**
  * Controller for:
- *  - \Drupal\purge_ui\Form\ProcessorDisableForm.
- *  - \Drupal\purge_ui\Form\ProcessorEnableForm.
+ *  - \Drupal\purge_ui\Form\ProcessorDeleteForm.
+ *  - \Drupal\purge_ui\Form\ProcessorAddForm.
  */
 class ProcessorFormController extends ControllerBase {
 
@@ -42,17 +42,26 @@ class ProcessorFormController extends ControllerBase {
   }
 
   /**
-   * Render the processor disable form.
+   * Render the processor configuration form.
    *
    * @param string $id
-   *   The container id of the processor to retrieve.
+   *   The plugin id of the processor to retrieve.
+   * @param bool $dialog
+   *   Determines if the modal dialog variant of the form should be rendered.
    *
    * @return array
    */
-  public function disableForm($id) {
-    if ($processor = $this->purgeProcessors->get($id)) {
-      if ($this->purgeProcessors->get($id)->isEnabled()) {
-        return $this->formBuilder()->getForm("\Drupal\purge_ui\Form\ProcessorDisableForm", $id);
+  public function configForm($id, $dialog) {
+    if ($this->purgeProcessors->isPluginEnabled($id)) {
+      $definition = $this->purgeProcessors->getPlugins()[$id];
+      if (isset($definition['configform']) && !empty($definition['configform'])) {
+        return $this->formBuilder()->getForm(
+          $definition['configform'],
+          [
+            'id' => $id,
+            'dialog' => $dialog
+          ]
+        );
       }
     }
     throw new NotFoundHttpException();
@@ -62,26 +71,61 @@ class ProcessorFormController extends ControllerBase {
    * Route title callback.
    *
    * @param string $id
-   *   The container id of the processor to retrieve.
+   *   The plugin id of the processor to retrieve.
    *
    * @return \Drupal\Core\StringTranslation\TranslationWrapper
    *   The page title.
    */
-  public function disableFormTitle($id) {
-    if ($processor = $this->purgeProcessors->get($id)) {
-      return $this->t('Disable @label', ['@label' => $processor->getTitle()]);
+  public function configFormTitle($id) {
+    if ($this->purgeProcessors->isPluginEnabled($id)) {
+      $definition = $this->purgeProcessors->getPlugins()[$id];
+      if (isset($definition['configform']) && !empty($definition['configform'])) {
+        return $this->t('Configure @label', ['@label' => $definition['label']]);
+      }
     }
-    return $this->t('Disable');
+    return $this->t('Configure');
   }
 
   /**
-   * Render the processor enable form.
+   * Render the processor delete form.
+   *
+   * @param string $id
+   *   The plugin id of the processor to retrieve.
    *
    * @return array
    */
-  public function enableForm() {
-    if ($this->purgeProcessors->getDisabled()) {
-      return $this->formBuilder()->getForm("Drupal\purge_ui\Form\ProcessorEnableForm");
+  public function deleteForm($id) {
+    if ($this->purgeProcessors->isPluginEnabled($id)) {
+      return $this->formBuilder()->getForm("\Drupal\purge_ui\Form\ProcessorDeleteForm", $id);
+    }
+    throw new NotFoundHttpException();
+  }
+
+  /**
+   * Route title callback.
+   *
+   * @param string $id
+   *   The plugin id of the processor to retrieve.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   *   The page title.
+   */
+  public function deleteFormTitle($id) {
+    if ($this->purgeProcessors->isPluginEnabled($id)) {
+      $label = $this->purgeProcessors->getPlugins()[$id]['label'];
+      return $this->t('Delete @label', ['@label' => $label]);
+    }
+    return $this->t('Delete');
+  }
+
+  /**
+   * Render the processor add form.
+   *
+   * @return array
+   */
+  public function addForm() {
+    if (count($this->purgeProcessors->getPluginsAvailable())) {
+      return $this->formBuilder()->getForm("Drupal\purge_ui\Form\ProcessorAddForm");
     }
     throw new NotFoundHttpException();
   }

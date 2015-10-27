@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Form\ProcessorEnableForm.
+ * Contains \Drupal\purge_ui\Form\ProcessorDeleteForm.
  */
 
 namespace Drupal\purge_ui\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
@@ -17,9 +17,9 @@ use Drupal\purge_ui\Form\CloseDialogTrait;
 use Drupal\purge_ui\Form\ReloadConfigFormCommand;
 
 /**
- * Enable a processor service.
+ * Delete processor {id}.
  */
-class ProcessorEnableForm extends ConfigFormBase {
+class ProcessorDeleteForm extends ConfirmFormBase {
   use CloseDialogTrait;
 
   /**
@@ -28,10 +28,17 @@ class ProcessorEnableForm extends ConfigFormBase {
   protected $purgeProcessors;
 
   /**
-   * Constructs a ProcessorEnableForm object.
+   * The processor object to be deleted.
+   *
+   * @var \Drupal\purge\Plugin\Purge\Processor\ProcessorInterface
+   */
+  protected $processor;
+
+  /**
+   * Constructs a ProcessorDeleteForm object.
    *
    * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface $purge_processors
-   *   The purge processors registry service.
+   *   The purge processors service.
    *
    * @return void
    */
@@ -46,7 +53,6 @@ class ProcessorEnableForm extends ConfigFormBase {
     return new static($container->get('purge.processors'));
   }
 
-
   /**
    * {@inheritdoc}
    */
@@ -58,38 +64,29 @@ class ProcessorEnableForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormID() {
-    return 'purge_ui.processor_enable_form';
+    return 'purge_ui.processor_delete_form';
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $this->processor = $this->purgeProcessors->get($form_state->getBuildInfo()['args'][0]);
     $form = parent::buildForm($form, $form_state);
-    $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
 
-    // List all available processor services.
-    $options = [];
-    foreach ($this->purgeProcessors->getDisabled() as $id => $processor) {
-      $options[$id] = t("@title: @description", ['@title' => $processor->getTitle(), '@description' => $processor->getDescription()]);
-    }
-    $form['id'] = [
-      '#default_value' => count($options) ? key($options) : NULL,
-      '#type' => 'radios',
-      '#options' => $options
-    ];
+    // This is rendered as a modal dialog, so we need to set some extras.
+    $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
 
     // Update the buttons and bind callbacks.
     $form['actions']['submit'] = [
-      '#access' => count($options),
       '#type' => 'submit',
       '#button_type' => 'primary',
-      '#value' => $this->t("Add"),
-      '#ajax' => ['callback' => '::enableProcessor']
+      '#value' => $this->getConfirmText(),
+      '#ajax' => ['callback' => '::deleteProcessor']
     ];
     $form['actions']['cancel'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Cancel'),
+      '#value' => $this->t('No'),
       '#weight' => -10,
       '#ajax' => ['callback' => '::closeDialog']
     ];
@@ -97,7 +94,33 @@ class ProcessorEnableForm extends ConfigFormBase {
   }
 
   /**
-   * Enable the processor service.
+   * {@inheritdoc}
+   */
+  public function getConfirmText() {
+    return $this->t('Yes, delete this processor!');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getQuestion() {
+    return $this->t('Are you sure you want to delete the @label processor?', ['@label' => $this->processor->getLabel()]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCancelUrl() {
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {}
+
+  /**
+   * Delete the processor.
    *
    * @param array $form
    *   An associative array containing the structure of the form.
@@ -106,14 +129,20 @@ class ProcessorEnableForm extends ConfigFormBase {
    *
    * @return \Drupal\Core\Ajax\AjaxResponse
    */
-  public function enableProcessor(array &$form, FormStateInterface $form_state) {
+  public function deleteProcessor(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
-    $id = $form_state->getValue('id');
-    $response->addCommand(new CloseModalDialogCommand());
-    if (isset($this->purgeProcessors->getDisabled()[$id])) {
-      $this->purgeProcessors->get($id)->enable();
-      $response->addCommand(new ReloadConfigFormCommand('edit-purgers'));
+    $enabled = $this->purgeProcessors->getPluginsEnabled();
+    $id = $form_state->getBuildInfo()['args'][0];
+    if (in_array($id, $enabled)) {
+      foreach ($enabled as $i => $plugin_id) {
+        if ($id === $plugin_id) {
+          unset($enabled[$i]);
+        }
+      }
+      $this->purgeProcessors->setPluginsEnabled($enabled);
+      $response->addCommand(new ReloadConfigFormCommand('edit-processors'));
     }
+    $response->addCommand(new CloseModalDialogCommand());
     return $response;
   }
 

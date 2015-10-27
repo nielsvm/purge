@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Form\QueuerDisableForm.
+ * Contains \Drupal\purge_ui\Form\QueuerAddForm.
  */
 
 namespace Drupal\purge_ui\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\ConfirmFormBase;
+use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
@@ -17,9 +17,9 @@ use Drupal\purge_ui\Form\CloseDialogTrait;
 use Drupal\purge_ui\Form\ReloadConfigFormCommand;
 
 /**
- * Disable the {id} queuer service.
+ * Add a queuer.
  */
-class QueuerDisableForm extends ConfirmFormBase {
+class QueuerAddForm extends ConfigFormBase {
   use CloseDialogTrait;
 
   /**
@@ -28,17 +28,10 @@ class QueuerDisableForm extends ConfirmFormBase {
   protected $purgeQueuers;
 
   /**
-   * The queuer object to be disabled.
-   *
-   * @var \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface
-   */
-  protected $queuer;
-
-  /**
-   * Constructs a QueuerDisableForm object.
+   * Constructs a QueuerAddForm object.
    *
    * @param \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface $purge_queuers
-   *   The purge queuers registry service.
+   *   The purge queuers service.
    *
    * @return void
    */
@@ -53,6 +46,7 @@ class QueuerDisableForm extends ConfirmFormBase {
     return new static($container->get('purge.queuers'));
   }
 
+
   /**
    * {@inheritdoc}
    */
@@ -64,29 +58,42 @@ class QueuerDisableForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getFormID() {
-    return 'purge_ui.queuer_disable_form';
+    return 'purge_ui.queuer_add_form';
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $this->queuer = $this->purgeQueuers->get($form_state->getBuildInfo()['args'][0]);
+    $definitions = $this->purgeQueuers->getPlugins();
     $form = parent::buildForm($form, $form_state);
-
-    // This is rendered as a modal dialog, so we need to set some extras.
     $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
+
+    // List all available queuers.
+    $options = [];
+    foreach ($this->purgeQueuers->getPluginsAvailable() as $plugin_id) {
+      $options[$plugin_id] = t("@label: @description", [
+        '@label' => $definitions[$plugin_id]['label'],
+        '@description' => $definitions[$plugin_id]['description']
+      ]);
+    }
+    $form['id'] = [
+      '#default_value' => count($options) ? key($options) : NULL,
+      '#type' => 'radios',
+      '#options' => $options
+    ];
 
     // Update the buttons and bind callbacks.
     $form['actions']['submit'] = [
+      '#access' => count($options),
       '#type' => 'submit',
       '#button_type' => 'primary',
-      '#value' => $this->getConfirmText(),
-      '#ajax' => ['callback' => '::disableQueuer']
+      '#value' => $this->t("Add"),
+      '#ajax' => ['callback' => '::addQueuer']
     ];
     $form['actions']['cancel'] = [
       '#type' => 'submit',
-      '#value' => $this->t('No'),
+      '#value' => $this->t('Cancel'),
       '#weight' => -10,
       '#ajax' => ['callback' => '::closeDialog']
     ];
@@ -94,33 +101,7 @@ class QueuerDisableForm extends ConfirmFormBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getConfirmText() {
-    return $this->t('Yes, disable this queuer!');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getQuestion() {
-    return $this->t('Are you sure you want to disable the @label queuer?', ['@label' => $this->queuer->getTitle()]);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCancelUrl() {
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function submitForm(array &$form, FormStateInterface $form_state) {}
-
-  /**
-   * Disable the queuer.
+   * Add the queuer.
    *
    * @param array $form
    *   An associative array containing the structure of the form.
@@ -129,11 +110,16 @@ class QueuerDisableForm extends ConfirmFormBase {
    *
    * @return \Drupal\Core\Ajax\AjaxResponse
    */
-  public function disableQueuer(array &$form, FormStateInterface $form_state) {
+  public function addQueuer(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
+    $id = $form_state->getValue('id');
     $response->addCommand(new CloseModalDialogCommand());
-    $response->addCommand(new ReloadConfigFormCommand('edit-queuers'));
-    $this->queuer->disable();
+    if (in_array($id, $this->purgeQueuers->getPluginsAvailable())) {
+      $enabled = $this->purgeQueuers->getPluginsEnabled();
+      $enabled[] = $id;
+      $this->purgeQueuers->setPluginsEnabled($enabled);
+      $response->addCommand(new ReloadConfigFormCommand('edit-queuers'));
+    }
     return $response;
   }
 

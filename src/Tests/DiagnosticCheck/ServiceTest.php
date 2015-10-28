@@ -122,8 +122,8 @@ class ServiceTest extends KernelServiceTestBase {
     $this->initializeService();
     $this->assertTrue($this->service instanceof \Iterator);
     $items = 0;
-    foreach ($this->service as $check) {
-      $this->assertTrue($check instanceof DiagnosticCheckInterface);
+    foreach ($this->service as $instance) {
+      $this->assertTrue($instance instanceof DiagnosticCheckInterface);
       $items++;
     }
     $this->assertEqual(9, $items);

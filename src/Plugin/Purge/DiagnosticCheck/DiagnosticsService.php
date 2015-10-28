@@ -61,7 +61,7 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
    * @ingroup countable
    */
   public function count() {
-    $this->initializeChecks();
+    $this->initializePluginInstances();
     return count($this->instances);
   }
 
@@ -69,7 +69,7 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
    * {@inheritdoc}
    */
   public function getHookRequirementsArray() {
-    $this->initializeChecks();
+    $this->initializePluginInstances();
     $requirements = [];
     foreach ($this as $check) {
       $requirements[$check->getPluginId()] = $check->getHookRequirementsArray();

@@ -34,44 +34,51 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests the \Iterator implementation, ::getEnabled and ::getDisabled.
+   * Tests \Drupal\purge\Plugin\Purge\Queuer\QueuersService::count
    */
-  public function testWholeService() {
+  public function testCount() {
     $this->initializeService();
-    // Tests \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface::current
-    // Tests \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface::key
-    // Tests \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface::next
-    // Tests \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface::rewind
-    // Tests \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface::valid
+    $this->assertTrue($this->service instanceof \Countable);
+    $this->assertEqual(2, count($this->service));
+  }
+
+  /**
+   * Tests \Drupal\purge\Plugin\Purge\Processor\QueuersService::get
+   */
+  public function testGet() {
+    $this->initializeService();
+    $this->assertTrue($this->service->get('a') instanceof QueuerInterface);
+    $this->assertTrue($this->service->get('b') instanceof QueuerInterface);
+    $this->assertFalse($this->service->get('c'));
+    $this->service->setPluginsEnabled(['c']);
+    $this->assertTrue($this->service->get('c') instanceof QueuerInterface);
+  }
+
+  /**
+   * Tests the \Iterator implementation.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Queuer\QueuersService::current
+   * @see \Drupal\purge\Plugin\Purge\Queuer\QueuersService::key
+   * @see \Drupal\purge\Plugin\Purge\Queuer\QueuersService::next
+   * @see \Drupal\purge\Plugin\Purge\Queuer\QueuersService::rewind
+   * @see \Drupal\purge\Plugin\Purge\Queuer\QueuersService::valid
+   */
+  public function testIteration() {
+    $this->initializeService();
     $this->assertTrue($this->service instanceof \Iterator);
     $items = 0;
-    foreach ($this->service as $id => $queuer) {
-      $this->assertTrue($queuer instanceof QueuerInterface);
-      $this->assertTrue(in_array($id, [
-        'purge.queuers.cache_tags',
-        'a',
-        'b',
-        'c']));
+    foreach ($this->service as $instance) {
+      $this->assertTrue($instance instanceof QueuerInterface);
       $items++;
     }
-    $this->assertEqual(4, $items);
+    $this->assertEqual(2, $items);
     $this->assertFalse($this->service->current());
     $this->assertFalse($this->service->valid());
     $this->assertNull($this->service->rewind());
-    $this->assertEqual('purge.queuers.cache_tags', $this->service->current()->getId());
+    $this->assertEqual('b', $this->service->current()->getPluginId());
     $this->assertNull($this->service->next());
-    $this->assertEqual('a', $this->service->current()->getId());
+    $this->assertEqual('a', $this->service->current()->getPluginId());
     $this->assertTrue($this->service->valid());
-    // Tests \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface::getEnabled.
-    $this->assertEqual(2, count($this->service->getEnabled()));
-    foreach ($this->service->getEnabled() as $id => $queuer) {
-      $this->assertTrue(in_array($id, ['purge.queuers.cache_tags', 'a']), $id);
-    }
-    // Tests \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface::getDisabled
-    $this->assertEqual(2, count($this->service->getDisabled()));
-    foreach ($this->service->getDisabled() as $id => $queuer) {
-      $this->assertTrue(in_array($id, ['b', 'c']), $id);
-    }
   }
 
 }

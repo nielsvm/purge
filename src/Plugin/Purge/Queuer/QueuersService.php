@@ -85,11 +85,11 @@ class QueuersService extends ServiceBase implements QueuersServiceInterface {
       // everything that isn't enabled and finally flip the array with just ids.
       foreach ($this->configFactory->get('purge.plugins')->get('queuers') as $inst) {
         if (isset($this->plugins_enabled[$inst['plugin_id']])) {
-          $this->plugins_enabled[$inst['plugin_id']] = $inst['enabled'];
+          $this->plugins_enabled[$inst['plugin_id']] = $inst['status'];
         }
       }
-      foreach ($this->plugins_enabled as $plugin_id => $enabled) {
-        if (!$enabled) {
+      foreach ($this->plugins_enabled as $plugin_id => $status) {
+        if (!$status) {
           unset($this->plugins_enabled[$plugin_id]);
         }
       }
@@ -130,10 +130,10 @@ class QueuersService extends ServiceBase implements QueuersServiceInterface {
 
     // Convert the array to the CMI storage format and commit.
     $setting = [];
-    foreach ($setting_assoc as $plugin_id => $enabled) {
+    foreach ($setting_assoc as $plugin_id => $status) {
       $setting[] = [
         'plugin_id' => $plugin_id,
-        'enabled' => $enabled
+        'status' => $status
       ];
     }
     $this->configFactory

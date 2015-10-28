@@ -8,34 +8,19 @@ purge.plugins:
       type: sequence
       translatable: false
       sequence:
-        type: mapping
-        mapping:
-          instance_id:
-            type: string
-          plugin_id:
-            type: string
+        type: purge_plugin_purger
     processors:
       label: 'All known processor plugins (including disabled).'
       type: sequence
       translatable: false
       sequence:
-        type: mapping
-        mapping:
-          plugin_id:
-            type: string
-          enabled:
-            type: bool
+        type: purge_plugin_processor
     queuers:
       label: 'All known queuer plugins (including disabled).'
       type: sequence
       translatable: false
       sequence:
-        type: mapping
-        mapping:
-          plugin_id:
-            type: string
-          enabled:
-            type: bool
+        type: purge_plugin_queuer
     queue:
       type: string
       label: 'The currently active queue plugin.'

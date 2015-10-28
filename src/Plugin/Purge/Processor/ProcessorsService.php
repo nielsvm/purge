@@ -85,11 +85,11 @@ class ProcessorsService extends ServiceBase implements ProcessorsServiceInterfac
       // everything that isn't enabled and finally flip the array with just ids.
       foreach ($this->configFactory->get('purge.plugins')->get('processors') as $setting) {
         if (isset($this->plugins_enabled[$setting['plugin_id']])) {
-          $this->plugins_enabled[$setting['plugin_id']] = $setting['enabled'];
+          $this->plugins_enabled[$setting['plugin_id']] = $setting['status'];
         }
       }
-      foreach ($this->plugins_enabled as $plugin_id => $enabled) {
-        if (!$enabled) {
+      foreach ($this->plugins_enabled as $plugin_id => $status) {
+        if (!$status) {
           unset($this->plugins_enabled[$plugin_id]);
         }
       }
@@ -130,10 +130,10 @@ class ProcessorsService extends ServiceBase implements ProcessorsServiceInterfac
 
     // Convert the array to the CMI storage format and commit.
     $setting = [];
-    foreach ($setting_assoc as $plugin_id => $enabled) {
+    foreach ($setting_assoc as $plugin_id => $status) {
       $setting[] = [
         'plugin_id' => $plugin_id,
-        'enabled' => $enabled
+        'status' => $status
       ];
     }
     $this->configFactory

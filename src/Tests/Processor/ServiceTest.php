@@ -48,29 +48,29 @@ class ServiceTest extends KernelServiceTestBase {
     foreach ($this->service as $id => $processor) {
       $this->assertTrue($processor instanceof ProcessorInterface);
       $this->assertTrue(in_array($id, [
-        'purge_processor_test.a',
-        'purge_processor_test.b',
-        'purge_processor_test.c',
-        'purge_processor_test.d']));
+        'a',
+        'b',
+        'c',
+        'd']));
       $items++;
     }
     $this->assertEqual(4, $items);
     $this->assertFalse($this->service->current());
     $this->assertFalse($this->service->valid());
     $this->assertNull($this->service->rewind());
-    $this->assertEqual('purge_processor_test.a', $this->service->current()->getId());
+    $this->assertEqual('a', $this->service->current()->getId());
     $this->assertNull($this->service->next());
-    $this->assertEqual('purge_processor_test.b', $this->service->current()->getId());
+    $this->assertEqual('b', $this->service->current()->getId());
     $this->assertTrue($this->service->valid());
     // Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface::getEnabled.
     $this->assertEqual(2, count($this->service->getEnabled()));
     foreach ($this->service->getEnabled() as $id => $processor) {
-      $this->assertTrue(in_array($id, ['purge_processor_test.a', 'purge_processor_test.b']), $id);
+      $this->assertTrue(in_array($id, ['a', 'b']), $id);
     }
     // Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface::getDisabled
     $this->assertEqual(2, count($this->service->getDisabled()));
     foreach ($this->service->getDisabled() as $id => $processor) {
-      $this->assertTrue(in_array($id, ['purge_processor_test.c', 'purge_processor_test.d']), $id);
+      $this->assertTrue(in_array($id, ['c', 'd']), $id);
     }
   }
 

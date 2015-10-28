@@ -39,6 +39,7 @@ class ConfigFormDiagnosticReportTest extends ConfigFormTestBase {
     $this->assertRaw('edit-diagnostics');
     $this->assertRaw('system-status-report');
     $this->assertRaw('open="open"');
+    $this->assertText('When content on your website changes, your purge setup will take care of refreshing external caching systems and CDNs.');
     $this->assertText('Status');
     $this->assertText('Capacity');
     $this->assertText('Queuers');

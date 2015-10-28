@@ -48,11 +48,11 @@ class PurgerDeleteFormTest extends WebTestBase {
    * Tests permissions, the form controller and general form returning.
    */
   public function testAccess() {
-    $this->initializePurgersService(['id3' => 'c']);
-    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id3']));
+    $this->initializePurgersService(['c']);
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id0']));
     $this->assertResponse(403);
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id3']));
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id0']));
     $this->assertResponse(200);
     // Non-existing ID's also need to get passed through to the form because
     // else the submit would break exactly after the purger was deleted.
@@ -67,11 +67,11 @@ class PurgerDeleteFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testNo() {
-    $this->initializePurgersService(['id3' => 'c']);
+    $this->initializePurgersService(['c']);
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id3']));
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id0']));
     $this->assertRaw(t('No'));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'id3'])->toString(), [], ['op' => t('No')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'id0'])->toString(), [], ['op' => t('No')]);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }
@@ -83,12 +83,12 @@ class PurgerDeleteFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::deletePurger
    */
   public function testDelete() {
-    $this->initializePurgersService(['id3' => 'c']);
+    $this->initializePurgersService(['c']);
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id3']));
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id0']));
     $this->assertRaw(t('Yes, delete this purger!'));
-    $this->assertTrue(array_key_exists('id3', $this->purgePurgers->getPluginsEnabled()));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'id3'])->toString(), [], ['op' => t('Yes, delete this purger!')]);
+    $this->assertTrue(array_key_exists('id0', $this->purgePurgers->getPluginsEnabled()));
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'id0'])->toString(), [], ['op' => t('Yes, delete this purger!')]);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual('redirect', $json[2]['command']);
     $this->purgePurgers->reload();

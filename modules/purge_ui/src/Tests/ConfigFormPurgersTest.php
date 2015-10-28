@@ -25,7 +25,7 @@ class ConfigFormPurgersTest extends ConfigFormTestBase {
   public static $modules = ['purge_purger_test'];
 
   /**
-   * Test the queue section of the configuration form.
+   * Test the purgers section of the configuration form.
    *
    * @warning
    *   This test depends on raw HTML, which is a bit of a maintenance cost. At
@@ -45,14 +45,14 @@ class ConfigFormPurgersTest extends ConfigFormTestBase {
     $this->assertNoRaw('Purger C</th>');
     $this->assertNoRaw('Configurable purger</th>');
     // Assert that enabled purgers show up and have the right buttons attached.
-    $this->initializePurgersService(['id1' => 'a', 'id2' => 'withform']);
+    $this->initializePurgersService(['a', 'withform']);
     $this->drupalGet($this->route);
     $this->assertRaw('<th title="Test purger A." class="priority-medium">Purger A</th>');
     $this->assertRaw('<th title="Test purger with a form attached." class="priority-medium">Configurable purger</th>');
-    $this->assertNoRaw('href="/admin/config/development/performance/purge/purger/id1/dialog"');
+    $this->assertNoRaw('href="/admin/config/development/performance/purge/purger/id0/dialog"');
+    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id0/delete"');
+    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id1/dialog"');
     $this->assertRaw('href="/admin/config/development/performance/purge/purger/id1/delete"');
-    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id2/dialog"');
-    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id2/delete"');
     // Assert that the purger-type supportability matrix shows the checkmarks.
     $padding = str_repeat(' ', 22);
     $unchecked = "\n$padding<td class=\"priority-medium\">&nbsp;</td>";
@@ -68,7 +68,7 @@ class ConfigFormPurgersTest extends ConfigFormTestBase {
     $this->assertRaw("Everything</td>$checked");
     // Assert that the 'Add purger' button only shows up when it actually should.
     $this->assertRaw(t('Add purger'));
-    $this->initializePurgersService(['id1' => 'a', 'id2' => 'b', 'id3' => 'c', 'id4' => 'withform', 'id5' => 'good']);
+    $this->initializePurgersService(['a', 'b', 'c', 'withform', 'good']);
     $this->drupalGet($this->route);
     $this->assertNoRaw(t('Add purger'));
   }

@@ -56,7 +56,7 @@ abstract class PurgerConfigFormTestBase extends WebTestBase {
    *
    * @var string
    */
-  protected $purgerId = 'id123';
+  protected $purgerId = 'id0';
 
   /**
    * The full class of the form being tested.
@@ -95,7 +95,7 @@ abstract class PurgerConfigFormTestBase extends WebTestBase {
 
     // Initialize the purger instance, form arguments and the form builder.
     $this->formArgs['id'] = $this->formArgsDialog['id'] = $this->purgerId;
-    $this->initializePurgersService([$this->purgerId => $this->purger]);
+    $this->initializePurgersService([$this->purger]);
     $this->formBuilder = $this->container->get('form_builder');
 
     // Instantiate the routes.

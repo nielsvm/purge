@@ -34,15 +34,24 @@ class ConfigFormProcessorsTest extends ConfigFormTestBase {
     $this->drupalGet($this->route);
     $this->assertRaw('Processors queue items in the queue upon certain events.');
     $this->assertRaw('Add processor');
-    $this->assertRaw('purge_processor_test.a');
+    $this->assertRaw('href="/admin/config/development/performance/purge/processor/a/delete"');
+    $this->assertNoRaw('href="/admin/config/development/performance/purge/processor/a/dialog"');
     $this->assertRaw('Processor A');
-    $this->assertRaw('href="/admin/config/development/performance/purge/processor/purge_processor_test.a/disable"');
-    $this->assertRaw('purge_processor_test.b');
+    $this->assertRaw('Test processor A.');
+    $this->assertRaw('href="/admin/config/development/performance/purge/processor/b/delete"');
+    $this->assertNoRaw('href="/admin/config/development/performance/purge/processor/b/dialog"');
     $this->assertRaw('Processor B');
-    $this->assertRaw("A processor that doesn't process but still is one!");
-    $this->assertRaw('href="/admin/config/development/performance/purge/processor/purge_processor_test.b/disable"');
+    $this->assertRaw('Test processor B.');
+    $this->assertNoRaw('href="/admin/config/development/performance/purge/processor/c/delete"');
+    $this->assertNoRaw('href="/admin/config/development/performance/purge/processor/c/dialog"');
     $this->assertNoRaw('Processor C');
-    $this->assertNoRaw('Processor D');
+    $this->assertNoRaw('Test processor C.');
+    $this->initializeProcessorsService(['withform']);
+    $this->drupalGet($this->route);
+    $this->assertRaw('href="/admin/config/development/performance/purge/processor/withform/delete"');
+    $this->assertRaw('href="/admin/config/development/performance/purge/processor/withform/dialog"');
+    $this->assertRaw('Processor with form');
+    $this->assertRaw('Test processor with a configuration form.');
   }
 
 }

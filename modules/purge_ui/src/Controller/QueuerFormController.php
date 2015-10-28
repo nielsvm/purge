@@ -42,6 +42,18 @@ class QueuerFormController extends ControllerBase {
   }
 
   /**
+   * Render the queuer add form.
+   *
+   * @return array
+   */
+  public function addForm() {
+    if (count($this->purgeQueuers->getPluginsAvailable())) {
+      return $this->formBuilder()->getForm("Drupal\purge_ui\Form\QueuerAddForm");
+    }
+    throw new NotFoundHttpException();
+  }
+
+  /**
    * Render the queuer configuration form.
    *
    * @param string $id
@@ -116,18 +128,6 @@ class QueuerFormController extends ControllerBase {
       return $this->t('Delete @label', ['@label' => $label]);
     }
     return $this->t('Delete');
-  }
-
-  /**
-   * Render the queuer add form.
-   *
-   * @return array
-   */
-  public function addForm() {
-    if (count($this->purgeQueuers->getPluginsAvailable())) {
-      return $this->formBuilder()->getForm("Drupal\purge_ui\Form\QueuerAddForm");
-    }
-    throw new NotFoundHttpException();
   }
 
 }

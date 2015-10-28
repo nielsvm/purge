@@ -44,6 +44,18 @@ class PurgerFormController extends ControllerBase {
   }
 
   /**
+   * Render the purger add form.
+   *
+   * @return array
+   */
+  public function addForm() {
+    if (count($this->purgePurgers->getPluginsAvailable())) {
+      return $this->formBuilder()->getForm("Drupal\purge_ui\Form\PurgerAddForm");
+    }
+    throw new NotFoundHttpException();
+  }
+
+  /**
    * Retrieve the plugin definition for the given instance ID.
    *
    * @param string $id

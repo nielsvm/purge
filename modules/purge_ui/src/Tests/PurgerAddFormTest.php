@@ -34,7 +34,7 @@ class PurgerAddFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_purger_test', 'purge_ui'];
+  public static $modules = ['purge_ui', 'purge_purger_test'];
 
   /**
    * Setup the test.
@@ -42,36 +42,40 @@ class PurgerAddFormTest extends WebTestBase {
   function setUp() {
     parent::setUp();
     $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
-    if (is_string($this->route)) {
-      $this->route = Url::fromRoute($this->route);
-    }
   }
 
   /**
    * Tests permissions, the form controller and general form returning.
    */
   public function testAccess() {
-    $this->drupalGet($this->route);
+    $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(403);
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet($this->route);
+    $this->initializePurgersService([]);
+    $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(200);
+    $this->initializePurgersService(['a', 'b', 'c']);
+    $this->drupalGet(Url::fromRoute($this->route));
+    $this->assertResponse(200);
+    $this->initializePurgersService(['a', 'b', 'c', 'withform', 'good']);
+    $this->drupalGet(Url::fromRoute($this->route));
+    $this->assertResponse(404);
+    $this->initializePurgersService(['a', 'b']);
   }
 
   /**
-   * Tests that clicking the add button, adds a purger and closes the screen.
+   * Tests clicking the add button, adds it and closes the screen.
    *
-   * @see \Drupal\purge_ui\Form\PurgerConfigFormBase::buildForm
+   * @see \Drupal\purge_ui\Form\PurgerAddForm::buildForm
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::addPurger
    */
   public function testAdd() {
-    $this->initializePurgersService();
+    $this->initializePurgersService(['a', 'withform', 'good']);
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet($this->route);
+    $this->drupalGet(Url::fromRoute($this->route));
     $this->assertRaw(t('Add'));
-    $this->assertTrue(is_array($this->purgePurgers->getPluginsEnabled()));
-    $this->assertTrue(empty($this->purgePurgers->getPluginsEnabled()));
-    $json = $this->drupalPostAjaxForm($this->route->toString(), ['plugin_id' => 'c'], ['op' => t('Add')]);
+    $this->assertTrue(count($this->purgePurgers->getPluginsEnabled()) === 3);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['plugin_id' => 'c'], ['op' => t('Add')]);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual('redirect', $json[2]['command']);
     $this->purgePurgers->reload();
@@ -82,42 +86,27 @@ class PurgerAddFormTest extends WebTestBase {
   /**
    * Tests that the cancel button closes the dialog.
    *
-   * @see \Drupal\purge_ui\Form\PurgerConfigFormBase::buildForm
+   * @see \Drupal\purge_ui\Form\PurgerAddForm::buildForm
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testCancel() {
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet($this->route);
+    $this->drupalGet(Url::fromRoute($this->route));
     $this->assertRaw(t('Cancel'));
-    $json = $this->drupalPostAjaxForm($this->route->toString(), [], ['op' => t('Cancel')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('Cancel')]);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }
 
   /**
-   * Tests that the 'plugin_id' field shows no purgers when all non multi-
-   * instantiable purgers are in use.
-   *
-   * @see \Drupal\purge_ui\Form\PurgerConfigFormBase::buildForm
-   */
-  public function testNoAvailablePurgers() {
-    $this->drupalLogin($this->admin_user);
-    $this->initializePurgersService(['id1' => 'a', 'id2' => 'b', 'id3' => 'c', 'id4' => 'withform', 'id5' => 'good']);
-    $this->drupalGet($this->route);
-    $this->assertNoFieldByName('plugin_id');
-    $this->assertFieldByName('op', t('Cancel'));
-    $this->assertNoFieldByName('op', t('Add'));
-  }
-
-  /**
    * Tests the 'plugin_id' form element for listing only available purgers.
    *
-   * @see \Drupal\purge_ui\Form\PurgerConfigFormBase::buildForm
+   * @see \Drupal\purge_ui\Form\PurgerAddForm::buildForm
    */
   public function testTwoAvailablePurgers() {
-    $this->initializePurgersService(['id3' => 'c', 'id4' => 'withform']);
+    $this->initializePurgersService(['c', 'withform']);
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet($this->route);
+    $this->drupalGet(Url::fromRoute($this->route));
     $this->assertFieldByName('plugin_id');
     $this->assertText('Purger A');
     $this->assertText('Purger B');

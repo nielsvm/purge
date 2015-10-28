@@ -49,9 +49,9 @@ class ServiceTest extends KernelServiceTestBase {
       $this->assertTrue($queuer instanceof QueuerInterface);
       $this->assertTrue(in_array($id, [
         'purge.queuers.cache_tags',
-        'purge_queuer_test.queuera',
-        'purge_queuer_test.queuerb',
-        'purge_queuer_test.queuerc']));
+        'a',
+        'b',
+        'c']));
       $items++;
     }
     $this->assertEqual(4, $items);
@@ -60,17 +60,17 @@ class ServiceTest extends KernelServiceTestBase {
     $this->assertNull($this->service->rewind());
     $this->assertEqual('purge.queuers.cache_tags', $this->service->current()->getId());
     $this->assertNull($this->service->next());
-    $this->assertEqual('purge_queuer_test.queuera', $this->service->current()->getId());
+    $this->assertEqual('a', $this->service->current()->getId());
     $this->assertTrue($this->service->valid());
     // Tests \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface::getEnabled.
     $this->assertEqual(2, count($this->service->getEnabled()));
     foreach ($this->service->getEnabled() as $id => $queuer) {
-      $this->assertTrue(in_array($id, ['purge.queuers.cache_tags', 'purge_queuer_test.queuera']), $id);
+      $this->assertTrue(in_array($id, ['purge.queuers.cache_tags', 'a']), $id);
     }
     // Tests \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface::getDisabled
     $this->assertEqual(2, count($this->service->getDisabled()));
     foreach ($this->service->getDisabled() as $id => $queuer) {
-      $this->assertTrue(in_array($id, ['purge_queuer_test.queuerb', 'purge_queuer_test.queuerc']), $id);
+      $this->assertTrue(in_array($id, ['b', 'c']), $id);
     }
   }
 

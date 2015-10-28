@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\PurgerConfigFormTest.
+ * Contains \Drupal\purge_ui\Tests\ProcessorConfigFormTest.
  */
 
 namespace Drupal\purge_ui\Tests;
@@ -11,14 +11,14 @@ use Drupal\Core\Url;
 use Drupal\purge\Tests\WebTestBase;
 
 /**
- * Tests the drop-in configuration form for purgers (modal dialog).
+ * Tests the drop-in configuration form for processors (modal dialog).
  *
  * @group purge_ui
  * @see \Drupal\purge_ui\Form\ConfigForm
- * @see \Drupal\purge_ui\Controller\PurgerFormController
- * @see \Drupal\purge_ui\Form\PurgerConfigFormBase
+ * @see \Drupal\purge_ui\Controller\ProcessorFormController
+ * @see \Drupal\purge_ui\Form\ProcessorConfigFormBase
  */
-class PurgerConfigFormTest extends WebTestBase {
+class ProcessorConfigFormTest extends WebTestBase {
 
   /**
    * @var \Drupal\user\Entity\User
@@ -26,25 +26,25 @@ class PurgerConfigFormTest extends WebTestBase {
   protected $admin_user;
 
   /**
-   * Name of the purger plugin that does have a form configured.
+   * Name of the processor plugin that does have a form configured.
    *
    * @var string
    */
-  protected $purger = 'withform';
+  protected $processor = 'withform';
 
   /**
-   * The route to a purgers configuration form (takes argument 'id').
+   * The route to a processors configuration form (takes argument 'id').
    *
    * @var string
    */
-  protected $route = 'purge_ui.purger_config_form';
+  protected $route = 'purge_ui.processor_config_form';
 
   /**
-   * The route to a purgers configuration form (takes argument 'id') - dialog.
+   * The route to a processors configuration form (takes argument 'id') - dialog.
    *
    * @var string
    */
-  protected $route_dialog = 'purge_ui.purger_config_dialog_form';
+  protected $route_dialog = 'purge_ui.processor_config_dialog_form';
 
   /**
    * The URL object constructed from $this->route.
@@ -72,17 +72,17 @@ class PurgerConfigFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_purger_test', 'purge_ui'];
+  public static $modules = ['purge_processor_test', 'purge_ui'];
 
   /**
    * Setup the test.
    */
   function setUp() {
     parent::setUp();
-    $this->initializePurgersService(['c', $this->purger]);
-    $this->urlValid = Url::fromRoute($this->route, ['id' => 'id1']);
-    $this->urlValidDialog = Url::fromRoute($this->route_dialog, ['id' => 'id1']);
-    $this->urlInvalid = Url::fromRoute($this->route, ['id' => 'id0']);
+    $this->initializeProcessorsService(['c', $this->processor]);
+    $this->urlValid = Url::fromRoute($this->route, ['id' => $this->processor]);
+    $this->urlValidDialog = Url::fromRoute($this->route_dialog, ['id' => $this->processor]);
+    $this->urlInvalid = Url::fromRoute($this->route, ['id' => 'c']);
     $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
   }
 

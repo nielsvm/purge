@@ -34,10 +34,7 @@ class ProcessorDeleteFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = [
-    'purge_ui',
-    'purge_processor_test'
-  ];
+  public static $modules = ['purge_ui', 'purge_processor_test'];
 
   /**
    * Setup the test.
@@ -51,12 +48,12 @@ class ProcessorDeleteFormTest extends WebTestBase {
    * Tests permissions, the form controller and general form returning.
    */
   public function testAccess() {
-    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge_processor_test.a']));
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'a']));
     $this->assertResponse(403);
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge_processor_test.a']));
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'a']));
     $this->assertResponse(200);
-    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge_processor_test.c']));
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'c']));
     $this->assertResponse(404);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => "doesnotexist"]));
     $this->assertResponse(404);
@@ -70,29 +67,27 @@ class ProcessorDeleteFormTest extends WebTestBase {
    */
   public function testNo() {
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge_processor_test.a']));
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'a']));
     $this->assertRaw(t('No'));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'purge_processor_test.a'])->toString(), [], ['op' => t('No')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'a'])->toString(), [], ['op' => t('No')]);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }
 
   /**
-   * Tests that 'Yes, disable..', disables the processor and closes the window.
+   * Tests that 'Yes, delete..', deletes the processor and closes the window.
    *
    * @see \Drupal\purge_ui\Form\ProcessorDeleteForm::buildForm
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::disableProcessor
    */
-  public function testDisableProcessor() {
-    $this->initializeProcessorsService();
+  public function testDeleteProcessor() {
     $this->drupalLogin($this->admin_user);
-    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'purge_processor_test.a']));
-    $this->assertRaw(t('Yes, disable this processor!'));
-    $this->assertTrue($this->purgeProcessors->get('purge_processor_test.a')->isEnabled());
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'purge_processor_test.a'])->toString(), [], ['op' => t('Yes, disable this processor!')]);
-    $this->assertEqual('closeDialog', $json[1]['command']);
-    $this->assertEqual('redirect', $json[2]['command']);
-    $this->assertFalse($this->configFactory->get('purge_processor_test.status')->get('a'));
+    $this->drupalGet(Url::fromRoute($this->route, ['id' => 'a']));
+    $this->assertRaw(t('Yes, delete this processor!'));
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'a'])->toString(), [], ['op' => t('Yes, delete this processor!')]);
+    $this->assertEqual('redirect', $json[1]['command']);
+    $this->assertEqual('closeDialog', $json[2]['command']);
+    $this->assertEqual(3, count($json));
   }
 
 }

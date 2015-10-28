@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\ConfigFormQueueTest.
+ * Contains \Drupal\purge_ui\Tests\Processor.
  */
 
 namespace Drupal\purge_ui\Tests;

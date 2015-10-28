@@ -52,14 +52,17 @@ trait TestTrait {
 
   /**
    * Make $this->purgeProcessors available.
+   *
+   * @param string[] $plugin_ids
+   *   Array of plugin ids to be enabled.
    */
-  protected function initializeProcessorsService() {
+  protected function initializeProcessorsService($plugin_ids = []) {
     if (is_null($this->purgeProcessors)) {
       $this->purgeProcessors = $this->container->get('purge.processors');
-      $this->purgeProcessors->reload();
     }
-    else {
+    if (count($plugin_ids)) {
       $this->purgeProcessors->reload();
+      $this->purgeProcessors->setPluginsEnabled($plugin_ids);
     }
   }
 
@@ -74,8 +77,12 @@ trait TestTrait {
       $this->purgePurgers = $this->container->get('purge.purgers');
     }
     if (count($plugin_ids)) {
+      $ids = [];
+      foreach ($plugin_ids as $i => $plugin_id) {
+        $ids["id$i"] = $plugin_id;
+      }
       $this->purgePurgers->reload();
-      $this->purgePurgers->setPluginsEnabled($plugin_ids);
+      $this->purgePurgers->setPluginsEnabled($ids);
     }
     $this->initializeDiagnosticsService();
   }
@@ -108,14 +115,17 @@ trait TestTrait {
 
   /**
    * Make $this->purgeQueuers available.
+   *
+   * @param string[] $plugin_ids
+   *   Array of plugin ids to be enabled.
    */
-  protected function initializeQueuersService() {
+  protected function initializeQueuersService($plugin_ids = []) {
     if (is_null($this->purgeQueuers)) {
       $this->purgeQueuers = $this->container->get('purge.queuers');
-      $this->purgeQueuers->reload();
     }
-    else {
+    if (count($plugin_ids)) {
       $this->purgeQueuers->reload();
+      $this->purgeQueuers->setPluginsEnabled($plugin_ids);
     }
   }
 

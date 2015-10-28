@@ -42,6 +42,18 @@ class ProcessorFormController extends ControllerBase {
   }
 
   /**
+   * Render the processor add form.
+   *
+   * @return array
+   */
+  public function addForm() {
+    if (count($this->purgeProcessors->getPluginsAvailable())) {
+      return $this->formBuilder()->getForm("Drupal\purge_ui\Form\ProcessorAddForm");
+    }
+    throw new NotFoundHttpException();
+  }
+
+  /**
    * Render the processor configuration form.
    *
    * @param string $id
@@ -116,18 +128,6 @@ class ProcessorFormController extends ControllerBase {
       return $this->t('Delete @label', ['@label' => $label]);
     }
     return $this->t('Delete');
-  }
-
-  /**
-   * Render the processor add form.
-   *
-   * @return array
-   */
-  public function addForm() {
-    if (count($this->purgeProcessors->getPluginsAvailable())) {
-      return $this->formBuilder()->getForm("Drupal\purge_ui\Form\ProcessorAddForm");
-    }
-    throw new NotFoundHttpException();
   }
 
 }

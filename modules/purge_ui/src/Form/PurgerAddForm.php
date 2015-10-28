@@ -81,7 +81,6 @@ class PurgerAddForm extends ConfigFormBase {
       }
     }
     $form['plugin_id'] = [
-      '#access' => (bool)count($plugins),
       '#default_value' => count($plugins) ? key($plugins) : NULL,
       '#type' => 'radios',
       '#options' => $plugins

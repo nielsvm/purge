@@ -19,7 +19,7 @@ purge_plugin_processor:
       label: 'Plugin ID'
       translatable: false
     status:
-      type: bool
+      type: boolean
       label: 'Enabled or disabled'
       translatable: false
 purge_plugin_queuer:
@@ -31,6 +31,6 @@ purge_plugin_queuer:
       label: 'Plugin ID'
       translatable: false
     status:
-      type: bool
+      type: boolean
       label: 'Enabled or disabled'
       translatable: false

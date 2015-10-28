@@ -12,29 +12,29 @@ use Drupal\Core\Url;
 use Drupal\purge_ui\Tests\PluginConfigFormTestBase;
 
 /**
- * Testbase for \Drupal\purge_ui\Form\PurgerConfigFormBase derivatives.
+ * Testbase for \Drupal\purge_ui\Form\ProcessorConfigFormBase derivatives.
  */
-abstract class PurgerConfigFormTestBase extends PluginConfigFormTestBase {
+abstract class ProcessorConfigFormTestBase extends PluginConfigFormTestBase {
 
   /**
    * The route to the plugin's configuration form, takes argument 'id'.
    *
    * @var string|\Drupal\Core\Url
    */
-  protected $route = 'purge_ui.purger_config_form';
+  protected $route = 'purge_ui.processor_config_form';
 
   /**
    * The route to the plugin's configuration form, takes argument 'id'.
    *
    * @var string|\Drupal\Core\Url
    */
-  protected $routeDialog = 'purge_ui.purger_config_dialog_form';
+  protected $routeDialog = 'purge_ui.processor_config_dialog_form';
 
   /**
    * {@inheritdoc}
    */
   protected function assertFormTitle() {
-    $label = $this->purgePurgers->getLabels()['id0'];
+    $label = $this->purgeProcessors->getPlugins()[$this->plugin]['label'];
     $this->assertTitle("Configure $label | Drupal");
   }
 
@@ -42,15 +42,7 @@ abstract class PurgerConfigFormTestBase extends PluginConfigFormTestBase {
    * {@inheritdoc}
    */
   protected function initializePlugin() {
-    $this->initializePurgersService([$this->plugin]);
-  }
-
-  /**
-   * Return the ID argument given to the form.
-   */
-  protected function getId() {
-    // Since initializePurgersService() autogenerates the IDs, ours is known.
-    return 'id0';
+    $this->initializeProcessorsService([$this->plugin]);
   }
 
 }

@@ -25,11 +25,11 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
   public static $modules = ['purge_purger_http'];
 
   /**
-   * The plugin ID of the purger this form is for.
+   * The plugin ID for which the form tested is rendered for.
    *
    * @var string
    */
-  protected $purger = 'http';
+  protected $plugin = 'http';
 
   /**
    * The full class of the form being tested.

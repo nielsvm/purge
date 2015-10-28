@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\Plugins\UrlInvalidationTest.
+ * Contains \Drupal\purge\Tests\Invalidation\UrlInvalidationTest.
  */
 
-namespace Drupal\purge\Tests\Plugins;
+namespace Drupal\purge\Tests\Invalidation;
 
 use Drupal\purge\Tests\Invalidation\PluginTestBase;
 

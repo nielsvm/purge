@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\Plugins\DomainInvalidationTest.
+ * Contains \Drupal\purge\Tests\Invalidation\DomainInvalidationTest.
  */
 
-namespace Drupal\purge\Tests\Plugins;
+namespace Drupal\purge\Tests\Invalidation;
 
 use Drupal\purge\Tests\Invalidation\PluginTestBase;
 

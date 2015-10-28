@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\Plugins\TagInvalidationTest.
+ * Contains \Drupal\purge\Tests\Invalidation\TagInvalidationTest.
  */
 
-namespace Drupal\purge\Tests\Plugins;
+namespace Drupal\purge\Tests\Invalidation;
 
 use Drupal\purge\Tests\Invalidation\PluginTestBase;
 

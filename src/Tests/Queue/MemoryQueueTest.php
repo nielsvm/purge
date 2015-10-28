@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\Plugins\MemoryQueueTest.
+ * Contains \Drupal\purge\Tests\Queue\MemoryQueueTest.
  */
 
-namespace Drupal\purge\Tests\Plugins;
+namespace Drupal\purge\Tests\Queue;
 
 use Drupal\purge\Tests\Queue\PluginTestBase;
 

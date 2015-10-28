@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\Plugins\WildcardUrlInvalidationTest.
+ * Contains \Drupal\purge\Tests\Invalidation\WildcardUrlInvalidationTest.
  */
 
-namespace Drupal\purge\Tests\Plugins;
+namespace Drupal\purge\Tests\Invalidation;
 
 use Drupal\purge\Tests\Invalidation\PluginTestBase;
 

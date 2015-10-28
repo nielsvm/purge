@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\Plugins\FileQueueTest.
+ * Contains \Drupal\purge\Tests\Queue\FileQueueTest.
  */
 
-namespace Drupal\purge\Tests\Plugins;
+namespace Drupal\purge\Tests\Queue;
 
 use Drupal\Core\DestructableInterface;
 use Drupal\Core\StreamWrapper\PublicStream;

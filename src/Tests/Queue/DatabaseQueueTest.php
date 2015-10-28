@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\Plugins\DatabaseQueueTest.
+ * Contains \Drupal\purge\Tests\Queue\DatabaseQueueTest.
  */
 
-namespace Drupal\purge\Tests\Plugins;
+namespace Drupal\purge\Tests\Queue;
 
 use Drupal\purge\Tests\Queue\PluginTestBase;
 

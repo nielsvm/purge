@@ -103,6 +103,9 @@ class ProcessorsService extends ServiceBase implements ProcessorsServiceInterfac
    */
   public function reload() {
     parent::reload();
+    // Without this, the tests will throw "failed to instantiate user-supplied
+    // statement class: CREATE TABLE {cache_config}".
+    $this->configFactory = \Drupal::configFactory();
     $this->reloadIterator();
   }
 

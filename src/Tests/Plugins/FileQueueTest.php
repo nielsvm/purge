@@ -90,6 +90,8 @@ class FileQueueTest extends PluginTestBase {
     $this->assertEqual(1, $claim->item_id);
     $this->assertEqual('qwerty', $claim->data);
     $this->assertEqual(12345, $claim->created);
+
+    $this->queue->deleteQueue();
   }
 
 }

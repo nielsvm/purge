@@ -14,8 +14,8 @@ services:
   # interfaces and allowing users to disable/enable them.
   purge.queuers:
     class: Drupal\purge\Plugin\Purge\Queuer\QueuersService
-    arguments: ['@plugin.manager.purge.queuers', '@config.factory']
-  plugin.manager.purge.queuers:
+    arguments: ['@plugin.manager.purge.queuer', '@config.factory']
+  plugin.manager.purge.queuer:
     class: Drupal\purge\Plugin\Purge\Queuer\PluginManager
     parent: default_plugin_manager
 
@@ -64,8 +64,8 @@ services:
   # Processors pull items from the queue and initiate purging activity.
   purge.processors:
     class: Drupal\purge\Plugin\Purge\Processor\ProcessorsService
-    arguments: ['@plugin.manager.purge.processors', '@config.factory']
-  plugin.manager.purge.processors:
+    arguments: ['@plugin.manager.purge.processor', '@config.factory']
+  plugin.manager.purge.processor:
     class: Drupal\purge\Plugin\Purge\Processor\PluginManager
     parent: default_plugin_manager
 

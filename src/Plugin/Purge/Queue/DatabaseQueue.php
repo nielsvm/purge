@@ -289,4 +289,31 @@ class DatabaseQueue extends QueueBase implements QueueInterface {
     return $this->dbqueue->deleteQueue();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function selectPage($page = 1) {
+    if (($page < 1) || !is_int($page)) {
+      throw new \LogicException('Parameter $page has to be a postive integer.');
+    }
+
+    $items = [];
+    $limit = $this->selectPageLimit();
+    $resultset = $this->connection
+      ->select('queue', 'q')
+      ->fields('q', ['item_id', 'expire', 'data'])
+      ->orderBy('q.created', 'DESC')
+      ->condition('name', $this->name)
+      ->range((($page - 1) * $limit), $limit)
+      ->execute();
+    foreach ($resultset as $item) {
+      if (!$item) continue;
+      $item->item_id = (int)$item->item_id;
+      $item->expire = (int)$item->expire;
+      $item->data = unserialize($item->data);
+      $items[] = $item;
+    }
+    return $items;
+  }
+
 }

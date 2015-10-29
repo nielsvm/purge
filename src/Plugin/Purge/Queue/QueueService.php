@@ -429,4 +429,30 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
     $this->destruct();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function selectPage($page = 0) {
+    $immutables = [];
+    foreach ($this->queue->selectPage($page) as $item) {
+      $immutables[] = $this->purgeInvalidationFactory
+        ->getImmutableFromQueueData($item->data);
+    }
+    return $immutables;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function selectPageLimit($set_limit_to = NULL) {
+    return $this->queue->selectPageLimit($set_limit_to);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function selectPageMax() {
+    return $this->queue->selectPageMax();
+  }
+
 }

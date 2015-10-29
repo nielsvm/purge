@@ -174,4 +174,51 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
    */
   public function emptyQueue();
 
+  /**
+   * Select a page of queue data with a limited number of items.
+   *
+   * This method facilitates end-user inspection of the queue by letting it
+   * select a set of data records, without the ability to further interact with
+   * the returned data. The items returned aren't claimed and no action is taken
+   * on them.
+   *
+   * @param int $page
+   *   Pages always start at 1 and the highest available page is returned by
+   *   ::selectPageMax(), which bases its information on the set limit that
+   *   in turn gets returned by selectPageLimit(). When page numbers are given
+   *   without any data in it, the resulting return value will be empty.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface::selectPageLimit
+   * @see \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface::selectPageMax
+   *
+   * @return \Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationInterface[]
+   */
+  public function selectPage($page = 1);
+
+  /**
+   * Retrieve or configure the number of items per data page.
+   *
+   * @param int $set_limit_to
+   *   When this argument is not NULL, it will change the known limit to the
+   *   integer given. From this call and on, the limit returned has changed.
+   *
+   * @return int
+   *   The maximum number of items returned on a selected data page.
+   */
+  public function selectPageLimit($set_limit_to = NULL);
+
+  /**
+   * Retrieve the highest page number containing data in the queue.
+   *
+   * This method relies on ::selectPageLimit() for finding out how many items
+   * are shown on a single page. The resulting division is rounded up so that
+   * the last page will usually have less items then the limit.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface::selectPageLimit
+   *
+   * @return int
+   *   The highest page number number with data on it.
+   */
+  public function selectPageMax();
+
 }

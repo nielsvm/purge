@@ -202,4 +202,32 @@ class MemoryQueue extends QueueBase implements QueueInterface {
     $this->buffer = [];
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function selectPage($page = 1) {
+    if (($page < 1) || !is_int($page)) {
+      throw new \LogicException('Parameter $page has to be a postive integer.');
+    }
+    $this->bufferInitialize();
+
+    // Calculate the start and end of the IDs we're looking for and iterate.
+    $items = [];
+    $limit = $this->selectPageLimit();
+    $start = (($page-1) * $limit) + 1;
+    $end = ($page * $limit) + 1;
+    for ($id = $start; $id < $end; $id++) {
+      if (!isset($this->buffer[$id])) {
+        break;
+      }
+      $item = new \stdClass();
+      $item->item_id = $id;
+      $item->data = unserialize($this->buffer[$id][SELF::DATA]);
+      $item->expire = $this->buffer[$id][SELF::EXPIRE];
+      $item->created = $this->buffer[$id][SELF::CREATED];
+      $items[] = $item;
+    }
+    return $items;
+  }
+
 }

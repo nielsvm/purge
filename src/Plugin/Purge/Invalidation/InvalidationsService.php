@@ -88,7 +88,7 @@ class InvalidationsService extends ServiceBase implements InvalidationsServiceIn
       ]
     );
     $instance->setState($item_data[1]);
-    return $instance;
+    return new ImmutableInvalidation($instance);
   }
 
 }

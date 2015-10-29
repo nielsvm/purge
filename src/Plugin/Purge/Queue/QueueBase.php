@@ -17,6 +17,13 @@ use Drupal\purge\Plugin\Purge\Queue\QueueInterface;
 abstract class QueueBase extends PluginBase implements QueueInterface {
 
   /**
+   * The configured limit of items on selected data pages.
+   *
+   * @var int
+   */
+  protected $selectPageLimit = 15;
+
+  /**
    * {@inheritdoc}
    */
   public function getPluginName() {
@@ -98,6 +105,24 @@ abstract class QueueBase extends PluginBase implements QueueInterface {
       }
     }
     return $failures;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function selectPageLimit($set_limit_to = NULL) {
+    if (is_int($set_limit_to)) {
+      $this->selectPageLimit = $set_limit_to;
+    }
+    return $this->selectPageLimit;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function selectPageMax() {
+    $max = ( (int)$this->numberOfItems() ) / $this->selectPageLimit();
+    return intval(ceil($max));
   }
 
 }

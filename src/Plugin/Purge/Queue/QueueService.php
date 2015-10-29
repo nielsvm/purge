@@ -432,6 +432,13 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   /**
    * {@inheritdoc}
    */
+  public function numberOfItems() {
+    return $this->queue->numberOfItems();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function selectPage($page = 1) {
     $this->commitAdding();
     $this->commitReleasing();

@@ -175,6 +175,14 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
   public function emptyQueue();
 
   /**
+   * Retrieves the number of items in the queue.
+   *
+   * @return int
+   *   The number of items in the queue.
+   */
+  public function numberOfItems();
+
+  /**
    * Select a page of queue data with a limited number of items.
    *
    * This method facilitates end-user inspection of the queue by letting it

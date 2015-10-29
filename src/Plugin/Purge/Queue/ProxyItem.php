@@ -9,12 +9,20 @@ namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Queue\Exception\InvalidPropertyException;
+use Drupal\purge\Plugin\Purge\Queue\ProxyItemInterface;
 use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
 
 /**
- * Provides a ProxyItem.
+ * Provides a proxy item.
+ *
+ * Queue proxy objects act as middle man between our high level invalidation
+ * objects and the lower level \Drupal\Core\Queue\QueueInterface API. As Purge
+ * queue plugins extend core's API, these are also unaware of invalidation
+ * objects and therefore proxy objects play a key translation role. A proxy has
+ * the properties 'data', 'item_id' and 'created', of which the data is stored
+ * in the given \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface derivative.
  */
-class ProxyItem {
+class ProxyItem implements ProxyItemInterface {
 
   /**
    * The proxied invalidation object.
@@ -69,23 +77,7 @@ class ProxyItem {
   private $created;
 
   /**
-   * Constructs the ProxyItem object.
-   *
-   * Once constructed, these objects act as if they were natively created by
-   * any of the \Drupal\Core\Queue\QueueInterface methods. The data properties
-   * such as 'data', 'item_id' and 'created' are writeable and readable, but
-   * under the hood interfacing with \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
-   * and \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface takes place.
-   *
-   * @see \Drupal\Core\Queue\QueueInterface::createItem
-   * @see \Drupal\Core\Queue\QueueInterface::claimItem
-   * @see \Drupal\Core\Queue\QueueInterface::deleteItem
-   * @see \Drupal\Core\Queue\QueueInterface::releaseItem
-   *
-   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface $invalidation
-   *   Invalidation object being proxied.
-   * @param \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface $buffer
-   *   The actively used TxBuffer object by \Drupal\purge\Plugin\Purge\Queue\QueueService.
+   * {@inheritdoc}
    */
   public function __construct(InvalidationInterface $invalidation, TxBufferInterface $buffer) {
     $this->invalidation = $invalidation;
@@ -93,7 +85,7 @@ class ProxyItem {
   }
 
   /**
-   * @see http://php.net/manual/en/language.oop5.overloading.php#object.get
+   * {@inheritdoc}
    */
   public function __get($name) {
     if (!isset($this->properties[$name])) {
@@ -117,7 +109,7 @@ class ProxyItem {
   }
 
   /**
-   * @see http://php.net/manual/en/language.oop5.overloading.php#object.set
+   * {@inheritdoc}
    */
   public function __set($name, $value) {
     if (!isset($this->properties[$name])) {

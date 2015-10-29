@@ -76,7 +76,17 @@ class FileQueue extends MemoryQueue implements QueueInterface, DestructableInter
    */
   public function bufferCommit() {
     $ob = '';
-    $fh = fopen($this->file, 'w');
+    if (!file_exists($path = dirname($this->file))) {
+      if (!mkdir($path, 0777, TRUE)) {
+        throw new \Exception("Failed recursive mkdir() to create missing '$path'!");
+      }
+      if (!$path) {
+        throw new \Exception("Path '$path' does not exist!");
+      }
+    }
+    if (!$fh = fopen($this->file, 'w')) {
+      throw new \Exception('Unable to open file resource to ' . $this->file);
+    }
     foreach($this->buffer as $item_id => $line) {
       $ob .= $item_id . SELF::SEPARATOR . $line[SELF::DATA] . SELF::SEPARATOR
         . $line[SELF::EXPIRE] . SELF::SEPARATOR . $line[SELF::CREATED] . "\n";

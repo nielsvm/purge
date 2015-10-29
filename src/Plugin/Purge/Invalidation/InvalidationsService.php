@@ -10,6 +10,7 @@ namespace Drupal\purge\Plugin\Purge\Invalidation;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidation;
 
 /**
  * Provides a service that instantiates invalidation objects on-demand.
@@ -22,6 +23,14 @@ class InvalidationsService extends ServiceBase implements InvalidationsServiceIn
    * @var int
    */
   protected $instance_counter = 0;
+
+  /**
+   * As immutable instances cannot change the queue, they are counted negative
+   * and the counter only decrements. Its IDs can never clash with real ones.
+   *
+   * @var int
+   */
+  protected $instance_counter_immutables = -1;
 
   /**
    * Instantiates a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsService.
@@ -48,8 +57,36 @@ class InvalidationsService extends ServiceBase implements InvalidationsServiceIn
   /**
    * {@inheritdoc}
    */
+  public function getImmutable($plugin_id, $expression = NULL) {
+    return new ImmutableInvalidation(
+      $this->pluginManager->createInstance(
+        $plugin_id, [
+          'id' => $this->instance_counter_immutables--,
+          'expression' => $expression
+        ]
+      )
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getFromQueueData($item_data) {
     $instance = $this->get($item_data[0], $item_data[2]);
+    $instance->setState($item_data[1]);
+    return $instance;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getImmutableFromQueueData($item_data) {
+    $instance = $this->pluginManager->createInstance(
+      $item_data[0], [
+        'id' => $this->instance_counter_immutables--,
+        'expression' => $item_data[2]
+      ]
+    );
     $instance->setState($item_data[1]);
     return $instance;
   }

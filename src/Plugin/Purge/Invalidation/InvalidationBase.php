@@ -8,38 +8,24 @@
 namespace Drupal\purge\Plugin\Purge\Invalidation;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Plugin\PluginBase;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationBase;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException;
 
 /**
- * Base invalidation type: which instructs the purger what to invalidate.
+ * Provides base implementations for the invalidation object.
+ *
+ * Invalidations are small value objects that decribe and track invalidations
+ * on one or more external caching systems within the Purge pipeline. These
+ * objects can be directly instantiated from InvalidationsService and float
+ * freely between the QueueService and the PurgersService.
  */
-abstract class InvalidationBase extends PluginBase implements InvalidationInterface {
+abstract class InvalidationBase extends ImmutableInvalidationBase implements InvalidationInterface {
 
   /**
-   * Unique integer ID for this object instance (during runtime).
-   *
-   * @var int
-   */
-  protected $id;
-
-  /**
-   * Mixed expression (or NULL) that describes what needs to be invalidated.
-   *
-   * @var mixed|null
-   */
-  protected $expression;
-
-  /**
-   * A enumerator that describes the current state of this invalidation.
-   */
-  protected $state = NULL;
-
-  /**
-   * Constructs a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase object.
+   * Constructs \Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
@@ -64,13 +50,6 @@ abstract class InvalidationBase extends PluginBase implements InvalidationInterf
   /**
    * {@inheritdoc}
    */
-  public function __toString() {
-    return is_null($this->expression) ? '' : $this->expression;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       [],
@@ -84,39 +63,8 @@ abstract class InvalidationBase extends PluginBase implements InvalidationInterf
   /**
    * {@inheritdoc}
    */
-  public function getExpression() {
-    return $this->expression;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getId() {
     return $this->id;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getState() {
-    if (is_null($this->state)) {
-      $this->state = SELF::STATE_NEW;
-    }
-    return $this->state;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getStateString() {
-    $mapping = [
-      SELF::STATE_NEW           => 'NEW',
-      SELF::STATE_PURGING       => 'PURGING',
-      SELF::STATE_PURGED        => 'PURGED',
-      SELF::STATE_FAILED        => 'FAILED',
-      SELF::STATE_UNSUPPORTED   => 'UNSUPPORTED',
-    ];
-    return $mapping[$this->getState()];
   }
 
   /**

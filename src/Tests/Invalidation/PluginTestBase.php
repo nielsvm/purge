@@ -8,6 +8,8 @@
 namespace Drupal\purge\Tests\Invalidation;
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationBase;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidPropertyException;
@@ -53,18 +55,50 @@ abstract class PluginTestBase extends KernelTestBase {
   }
 
   /**
-   * Retrieve an invalidation object provided by the plugin.
+   * Retrieve a invalidation object provided by the plugin.
    */
   function getInstance() {
-    return $this->purgeInvalidationFactory->get($this->plugin_id, $this->expressions[0]);
+    return $this->purgeInvalidationFactory->get(
+      $this->plugin_id,
+      $this->expressions[0]
+    );
+  }
+
+  /**
+   * Retrieve a immutable invalidation object, which wraps the plugin.
+   */
+  function getImmutableInstance() {
+    return $this->purgeInvalidationFactory->getImmutable(
+      $this->plugin_id,
+      $this->expressions[0]
+    );
   }
 
   /**
    * Tests the code contract strictly enforced on invalidation type plugins.
    */
   function testCodeContract() {
+    $this->assertTrue($this->getInstance() instanceof ImmutableInvalidationInterface);
     $this->assertTrue($this->getInstance() instanceof InvalidationInterface);
+    $this->assertTrue($this->getInstance() instanceof ImmutableInvalidationBase);
     $this->assertTrue($this->getInstance() instanceof InvalidationBase);
+    $this->assertTrue($this->getImmutableInstance() instanceof ImmutableInvalidationInterface);
+    $this->assertFalse($this->getImmutableInstance() instanceof InvalidationInterface);
+    $this->assertTrue($this->getImmutableInstance() instanceof ImmutableInvalidationBase);
+    $this->assertFalse($this->getImmutableInstance() instanceof InvalidationBase);
+  }
+
+  /**
+   * Tests \Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidation.
+   */
+  function testImmutable() {
+    $immutable = $this->getImmutableInstance();
+    $mutable = $this->getInstance();
+    $this->assertEqual($immutable->__toString(), $mutable->__toString());
+    $this->assertEqual($immutable->getExpression(), $mutable->getExpression());
+    $this->assertEqual($immutable->getState(), $mutable->getState());
+    $this->assertEqual($immutable->getStateString(), $mutable->getStateString());
+    $this->assertEqual($immutable->getPluginId(), $mutable->getPluginId());
   }
 
   /**
@@ -165,9 +199,26 @@ abstract class PluginTestBase extends KernelTestBase {
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getPluginDefinition
    */
   function testPluginIdAndDefinition() {
-    $i = $this->getInstance();
-    $this->assertEqual($this->plugin_id, $i->getPluginId());
-    $d = $i->getPluginDefinition();
+    // Test mutable objects.
+    $mutable = $this->getInstance();
+    $this->assertEqual($this->plugin_id, $mutable->getPluginId());
+    $d = $mutable->getPluginDefinition();
+    $this->assertTrue(is_array($d));
+    $this->assertTrue(is_array($d['examples']));
+    $this->assertTrue($d['label'] instanceof TranslatableMarkup);
+    $this->assertFalse(empty((string) $d['label']));
+    $this->assertTrue($d['description'] instanceof TranslatableMarkup);
+    $this->assertFalse(empty((string) $d['description']));
+    $this->assertTrue(isset($d['expression_required']));
+    $this->assertTrue(isset($d['expression_can_be_empty']));
+    $this->assertTrue(isset($d['expression_must_be_string']));
+    if (!$d["expression_required"]) {
+      $this->assertFalse($d["expression_can_be_empty"]);
+    }
+    // Test the immutable objects.
+    $immutable = $this->getImmutableInstance();
+    $this->assertEqual($this->plugin_id, $immutable->getPluginId());
+    $d = $immutable->getPluginDefinition();
     $this->assertTrue(is_array($d));
     $this->assertTrue(is_array($d['examples']));
     $this->assertTrue($d['label'] instanceof TranslatableMarkup);

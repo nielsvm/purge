@@ -102,3 +102,10 @@ purge_ui.queue_browser_form:
     _form: 'Drupal\purge_ui\Form\QueueBrowserForm'
   requirements:
     _permission: 'administer site configuration'
+purge_ui.queue_empty_form:
+  path: '/admin/config/development/performance/purge/queue/empty'
+  defaults:
+    _title: 'Empty the queue'
+    _form: 'Drupal\purge_ui\Form\QueueEmptyForm'
+  requirements:
+    _permission: 'administer site configuration'

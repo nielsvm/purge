@@ -98,6 +98,8 @@ class ServiceTest extends KernelServiceTestBase {
     $this->purgeQueue->emptyQueue();
     $this->assertFalse($this->purgeQueue->claim());
     $this->assertTrue(empty($this->purgeQueue->claimMultiple()));
+    $this->assertTrue(is_int($this->purgeQueue->numberOfItems()));
+    $this->assertEqual(0, $this->purgeQueue->numberOfItems());
   }
 
   /**

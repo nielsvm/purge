@@ -9,7 +9,7 @@ namespace Drupal\purge_ui\Form;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\SafeMarkup;
-use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
@@ -22,7 +22,7 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
 /**
  * Configure the Purge pipeline for this site.
  */
-class ConfigForm extends ConfigFormBase {
+class ConfigForm extends FormBase {
 
   /**
    * Diagnostics service that reports any preliminary issues regarding purge.
@@ -81,7 +81,6 @@ class ConfigForm extends ConfigFormBase {
     $this->purgePurgers = $purge_purgers;
     $this->purgeQueue = $purge_queue;
     $this->purgeQueuers = $purge_queuers;
-    parent::__construct($this->configFactory());
   }
 
   /**
@@ -126,11 +125,11 @@ class ConfigForm extends ConfigFormBase {
     $this->buildFormQueue($form, $form_state);
     $this->buildFormPurgers($form, $form_state);
     $this->buildFormProcessors($form, $form_state);
-    return parent::buildForm($form, $form_state);
+    return $form;
   }
 
   /**
-   * Helper for dropbutton/operations modal buttons (#links).
+   * Helper for creating dropbutton modal links.
    *
    * @param string $title
    *   The title of the button.
@@ -154,6 +153,31 @@ class ConfigForm extends ConfigFormBase {
   }
 
   /**
+   * Helper for creating modal links.
+   *
+   * @param string $title
+   *   The title of the link.
+   * @param \Drupal\Core\Url $url
+   *   The route to the modal dialog provider.
+   * @param string $width
+   *   Optional width of the dialog button to be generated.
+   *
+   *  @return array
+   */
+  protected function getDialogLink($title, $url, $width = '70%') {
+    return [
+      '#type' => 'link',
+      '#title' => $title,
+      '#url' => $url,
+      '#attributes' => [
+        'class' => ['use-ajax', 'button', 'button--small'],
+        'data-dialog-type' => 'modal',
+        'data-dialog-options' => Json::encode(['width' => $width]),
+      ],
+    ];
+  }
+
+  /**
    * Add a visual report on the current state of the purge module.
    *
    * @param array &$form
@@ -166,7 +190,7 @@ class ConfigForm extends ConfigFormBase {
    */
   protected function buildFormDiagnosticReport(array &$form, FormStateInterface $form_state) {
     $form['diagnostics'] = [
-      '#open' => $this->purgeDiagnostics->isSystemShowingSmoke() || $this->purgeDiagnostics->isSystemOnFire(),
+      '#open' => TRUE,
       '#type' => 'details',
       '#title' => t('Status'),
     ];
@@ -281,12 +305,10 @@ class ConfigForm extends ConfigFormBase {
         'description' => $definition['description'],
       ];
     }
-
-    // Add a button to open the queue browser.
-    $form['queue']['links'] = [
-      '#type' => 'operations',
-      '#links' => [$this->getDialogButton($this->t("Inspect data"), Url::fromRoute('purge_ui.queue_browser_form'), '900')]
-    ];
+    // Add the buttons.
+    $form['queue']['save'] = ['#type' => 'submit', '#button_type' => 'primary', '#value' => $this->t('Change')];
+    $form['queue']['browser'] = $this->getDialogLink($this->t("Inspect data"), Url::fromRoute('purge_ui.queue_browser_form'), '900');
+    $form['queue']['empty'] = $this->getDialogLink($this->t("Empty the queue"), Url::fromRoute('purge_ui.queue_empty_form'), '40%');
   }
 
   /**
@@ -503,21 +525,6 @@ class ConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $this->validateFormQueue($form, $form_state);
-    parent::validateForm($form, $form_state);
-  }
-
-  /**
-   * Validate the queue form values.
-   *
-   * @param array &$form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return void
-   */
-  protected function validateFormQueue(array &$form, FormStateInterface $form_state) {
     if (!$form_state->hasValue('queue_plugin')) {
       $form_state->setError($form['queue']['queue_plugin'], $this->t('Value missing.'));
     }
@@ -531,21 +538,6 @@ class ConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->submitFormQueue($form, $form_state);
-    parent::submitForm($form, $form_state);
-  }
-
-  /**
-   * Store the queue form submission values into configuration.
-   *
-   * @param array &$form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return void
-   */
-  protected function submitFormQueue(array &$form, FormStateInterface $form_state) {
     $this->purgeQueue->setPluginsEnabled([$form_state->getValue('queue_plugin')]);
   }
 

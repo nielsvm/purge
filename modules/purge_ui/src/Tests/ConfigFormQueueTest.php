@@ -43,6 +43,7 @@ class ConfigFormQueueTest extends ConfigFormTestBase {
     $this->drupalPostForm($this->route, ['queue_plugin' => 'b'], t('Save configuration'));
     $this->purgeQueue->reload();
     $this->assertTrue(in_array('b', $this->purgeQueue->getPluginsEnabled()));
+    $this->assertText("Inspect data");
   }
 
 }

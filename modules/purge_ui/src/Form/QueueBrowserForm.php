@@ -8,6 +8,8 @@
 namespace Drupal\purge_ui\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
@@ -61,7 +63,7 @@ class QueueBrowserForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['#prefix'] = '<div id="browser-wrapper">';
+    $form['#prefix'] = '<div id="browserwrapper">';
     $form['#suffix'] = '</div>';
 
     // Store paging information in form state so we can easily update it.
@@ -80,7 +82,7 @@ class QueueBrowserForm extends FormBase {
         '#submit' => [[$this, 'submitForm']],
         '#ajax' => [
           'callback' => '::submitForm',
-          'wrapper' => 'browser-wrapper'
+          'wrapper' => 'browserwrapper'
         ],
       ];
     };
@@ -130,6 +132,9 @@ class QueueBrowserForm extends FormBase {
       '#value' => ">> $pages",
       '#access' => $page < ($pages-4)
     ]);
+    if (count($form['pager']['page']) === 3) {
+      unset($form['pager']);
+    }
 
     // Define the close button and return the form definition.
     $form['actions'] = ['#type' => 'actions'];
@@ -164,6 +169,8 @@ class QueueBrowserForm extends FormBase {
 
     $form_state->set('page', $page);
     $form_state->setRebuild();
+    $response = new AjaxResponse();
+    $response->addCommand(new HtmlCommand('#browserwrapper', $form));
     return $form;
   }
 

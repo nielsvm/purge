@@ -432,7 +432,10 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   /**
    * {@inheritdoc}
    */
-  public function selectPage($page = 0) {
+  public function selectPage($page = 1) {
+    $this->commitAdding();
+    $this->commitReleasing();
+    $this->commitDeleting();
     $immutables = [];
     foreach ($this->queue->selectPage($page) as $item) {
       $immutables[] = $this->purgeInvalidationFactory

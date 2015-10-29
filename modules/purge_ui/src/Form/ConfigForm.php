@@ -281,6 +281,12 @@ class ConfigForm extends ConfigFormBase {
         'description' => $definition['description'],
       ];
     }
+
+    // Add a button to open the queue browser.
+    $form['queue']['links'] = [
+      '#type' => 'operations',
+      '#links' => [$this->getDialogButton($this->t("Inspect data"), Url::fromRoute('purge_ui.queue_browser_form'), '900')]
+    ];
   }
 
   /**

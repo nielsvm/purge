@@ -95,3 +95,10 @@ purge_ui.queuer_delete_form:
     _title_callback: '\Drupal\purge_ui\Controller\QueuerFormController::deleteFormTitle'
   requirements:
     _permission: 'administer site configuration'
+purge_ui.queue_browser_form:
+  path: '/admin/config/development/performance/purge/queue/browser'
+  defaults:
+    _title: 'Purge queue browser'
+    _form: 'Drupal\purge_ui\Form\QueueBrowserForm'
+  requirements:
+    _permission: 'administer site configuration'

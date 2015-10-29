@@ -77,4 +77,11 @@ interface ImmutableInvalidationInterface extends PluginInspectionInterface {
    */
   public function getStateString();
 
+  /**
+   * Get the current state as user translated string.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   The translated string describing the current state of the invalidation.
+   */
+  public function getStateStringTranslated();
 }

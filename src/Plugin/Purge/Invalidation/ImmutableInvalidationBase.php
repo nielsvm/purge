@@ -79,4 +79,18 @@ abstract class ImmutableInvalidationBase extends PluginBase implements Immutable
     return $mapping[$this->getState()];
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getStateStringTranslated() {
+    $mapping = [
+      SELF::STATE_NEW           => $this->t('New'),
+      SELF::STATE_PURGING       => $this->t('Currently invalidating'),
+      SELF::STATE_PURGED        => $this->t('Succeeded'),
+      SELF::STATE_FAILED        => $this->t('Failed'),
+      SELF::STATE_UNSUPPORTED   => $this->t('Not supported'),
+    ];
+    return $mapping[$this->getState()];
+  }
+
 }

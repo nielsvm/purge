@@ -49,7 +49,8 @@ class ConfigurationFormTest extends QueuerConfigFormTestBase {
     $this->assertRaw('config:');
     $this->assertField('edit-blacklist-1');
     $this->assertRaw('4xx-response');
-    $this->assertNoField('edit-blacklist-3');
+    $this->assertField('edit-blacklist-3');
+    $this->assertNoField('edit-blacklist-4');
     $this->assertText('Add prefix');
     $this->assertText('if you know what you are doing');
     // Test that direct configuration changes are reflected properly.

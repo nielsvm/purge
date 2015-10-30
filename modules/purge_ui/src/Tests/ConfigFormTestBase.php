@@ -54,7 +54,6 @@ abstract class ConfigFormTestBase extends WebTestBase {
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->route);
     $this->assertRaw('<form class="purge-uiconfig-form"');
-    $this->assertRaw('value="Save configuration"');
     $this->assertResponse(200);
     $this->drupalGet(Url::fromRoute('system.performance_settings'));
   }

@@ -1,4 +1,5 @@
-Purge
+# Purge
+##### _The modular external cache invalidation framework_
 ------------------------------------------------------------------------------
 
 The Purge module for Drupal 8 enables invalidation of content from external
@@ -7,7 +8,7 @@ architecture allows for different server configurations and use cases. Last but
 not least, it enforces a separation of concerns and should be seen as a
 **middleware** solution.
 
-Terminology overview
+The framework explained
 ------------------------------------------------------------------------------
 
 #### Queuer
@@ -75,7 +76,19 @@ hard crashes during runtime that affect end-user workflow, Purge allows plugins
 to write preventive diagnostic checks that can check their configurations and
 anything else that affects runtime execution. These checks can block all purging
 but also raise warnings and other diagnostic information. End-users can rely on
-Drupal's status report page where these checks bubble up.
+Drupal's status report page where these checks also bubble up.
+
+#### Capacity tracker
+The capacity tracker is the central orchestrator between limited - request
+lifetime - system resources and an ever growing queue of invalidation objects.
+
+The tracker aggregates capacity hints given by loaded purgers and sets
+uniformized purging capacity boundaries. It tracks how much purges are taking
+place - counts successes and failures - and actively protects the set
+limits. This protects end-users against requests exceeding resource limits
+such as maximum execution time and memory exhaustion. At the same time it
+aids queue processors by dynamically giving the number of items that can
+be processed in one go.
 
 #### Processors
 With queuers adding ``tag`` invalidation objects to the queue, this still leaves

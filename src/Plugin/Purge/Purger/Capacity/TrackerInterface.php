@@ -20,7 +20,7 @@ use Drupal\Core\State\StateInterface;
  * place - counts successes and failures - and actively protects the set
  * limits. This protects end-users against requests exceeding resource limits
  * such as maximum execution time and memory exhaustion. At the same time it
- * aids queue processors by dynamically giving them the number of items that can
+ * aids queue processors by dynamically giving the number of items that can
  * be processed in one go.
  */
 interface TrackerInterface {

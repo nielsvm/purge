@@ -24,9 +24,9 @@ use Drupal\purge\Plugin\Purge\Queue\QueueInterface;
 class FileQueue extends MemoryQueue implements QueueInterface, DestructableInterface {
 
   /**
-   * The file path to which the queue buffer gets written to.
+   * The file under public:// to which the queue buffer gets written to.
    */
-  protected $file = 'public://purge-queue-file';
+  protected $file = 'purge-file.queue';
 
   /**
    * The separator string to split columns with.
@@ -45,7 +45,7 @@ class FileQueue extends MemoryQueue implements QueueInterface, DestructableInter
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->file = str_replace('public:/', PublicStream::basePath(), $this->file);
+    $this->file = DRUPAL_ROOT . '/' . PublicStream::basePath() . '/' . $this->file;
     $this->bufferInitialize();
   }
 
@@ -80,8 +80,8 @@ class FileQueue extends MemoryQueue implements QueueInterface, DestructableInter
       if (!mkdir($path, 0777, TRUE)) {
         throw new \Exception("Failed recursive mkdir() to create missing '$path'!");
       }
-      if (!$path) {
-        throw new \Exception("Path '$path' does not exist!");
+      if (!file_exists($path)) {
+        throw new \Exception("Path '$path' still does not exist after trying mkdir()!");
       }
     }
     if (!$fh = fopen($this->file, 'w')) {

@@ -10,6 +10,12 @@ not least, it enforces a separation of concerns and should be seen as a
 
 The framework explained
 ------------------------------------------------------------------------------
+Purge isn't just a single API but made up of several API pillars all driven by
+plugins, allowing very flexible end-user setups. All of them are clearly
+defined to enforce a sustainable and maintainable framework over the longer
+term. This also allows everyone to build, improve and fix bugs in only the
+plugins they provide and therefore allows everyone to 'scale up' solving
+external cache invalidation in the best way possible.
 
 #### Queuer
 With Purge, end users can manually invalidate a page with a Drush command or,

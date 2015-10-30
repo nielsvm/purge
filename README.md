@@ -102,6 +102,20 @@ Possibilities:
 content has been updated.
 * **``lateruntime``** purges items from the queue on every request (**SLOW**).
 
+Third-party integration
+------------------------------------------------------------------------------
+The purge project aims to get as many Drupal modules integrating with reverse
+proxies and CDNs on board to integrate with it, this doesn't only offer the
+shared benefit of saving work - **it will actually make the end user experience
+better**.
+
+As known to date, these modules are being integrated:
+
+* **Cloudflare**: https://github.com/aweingarten/cloudflare
+* **Akamai**: https://github.com/cam8001/akamai
+
+Interested? Reach out any time of day and we'll get you going!
+
 API examples
 ------------------------------------------------------------------------------
 

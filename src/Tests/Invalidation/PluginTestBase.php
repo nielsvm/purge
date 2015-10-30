@@ -111,26 +111,26 @@ abstract class PluginTestBase extends KernelTestBase {
   function testState() {
     $i = $this->getInstance();
     $test_states = [
-      InvalidationInterface::STATE_NEW           => 'NEW',
-      InvalidationInterface::STATE_PURGING       => 'PURGING',
-      InvalidationInterface::STATE_PURGED        => 'PURGED',
-      InvalidationInterface::STATE_FAILED        => 'FAILED',
-      InvalidationInterface::STATE_UNSUPPORTED   => 'UNSUPPORTED',
+      InvalidationInterface::FRESH         => 'FRESH',
+      InvalidationInterface::PROCESSING    => 'PROCESSING',
+      InvalidationInterface::SUCCEEDED     => 'SUCCEEDED',
+      InvalidationInterface::FAILED        => 'FAILED',
+      InvalidationInterface::NOT_SUPPORTED => 'NOT_SUPPORTED',
     ];
 
     // Test the initial state of the invalidation object.
-    $this->assertEqual($i->getState(), InvalidationInterface::STATE_NEW, 'getState: STATE_NEW');
-    $this->assertEqual($i->getStateString(), 'NEW', 'getStateString: NEW');
+    $this->assertEqual($i->getState(), InvalidationInterface::FRESH);
+    $this->assertEqual($i->getStateString(), 'FRESH');
 
     // Test setting, getting and getting the string version of each state.
     foreach ($test_states as $state => $string) {
-      $this->assertNull($i->setState($state), "setState(STATE_$string): NULL");
-      $this->assertEqual($i->getState(), $state, "getState(): STATE_$string");
-      $this->assertEqual($i->getStateString(), $string, "getStateString(): $string");
+      $this->assertNull($i->setState($state));
+      $this->assertEqual($i->getState(), $state);
+      $this->assertEqual($i->getStateString(), $string);
     }
 
     // Test \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState catches bad input.
-    foreach(['2', 'NEW', -1, 5, 100] as $badstate) {
+    foreach(['2', 'FRESH', -1, 5, 100] as $badstate) {
       $thrown = FALSE;
       try {
         $i->setState($badstate);

@@ -60,7 +60,7 @@ abstract class ImmutableInvalidationBase extends PluginBase implements Immutable
    */
   public function getState() {
     if (is_null($this->state)) {
-      $this->state = SELF::STATE_NEW;
+      $this->state = SELF::FRESH;
     }
     return $this->state;
   }
@@ -70,11 +70,11 @@ abstract class ImmutableInvalidationBase extends PluginBase implements Immutable
    */
   public function getStateString() {
     $mapping = [
-      SELF::STATE_NEW           => 'NEW',
-      SELF::STATE_PURGING       => 'PURGING',
-      SELF::STATE_PURGED        => 'PURGED',
-      SELF::STATE_FAILED        => 'FAILED',
-      SELF::STATE_UNSUPPORTED   => 'UNSUPPORTED',
+      SELF::FRESH         => 'FRESH',
+      SELF::PROCESSING    => 'PROCESSING',
+      SELF::SUCCEEDED     => 'SUCCEEDED',
+      SELF::FAILED        => 'FAILED',
+      SELF::NOT_SUPPORTED => 'NOT_SUPPORTED',
     ];
     return $mapping[$this->getState()];
   }
@@ -84,11 +84,11 @@ abstract class ImmutableInvalidationBase extends PluginBase implements Immutable
    */
   public function getStateStringTranslated() {
     $mapping = [
-      SELF::STATE_NEW           => $this->t('New'),
-      SELF::STATE_PURGING       => $this->t('Currently invalidating'),
-      SELF::STATE_PURGED        => $this->t('Succeeded'),
-      SELF::STATE_FAILED        => $this->t('Failed'),
-      SELF::STATE_UNSUPPORTED   => $this->t('Not supported'),
+      SELF::FRESH         => $this->t('New'),
+      SELF::PROCESSING    => $this->t('Currently invalidating'),
+      SELF::SUCCEEDED     => $this->t('Succeeded'),
+      SELF::FAILED        => $this->t('Failed'),
+      SELF::NOT_SUPPORTED => $this->t('Not supported'),
     ];
     return $mapping[$this->getState()];
   }

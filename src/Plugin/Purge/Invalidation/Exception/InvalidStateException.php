@@ -12,11 +12,12 @@ namespace Drupal\purge\Plugin\Purge\Invalidation\Exception;
  *
  * InvalidStateException gets thrown in the following circumstances:
  *
- * 1) in \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState when the $state
- *    parameter is out of range and doesn't match any of the STATE_* constants.
+ * 1) in \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState
+ *    when the $state parameter doesn't match any of the constants defined in
+ *    \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface.
  *
- * 2) When a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface object gets fed to
- *    the purger service that isn't a valid condition to purge objects in.
+ * 2) When a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
+ *    object gets fed to the purger service that isn't a valid condition.
  *
  * 2) When a purger plugin doesn't set a valid state after processing the
  *    \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface object.

@@ -61,10 +61,10 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * @var int[]
    */
   protected $states_inbound = [
-    InvalidationInterface::STATE_NEW,
-    InvalidationInterface::STATE_PURGING,
-    InvalidationInterface::STATE_FAILED,
-    InvalidationInterface::STATE_UNSUPPORTED,
+    InvalidationInterface::FRESH,
+    InvalidationInterface::PROCESSING,
+    InvalidationInterface::FAILED,
+    InvalidationInterface::NOT_SUPPORTED,
   ];
 
   /**
@@ -73,9 +73,9 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * @var int[]
    */
   protected $states_outbound = [
-    InvalidationInterface::STATE_PURGED,
-    InvalidationInterface::STATE_PURGING,
-    InvalidationInterface::STATE_FAILED
+    InvalidationInterface::SUCCEEDED,
+    InvalidationInterface::PROCESSING,
+    InvalidationInterface::FAILED
   ];
 
   /**
@@ -310,7 +310,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     // Test $invalidation's inbound object state.
     $initialstate = $invalidation->getState();
     if (!in_array($initialstate, $this->states_inbound)) {
-      throw new BadPluginBehaviorException("Only STATE_NEW, STATE_PURGING, STATE_FAILED and STATE_UNSUPPORTED are valid inbound states.");
+      throw new BadPluginBehaviorException("Only FRESH, PROCESSING, FAILED and NOT_SUPPORTED are valid inbound states.");
     }
 
     // Iterate the purger instances and only execute for supported types.
@@ -321,7 +321,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
         $invalidation->setState($initialstate);
         $purger->invalidate($invalidation);
         if (!in_array($invalidation->getState(), $this->states_outbound)) {
-          throw new BadPluginBehaviorException("Only STATE_PURGED, STATE_PURGING and STATE_FAILED are valid return states.");
+          throw new BadPluginBehaviorException("Only SUCCEEDED, PROCESSING and FAILED are valid return states.");
         }
         $results[] = $invalidation->getState();
       }
@@ -357,12 +357,12 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
       $invalidation_types[$i] = $invalidation->getPluginId();
       $initialstates[$i] = $invalidation->getState();
       if (!in_array($initialstates[$i], $this->states_inbound)) {
-        throw new BadPluginBehaviorException("Only STATE_NEW, STATE_PURGING, STATE_FAILED and STATE_UNSUPPORTED are valid inbound states.");
+        throw new BadPluginBehaviorException("Only FRESH, PROCESSING, FAILED and NOT_SUPPORTED are valid inbound states.");
       }
     }
 
     // Prepopulate empty result sets and list supported types. Empty result sets
-    // will lead to STATE_UNSUPPORTED in ::resolveInvalidationState().
+    // will lead to NOT_SUPPORTED in ::resolveInvalidationState().
     foreach ($invalidations as $i => $invalidation) {
       $results[$i] = [];
     }
@@ -387,7 +387,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
         $state = $invalidation->getState();
         $results[$i][] = $state;
         if (!in_array($state, $this->states_outbound)) {
-          throw new BadPluginBehaviorException("Only STATE_PURGED, STATE_PURGING and STATE_FAILED are valid return states.");
+          throw new BadPluginBehaviorException("Only SUCCEEDED, PROCESSING and FAILED are valid return states.");
         }
       }
     }
@@ -404,7 +404,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   public function resolveInvalidationState(InvalidationInterface $invalidation, array $states) {
     // No results indicate no purgers touched it, so it is not supported.
     if (empty($states)) {
-      $invalidation->setState(InvalidationInterface::STATE_UNSUPPORTED);
+      $invalidation->setState(InvalidationInterface::NOT_SUPPORTED);
     }
 
     // When there is just one result, we take it as final state.
@@ -417,22 +417,22 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
 
     // With multiple results, determine what the final result will be.
     else {
-      if (in_array(InvalidationInterface::STATE_UNSUPPORTED, $states)) {
-        $invalidation->setState(InvalidationInterface::STATE_UNSUPPORTED);
+      if (in_array(InvalidationInterface::NOT_SUPPORTED, $states)) {
+        $invalidation->setState(InvalidationInterface::NOT_SUPPORTED);
       }
-      elseif (in_array(InvalidationInterface::STATE_FAILED, $states)) {
-        $invalidation->setState(InvalidationInterface::STATE_FAILED);
+      elseif (in_array(InvalidationInterface::FAILED, $states)) {
+        $invalidation->setState(InvalidationInterface::FAILED);
       }
-      elseif (in_array(InvalidationInterface::STATE_PURGING, $states)) {
-        $invalidation->setState(InvalidationInterface::STATE_PURGING);
+      elseif (in_array(InvalidationInterface::PROCESSING, $states)) {
+        $invalidation->setState(InvalidationInterface::PROCESSING);
       }
-      elseif (in_array(InvalidationInterface::STATE_NEW, $states)) {
-        $invalidation->setState(InvalidationInterface::STATE_NEW);
+      elseif (in_array(InvalidationInterface::FRESH, $states)) {
+        $invalidation->setState(InvalidationInterface::FRESH);
       }
 
       // Only really succeed when no other scenario exists.
       else {
-        $invalidation->setState(InvalidationInterface::STATE_PURGED);
+        $invalidation->setState(InvalidationInterface::SUCCEEDED);
       }
     }
   }

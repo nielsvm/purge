@@ -32,10 +32,11 @@ interface InvalidationInterface extends ImmutableInvalidationInterface, Containe
    * Set the state of the invalidation.
    *
    * @param int $state
-   *   Integer matching to any of the InvalidationInterface::STATE_* constants.
+   *   Any \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface constant.
    *
    * @throws \Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException
-   *   Thrown when the given value doesn't match any of the STATE_ constants.
+   *   Thrown when the $state parameter doesn't match any of the constants
+   *   defined in \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface.
    *
    * @return void
    */

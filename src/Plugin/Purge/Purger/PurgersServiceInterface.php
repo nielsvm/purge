@@ -104,7 +104,7 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface $invalidation
    *   The invalidation object as just returned by one or more purgers.
    * @param int[] $states
-   *   One or more \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::STATE_* constants.
+   *   \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface constants.
    *
    * @return void
    */

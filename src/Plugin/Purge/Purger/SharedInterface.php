@@ -21,16 +21,16 @@ interface SharedInterface {
    * given $invalidation object from the external cache. In addition to the work
    * itself, it also has to call $invalidation->setState() and set it to the
    * situation that applies after its attempt. In the case the purge succeeded,
-   * this has to be STATE_PURGED and if it failed, its STATE_FAILED.
+   * this has to be SUCCEEDED and if it failed, its FAILED.
    *
    * Some external caching platforms - think CDNs - need more time to finish
    * invalidations and require later confirmation. In these cases, the state has
-   * to be set to STATE_PURGING so that it gets fed to this method again in the
+   * to be set to PROCESSING so that it gets fed to this method again in the
    * future (via the queue presumably). That means that incoming $invalidation
-   * objects have to be checked for the STATE_PURGING in these cases as well.
+   * objects have to be checked for the PROCESSING in these cases as well.
    *
    * Implementations of \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidate() can
-   * also set the state to STATE_UNSUPPORTED when available purgers cannot
+   * also set the state to NOT_SUPPORTED when available purgers cannot
    * invalidate the type of $invalidation given.
    *
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface $invalidation
@@ -47,17 +47,18 @@ interface SharedInterface {
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
    *   Exception thrown by \Drupal\purge\Plugin\Purge\Purger\SharedInterface::invalidate
    *   when the incoming $invalidation object's state is not any of these:
-   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::STATE_NEW
-   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::STATE_PURGING
-   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::STATE_FAILED
+   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::FRESH
+   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::PROCESSING
+   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::FAILED
+   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::NOT_SUPPORTED
    *
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
    *   Exception thrown by \Drupal\purge\Plugin\Purge\Purger\SharedInterface::invalidate
    *   when the invalidation object processed by the purger plugin, is not in
    *   any of the following states:
-   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::STATE_PURGED
-   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::STATE_PURGING
-   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::STATE_FAILED
+   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::SUCCEEDED
+   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::PROCESSING
+   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::FAILED
    *
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState()
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getState()
@@ -73,17 +74,17 @@ interface SharedInterface {
    * given list of invalidation objects from the external cache. In addition to
    * the work itself, it also has to call $invalidation->setState() on each one
    * of them and set it to the situation that applies for each object. In the
-   * case an individual invalidation succeeded, its state becomes STATE_PURGED
-   * or STATE_FAILED when it failed.
+   * case an individual invalidation succeeded, its state becomes SUCCEEDED
+   * or FAILED when it failed.
    *
    * Some external caching platforms - think CDNs - need more time to finish
    * invalidations and require later confirmation. In these cases, the state has
-   * to be set to STATE_PURGING so that it gets fed to this method again in the
+   * to be set to PROCESSING so that it gets fed to this method again in the
    * future (via the queue presumably). That means that incoming $invalidation
-   * objects have to be checked for the STATE_PURGING in these cases as well.
+   * objects have to be checked for the PROCESSING in these cases as well.
    *
    * \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidateMultiple() implementations
-   * can also set the state to STATE_UNSUPPORTED when available purgers cannot
+   * can also set the state to NOT_SUPPORTED when available purgers cannot
    * invalidate the type of $invalidation given.
    *
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations
@@ -104,17 +105,17 @@ interface SharedInterface {
    *   Thrown by \Drupal\purge\Plugin\Purge\Purger\SharedInterface::invalidateMultiple when
    *   any of the incoming invalidation objects does not have any of the
    *   following states:
-   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::STATE_NEW
-   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::STATE_PURGING
-   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::STATE_FAILED
+   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::FRESH
+   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::PROCESSING
+   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::FAILED
    *
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
    *   Thrown by \Drupal\purge\Plugin\Purge\Purger\SharedInterface::invalidateMultiple when
    *   any of the invalidation objects returning from the purger plugin are not
    *   in one of these states:
-   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::STATE_PURGED
-   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::STATE_PURGING
-   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::STATE_FAILED
+   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::SUCCEEDED
+   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::PROCESSING
+   *    - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::FAILED
    *
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState()
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getState()

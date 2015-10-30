@@ -8,6 +8,7 @@
 namespace Drupal\purge\Plugin\Purge\Invalidation;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface;
 
 /**
  * Describes the immutable invalidation.
@@ -17,33 +18,7 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
  * them. However, as they are read-only, they are used by user interfaces to
  * see what is in the queue without actually claiming or changing it.
  */
-interface ImmutableInvalidationInterface extends PluginInspectionInterface {
-
-  /**
-   * Invalidation object just got instantiated.
-   */
-  const STATE_NEW = 0;
-
-  /**
-   * Invalidation is on-going and requires later confirmation by the purger
-   * whether it is finished or not, turns into STATE_PURGED.
-   */
-  const STATE_PURGING = 1;
-
-  /**
-   * The invalidation succeeded.
-   */
-  const STATE_PURGED = 2;
-
-  /**
-   * The invalidation failed.
-   */
-  const STATE_FAILED = 3;
-
-  /**
-   * The invalidation type is not supported by any active purger.
-   */
-  const STATE_UNSUPPORTED = 4;
+interface ImmutableInvalidationInterface extends InvStatesInterface, PluginInspectionInterface {
 
   /**
    * Return the string expression of the invalidation.
@@ -65,7 +40,7 @@ interface ImmutableInvalidationInterface extends PluginInspectionInterface {
    * Get the current state of the invalidation.
    *
    * @return int
-   *   Integer matching to one of the InvalidationInterface::STATE_* constants.
+   *   Any \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface constant.
    */
   public function getState();
 
@@ -73,7 +48,8 @@ interface ImmutableInvalidationInterface extends PluginInspectionInterface {
    * Get the current state as string.
    *
    * @return string
-   *   The string comes without the 'STATE_' prefix as on the constants.
+   *   A capitalized string exactly matching the names of the constants in
+   *   \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface.
    */
   public function getStateString();
 

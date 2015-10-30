@@ -55,10 +55,10 @@ class ProxyItemTest extends KernelTestBase {
     // Test the 'data' array property and its peculiar format.
     $this->assertTrue(is_array($p->data));
     $this->assertEqual($i->getPluginId(), $p->data[0]);
-    $this->assertEqual(InvalidationInterface::STATE_NEW, $p->data[1]);
+    $this->assertEqual(InvalidationInterface::FRESH, $p->data[1]);
     $this->assertEqual($i->getExpression(), $p->data[1]);
-    $i->setState(InvalidationInterface::STATE_UNSUPPORTED);
-    $this->assertEqual(InvalidationInterface::STATE_UNSUPPORTED, $p->data[1]);
+    $i->setState(InvalidationInterface::NOT_SUPPORTED);
+    $this->assertEqual(InvalidationInterface::NOT_SUPPORTED, $p->data[1]);
 
     // Test the 'created' property and changing it directly on the buffer.
     $this->assertNull($p->created);

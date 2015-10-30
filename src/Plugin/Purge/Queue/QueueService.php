@@ -269,13 +269,13 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   public function deleteOrReleaseMultiple(array $invalidations) {
     foreach($invalidations as $invalidation) {
       switch ($invalidation->getState()) {
-        case InvalidationInterface::STATE_PURGED:
+        case InvalidationInterface::SUCCEEDED:
           $this->buffer->set($invalidation, TxBuffer::DELETING);
           break;
-        case InvalidationInterface::STATE_NEW:
-        case InvalidationInterface::STATE_PURGING:
-        case InvalidationInterface::STATE_FAILED:
-        case InvalidationInterface::STATE_UNSUPPORTED:
+        case InvalidationInterface::FRESH:
+        case InvalidationInterface::PROCESSING:
+        case InvalidationInterface::FAILED:
+        case InvalidationInterface::NOT_SUPPORTED:
           if (!$this->buffer->has($invalidation)) {
             $this->buffer->set($invalidation, TxBuffer::ADDING);
           }

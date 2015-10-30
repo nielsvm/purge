@@ -87,7 +87,7 @@ class HttpPurger extends PurgerBase implements PurgerInterface {
    */
   public function invalidate(InvalidationInterface $invalidation) {
     // @todo: this obviously needs to be implemented.
-    $invalidation->setState(InvalidationInterface::STATE_FAILED);
+    $invalidation->setState(InvalidationInterface::FAILED);
   }
 
   /**
@@ -96,7 +96,7 @@ class HttpPurger extends PurgerBase implements PurgerInterface {
   public function invalidateMultiple(array $invalidations) {
     // @todo: this obviously needs to be implemented.
     foreach ($invalidations as $invalidation) {
-      $invalidation->setState(InvalidationInterface::STATE_FAILED);
+      $invalidation->setState(InvalidationInterface::FAILED);
     }
   }
 

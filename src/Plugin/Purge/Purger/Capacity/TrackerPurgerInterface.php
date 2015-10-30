@@ -52,8 +52,8 @@ interface TrackerPurgerInterface {
    *     so don't return different values during a single request.
    *   - If your purger executes invalidation in multiple steps (e.g. some CDNs)
    *     that can take many minutes, make sure to keep this value low. Put your
-   *     objects into STATE_PURGING and they return back later to check status
-   *     in which you can finalize their status into STATE_PURGED.
+   *     objects into PROCESSING and they return back later to check status
+   *     in which you can finalize their status into SUCCEEDED.
    *
    * @warning
    *   Please take implementing this method seriously, as it strongly influences

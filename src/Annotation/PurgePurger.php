@@ -44,7 +44,7 @@ class PurgePurger extends Plugin {
   /**
    * A list of invalidation types that are supported by the purger plugin, for
    * instance 'tag', 'path' or 'url'. The plugin will only receive invalidation
-   * requests for the given types, others fail with state STATE_UNSUPPORTED. It
+   * requests for the given types, others fail with state NOT_SUPPORTED. It
    * is possible to dynamically provide this list by overloading the base
    * implementation of \Drupal\purge\Plugin\Purge\Purger\SharedInterface::getTypes().
    *

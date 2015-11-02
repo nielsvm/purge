@@ -142,6 +142,7 @@ $invalidations = [
   $purgeInvalidationFactory->get('path', 'contact'),
   $purgeInvalidationFactory->get('wildcardpath', 'news/*'),
 ];
+
 try {
   $purgePurgers->invalidate($invalidations);
 }
@@ -222,5 +223,6 @@ catch (DiagnosticsException $e) {
 catch (CapacityException $e) {
   // Capacity exceptions happen when too much was purged during this request.
 }
+
 $purgeQueue->deleteOrReleaseMultiple($claims);
 ```

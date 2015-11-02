@@ -11,9 +11,11 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\purge\ServiceBase;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
 use Drupal\purge\Plugin\Purge\Purger\Capacity\Tracker;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException;
@@ -33,6 +35,11 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
+
+  /**
+   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
+   */
+  protected $purgeDiagnostics;
 
   /**
    * Holds all generated user-readable purger labels per instance ID.
@@ -76,12 +83,15 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    *   The plugin manager for this service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
+   * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
+   *   The diagnostics service.
    * @param \Drupal\Core\State\StateInterface $state
    *   The state key value store.
    */
-  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory, StateInterface $state) {
+  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory, DiagnosticsServiceInterface $purge_diagnostics, StateInterface $state) {
     $this->pluginManager = $pluginManager;
     $this->configFactory = $config_factory;
+    $this->purgeDiagnostics = $purge_diagnostics;
     $this->state = $state;
 
     // Instantiate all the purgers and let them configure themselves.
@@ -120,6 +130,9 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
       if (!$invalidation instanceof InvalidationInterface) {
         throw new BadBehaviorException("Item $i is not a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface derivative.");
       }
+    }
+    if ($fire = $this->purgeDiagnostics->isSystemOnFire()) {
+      throw new DiagnosticsException($fire->getRecommendation());
     }
     if (!$capacity_limit) {
       throw new CapacityException('Capacity limits exceeded.');

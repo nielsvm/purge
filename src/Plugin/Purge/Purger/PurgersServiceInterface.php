@@ -135,6 +135,10 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
    *   Thrown when $invalidations contains other data than derivatives of
    *   \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface.
    *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException
+   *   Thrown when ::isSystemOnFire() of the diagnostics service reported a
+   *   SEVERITY_ERROR level issue, this forces all purging to be halted.
+   *
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException
    *   Thrown when the capacity tracker's global resource limit returns zero or
    *   when more $invalidations are given exceeding this limit. Any claimed

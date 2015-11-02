@@ -11,6 +11,8 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
 
 /**
  * Processes queue items at the end of every request.
@@ -24,13 +26,6 @@ class LateRuntimeProcessor implements EventSubscriberInterface, ContainerAwareIn
    * @var false|\Drupal\purge_processor_lateruntime\Plugin\Purge\Processor\LateRuntimeProcessor
    */
   protected $processor;
-
-  /**
-   * Diagnostics service that reports any preliminary issues before purging.
-   *
-   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
-   */
-  protected $purgeDiagnostics;
 
   /**
    * The purge executive service, which wipes content from external caches.
@@ -66,7 +61,6 @@ class LateRuntimeProcessor implements EventSubscriberInterface, ContainerAwareIn
       // allowed to operate and thus loads the least possible dependencies.
       $this->processor = $this->container->get('purge.processors')->get('lateruntime');
       if ($this->processor !== FALSE) {
-        $this->purgeDiagnostics = $this->container->get('purge.diagnostics');
         $this->purgePurgers = $this->container->get('purge.purgers');
         $this->purgeQueue = $this->container->get('purge.queue');
       }
@@ -89,20 +83,22 @@ class LateRuntimeProcessor implements EventSubscriberInterface, ContainerAwareIn
       return;
     }
 
-    // When the system is showing fire, immediately stop attempting to purge.
-    if ($fire = $this->purgeDiagnostics->isSystemOnFire()) {
-      return;
-    }
-
     // Claim a chunk of invalidations, process and let the queue handle results.
     $capacity = $this->purgePurgers->capacityTracker();
-    if ($limit = $capacity->getLimit()) {
-      $claims = $this->purgeQueue->claimMultiple($limit, $capacity->getTimeHint());
-      if (count($claims)) {
-        $this->purgePurgers->invalidate($claims);
-        $this->purgeQueue->deleteOrReleaseMultiple($claims);
-      }
+    $claims = $this->purgeQueue->claimMultiple($capacity->getLimit(), $capacity->getTimeHint());
+    try {
+      $this->purgePurgers->invalidate($claims);
     }
+    catch (DiagnosticsException $e) {
+
+    }
+    catch (CapacityException $e) {
+
+    }
+    finally {
+      $this->purgeQueue->deleteOrReleaseMultiple($claims);
+    }
+
   }
 
 }

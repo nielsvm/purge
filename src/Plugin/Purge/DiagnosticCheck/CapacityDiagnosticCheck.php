@@ -72,7 +72,7 @@ class CapacityDiagnosticCheck extends DiagnosticCheckBase implements DiagnosticC
 
     if ($this->value === 0) {
       $this->recommendation = $this->t("There is no purging capacity available.");
-      return SELF::SEVERITY_ERROR;
+      return SELF::SEVERITY_WARNING;
     }
     elseif ($this->value < 5) {
       $this->recommendation = $this->t("Your system invalidates just @limit items through webserver-initated processing. If you notice that purge cannot keep up with its queue, reconsider your configuration.", $placeholders);

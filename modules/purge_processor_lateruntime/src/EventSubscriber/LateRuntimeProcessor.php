@@ -99,7 +99,7 @@ class LateRuntimeProcessor implements EventSubscriberInterface, ContainerAwareIn
     if ($limit = $capacity->getLimit()) {
       $claims = $this->purgeQueue->claimMultiple($limit, $capacity->getTimeHint());
       if (count($claims)) {
-        $this->purgePurgers->invalidateMultiple($claims);
+        $this->purgePurgers->invalidate($claims);
         $this->purgeQueue->deleteOrReleaseMultiple($claims);
       }
     }

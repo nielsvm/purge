@@ -24,14 +24,7 @@ abstract class NullPurgerBase extends PurgerBase implements PurgerInterface {
   /**
    * {@inheritdoc}
    */
-  public function invalidate(InvalidationInterface $invalidation) {
-    $invalidation->setState(InvalidationInterface::FAILED);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function invalidateMultiple(array $invalidations) {
+  public function invalidate(array $invalidations) {
     foreach ($invalidations as $invalidation) {
       $invalidation->setState(InvalidationInterface::FAILED);
     }

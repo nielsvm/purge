@@ -85,15 +85,7 @@ class HttpPurger extends PurgerBase implements PurgerInterface {
   /**
    * {@inheritdoc}
    */
-  public function invalidate(InvalidationInterface $invalidation) {
-    // @todo: this obviously needs to be implemented.
-    $invalidation->setState(InvalidationInterface::FAILED);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function invalidateMultiple(array $invalidations) {
+  public function invalidate(array $invalidations) {
     // @todo: this obviously needs to be implemented.
     foreach ($invalidations as $invalidation) {
       $invalidation->setState(InvalidationInterface::FAILED);

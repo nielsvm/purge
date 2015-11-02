@@ -147,7 +147,6 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
    *   Exception thrown when the object state doesn't make any sense.
    *
    * @see \Drupal\purge\Plugin\Purge\Purger\PurgersService::invalidate
-   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersService::invalidateMultiple
    *
    * @return void
    */
@@ -161,7 +160,6 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
    *   their invalidation.
    *
    * @see \Drupal\purge\Plugin\Purge\Purger\PurgersService::invalidate
-   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersService::invalidateMultiple
    *
    * @return void
    */

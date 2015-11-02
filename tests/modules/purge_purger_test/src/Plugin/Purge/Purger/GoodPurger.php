@@ -26,14 +26,7 @@ class GoodPurger extends NullPurgerBase {
   /**
    * {@inheritdoc}
    */
-  public function invalidate(InvalidationInterface $invalidation) {
-    $invalidation->setState(InvalidationInterface::SUCCEEDED);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function invalidateMultiple(array $invalidations) {
+  public function invalidate(array $invalidations) {
     foreach ($invalidations as $invalidation) {
       $invalidation->setState(InvalidationInterface::SUCCEEDED);
     }

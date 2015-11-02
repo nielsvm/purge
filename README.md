@@ -128,7 +128,7 @@ API examples
 #### Direct invalidation
 ```
 $i = \Drupal::service('purge.invalidation.factory')->get('tag', 'node:1');
-\Drupal::service('purge.purgers')->invalidate($i);
+\Drupal::service('purge.purgers')->invalidate([$i]);
 ```
 
 ```
@@ -138,7 +138,7 @@ $i = [
   \Drupal::service('purge.invalidation.factory')->get('path', 'contact'),
   \Drupal::service('purge.invalidation.factory')->get('wildcardpath', 'news/*'),
 ];
-\Drupal::service('purge.purgers')->invalidateMultiple($i);
+\Drupal::service('purge.purgers')->invalidate($i);
 ```
 
 #### Queuing
@@ -162,11 +162,11 @@ $queue = \Drupal::service('purge.queue');
 
 // Claim one item, process and let the queue handle the result.
 $i = $queue->claim();
-$purgers->invalidate($i);
+$purgers->invalidate([$i]);
 $queue->deleteOrRelease($i);
 
 // Claim a bunch, process and let the queue handle the resulting objects.
 $i = $queue->claimMultiple(30);
-$purgers->invalidateMultiple($i);
+$purgers->invalidate($i);
 $queue->deleteOrReleaseMultiple($i);
 ```

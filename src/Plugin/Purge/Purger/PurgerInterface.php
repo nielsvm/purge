@@ -9,12 +9,25 @@ namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface;
-use Drupal\purge\Plugin\Purge\Purger\SharedInterface;
 
 /**
  * Describes a purger - the cache invalidation executor.
  */
-interface PurgerInterface extends ContainerFactoryPluginInterface, SharedInterface, TrackerPurgerInterface {
+interface PurgerInterface extends ContainerFactoryPluginInterface, TrackerPurgerInterface {
+
+  /**
+   * The current instance of this purger plugin is about to be deleted.
+   *
+   * When end-users decide to uninstall this purger through the user interface,
+   * this method gets called. Especially when this purger is multi-instantiable
+   * this gets useful as it allows to remove configuration and perform cleanup
+   * prior to when the instance gets uninstalled.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::deletePluginsEnabled()
+   *
+   * @return void
+   */
+  public function delete();
 
   /**
    * Retrieve the unique instance ID for this purger instance.
@@ -41,17 +54,60 @@ interface PurgerInterface extends ContainerFactoryPluginInterface, SharedInterfa
   public function getLabel();
 
   /**
-   * The current instance of this purger plugin is about to be deleted.
+   * Retrieve the list of supported invalidation types.
    *
-   * When end-users decide to uninstall this purger through the user interface,
-   * this method gets called. Especially when this purger is multi-instantiable
-   * this gets useful as it allows to remove configuration and perform cleanup
-   * prior to when the instance gets uninstalled.
+   * @see \Drupal\purge\Annotation\PurgePurger::$types.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::deletePluginsEnabled()
+   * @return string[]
+   *   List of supported invalidation type plugins.
+   */
+  public function getTypes();
+
+  /**
+   * Invalidate content from external caches.
+   *
+   * Implementations of this method have the responsibility of invalidating the
+   * given list of invalidation objects from their external caches. Besides the
+   * invalidation itself, it also needs to call ::setState() on each object to
+   * reflect the correct state after invalidation.
+   *
+   * You can set it to the following states:
+   *
+   * - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::SUCCEEDED
+   * - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::FAILED
+   * - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::PROCESSING
+   * - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::NOT_SUPPORTED
+   *
+   * PROCESSING is a special state only intended to be used on caching platforms
+   * where more time is required than 1-2 seconds to clear its cache. Usually
+   * CDNs with special status API calls where you can later find out if the
+   * object succeeded invalidation. When set to this state, the object flows
+   * back to the queue to be offered to your plugin again later.
+   *
+   * NOT_SUPPORTED will be rarely needed, as invalidation types not listed as
+   * supported by your plugin will already be put to this state before it is
+   * offered to your plugin by PurgersServiceInterface::invalidate(). However,
+   * if there is any technical reason why you couldn't support a particular
+   * invalidation at that given time, you can set it as such and it will be
+   * offered again later.
+   *
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations
+   *   Non-associative array of invalidation objects that each describe what
+   *   needs to be invalidated by the external caching system. Usually these
+   *   objects originate from the queue but direct invalidation is also
+   *   possible, in either cases the behavior of your plugin stays the same.
+   *
+   *   The number of objects given is dictated by the outer limit of Purge's
+   *   capacity tracking mechanism and is dynamically calculated. The lower your
+   *   ::getTimeHint() implementation returns, the more that will be offered at
+   *   once. However, your real execution time can and should never exceed the
+   *   defined hint, to protect system stability.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState()
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getTimeHint()
    *
    * @return void
    */
-  public function delete();
+  public function invalidate(array $invalidations);
 
 }

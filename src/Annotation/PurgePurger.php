@@ -46,9 +46,9 @@ class PurgePurger extends Plugin {
    * instance 'tag', 'path' or 'url'. The plugin will only receive invalidation
    * requests for the given types, others fail with state NOT_SUPPORTED. It
    * is possible to dynamically provide this list by overloading the base
-   * implementation of \Drupal\purge\Plugin\Purge\Purger\SharedInterface::getTypes().
+   * implementation of \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getTypes().
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\SharedInterface::getTypes()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getTypes()
    *
    * @var string[]
    */

@@ -98,7 +98,7 @@ abstract class PluginTestBase extends KernelTestBase {
     $this->assertEqual($immutable->getExpression(), $mutable->getExpression());
     $this->assertEqual($immutable->getState(), $mutable->getState());
     $this->assertEqual($immutable->getStateString(), $mutable->getStateString());
-    $this->assertEqual($immutable->getPluginId(), $mutable->getPluginId());
+    $this->assertEqual($immutable->getType(), $mutable->getType());
   }
 
   /**
@@ -196,12 +196,14 @@ abstract class PluginTestBase extends KernelTestBase {
    * Test retrieving the plugin ID and definition.
    *
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getPluginId
+   * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getType
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getPluginDefinition
    */
   function testPluginIdAndDefinition() {
     // Test mutable objects.
     $mutable = $this->getInstance();
     $this->assertEqual($this->plugin_id, $mutable->getPluginId());
+    $this->assertEqual($this->plugin_id, $mutable->getType());
     $d = $mutable->getPluginDefinition();
     $this->assertTrue(is_array($d));
     $this->assertTrue(is_array($d['examples']));
@@ -218,6 +220,7 @@ abstract class PluginTestBase extends KernelTestBase {
     // Test the immutable objects.
     $immutable = $this->getImmutableInstance();
     $this->assertEqual($this->plugin_id, $immutable->getPluginId());
+    $this->assertEqual($this->plugin_id, $immutable->getType());
     $d = $immutable->getPluginDefinition();
     $this->assertTrue(is_array($d));
     $this->assertTrue(is_array($d['examples']));

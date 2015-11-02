@@ -72,7 +72,6 @@ interface PurgerInterface extends ContainerFactoryPluginInterface, TrackerPurger
    * reflect the correct state after invalidation.
    *
    * You can set it to the following states:
-   *
    * - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::SUCCEEDED
    * - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::FAILED
    * - \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface::PROCESSING

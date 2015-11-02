@@ -8,6 +8,7 @@
 namespace Drupal\purge\Plugin\Purge\Invalidation;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationBase;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
@@ -77,7 +78,40 @@ abstract class InvalidationBase extends ImmutableInvalidationBase implements Inv
     if (($state < 0) || ($state > 4)) {
       throw new InvalidStateException('$state is out of range!');
     }
-    $this->state = $state;
+    if (is_null($this->context)) {
+      throw new \LogicException('State cannot be set in NULL context!');
+    }
+    $this->states[$this->context] = $state;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setStateContext($purger_instance_id) {
+    $new_is_string = is_string($purger_instance_id);
+    $new_is_null = is_null($purger_instance_id);
+    if ($new_is_string && (!strlen($purger_instance_id))) {
+      throw new \LogicException('Parameter $purger_instance_id is empty!');
+    }
+    elseif ((!$new_is_string) && (!$new_is_null)) {
+      throw new \LogicException('Parameter $purger_instance_id is not NULL or a non-empty string!');
+    }
+    elseif ($purger_instance_id === $this->context) {
+      return;
+    }
+
+    // Find out if states returning from purgers are actually valid.
+    $old_is_string = is_string($this->context);
+    $old_is_null = is_null($this->context);
+    $both_strings = $old_is_string && $new_is_string;
+    $transferring = $both_strings && ($this->context != $purger_instance_id);
+    if ($transferring || ($old_is_string && $new_is_null)) {
+      if (!in_array($this->getState(), $this->states_after_processing)) {
+        throw new BadPluginBehaviorException("Only NOT_SUPPORTED, PROCESSING, SUCCEEDED and FAILED are valid outbound states.");
+      }
+    }
+
+    $this->context = $purger_instance_id;
   }
 
   /**

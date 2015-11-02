@@ -56,29 +56,6 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   protected $state;
 
   /**
-   * Valid Invalidation object states that can be fed to the purger service.
-   *
-   * @var int[]
-   */
-  protected $states_inbound = [
-    InvalidationInterface::FRESH,
-    InvalidationInterface::PROCESSING,
-    InvalidationInterface::FAILED,
-    InvalidationInterface::NOT_SUPPORTED,
-  ];
-
-  /**
-   * Valid Invalidation object states that return from purger plugins.
-   *
-   * @var int[]
-   */
-  protected $states_outbound = [
-    InvalidationInterface::SUCCEEDED,
-    InvalidationInterface::PROCESSING,
-    InvalidationInterface::FAILED
-  ];
-
-  /**
    * The list of supported invalidation types across all purgers.
    *
    * @var null|string[]
@@ -119,6 +96,37 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
       $this->capacityTracker = new Tracker($this->purgers, $this->state);
     }
     return $this->capacityTracker;
+  }
+
+  /**
+   * Perform pre-flight checks.
+   *
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations
+   *   Non-associative array of invalidation objects that each describe what
+   *   needs to be invalidated by the external caching system. Usually these
+   *   objects originate from the queue but direct invalidation is also
+   *   possible, in either cases the behavior of your plugin stays the same.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidate()
+   *
+   * @return void
+   */
+  protected function checksBeforeTakeoff(array $invalidations) {
+    $capacity_limit = $this->capacityTracker()->getLimit();
+    if (empty($invalidations)) {
+      throw new BadBehaviorException('No invalidations given.');
+    }
+    foreach ($invalidations as $i => $invalidation) {
+      if (!$invalidation instanceof InvalidationInterface) {
+        throw new BadBehaviorException("Item $i is not a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface derivative.");
+      }
+    }
+    if (!$capacity_limit) {
+      throw new CapacityException('Capacity limits exceeded.');
+    }
+    if (($count = count($invalidations)) > $capacity_limit) {
+      throw new CapacityException("Capacity limit allows $capacity_limit invalidations during this request, $count given.");
+    }
   }
 
   /**
@@ -296,144 +304,60 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function invalidate(InvalidationInterface $invalidation) {
-    $invalidation_type = $invalidation->getPluginId();
+  public function invalidate(array $invalidations) {
     $types_by_purger = $this->getTypesByPurger();
-    $types = $this->getTypes();
-    $results = [];
+    $this->checksBeforeTakeoff($invalidations);
 
-    // Stop any attempt when there is no available capacity.
-    if (!$this->capacityTracker()->getLimit()) {
-      throw new CapacityException('No capacity available or resource limits exceeded.');
-    }
-
-    // Test $invalidation's inbound object state.
-    $initialstate = $invalidation->getState();
-    if (!in_array($initialstate, $this->states_inbound)) {
-      throw new BadPluginBehaviorException("Only FRESH, PROCESSING, FAILED and NOT_SUPPORTED are valid inbound states.");
-    }
-
-    // Iterate the purger instances and only execute for supported types.
-    foreach ($this->purgers as $id => $purger) {
-      if (in_array($invalidation_type, $types_by_purger[$id])) {
-
-        // Reset the initial state object state, execute the invalidation.
-        $invalidation->setState($initialstate);
-        $purger->invalidate($invalidation);
-        if (!in_array($invalidation->getState(), $this->states_outbound)) {
-          throw new BadPluginBehaviorException("Only SUCCEEDED, PROCESSING and FAILED are valid return states.");
-        }
-        $results[] = $invalidation->getState();
-      }
-    }
-
-    // Resolve the multiple states into the final state.
-    $this->resolveInvalidationState($invalidation, $results);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function invalidateMultiple(array $invalidations) {
-    $types_by_purger = $this->getTypesByPurger();
-    $types = $this->getTypes();
-    $invalidation_types = [];
-    $initialstates = [];
-    $results = [];
-
-    // Throw exceptions for various unsupported conditions.
-    if (empty($invalidations)) {
-      throw new BadBehaviorException('Given $invalidations array is empty.');
-    }
-    if (!$this->capacityTracker()->getLimit()) {
-      throw new CapacityException('No capacity available or resource limits exceeded.');
-    }
-    if (count($invalidations) > $this->capacityTracker()->getLimit()) {
-      throw new CapacityException('Given $invalidations has more items than the capacity limit allows.');
-    }
-
-    // Test each invalidation object to see if its in a valid inbound state.
+    // Discover types in need of processing and - just to be sure - reset state.
+    $types = [];
     foreach ($invalidations as $i => $invalidation) {
-      $invalidation_types[$i] = $invalidation->getPluginId();
-      $initialstates[$i] = $invalidation->getState();
-      if (!in_array($initialstates[$i], $this->states_inbound)) {
-        throw new BadPluginBehaviorException("Only FRESH, PROCESSING, FAILED and NOT_SUPPORTED are valid inbound states.");
-      }
+      $types[$i] = $invalidation->getType();
+      $invalidation->setStateContext(NULL);
     }
 
-    // Prepopulate empty result sets and list supported types. Empty result sets
-    // will lead to NOT_SUPPORTED in ::resolveInvalidationState().
-    foreach ($invalidations as $i => $invalidation) {
-      $results[$i] = [];
-    }
-
-    // Iterate the purgers, and match supported types to loaded purgers.
+    // Iterate the purgers and start invalidating the items each one supports.
     foreach ($this->purgers as $id => $purger) {
+      $supported = $groups = [];
 
-      // Build a subset of invalidation objects, supported by this purger.
-      $supported_invalidations = [];
+      // Set context and presort the invalidations that this purger supports.
       foreach ($invalidations as $i => $invalidation) {
-        if (in_array($invalidation_types[$i], $types_by_purger[$id])) {
-          $invalidation->setState($initialstates[$i]);
-          $supported_invalidations[$i] = $invalidation;
+        $invalidation->setStateContext($id);
+        if ($invalidation->getState() == InvalidationInterface::SUCCEEDED) {
+          continue;
+        }
+        if (!in_array($types[$i], $types_by_purger[$id])) {
+          $invalidation->setState(InvalidationInterface::NOT_SUPPORTED);
+          continue;
+        }
+        $supported[$i] = $invalidation;
+      }
+
+      // Filter supported objects and group them by the right purger methods.
+      foreach ($types_by_purger[$id] as $type) {
+        $method = $purger->routeTypeToMethod($type);
+        if (!isset($groups[$method])) {
+          $groups[$method] = [];
+        }
+        foreach ($types as $i => $invalidation_type) {
+          if ($invalidation_type === $type) {
+            $groups[$method][$i] = $invalidations[$i];
+          }
         }
       }
 
-      // Ask the purger plugin to execute the purges for the given subset.
-      $purger->invalidateMultiple($supported_invalidations);
-
-      // Gather results and pick up invalid outbound states.
-      foreach ($supported_invalidations as $i => $invalidation) {
-        $state = $invalidation->getState();
-        $results[$i][] = $state;
-        if (!in_array($state, $this->states_outbound)) {
-          throw new BadPluginBehaviorException("Only SUCCEEDED, PROCESSING and FAILED are valid return states.");
+      // Invalidate objects by offering each group to its method on the purger.
+      foreach ($groups as $method => $offers) {
+        if (!count($offers)) {
+          continue;
         }
+        $purger->$method($offers);
       }
     }
 
-    // Resolve the multiple states into the final state for each object.
+    // As processing finished we have the obligation to reset context. A call to
+    // getState() will now lead to evaluation of the outcome for each object.
     foreach ($invalidations as $i => $invalidation) {
-      $this->resolveInvalidationState($invalidation, $results[$i]);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function resolveInvalidationState(InvalidationInterface $invalidation, array $states) {
-    // No results indicate no purgers touched it, so it is not supported.
-    if (empty($states)) {
-      $invalidation->setState(InvalidationInterface::NOT_SUPPORTED);
-    }
-
-    // When there is just one result, we take it as final state.
-    elseif (count($states) === 1) {
-      $single_resulting_state = current($states);
-      if ($invalidation->getState() != $single_resulting_state) {
-        $invalidation->setState($single_resulting_state);
-      }
-    }
-
-    // With multiple results, determine what the final result will be.
-    else {
-      if (in_array(InvalidationInterface::NOT_SUPPORTED, $states)) {
-        $invalidation->setState(InvalidationInterface::NOT_SUPPORTED);
-      }
-      elseif (in_array(InvalidationInterface::FAILED, $states)) {
-        $invalidation->setState(InvalidationInterface::FAILED);
-      }
-      elseif (in_array(InvalidationInterface::PROCESSING, $states)) {
-        $invalidation->setState(InvalidationInterface::PROCESSING);
-      }
-      elseif (in_array(InvalidationInterface::FRESH, $states)) {
-        $invalidation->setState(InvalidationInterface::FRESH);
-      }
-
-      // Only really succeed when no other scenario exists.
-      else {
-        $invalidation->setState(InvalidationInterface::SUCCEEDED);
-      }
+      $invalidation->setStateContext(NULL);
     }
   }
 

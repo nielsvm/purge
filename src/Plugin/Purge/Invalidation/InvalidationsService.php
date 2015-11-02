@@ -73,7 +73,12 @@ class InvalidationsService extends ServiceBase implements InvalidationsServiceIn
    */
   public function getFromQueueData($item_data) {
     $instance = $this->get($item_data[0], $item_data[2]);
-    $instance->setState($item_data[1]);
+    // Replay the purger states as stored in item_data[1].
+    foreach ($item_data[1] as $purger_instance_id => $state) {
+      $instance->setStateContext($purger_instance_id);
+      $instance->setState($state);
+    }
+    $instance->setStateContext(NULL);
     return $instance;
   }
 
@@ -87,7 +92,12 @@ class InvalidationsService extends ServiceBase implements InvalidationsServiceIn
         'expression' => $item_data[2]
       ]
     );
-    $instance->setState($item_data[1]);
+    // Replay the purger states as stored in item_data[1].
+    foreach ($item_data[1] as $purger_instance_id => $state) {
+      $instance->setStateContext($purger_instance_id);
+      $instance->setState($state);
+    }
+    $instance->setStateContext(NULL);
     return new ImmutableInvalidation($instance);
   }
 

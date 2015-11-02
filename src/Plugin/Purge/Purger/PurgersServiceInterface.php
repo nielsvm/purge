@@ -19,9 +19,9 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
   /**
    * Get the capacity tracker.
    *
-   * Implementations of \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface always hold a
-   * single capacity tracker instance. The capacity tracker tracks runtime
-   * resource consumption and maintains activity counters.
+   * Implementations of \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
+   * always hold a single capacity tracker instance. The capacity tracker tracks
+   * runtime resource consumption and maintains activity counters.
    *
    * @return \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface;
    */
@@ -43,8 +43,8 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
   /**
    * Disable the given purger plugin instances.
    *
-   * Just before, it calls \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::delete()
-   * on the purger(s) being disabled allowing the plugin to clean up.
+   * This calls \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::delete()
+   * on the purger(s) just before disabling to allow the plugin to clean up.
    *
    * @param string[] $ids
    *   Non-associative array of instance ids that are about to be uninstalled.

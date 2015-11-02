@@ -104,4 +104,11 @@ abstract class PurgerBase extends PluginBase implements PurgerInterface {
     return $this->getPluginDefinition()['types'];
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function routeTypeToMethod($type) {
+    return 'invalidate';
+  }
+
 }

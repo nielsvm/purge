@@ -110,4 +110,39 @@ interface PurgerInterface extends ContainerFactoryPluginInterface, TrackerPurger
    */
   public function invalidate(array $invalidations);
 
+  /**
+   * Route certain type of invalidations to other methods.
+   *
+   * Simple purgers supporting just one type - for example 'tag' - will get that
+   * specific type offered in ::invalidate(). However, when supporting multiple
+   * types it might be useful to have PurgersService sort and route these for
+   * you to the methods you specify. The expected signature and method behavior
+   * is equal to \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::invalidate.
+   *
+   * One note of warning: depending on the implementation specifics of a plugin,
+   * sorting and dispatching types to different code paths can be less efficient
+   * compared to external platforms allowing you to mix and send everyhing in
+   * one single batch. Therefore, consult the API of the platform your plugin
+   * supports to decide what the most efficient implementation will be.
+   *
+   * A simple implementation will look like this:
+   * @code
+   *   public function routeTypeToMethod($type) {
+   *     $methods = [
+   *       'path' => 'invalidatePaths',
+   *       'tag'  => 'invalidateTags',
+   *       'url'  => 'invalidateUrls',
+   *     ];
+   *     return isset($methods[$type]) ? $methods[$type] : 'invalidate';
+   *   }
+   * @endcode
+   *
+   * @param string $type
+   *   The type of invalidation(s) about to be offered to the purger.
+   *
+   * @return string
+   *   The PHP method name called on the purger with a $invalidations parameter.
+   */
+   public function routeTypeToMethod($type);
+
 }

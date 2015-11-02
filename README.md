@@ -125,48 +125,102 @@ Interested? Reach out any time of day and we'll get you going!
 API examples
 ------------------------------------------------------------------------------
 
-#### Direct invalidation
-```
-$i = \Drupal::service('purge.invalidation.factory')->get('tag', 'node:1');
-\Drupal::service('purge.purgers')->invalidate([$i]);
-```
+#### Invalidation without queue
+You can simply invalidate objects by creating them and feeding them to the
+purgers service directly. The purgers service then processes your request and
+sets processing states accordingly.
 
 ```
-$i = [
-  \Drupal::service('purge.invalidation.factory')->get('tag', 'node:1'),
-  \Drupal::service('purge.invalidation.factory')->get('tag', 'node:2'),
-  \Drupal::service('purge.invalidation.factory')->get('path', 'contact'),
-  \Drupal::service('purge.invalidation.factory')->get('wildcardpath', 'news/*'),
+use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
+$purgeInvalidationFactory = \Drupal::service('purge.invalidation.factory');
+$purgePurgers = \Drupal::service('purge.purgers');
+
+$invalidations = [
+  $purgeInvalidationFactory->get('tag', 'node:1'),
+  $purgeInvalidationFactory->get('tag', 'node:2'),
+  $purgeInvalidationFactory->get('path', 'contact'),
+  $purgeInvalidationFactory->get('wildcardpath', 'news/*'),
 ];
-\Drupal::service('purge.purgers')->invalidate($i);
+try {
+  $purgePurgers->invalidate($invalidations);
+}
+catch (DiagnosticsException $e) {
+  // Diagnostic exceptions happen when the system cannot purge.
+}
+catch (CapacityException $e) {
+  // Capacity exceptions happen when too much was purged during this request.
+}
+```
+When this code finished successfully, the ``$invalidations`` array holds the
+objects it had before, but now each object has changed its state. You can now
+verify this by iterating over the objects.
+
+```
+foreach ($invalidations as $invalidation) {
+  var_dump($invalidation->getStateString());
+}
 ```
 
-#### Queuing
-```
-$i = \Drupal::service('purge.invalidation.factory')->get('path', 'news/');
-\Drupal::service('purge.queue')->add($i);
-```
+Which could then look like this:
 
 ```
-$i = [
-  \Drupal::service('purge.invalidation.factory')->get('tag', 'node:1'),
-  \Drupal::service('purge.invalidation.factory')->get('tag', 'node:2'),
+string(6) "FAILED"
+string(6) "FAILED"
+string(9) "SUCCEEDED"
+string(10) "PROCESSING"
+```
+
+The results reveal why you should ** normally not invalidate without queue**,
+because items can fail or need to run again later to finish entirely.
+
+#### Queueing
+Contrary to direct purging without a queue, going through the queue is in fact
+much easier. Queuers are the entities creating objects and then add them to
+the queue by calling ``addMultiple()`` on the queue service.
+
+```
+$purgeInvalidationFactory = \Drupal::service('purge.invalidation.factory');
+$purgeQueue = \Drupal::service('purge.queue');
+
+$invalidations = [
+  $purgeInvalidationFactory->get('tag', 'node:1'),
+  $purgeInvalidationFactory->get('tag', 'node:2'),
+  $purgeInvalidationFactory->get('path', 'contact'),
+  $purgeInvalidationFactory->get('wildcardpath', 'news/*'),
 ];
-\Drupal::service('purge.queue')->addMultiple($i);
+
+$purgeQueue->addMultiple(invalidations);
 ```
+
+What happens now depends on the **processors you configured**, as some might
+purge very quickly after adding items to the queue whereas others might need
+a time-based delay before this occurs. Items enter the queue in state ``FRESH``
+and normally leave the processor in the states ``SUCCEEDED``, ``FAILED``,
+``PROCESSING`` or when no single plugins supported it: ``NOT_SUPPORTED``. Items
+that don't succeed, cycle back to the queue until it gets manually cleared.
 
 #### Queue processing
+Processing items from the queue is handled by processors, which users can add
+and configure according to their configuration.
+
 ```
-$purgers = \Drupal::service('purge.purgers');
-$queue = \Drupal::service('purge.queue');
+use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
+$purgePurgers = \Drupal::service('purge.purgers');
+$purgeQueue = \Drupal::service('purge.queue');
 
-// Claim one item, process and let the queue handle the result.
-$i = $queue->claim();
-$purgers->invalidate([$i]);
-$queue->deleteOrRelease($i);
-
-// Claim a bunch, process and let the queue handle the resulting objects.
-$i = $queue->claimMultiple(30);
-$purgers->invalidate($i);
-$queue->deleteOrReleaseMultiple($i);
+$claim_limit = $this->purgePurgers->capacityTracker()->getLimit();
+$lease_time = $this->purgePurgers->capacityTracker()->getTimeHint();
+$claims = $this->purgeQueue->claimMultiple($claim_limit, $lease_time);
+try {
+  $purgePurgers->invalidate($invalidations);
+}
+catch (DiagnosticsException $e) {
+  // Diagnostic exceptions happen when the system cannot purge.
+}
+catch (CapacityException $e) {
+  // Capacity exceptions happen when too much was purged during this request.
+}
+$purgeQueue->deleteOrReleaseMultiple($claims);
 ```

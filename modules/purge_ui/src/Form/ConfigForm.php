@@ -140,7 +140,7 @@ class ConfigForm extends FormBase {
    *
    *  @return array
    */
-  protected function getDialogButton($title, $url, $width = '70%') {
+  protected function getDialogButton($title, $url, $width = '60%') {
     return [
       'title' => $title,
       'url' => $url,
@@ -164,7 +164,7 @@ class ConfigForm extends FormBase {
    *
    *  @return array
    */
-  protected function getDialogLink($title, $url, $width = '70%') {
+  protected function getDialogLink($title, $url, $width = '60%') {
     return [
       '#type' => 'link',
       '#title' => $title,
@@ -223,8 +223,7 @@ class ConfigForm extends FormBase {
         $links['delete'] = $this->getDialogButton(
           $this->t("Delete"),
           Url::fromRoute('purge_ui.queuer_delete_form',
-          ['id' => $id]),
-          '40%'
+          ['id' => $id])
         );
       };
       $add_configure_link = function(&$links, $queuer) {
@@ -260,7 +259,7 @@ class ConfigForm extends FormBase {
     if (count($available)) {
       $form['queuers']['add'] = [
         '#type' => 'operations',
-        '#links' => [$this->getDialogButton($this->t("Add queuer"), Url::fromRoute('purge_ui.queuer_add_form'), '40%')]
+        '#links' => [$this->getDialogButton($this->t("Add queuer"), Url::fromRoute('purge_ui.queuer_add_form'))]
       ];
     }
     elseif (!count($this->purgeQueuers)) {
@@ -308,7 +307,7 @@ class ConfigForm extends FormBase {
     // Add the buttons.
     $form['queue']['save'] = ['#type' => 'submit', '#button_type' => 'primary', '#value' => $this->t('Change')];
     $form['queue']['browser'] = $this->getDialogLink($this->t("Inspect data"), Url::fromRoute('purge_ui.queue_browser_form'), '900');
-    $form['queue']['empty'] = $this->getDialogLink($this->t("Empty the queue"), Url::fromRoute('purge_ui.queue_empty_form'), '40%');
+    $form['queue']['empty'] = $this->getDialogLink($this->t("Empty the queue"), Url::fromRoute('purge_ui.queue_empty_form'));
   }
 
   /**
@@ -334,8 +333,7 @@ class ConfigForm extends FormBase {
         $links['delete'] = $this->getDialogButton(
           $this->t("Delete"),
           Url::fromRoute('purge_ui.processor_delete_form',
-          ['id' => $id]),
-          '40%'
+          ['id' => $id])
         );
       };
       $add_configure_link = function(&$links, $processor) {
@@ -371,7 +369,7 @@ class ConfigForm extends FormBase {
     if (count($available)) {
       $form['processors']['add'] = [
         '#type' => 'operations',
-        '#links' => [$this->getDialogButton($this->t("Add processor"), Url::fromRoute('purge_ui.processor_add_form'), '40%')]
+        '#links' => [$this->getDialogButton($this->t("Add processor"), Url::fromRoute('purge_ui.processor_add_form'))]
       ];
     }
     elseif (!count($this->purgeProcessors)) {
@@ -408,7 +406,7 @@ class ConfigForm extends FormBase {
     // If purgers have been enabled, we build up a type-purgers matrix table.
     if (count($enabled)) {
       $add_delete_link = function(&$links, $id, $definition) {
-        $links['delete'] = $this->getDialogButton($this->t("Delete"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]), '40%');
+        $links['delete'] = $this->getDialogButton($this->t("Delete"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]));
       };
       $add_configure_link = function(&$links, $id, $definition) {
         if (isset($definition['configform']) && !empty($definition['configform'])) {
@@ -498,7 +496,7 @@ class ConfigForm extends FormBase {
         $operationsrow_cols['add'] = [
           'data' => [
             '#type' => 'operations',
-            '#links' => [$this->getDialogButton($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'), '40%')]
+            '#links' => [$this->getDialogButton($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'))]
           ]
         ];
       }
@@ -513,7 +511,7 @@ class ConfigForm extends FormBase {
     elseif (count($available)) {
       $form['purgers']['add'] = [
         '#type' => 'operations',
-        '#links' => [$this->getDialogButton($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'), '40%')]
+        '#links' => [$this->getDialogButton($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'))]
       ];
     }
     else {

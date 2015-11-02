@@ -138,7 +138,7 @@ class DatabaseQueue extends QueueBase implements QueueInterface {
    * {@inheritdoc}
    */
   public function numberOfItems() {
-    return $this->dbqueue->numberOfItems();
+    return (int)$this->dbqueue->numberOfItems();
   }
 
   /**

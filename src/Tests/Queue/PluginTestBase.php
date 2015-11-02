@@ -93,6 +93,7 @@ abstract class PluginTestBase extends KernelTestBase {
    */
   public function testQueueCountBehavior() {
     $this->assertNull($this->queue->deleteQueue());
+    $this->assertTrue(is_int($this->queue->numberOfItems()));
     $this->assertEqual(0, $this->queue->numberOfItems());
     for ($i=1; $i <= 5; $i++) {
       $id = $this->queue->createItem($i);
@@ -101,6 +102,7 @@ abstract class PluginTestBase extends KernelTestBase {
       $this->assertEqual($i, $this->queue->numberOfItems());
     }
     $this->assertTrue(is_object($this->queue->claimItem(1)));
+    $this->assertTrue(is_int($this->queue->numberOfItems()));
     $this->assertEqual(5, $this->queue->numberOfItems());
     $this->assertNull($this->queue->deleteQueue());
     $this->assertEqual(0, $this->queue->numberOfItems());

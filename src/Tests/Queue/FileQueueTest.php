@@ -21,18 +21,18 @@ class FileQueueTest extends PluginTestBase {
   protected $plugin_id = 'file';
 
   /**
-   * The file path to which the queue buffer gets written to.
+   * The file under public:// to which the queue buffer gets written to.
    *
    * @see \Drupal\purge\Plugin\Purge\Queue\File::$file
    */
-  protected $file = 'public://purge-queue-file';
+  protected $file = 'purge-file.queue';
 
   /**
    * Set up the test.
    */
   function setUp() {
     parent::setUp();
-    $this->file = str_replace('public:/', PublicStream::basePath(), $this->file);
+    $this->file = DRUPAL_ROOT . '/' . PublicStream::basePath() . '/' . $this->file;
   }
 
   /**

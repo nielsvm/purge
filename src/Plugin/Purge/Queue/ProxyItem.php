@@ -96,7 +96,7 @@ class ProxyItem implements ProxyItemInterface {
     // \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface is able to recreate it.
     if ($name === 'data') {
       return [
-        $this->invalidation->getPluginId(),   // 0
+        $this->invalidation->getType(),       // 0
         $this->invalidation->getStates(),     // 1
         $this->invalidation->getExpression(), // 2
       ];

@@ -40,6 +40,8 @@ class ProxyItemTest extends KernelTestBase {
    */
   public function testGet() {
     $i = $this->getInvalidations(1);
+    $i->setStateContext('a');
+    $i->setState(InvalidationInterface::PROCESSING);
     $p = new ProxyItem($i, $this->buffer);
     $this->buffer->set($i, TxBuffer::CLAIMED);
 
@@ -56,10 +58,11 @@ class ProxyItemTest extends KernelTestBase {
     $this->assertTrue(is_array($p->data));
     $this->assertEqual($i->getPluginId(), $p->data[0]);
     $this->assertEqual($i->getType(), $p->data[0]);
-    $this->assertEqual(InvalidationInterface::FRESH, $p->data[1]);
-    $this->assertEqual($i->getExpression(), $p->data[1]);
-    $i->setState(InvalidationInterface::NOT_SUPPORTED);
-    $this->assertEqual(InvalidationInterface::NOT_SUPPORTED, $p->data[1]);
+    $this->assertTrue(is_array($p->data[1]));
+    $this->assertEqual(1, count($p->data[1]));
+    $this->assertTrue(isset($p->data[1]['a']));
+    $this->assertEqual(InvalidationInterface::PROCESSING, $p->data[1]['a']);
+    $this->assertEqual($i->getExpression(), $p->data[2]);
 
     // Test the 'created' property and changing it directly on the buffer.
     $this->assertNull($p->created);

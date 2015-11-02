@@ -8,6 +8,7 @@
 namespace Drupal\purge\Tests\Invalidation;
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
 use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationBase;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
@@ -110,24 +111,32 @@ abstract class PluginTestBase extends KernelTestBase {
    */
   function testState() {
     $i = $this->getInstance();
-    $test_states = [
-      InvalidationInterface::FRESH         => 'FRESH',
-      InvalidationInterface::PROCESSING    => 'PROCESSING',
-      InvalidationInterface::SUCCEEDED     => 'SUCCEEDED',
-      InvalidationInterface::FAILED        => 'FAILED',
-      InvalidationInterface::NOT_SUPPORTED => 'NOT_SUPPORTED',
-    ];
 
-    // Test the initial state of the invalidation object.
+    // Test the initial state of the invalidation object. Then verify that a
+    // BadPluginBehaviorException is thrown when left as FRESH.
     $this->assertEqual($i->getState(), InvalidationInterface::FRESH);
     $this->assertEqual($i->getStateString(), 'FRESH');
-
-    // Test setting, getting and getting the string version of each state.
-    foreach ($test_states as $state => $string) {
-      $this->assertNull($i->setState($state));
-      $this->assertEqual($i->getState(), $state);
-      $this->assertEqual($i->getStateString(), $string);
+    $thrown = FALSE;
+    $i->setStateContext('test');
+    try {
+      $i->setStateContext(NULL);
     }
+    catch (BadPluginBehaviorException $e) {
+      $thrown = TRUE;
+    }
+    $i->setState(InvalidationInterface::FAILED);
+    $i->setStateContext(NULL);
+    $this->assertTrue($thrown, 'Leaving state as FRESH gives BadPluginBehaviorException.');
+
+    // Verify that setting state in general context throws exceptions.
+    $thrown = FALSE;
+    try {
+      $i->setState(InvalidationInterface::FAILED);
+    }
+    catch (\LogicException $e) {
+      $thrown = TRUE;
+    }
+    $this->assertTrue($thrown, 'Setting state without context results in LogicException being thrown.');
 
     // Test \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState catches bad input.
     foreach(['2', 'FRESH', -1, 5, 100] as $badstate) {
@@ -138,9 +147,26 @@ abstract class PluginTestBase extends KernelTestBase {
       catch (InvalidStateException $e) {
         $thrown = TRUE;
       }
-      $this->assertTrue($thrown, 'Bad input '. var_export($badstate, TRUE)
-        .' results in InvalidStateException being thrown.');
+      $this->assertTrue($thrown, 'Bad input ' . var_export($badstate, TRUE) . ' results in InvalidStateException being thrown.');
     }
+
+    // Test setting normal states results in the same return state.
+    $test_states = [
+      InvalidationInterface::PROCESSING    => 'PROCESSING',
+      InvalidationInterface::SUCCEEDED     => 'SUCCEEDED',
+      InvalidationInterface::FAILED        => 'FAILED',
+      InvalidationInterface::NOT_SUPPORTED => 'NOT_SUPPORTED',
+    ];
+    $context = 0;
+    $i->setStateContext((string)$context);
+    foreach ($test_states as $state => $string) {
+      $this->assertNull($i->setStateContext((string) ($context++)));
+      $this->assertNull($i->setState($state));
+      $this->assertEqual($i->getState(), $state);
+      $this->assertEqual($i->getStateString(), $string);
+    }
+    $i->setStateContext(NULL);
+
   }
 
   /**

@@ -129,9 +129,6 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
    *   defined hint, to protect system stability.
    *
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
-   *   Thrown when the $invalidations parameter is empty.
-   *
-   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
    *   Thrown when $invalidations contains other data than derivatives of
    *   \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface.
    *

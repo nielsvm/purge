@@ -123,9 +123,6 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    */
   protected function checksBeforeTakeoff(array $invalidations) {
     $capacity_limit = $this->capacityTracker()->getLimit();
-    if (empty($invalidations)) {
-      throw new BadBehaviorException('No invalidations given.');
-    }
     foreach ($invalidations as $i => $invalidation) {
       if (!$invalidation instanceof InvalidationInterface) {
         throw new BadBehaviorException("Item $i is not a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface derivative.");
@@ -318,6 +315,13 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * {@inheritdoc}
    */
   public function invalidate(array $invalidations) {
+
+    // Stop when the incoming array is empty (no queue claims, DX improvement).
+    if (empty($invalidations)) {
+      return;
+    }
+
+    // Prepare before we start processing.
     $types_by_purger = $this->getTypesByPurger();
     $this->checksBeforeTakeoff($invalidations);
 

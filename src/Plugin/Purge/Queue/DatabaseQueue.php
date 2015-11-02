@@ -226,22 +226,45 @@ class DatabaseQueue extends QueueBase implements QueueInterface {
    * Implements \Drupal\Core\Queue\QueueInterface::releaseItem().
    */
   public function releaseItem($item) {
-    return $this->dbqueue->releaseItem($item);
+    return $this->connection->update('queue')
+      ->fields([
+        'expire' => 0,
+        'data' => serialize($item->data),
+      ])
+      ->condition('item_id', $item->item_id)
+      ->execute();
   }
 
   /**
    * {@inheritdoc}
    */
   public function releaseItemMultiple(array $items) {
-    $item_ids = [];
+    // Extract item IDs and serialized data so comparing becomes easier.
+    $items_data = [];
     foreach ($items as $item) {
-      $item_ids[] = $item->item_id;
+      $items_data[intval($item->item_id)] = serialize($item->data);
     }
+
+    // Figure out which items have changed their data and update just those.
+    $originals = $this->connection
+      ->select('queue', 'q')
+      ->fields('q', ['item_id', 'data'])
+      ->condition('item_id', array_keys($items_data), 'IN')
+      ->execute();
+    foreach ($originals as $original) {
+      $item_id = intval($original->item_id);
+      if ($original->data !== $items_data[$item_id]) {
+        $this->connection->update('queue')
+          ->fields(['data' => $items_data[$item_id]])
+          ->condition('item_id', $item_id)
+          ->execute();
+      }
+    }
+
+    // Update the lease time in one single query and resolve what to return.
     $update = $this->connection->update('queue')
-      ->fields([
-        'expire' => 0,
-      ])
-      ->condition('item_id', $item_ids, 'IN')
+      ->fields(['expire' => 0])
+      ->condition('item_id', array_keys($items_data), 'IN')
       ->execute();
     if ($update) {
       return [];

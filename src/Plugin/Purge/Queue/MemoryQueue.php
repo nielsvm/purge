@@ -152,6 +152,9 @@ class MemoryQueue extends QueueBase implements QueueInterface {
       return FALSE;
     }
     $this->buffer[$item->item_id][SELF::EXPIRE] = 0;
+    if ($item->data !== $this->buffer[$item->item_id][SELF::DATA]) {
+      $this->buffer[$item->item_id][SELF::DATA] = serialize($item->data);
+    }
     return TRUE;
   }
 

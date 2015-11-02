@@ -136,16 +136,26 @@ abstract class PluginTestBase extends KernelTestBase {
   function testCreatingClaimingAndReleasing() {
     $this->queue->createItem([1,2,3]);
     $claim = $this->queue->claimItem(3600);
+    // Change the claim data to verify that releasing changed data, persists.
+    $claim->data = [4,5,6];
     $this->assertFalse($this->queue->claimItem(3600));
     $this->assertTrue($this->queue->releaseItem($claim));
     $this->assertTrue($claim = $this->queue->claimItem(3600));
+    $this->assertIdentical([4,5,6], $claim->data);
     $this->queue->releaseItem($claim);
     $this->assertIdentical(4, count($this->queue->createItemMultiple([1,2,3,4])));
     $claims = $this->queue->claimItemMultiple(5, 3600);
+    foreach ($claims as $i => $claim) {
+      $claim->data = 9;
+      $claims[$i] = $claim;
+    }
     $this->assertIdentical([], $this->queue->claimItemMultiple(5, 3600));
     $this->assertIdentical([], $this->queue->releaseItemMultiple($claims));
     $claims = $this->queue->claimItemMultiple(5, 3600);
     $this->assertIdentical(5, count($claims));
+    foreach ($claims as $i => $claim) {
+      $this->assertEqual(9, $claim->data);
+    }
 
     $this->queue->deleteQueue();
   }

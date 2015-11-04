@@ -150,14 +150,15 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     if (empty($ids)) {
       throw new \LogicException('Empty $ids in ::deletePluginsEnabled().');
     }
+    $this->initializePurgers();
     $enabled = $this->getPluginsEnabled();
     foreach ($ids as $id) {
       if (!isset($enabled[$id])) {
         throw new \LogicException('Invalid id in ::deletePluginsEnabled().');
       }
+      $this->purgers[$id]->delete();
       unset($enabled[$id]);
     }
-    $this->purgers[$id]->delete();
     $this->setPluginsEnabled($enabled);
   }
 

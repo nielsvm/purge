@@ -88,7 +88,7 @@ class QueueEmptyFormTest extends WebTestBase {
     for ($i = 1; $i <= 7; $i++) {
       $tags[] = $this->purgeInvalidationFactory->get('tag', "$i");
     }
-    $this->purgeQueue->addMultiple($tags);
+    $this->purgeQueue->add($tags);
     // Assert that - after reloading/comitting the queue - we still have these.
     $this->purgeQueue->reload();
     $this->assertEqual(7, $this->purgeQueue->numberOfItems());

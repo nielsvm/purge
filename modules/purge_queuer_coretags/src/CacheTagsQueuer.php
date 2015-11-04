@@ -119,7 +119,7 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface, ContainerAwareIn
 
     // The queue buffers invalidations, though we don't care about that here.
     if (count($invalidations)) {
-      $this->purgeQueue->addMultiple($invalidations);
+      $this->purgeQueue->add($invalidations);
     }
   }
 

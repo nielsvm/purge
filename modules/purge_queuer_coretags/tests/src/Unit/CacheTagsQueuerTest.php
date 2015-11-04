@@ -60,10 +60,10 @@ class CacheTagsQueuerTest extends UnitTestCase {
     //   ->willReturn($tag_invalidation);
     //
     // $this->queue->expects($this->exactly(count($tag_invalidations)))
-    //   ->method('addMultiple');
+    //   ->method('add');
     // for ($i = 0; $i < count($tag_invalidations); $i++) {
     //   $this->queue->expects($this->at($i))
-    //     ->method('addMultiple')
+    //     ->method('add')
     //     ->with($this->callback(function($invalidations) use ($queue_additions, $i) {
     //       // Ensure we have an array of invalidations of the right size.
     //       return is_array($invalidations) && count($invalidations) == $queue_additions[$i];

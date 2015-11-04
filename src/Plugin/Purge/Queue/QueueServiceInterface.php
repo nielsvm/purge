@@ -17,52 +17,19 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInterface {
 
   /**
-   * Add a invalidation object to the queue, schedule it for later purging.
-   *
-   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface $invalidation
-   *   A invalidation object describes a single item to be invalidated and can
-   *   be created using the 'purge.invalidation.factory' service. The object
-   *   instance added to the queue can be claimed and executed by the
-   *   'purge.purgers' service later.
-   *
-   * @return void
-   */
-  public function add(InvalidationInterface $invalidation);
-
-  /**
-   * Add multiple invalidation objects to the queue, schedule for later purging.
+   * Add invalidation objects to the queue, schedule for later purging.
    *
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations
-   *   A non-associative array with \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
-   *   objects to be added to the queue. The invalidations can later be claimed
-   *   from the queue and fed to the 'purge.purgers' executor.
+   *   A non-associative array with invalidation objects to be added to the
+   *   queue. After the items have been added to the queue, they can be claimed
+   *   to be processed by a queue processor.
    *
    * @return void
    */
-  public function addMultiple(array $invalidations);
+  public function add(array $invalidations);
 
   /**
-   * Claims a invalidation object from the queue for immediate purging.
-   *
-   * @param int $lease_time
-   *   The expected time needed to process this claim. Use the mandatory
-   *   \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHint()
-   *   as input parameter as it gives the best informed number of seconds.
-   *
-   *   After the lease_time expires, another running request or CLI process can
-   *   also claim this item and process it, therefore too short lease times are
-   *   dangerous as it could lead to double processing.
-   *
-   * @return \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface|false
-   *   Returned will be a fully instantiated invalidation object or FALSE when
-   *   the queue is empty. Be aware that its expected that the claimed item
-   *   needs to be fed to the purger within the specified $lease_time, else they
-   *   will become available again.
-   */
-  public function claim($lease_time = 30);
-
-  /**
-   * Claim multiple invalidations for immediate purging from the queue at once.
+   * Claim invalidation objects from the queue.
    *
    * @param int $claims
    *   Determines how many claims at once should be claimed from the queue. When
@@ -80,90 +47,25 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
    *
    * @return \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[]|array
    *   Returned will be a non-associative array with the given amount of
-   *   \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface objects as claimed. Be aware
-   *   that its expected that the claimed invalidations will need to be
-   *   processed by the purger within the given $lease_time, else they will
-   *   become available again. The returned array is empty when the queue is.
+   *   invalidation objects as claimed. Be aware that it can be expected that
+   *   the claimed invalidations will need to be processed by the purger within
+   *   the given $lease_time, else they will become available again. The
+   *   returned array is empty when the queue is.
    */
-  public function claimMultiple($claims = 10, $lease_time = 30);
+  public function claim($claims = 10, $lease_time = 30);
 
   /**
-   * Release a invalidation object that couldn't be purged, back to the queue.
-   *
-   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface $invalidation
-   *   The invalidation that couldn't be held for longer or that failed
-   *   processing, to be marked as free for processing in the queue. Once
-   *   released, other consumers can claim and attempt purging it again.
-   *
-   * @return void
-   */
-  public function release(InvalidationInterface $invalidation);
-
-  /**
-   * Release invalidations that couldn't be purged, back to the queue.
+   * Delete invalidation objects from the queue.
    *
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations
-   *   A non-associative array with \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
-   *   objects to released and marked as available in the queue. Once released,
-   *   other consumers can claim them again and attempt purging them.
+   *   A non-associative array with invalidation objects to be deleted from the
+   *   queue. The object instances and references thereto, remain to exist until
+   *   the queue service is destructed, but should not be accessed anymore as
+   *   they will be deleted anyway.
    *
    * @return void
    */
-  public function releaseMultiple(array $invalidations);
-
-  /**
-   * Delete a purged invalidation object from the queue.
-   *
-   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface $invalidation
-   *   The invalidation that was successfully purged and that should be removed
-   *   from the queue. The object instance might remain to exist but should not
-   *   be accessed anymore, cleanup might occur later during runtime.
-   *
-   * @return void
-   */
-  public function delete(InvalidationInterface $invalidation);
-
-  /**
-   * Delete multiple invalidations from the queue at once.
-   *
-   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations
-   *   A non-associative array with \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
-   *   objects to be removed from the queue. Once called, the instance might
-   *   still exists but should not be accessed anymore, cleanup might occur
-   *   later during runtime.
-   *
-   * @return void
-   */
-  public function deleteMultiple(array $invalidations);
-
-  /**
-   * Release the item to, or delete it from the queue depending its state.
-   *
-   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface $invalidation
-   *   The invalidation object after the 'purge.purgers' service attempted
-   *   invalidation.
-   *
-   * @throws \Drupal\purge\Plugin\Purge\Queue\Exception\UnexpectedServiceConditionException
-   *   Exception thrown when the object state doesn't make any sense.
-   *
-   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersService::invalidate
-   *
-   * @return void
-   */
-  public function deleteOrRelease(InvalidationInterface $invalidation);
-
-  /**
-   * Release the items to, or delete them from the queue depending their state.
-   *
-   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations
-   *   The invalidation objects after the 'purge.purgers' service attempted
-   *   their invalidation.
-   *
-   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersService::invalidate
-   *
-   * @return void
-   */
-  public function deleteOrReleaseMultiple(array $invalidations);
+  public function delete(array $invalidations);
 
   /**
    * Empty the entire queue and reset all statistics.
@@ -173,12 +75,36 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
   public function emptyQueue();
 
   /**
+   * Handle processing results and either release back, or delete objects.
+   *
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations
+   *   The invalidation objects after processing.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersService::invalidate
+   *
+   * @return void
+   */
+  public function handleResults(array $invalidations);
+
+  /**
    * Retrieves the number of items in the queue.
    *
    * @return int
    *   The number of items in the queue.
    */
   public function numberOfItems();
+
+  /**
+   * Release invalidation objects back to the queue.
+   *
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations
+   *   A non-associative array with invalidation objects to be released back to
+   *   the queue, usually FAILED, PROCESSING or NOT_SUPPORTED. Once released,
+   *   other processors can claim them again for further processing.
+   *
+   * @return void
+   */
+  public function release(array $invalidations);
 
   /**
    * Select a page of queue data with a limited number of items.
@@ -198,6 +124,7 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
    * @see \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface::selectPageMax
    *
    * @return \Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationInterface[]
+   *   Immutable invalidation objects, which aren't usable besides data display.
    */
   public function selectPage($page = 1);
 

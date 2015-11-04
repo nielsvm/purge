@@ -178,7 +178,7 @@ because items can fail or need to run again later to finish entirely.
 #### Queueing
 Contrary to direct purging without a queue, going through the queue is in fact
 much easier. Queuers are the entities creating objects and then add them to
-the queue by calling ``addMultiple()`` on the queue service.
+the queue by calling ``add()`` on the queue service.
 
 ```
 $purgeInvalidationFactory = \Drupal::service('purge.invalidation.factory');
@@ -191,7 +191,7 @@ $invalidations = [
   $purgeInvalidationFactory->get('wildcardpath', 'news/*'),
 ];
 
-$purgeQueue->addMultiple(invalidations);
+$purgeQueue->add(invalidations);
 ```
 
 What happens now depends on the **processors you configured**, as some might
@@ -213,7 +213,7 @@ $purgeQueue = \Drupal::service('purge.queue');
 
 $claim_limit = $this->purgePurgers->capacityTracker()->getLimit();
 $lease_time = $this->purgePurgers->capacityTracker()->getTimeHint();
-$claims = $this->purgeQueue->claimMultiple($claim_limit, $lease_time);
+$claims = $this->purgeQueue->claim($claim_limit, $lease_time);
 try {
   $purgePurgers->invalidate($invalidations);
 }
@@ -224,5 +224,5 @@ catch (CapacityException $e) {
   // Capacity exceptions happen when too much was purged during this request.
 }
 
-$purgeQueue->deleteOrReleaseMultiple($claims);
+$purgeQueue->handleResults($claims);
 ```

@@ -88,7 +88,7 @@ class QueueBrowserFormTest extends WebTestBase {
       $needles[$i] = "node:$i";
       $tags[] = $this->purgeInvalidationFactory->get('tag', $needles[$i]);
     }
-    $this->purgeQueue->addMultiple($tags);
+    $this->purgeQueue->add($tags);
     // Assert that the pager works and returns our objects.
     $this->assertEqual(15, count($this->purgeQueue->selectPage()));
     $this->assertEqual(50, $this->purgeQueue->selectPageLimit(50));

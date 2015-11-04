@@ -85,7 +85,7 @@ class LateRuntimeProcessor implements EventSubscriberInterface, ContainerAwareIn
 
     // Claim a chunk of invalidations, process and let the queue handle results.
     $capacity = $this->purgePurgers->capacityTracker();
-    $claims = $this->purgeQueue->claimMultiple($capacity->getLimit(), $capacity->getTimeHint());
+    $claims = $this->purgeQueue->claim($capacity->getLimit(), $capacity->getTimeHint());
     try {
       $this->purgePurgers->invalidate($claims);
     }
@@ -96,7 +96,7 @@ class LateRuntimeProcessor implements EventSubscriberInterface, ContainerAwareIn
 
     }
     finally {
-      $this->purgeQueue->deleteOrReleaseMultiple($claims);
+      $this->purgeQueue->handleResults($claims);
     }
 
   }

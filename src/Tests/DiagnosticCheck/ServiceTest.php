@@ -8,7 +8,6 @@
 namespace Drupal\purge\Tests\DiagnosticCheck;
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\purge\Tests\KernelTestBase;
 use Drupal\purge\Tests\KernelServiceTestBase;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
@@ -147,9 +146,9 @@ class ServiceTest extends KernelServiceTestBase {
     foreach ($requirements as $id => $requirement) {
       $this->assertTrue(is_string($id));
       $this->assertFalse(empty($id));
-      $this->assertTrue($requirement['title'] instanceof TranslatableMarkup, "$id's title is a TranslatableMarkup object.");
+      $this->assertTrue(is_string($requirement['title']) || ($requirement['title'] instanceof TranslatableMarkup));
       $this->assertFalse(empty($requirement['title']));
-      $this->assertTrue($requirement['description'] instanceof TranslatableMarkup, "$id's description is a TranslatableMarkup object.");
+      $this->assertTrue((is_string($requirement['description']) || $requirement['description'] instanceof TranslatableMarkup));
       $this->assertFalse(empty($requirement['description']));
       $this->assertTrue(in_array($requirement['severity'], $this->requirementSeverities));
     }

@@ -41,6 +41,21 @@ class PurgePurger extends Plugin {
   public $configform = '';
 
   /**
+   * Time in seconds to wait after invalidation.
+   *
+   * The value is expressed as float between 0.0 and 3.0. After ::invalidate()
+   * finished, the system will automatically wait this time to allow the caching
+   * platform in front of Drupal, to catch up (before other purgers kick in).
+   *
+   * This value adds up to the total time hint of this purger and therefore the
+   * higher this value is, the less processing can happen per request. Platforms
+   * that clear instantly (e.g.: via a socket) are best off leaving this at 0.0.
+   *
+   * @var float
+   */
+  public $cooldown_time = 0.0;
+
+  /**
    * The description of the purger plugin.
    *
    * @ingroup plugin_translatable

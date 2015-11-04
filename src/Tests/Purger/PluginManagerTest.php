@@ -33,6 +33,7 @@ class PluginManagerTest extends KernelServiceTestBase {
     'id',
     'label',
     'configform',
+    'cooldown_time',
     'description',
     'multi_instance',
     'types',

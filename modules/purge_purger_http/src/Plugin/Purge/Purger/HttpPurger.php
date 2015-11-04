@@ -26,6 +26,7 @@ use Drupal\purge_purger_http\Entity\HttpPurgerSettings;
  *   id = "http",
  *   label = @Translation("HTTP"),
  *   configform = "\Drupal\purge_purger_http\Form\ConfigurationForm",
+ *   cooldown_time = 0.2,
  *   description = @Translation("Generic and highly configurable purger making HTTP requests, best suits custom configurations."),
  *   multi_instance = TRUE,
  *   types = {},

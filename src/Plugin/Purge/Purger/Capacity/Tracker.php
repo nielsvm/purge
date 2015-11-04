@@ -241,7 +241,7 @@ class Tracker implements TrackerInterface {
       // Fail early when no purgers are loaded.
       if (empty($this->purgers)) {
         $this->remainingInvalidationsLimit = new Counter(0);
-        return $this->remainingInvalidationsLimit->get();
+        return $this->remainingInvalidationsLimit->getInteger();
       }
 
       // When the maximum execution time is zero, Drupal is given a lot more
@@ -251,7 +251,7 @@ class Tracker implements TrackerInterface {
       if ($max_execution_time === 0) {
         $limit = $this->getIdealConditionsLimit();
         $this->remainingInvalidationsLimit = new Counter($limit);
-        return $this->remainingInvalidationsLimit->get();
+        return $this->remainingInvalidationsLimit->getInteger();
       }
 
       // Though in most conditions, we do have a max execution time to deal with
@@ -270,7 +270,7 @@ class Tracker implements TrackerInterface {
 
     // We don't expose the object but just return its value. This protects us
     // from public calls attempting to overwrite or reset our limit.
-    return $this->remainingInvalidationsLimit->get();
+    return $this->remainingInvalidationsLimit->getInteger();
   }
 
   /**

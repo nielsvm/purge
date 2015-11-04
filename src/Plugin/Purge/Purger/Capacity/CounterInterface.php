@@ -15,54 +15,59 @@ interface CounterInterface {
   /**
    * Construct a counter object.
    *
-   * @param int $value
+   * @param int|float $value
    *   The initial positive number the counter starts its life with.
-   *
-   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
-   *   Thrown when $value is negative or not a integer.
    */
-  public function __construct($value = 0);
+  public function __construct($value = 0.0);
 
   /**
    * Get the current value.
    *
-   * @return int
+   * @return float
    *   The numeric value of the counter.
    */
   public function get();
 
   /**
+   * Get the current value as integer.
+   *
+   * @return int
+   *   The numeric value of the counter, typecasted as int.
+   */
+  public function getInteger();
+
+  /**
    * Overwrite the counter value.
    *
-   * @param int $value
+   * @param int|float $value
    *   The new value.
    *
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
-   *   Thrown when $value is not a integer or when it is negative.
+   *   Thrown when $value is not a integer, float or when it is negative.
    */
   public function set($value);
 
   /**
    * Decrease the counter.
    *
-   * @param int $amount
+   * @param int|float $amount
    *   Numeric amount to subtract from the current counter value.
    *
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
-   *   Thrown when $amount is not a integer, when it is zero or when the current
-   *   counter value becomes negative.
+   *   Thrown when $amount is not a float, integer, when it is zero/negative or
+   *   when the current counter value becomes negative.
    */
-  public function decrement($amount = 1);
+  public function decrement($amount = 1.0);
 
   /**
    * Increase the counter.
    *
-   * @param int $amount
+   * @param int|float $amount
    *   Numeric amount to add up to the current counter value.
    *
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
-   *   Thrown when $amount is not a integer or when it is invalid.
+   *   Thrown when $amount is not a float, integer, when it is zero/negative.
    */
-  public function increment($amount = 1);
+  public function increment($amount = 1.0);
 
 }

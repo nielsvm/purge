@@ -76,7 +76,7 @@ class PersistentCounter extends Counter implements PersistentCounterInterface {
   /**
    * {@inheritdoc}
    */
-  public function decrement($amount = 1) {
+  public function decrement($amount = 1.0) {
     if (is_null($this->state)) {
       throw new BadBehaviorException('::setStateAndId() has to be called!');
     }
@@ -86,7 +86,7 @@ class PersistentCounter extends Counter implements PersistentCounterInterface {
   /**
    * {@inheritdoc}
    */
-  public function increment($amount = 1) {
+  public function increment($amount = 1.0) {
     if (is_null($this->state)) {
       throw new BadBehaviorException('::setStateAndId() has to be called!');
     }

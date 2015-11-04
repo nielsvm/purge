@@ -68,6 +68,13 @@ abstract class PurgerBase extends PluginBase implements PurgerInterface {
   /**
    * {@inheritdoc}
    */
+  public function getCooldownTime() {
+    return $this->getPluginDefinition()['cooldown_time'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getIdealConditionsLimit() {
     // We don't know how much invalidations our derivatives can process under
     // ideal circumstances, it can range from low numbers on inefficient CDNs to

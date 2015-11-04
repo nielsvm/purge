@@ -13,6 +13,28 @@ namespace Drupal\purge\Plugin\Purge\Purger\Capacity;
 interface TrackerPurgerInterface {
 
   /**
+   * Get the time in seconds to wait after invalidation.
+   *
+   * The value is expressed as float between 0.0 and 3.0. After ::invalidate()
+   * finished, the system will automatically wait this time to allow the caching
+   * platform in front of Drupal, to catch up (before other purgers kick in).
+   *
+   * This value adds up to the total time hint of this purger and therefore the
+   * higher this value is, the less processing can happen per request. Platforms
+   * that clear instantly (e.g.: via a socket) are best off leaving this at 0.0.
+   *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
+   *   Thrown when the returned floating point value is lower than 0.0, higher
+   *   than 3.0 or is not returned as floating point value.
+   *
+   * @see \Drupal\purge\Annotation\PurgePurger::$cooldown_time.
+   *
+   * @return float
+   *   The maximum number of seconds - as a float - to wait after invalidation.
+   */
+  public function getCooldownTime();
+
+  /**
    * Get the maximum number of invalidations that this purger can process.
    *
    * When Drupal requests are served through a webserver, several resource

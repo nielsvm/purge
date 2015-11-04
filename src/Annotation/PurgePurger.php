@@ -33,6 +33,14 @@ class PurgePurger extends Plugin {
   public $label;
 
   /**
+   * Full class name of the configuration form of your purger, with leading
+   * backslash. Class must extend \Drupal\purge_ui\Form\PurgerConfigFormBase.
+   *
+   * @var string
+   */
+  public $configform = '';
+
+  /**
    * The description of the purger plugin.
    *
    * @ingroup plugin_translatable
@@ -40,19 +48,6 @@ class PurgePurger extends Plugin {
    * @var \Drupal\Core\Annotation\Translation
    */
   public $description;
-
-  /**
-   * A list of invalidation types that are supported by the purger plugin, for
-   * instance 'tag', 'path' or 'url'. The plugin will only receive invalidation
-   * requests for the given types, others fail with state NOT_SUPPORTED. It
-   * is possible to dynamically provide this list by overloading the base
-   * implementation of \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getTypes().
-   *
-   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getTypes()
-   *
-   * @var string[]
-   */
-  public $types = [];
 
   /**
    * Whether end users can create more then one instance of the purger plugin.
@@ -67,11 +62,16 @@ class PurgePurger extends Plugin {
   public $multi_instance = FALSE;
 
   /**
-   * Full class name of the configuration form of your purger, with leading
-   * backslash. Class must extend \Drupal\purge_ui\Form\PurgerConfigFormBase.
+   * A list of invalidation types that are supported by the purger plugin, for
+   * instance 'tag', 'path' or 'url'. The plugin will only receive invalidation
+   * requests for the given types, others fail with state NOT_SUPPORTED. It
+   * is possible to dynamically provide this list by overloading the base
+   * implementation of \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getTypes().
    *
-   * @var string
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getTypes()
+   *
+   * @var string[]
    */
-  public $configform = '';
+  public $types = [];
 
 }

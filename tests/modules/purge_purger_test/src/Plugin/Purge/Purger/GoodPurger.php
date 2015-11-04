@@ -16,8 +16,9 @@ use Drupal\purge_purger_test\Plugin\Purge\Purger\NullPurgerBase;
  * @PurgePurger(
  *   id = "good",
  *   label = @Translation("Good Purger"),
- *   description = @Translation("A purger that always succeeds."),
  *   configform = "",
+ *   description = @Translation("A purger that always succeeds."),
+ *   multi_instance = FALSE,
  *   types = {"tag", "path", "domain"},
  * )
  */

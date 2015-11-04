@@ -28,14 +28,14 @@ class PluginManagerTest extends KernelServiceTestBase {
    * @var string[]
    */
   protected $annotationFields = [
-    'provider',
     'class',
+    'provider',
     'id',
     'label',
-    'description',
-    'types',
-    'multi_instance',
     'configform',
+    'description',
+    'multi_instance',
+    'types',
   ];
 
   /**

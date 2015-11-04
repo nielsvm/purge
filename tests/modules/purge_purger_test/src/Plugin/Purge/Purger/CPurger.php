@@ -15,8 +15,9 @@ use Drupal\purge_purger_test\Plugin\Purge\Purger\NullPurgerBase;
  * @PurgePurger(
  *   id = "c",
  *   label = @Translation("Purger C"),
- *   description = @Translation("Test purger C."),
  *   configform = "",
+ *   description = @Translation("Test purger C."),
+ *   multi_instance = FALSE,
  *   types = {"wildcardpath", "wildcardurl"},
  * )
  */

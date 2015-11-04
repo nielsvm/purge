@@ -240,7 +240,7 @@ class Tracker implements TrackerInterface {
 
       // Fail early when no purgers are loaded.
       if (empty($this->purgers)) {
-        $this->remainingInvalidationsLimit = new Counter(0);
+        $this->remainingInvalidationsLimit = new Counter(0, TRUE, FALSE, FALSE);
         return $this->remainingInvalidationsLimit->getInteger();
       }
 
@@ -250,7 +250,7 @@ class Tracker implements TrackerInterface {
       $max_execution_time = $this->getMaxExecutionTime();
       if ($max_execution_time === 0) {
         $limit = $this->getIdealConditionsLimit();
-        $this->remainingInvalidationsLimit = new Counter($limit);
+        $this->remainingInvalidationsLimit = new Counter($limit, TRUE, FALSE, FALSE);
         return $this->remainingInvalidationsLimit->getInteger();
       }
 
@@ -265,7 +265,7 @@ class Tracker implements TrackerInterface {
       }
 
       // Wrap the runtime limit into a (non-persistent) counter object.
-      $this->remainingInvalidationsLimit = new Counter($runtime_limit);
+      $this->remainingInvalidationsLimit = new Counter($runtime_limit, TRUE, FALSE, FALSE);
     }
 
     // We don't expose the object but just return its value. This protects us

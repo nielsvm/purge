@@ -16,6 +16,27 @@ use Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface;
 class Counter implements CounterInterface {
 
   /**
+   * Whether it is possible to call ::decrement() or not.
+   *
+   * @var bool
+   */
+  protected $permission_decrement = TRUE;
+
+  /**
+   * Whether it is possible to call ::increment() or not.
+   *
+   * @var bool
+   */
+  protected $permission_increment = TRUE;
+
+  /**
+   * Whether it is possible to call ::set() or not.
+   *
+   * @var bool
+   */
+  protected $permission_set = TRUE;
+
+  /**
    * The value of the counter.
    *
    * @var float
@@ -25,8 +46,11 @@ class Counter implements CounterInterface {
   /**
    * {@inheritdoc}
    */
-  public function __construct($value = 0.0) {
+  public function __construct($value = 0.0, $decrement = TRUE, $increment = TRUE, $set = TRUE) {
     $this->set($value);
+    $this->permission_decrement = $decrement;
+    $this->permission_increment = $increment;
+    $this->permission_set = $set;
   }
 
   /**
@@ -47,6 +71,24 @@ class Counter implements CounterInterface {
    * {@inheritdoc}
    */
   public function set($value) {
+    if (!$this->permission_set) {
+      throw new \LogicException('No ::set() permission on this object.');
+    }
+    $this->setDirectly($value);
+  }
+
+  /**
+   * Overwrite the counter value (permission bypass).
+   *
+   * @param int|float $value
+   *   The new value.
+   *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
+   *   Thrown when $value is not a integer, float or when it is negative.
+   * @throws \LogicException
+   *   Thrown when the object got created without set permission.
+   */
+  protected function setDirectly($value) {
     if (!(is_float($value) || is_int($value))) {
       throw new BadBehaviorException('Given $value is not a integer or float.');
     }
@@ -63,6 +105,9 @@ class Counter implements CounterInterface {
    * {@inheritdoc}
    */
   public function decrement($amount = 1.0) {
+    if (!$this->permission_decrement) {
+      throw new \LogicException('No ::decrement() permission on this object.');
+    }
     if (!(is_float($amount) || is_int($amount))) {
       throw new BadBehaviorException('Given $amount is not a integer or float.');
     }
@@ -76,13 +121,16 @@ class Counter implements CounterInterface {
     if ($new < 0.0) {
       throw new BadBehaviorException('Given $amount causes negative counter.');
     }
-    $this->set($new);
+    $this->setDirectly($new);
   }
 
   /**
    * {@inheritdoc}
    */
   public function increment($amount = 1.0) {
+    if (!$this->permission_increment) {
+      throw new \LogicException('No ::increment() permission on this object.');
+    }
     if (!(is_float($amount) || is_int($amount))) {
       throw new BadBehaviorException('Given $amount is not a integer or float.');
     }
@@ -92,7 +140,7 @@ class Counter implements CounterInterface {
     if (!($amount > 0.0)) {
       throw new BadBehaviorException('Given $amount is zero or negative.');
     }
-    $this->set($this->value + $amount);
+    $this->setDirectly($this->value + $amount);
   }
 
 }

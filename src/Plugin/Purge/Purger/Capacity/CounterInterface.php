@@ -17,8 +17,14 @@ interface CounterInterface {
    *
    * @param int|float $value
    *   The initial positive number the counter starts its life with.
+   * @param bool $decrement
+   *   Whether it is possible to call ::decrement() or not.
+   * @param bool $increment
+   *   Whether it is possible to call ::increment() or not.
+   * @param bool $set
+   *   Whether it is possible to call ::set() or not.
    */
-  public function __construct($value = 0.0);
+  public function __construct($value = 0.0, $decrement = TRUE, $increment = TRUE, $set = TRUE);
 
   /**
    * Get the current value.
@@ -44,6 +50,8 @@ interface CounterInterface {
    *
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
    *   Thrown when $value is not a integer, float or when it is negative.
+   * @throws \LogicException
+   *   Thrown when the object got created without set permission.
    */
   public function set($value);
 
@@ -56,6 +64,8 @@ interface CounterInterface {
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
    *   Thrown when $amount is not a float, integer, when it is zero/negative or
    *   when the current counter value becomes negative.
+   * @throws \LogicException
+   *   Thrown when the object got created without decrement permission.
    */
   public function decrement($amount = 1.0);
 
@@ -67,6 +77,8 @@ interface CounterInterface {
    *
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
    *   Thrown when $amount is not a float, integer, when it is zero/negative.
+   * @throws \LogicException
+   *   Thrown when the object got created without increment permission.
    */
   public function increment($amount = 1.0);
 

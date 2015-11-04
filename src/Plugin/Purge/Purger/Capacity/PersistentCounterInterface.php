@@ -16,11 +16,6 @@ use Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface;
 interface PersistentCounterInterface extends CounterInterface {
 
   /**
-   * Overwrite the counter value if the object already exists in state storage.
-   */
-  public function setFromState();
-
-  /**
    * Inject the state API and its storage key.
    *
    * @param \Drupal\Core\State\StateInterface $state

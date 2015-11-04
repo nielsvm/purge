@@ -34,6 +34,28 @@ class PersistentCounter extends Counter implements PersistentCounterInterface {
   /**
    * {@inheritdoc}
    */
+  public function __construct($value = 0.0, $decrement = TRUE, $increment = TRUE, $set = TRUE) {
+    $this->permission_decrement = $decrement;
+    $this->permission_increment = $increment;
+    $this->permission_set = $set;
+
+    // Set the initial starting value, for which we cannot use ::set() as there
+    // is no state and ID yet, so we just start with a configured default.
+    if (!(is_float($value) || is_int($value))) {
+      throw new BadBehaviorException('Given $value is not a integer or float.');
+    }
+    if (is_int($value)) {
+      $value = (float) $value;
+    }
+    if ($value < 0.0) {
+      throw new BadBehaviorException('Given $value can only be zero or positive.');
+    }
+    $this->value = $value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function get() {
     if (is_null($this->state)) {
       throw new BadBehaviorException('::setStateAndId() has to be called!');
@@ -44,22 +66,12 @@ class PersistentCounter extends Counter implements PersistentCounterInterface {
   /**
    * {@inheritdoc}
    */
-  public function set($value) {
+  protected function setDirectly($value) {
     if (is_null($this->state)) {
       throw new BadBehaviorException('::setStateAndId() has to be called!');
     }
-    parent::set($value);
+    parent::setDirectly($value);
     $this->state->set($this->id, $value);
-  }
-
-  /**
-   * Overwrite the counter value if the object already exists in state storage.
-   */
-  public function setFromState() {
-    if (is_null($this->state)) {
-      throw new BadBehaviorException('::setStateAndId() has to be called!');
-    }
-    $this->value = (int) $this->state->get($this->id, $this->value);
   }
 
   /**

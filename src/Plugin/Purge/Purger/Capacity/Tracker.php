@@ -36,25 +36,25 @@ class Tracker implements TrackerInterface {
   protected $counterFailed;
 
   /**
+   * The counter tracking invalidations that were not supported.
+   *
+   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
+   */
+  protected $counterNotSupported;
+
+  /**
+   * The counter tracking currently active multi-step invalidations.
+   *
+   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
+   */
+  protected $counterProcessing;
+
+  /**
    * The counter tracking the amount of succeeded invalidations.
    *
    * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
    */
-  protected $counterPurged;
-
-  /**
-   * The counter tracking currently purging multi-step invalidations.
-   *
-   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
-   */
-  protected $counterPurging;
-
-  /**
-   * The counter tracking failed invalidations that weren't supported.
-   *
-   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
-   */
-  protected $counterUnsupported;
+  protected $counterSucceeded;
 
   /**
    * Associative array of cooldown times per purger, as int values.
@@ -119,25 +119,25 @@ class Tracker implements TrackerInterface {
   /**
    * {@inheritdoc}
    */
-  public function counterPurged() {
+  public function counterNotSupported() {
     $this->initializeCounters();
-    return $this->counterPurged;
+    return $this->counterNotSupported;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function counterPurging() {
+  public function counterProcessing() {
     $this->initializeCounters();
-    return $this->counterPurging;
+    return $this->counterProcessing;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function counterUnsupported() {
+  public function counterSucceeded() {
     $this->initializeCounters();
-    return $this->counterUnsupported;
+    return $this->counterSucceeded;
   }
 
   /**
@@ -331,9 +331,9 @@ class Tracker implements TrackerInterface {
       // Mapping of counter variables and their state API ID's.
       $counters = [
         'counterFailed' => 'purge_counter_failed',
-        'counterPurged' => 'purge_counter_purged',
-        'counterPurging' => 'purge_counter_purging',
-        'counterUnsupported' => 'purge_counter_unsupported'];
+        'counterSucceeded' => 'purge_counter_succeeded',
+        'counterProcessing' => 'purge_counter_processing',
+        'counterNotSupported' => 'purge_counter_notsupported'];
       $values = $this->state->getMultiple($counters);
 
       // Spin up the instances and pass on the state object.

@@ -44,12 +44,12 @@ interface TrackerInterface {
   public function counterFailed();
 
   /**
-   * Retrieve the counter tracking the amount of succeeded invalidations.
+   * Retrieve the counter tracking failed invalidations that were not supported.
    *
    * @return \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
    *   The counter object.
    */
-  public function counterPurged();
+  public function counterNotSupported();
 
   /**
    * Retrieve the counter tracking currently purging multi-step invalidations.
@@ -57,15 +57,15 @@ interface TrackerInterface {
    * @return \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
    *   The counter object.
    */
-  public function counterPurging();
+  public function counterProcessing();
 
   /**
-   * Retrieve the counter tracking failed invalidations that weren't supported.
+   * Retrieve the counter tracking the amount of succeeded invalidations.
    *
    * @return \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
    *   The counter object.
    */
-  public function counterUnsupported();
+  public function counterSucceeded();
 
   /**
    * Decrease the number of remaining purges that can happen in this request.

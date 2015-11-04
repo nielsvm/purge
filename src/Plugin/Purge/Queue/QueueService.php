@@ -380,7 +380,6 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
     }
     $this->configFactory = \Drupal::configFactory();
     $this->queue = NULL;
-    $this->initializeQueue();
   }
 
   /**

@@ -92,9 +92,6 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     $this->configFactory = $config_factory;
     $this->purgeDiagnostics = $purge_diagnostics;
     $this->state = $state;
-
-    // Instantiate all the purgers and let them configure themselves.
-    $this->initializePurgers();
   }
 
   /**
@@ -102,6 +99,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    */
   public function capacityTracker() {
     if (is_null($this->capacityTracker)) {
+      $this->initializePurgers();
       $this->capacityTracker = new Tracker($this->purgers, $this->state);
     }
     return $this->capacityTracker;
@@ -168,6 +166,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    */
   public function getLabels() {
     if (is_null($this->labels)) {
+      $this->initializePurgers();
       $this->labels = [];
       foreach ($this->getPluginsEnabled() as $id => $plugin_id) {
         $this->labels[$id] = $this->purgers[$id]->getLabel();
@@ -231,6 +230,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    */
   public function getTypes() {
     if (is_null($this->types)) {
+      $this->initializePurgers();
       $this->types = [];
       foreach ($this->purgers as $purger) {
         foreach ($purger->getTypes() as $type) {
@@ -248,6 +248,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    */
   public function getTypesByPurger() {
     if (is_null($this->types_by_purger)) {
+      $this->initializePurgers();
       $this->types_by_purger = [];
       foreach ($this->getPluginsEnabled(FALSE) as $id => $plugin_id) {
         $this->types_by_purger[$id] = $this->purgers[$id]->getTypes();
@@ -292,11 +293,10 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     $this->labels = NULL;
     $this->types = NULL;
     $this->types_by_purger = NULL;
-    $this->initializePurgers();
   }
 
   /**
-   * Load the configured purgers and gather them in $this->purgers.
+   * Propagate $this->purgers by initializing the purgers.
    */
   protected function initializePurgers() {
     if (!is_null($this->purgers)) {
@@ -314,6 +314,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * {@inheritdoc}
    */
   public function invalidate(array $invalidations) {
+    $this->initializePurgers();
 
     // Stop when the incoming array is empty (no queue claims, DX improvement).
     if (empty($invalidations)) {

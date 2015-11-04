@@ -57,6 +57,13 @@ class Tracker implements TrackerInterface {
   protected $counterUnsupported;
 
   /**
+   * Associative array of cooldown times per purger, as int values.
+   *
+   * @var float[]
+   */
+  protected $cooldownTimes;
+
+  /**
    * The number of invalidations that can be processed under ideal conditions.
    *
    * @var int
@@ -154,6 +161,38 @@ class Tracker implements TrackerInterface {
   /**
    * {@inheritdoc}
    */
+  public function getCooldownTime($purger_instance_id) {
+    if (is_null($this->cooldownTimes)) {
+      $this->cooldownTimes = [];
+      foreach ($this->purgers as $id => $purger) {
+        $cooldown_time = $purger->getCooldownTime();
+        if (!is_float($cooldown_time)) {
+          $method = sprintf("%s::getCooldownTime()", get_class($purger));
+          throw new BadPluginBehaviorException(
+            "$method did not return a floating point value.");
+        }
+        if ($cooldown_time < 0.0) {
+          $method = sprintf("%s::getCooldownTime()", get_class($purger));
+          throw new BadPluginBehaviorException(
+            "$method returned $cooldown_time, a value lower than 0.0.");
+        }
+        if ($cooldown_time > 3.0) {
+          $method = sprintf("%s::getCooldownTime()", get_class($purger));
+          throw new BadPluginBehaviorException(
+            "$method returned $cooldown_time, a value higher than 3.0.");
+        }
+        $this->cooldownTimes[$id] = $cooldown_time;
+      }
+    }
+    if (!isset($this->cooldownTimes[$purger_instance_id])) {
+      throw new BadBehaviorException("Instance id '$purger_instance_id' does not exist!");
+    }
+    return $this->cooldownTimes[$purger_instance_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getIdealConditionsLimit() {
     if (is_null($this->idealConditionsLimit)) {
 
@@ -166,7 +205,13 @@ class Tracker implements TrackerInterface {
       // Find the lowest emitted ideal conditions limit.
       $this->idealConditionsLimit = [];
       foreach ($this->purgers as $purger) {
-        $this->idealConditionsLimit[] = $purger->getIdealConditionsLimit();
+        $limit = $purger->getIdealConditionsLimit();
+        if ((!is_int($limit)) || ($limit < 1)) {
+          $method = sprintf("%s::getIdealConditionsLimit()", get_class($purger));
+          throw new BadPluginBehaviorException(
+            "$method returned $limit, which has to be a integer higher than 0.");
+        }
+        $this->idealConditionsLimit[] = $limit;
       }
       $this->idealConditionsLimit = (int) min($this->idealConditionsLimit);
     }
@@ -242,7 +287,6 @@ class Tracker implements TrackerInterface {
       // Iterate the purgers and gather ::getTimeHint()'s results.
       $hint_per_type = [];
       foreach ($this->purgers as $id => $purger) {
-        $plugin_id = $purger->getPluginId();
         $hint = $purger->getTimeHint();
 
         // Be strict about what values are accepted, better throwing exceptions

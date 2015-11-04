@@ -98,6 +98,25 @@ interface TrackerInterface {
   public function decrementLimit($amount = 1);
 
   /**
+   * Get the time in seconds to wait after invalidation for a specific purger.
+   *
+   * @param string $purger_instance_id
+   *   The instance ID of the purger from which to return the cooldown time.
+   *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
+   *   Thrown when the returned floating point value is lower than 0.0, higher
+   *   than 3.0 or is not returned as floating point value.
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
+   *   Thrown when $purger_instance_id doesn't exist.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getCooldownTime()
+   *
+   * @return float
+   *   The maximum number of seconds - as a float - to wait after invalidation.
+   */
+  public function getCooldownTime($purger_instance_id);
+
+  /**
    * Get the maximum number of invalidations that can be processed.
    *
    * External cache invalidation is expensive and can become exponentially more
@@ -116,6 +135,9 @@ interface TrackerInterface {
    * In order to track this global limit, ::decrementLimit() gets called every
    * time the purgers service attempted one or more invalidations until the
    * value becomes zero.
+   *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
+   *   Thrown when a returned value is not a integer or when it equals to 0.
    *
    * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getIdealConditionsLimit()
    *
@@ -174,7 +196,7 @@ interface TrackerInterface {
    * queue per request.
    *
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
-   *   Thrown when the returned floating point value is lower than 0.1, higher
+   *   Thrown when a returned floating point value is lower than 0.1, higher
    *   than 10 or is not returned as float.
    *
    * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getTimeHint()

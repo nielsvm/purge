@@ -23,11 +23,8 @@ interface TrackerPurgerInterface {
    * higher this value is, the less processing can happen per request. Platforms
    * that clear instantly (e.g.: via a socket) are best off leaving this at 0.0.
    *
-   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
-   *   Thrown when the returned floating point value is lower than 0.0, higher
-   *   than 3.0 or is not returned as floating point value.
-   *
    * @see \Drupal\purge\Annotation\PurgePurger::$cooldown_time.
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getCooldownTime()
    *
    * @return float
    *   The maximum number of seconds - as a float - to wait after invalidation.
@@ -46,9 +43,6 @@ interface TrackerPurgerInterface {
    * However, we cannot feed the entire queue at once and therefore there will
    * always be a hard outer limit of how many invalidation objects are being
    * processed during Drupal's request lifetime.
-   *
-   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
-   *   Thrown when the returned value is not a integer or when it equals to 0.
    *
    * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getLimit()
    *
@@ -84,10 +78,6 @@ interface TrackerPurgerInterface {
    *   real-world experiences for end users. Undercutting can result in requests
    *   that time out and too high values can lead to queue-processing not being
    *   able to keep up.
-   *
-   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
-   *   Thrown when the returned floating point value is lower than 0.2, higher
-   *   than 10 or is not returned as floating point value.
    *
    * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHint()
    *

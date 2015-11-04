@@ -32,14 +32,13 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
    * Claim invalidation objects from the queue.
    *
    * @param int $claims
-   *   Determines how many claims at once should be claimed from the queue. When
-   *   the queue is unable to return as many items as requested it will return
-   *   as much items as it can.
+   *   Determines how many claims should be taken from the queue. When the queue
+   *   has less items available, less will be returned. When this parameter is
+   *   left as NULL, TrackerInterface::getLimit() will be used as input.
    * @param int $lease_time
    *   The expected (maximum) time needed per claim, which will get multiplied
-   *   for you by the number of claims you request. It is mandatory to use
-   *   \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHint()
-   *   as input parameter as it gives the best informed number of seconds.
+   *   for you by the number of claims you request. When this is left NULL, this
+   *   value comes from TrackerInterface::getTimeHint().
    *
    *   After the lease_time expires, another running request or CLI process can
    *   also claim the items and process them, therefore too short lease times
@@ -52,7 +51,7 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
    *   the given $lease_time, else they will become available again. The
    *   returned array is empty when the queue is.
    */
-  public function claim($claims = 10, $lease_time = 30);
+  public function claim($claims = NULL, $lease_time = NULL);
 
   /**
    * Delete invalidation objects from the queue.

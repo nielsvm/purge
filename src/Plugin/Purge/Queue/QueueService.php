@@ -14,6 +14,7 @@ use Drupal\purge\ServiceBase;
 use Drupal\purge\ModifiableServiceBaseTrait;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
+use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Plugin\Purge\Queue\Exception\UnexpectedServiceConditionException;
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 use Drupal\purge\Plugin\Purge\Queue\TxBuffer;
@@ -31,11 +32,14 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   protected $configFactory;
 
   /**
-   * The service that generates invalidation objects on-demand.
-   *
    * @var \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface
    */
   protected $purgeInvalidationFactory;
+
+  /**
+   * @var \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
+   */
+  protected $purgePurgers;
 
   /**
    * The Queue (plugin) object in which all items are stored.
@@ -65,11 +69,14 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    *   The factory for configuration objects.
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface $purge_invalidation_factory
    *   The service that instantiates invalidation objects for queue items.
+   * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
+   *   The purgers service.
    */
-  function __construct(PluginManagerInterface $plugin_manager, ConfigFactoryInterface $config_factory, InvalidationsServiceInterface $purge_invalidation_factory) {
+  function __construct(PluginManagerInterface $plugin_manager, ConfigFactoryInterface $config_factory, InvalidationsServiceInterface $purge_invalidation_factory, PurgersServiceInterface $purge_purgers) {
     $this->pluginManager = $plugin_manager;
     $this->configFactory = $config_factory;
     $this->purgeInvalidationFactory = $purge_invalidation_factory;
+    $this->purgePurgers = $purge_purgers;
   }
 
   /**
@@ -87,13 +94,22 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   /**
    * {@inheritdoc}
    */
-  public function claim($claims = 10, $lease_time = 30) {
+  public function claim($claims = NULL, $lease_time = NULL) {
     $this->initializeQueue();
     $this->commitAdding();
     $this->commitReleasing();
     $this->commitDeleting();
 
-    // Multiply the lease time by the amount of items being claimed.
+    // When the claim number or lease_time isn't passed, the capacity tracker
+    // will kindly give it to us. Then multiply the lease time with the claims.
+    if (is_null($claims)) {
+      if (!($claims = $this->purgePurgers->capacityTracker()->getLimit())) {
+        return [];
+      }
+    }
+    if (is_null($lease_time)) {
+      $lease_time = $this->purgePurgers->capacityTracker()->getTimeHint();
+    }
     $lease_time = $claims * $lease_time;
 
     // Claim one or several items out of the queue or finish the call.

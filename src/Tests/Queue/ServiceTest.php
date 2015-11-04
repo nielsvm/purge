@@ -84,10 +84,10 @@ class ServiceTest extends KernelServiceTestBase {
    *   - \Drupal\purge\Plugin\Purge\Queue\QueueService::claim
    */
   public function testAddClaim() {
-    $this->assertTrue(empty($this->purgeQueue->claim()));
+    $this->assertTrue(empty($this->purgeQueue->claim(10, 10)));
     $i = $this->getInvalidations(1);
     $this->assertNull($this->purgeQueue->add([$i]));
-    $claims = $this->purgeQueue->claim();
+    $claims = $this->purgeQueue->claim(100, 10);
     $this->assertTrue(is_array($claims));
     $this->assertEqual(1, count($claims));
     $this->assertTrue($claims[0] instanceof InvalidationInterface);
@@ -97,8 +97,8 @@ class ServiceTest extends KernelServiceTestBase {
     $this->purgeQueue->emptyQueue();
     $this->purgeQueue->add($this->getInvalidations(50));
     $this->assertEqual(50, $this->purgeQueue->numberOfItems());
-    $this->assertTrue(37 === count($this->purgeQueue->claim(37)));
-    $this->assertTrue(13 === count($this->purgeQueue->claim(15)));
+    $this->assertTrue(37 === count($this->purgeQueue->claim(37, 10)));
+    $this->assertTrue(13 === count($this->purgeQueue->claim(15, 10)));
   }
 
   /**
@@ -107,7 +107,7 @@ class ServiceTest extends KernelServiceTestBase {
   public function testEmptyQueue() {
     $this->purgeQueue->add($this->getInvalidations(10));
     $this->purgeQueue->emptyQueue();
-    $this->assertTrue(empty($this->purgeQueue->claim()));
+    $this->assertTrue(empty($this->purgeQueue->claim(10, 10)));
     $this->assertTrue(is_int($this->purgeQueue->numberOfItems()));
     $this->assertEqual(0, $this->purgeQueue->numberOfItems());
   }
@@ -140,17 +140,17 @@ class ServiceTest extends KernelServiceTestBase {
     $this->assertTrue(InvalidationInterface::SUCCEEDED === $claims[0]->getState());
     $this->assertTrue(InvalidationInterface::PROCESSING === $claims[1]->getState());
     $this->assertTrue(InvalidationInterface::FAILED === $claims[2]->getState());
-    $this->assertTrue(InvalidationInterface::NOT_SUPPORTED === $this->purgeQueue->claim()[0]->getState());
+    $this->assertTrue(InvalidationInterface::NOT_SUPPORTED === $this->purgeQueue->claim(10, 10)[0]->getState());
   }
 
   /**
    * Tests \Drupal\purge\Plugin\Purge\Queue\QueueService::release
    */
   public function testRelease() {
-    $this->assertFalse($this->purgeQueue->claim());
+    $this->assertTrue(empty($this->purgeQueue->claim(10, 10)));
     $this->purgeQueue->add($this->getInvalidations(4));
-    $claims = $this->purgeQueue->claim(4);
-    $this->assertTrue(empty($this->purgeQueue->claim()));
+    $claims = $this->purgeQueue->claim(4, 10);
+    $this->assertTrue(empty($this->purgeQueue->claim(10, 10)));
     $this->purgeQueue->release([$claims[0]]);
     $this->assertTrue(1 === count($this->purgeQueue->claim(4, 1)));
     $this->purgeQueue->release([$claims[1], $claims[2], $claims[3]]);
@@ -158,14 +158,14 @@ class ServiceTest extends KernelServiceTestBase {
 
     // Assert that the claims become available again after our 1*4=4s expired.
     sleep(5);
-    $this->assertTrue(4 === count($this->purgeQueue->claim()));
+    $this->assertTrue(4 === count($this->purgeQueue->claim(10, 10)));
   }
 
   /**
    * Tests \Drupal\purge\Plugin\Purge\Queue\QueueService::delete
    */
   public function testDelete() {
-    $this->assertFalse($this->purgeQueue->claim());
+    $this->assertTrue(empty($this->purgeQueue->claim(10, 10)));
     $this->purgeQueue->add($this->getInvalidations(3));
     $claims = $this->purgeQueue->claim(3, 1);
     $this->purgeQueue->delete([array_pop($claims)]);
@@ -174,7 +174,7 @@ class ServiceTest extends KernelServiceTestBase {
     $this->assertTrue(2 === count($claims));
     $this->purgeQueue->delete($claims);
     sleep(4);
-    $this->assertTrue(empty($this->purgeQueue->claim()));
+    $this->assertTrue(empty($this->purgeQueue->claim(10, 10)));
   }
 
   /**
@@ -184,10 +184,10 @@ class ServiceTest extends KernelServiceTestBase {
     $this->purgeQueue->add($this->getInvalidations(5));
 
     // Claim for 1s, mark as purged and assert it gets deleted.
-    $claim = $this->purgeQueue->claim(1)[0];
-    $claim->setStateContext('purger1');
-    $claim->setState(InvalidationInterface::SUCCEEDED);
-    $this->purgeQueue->handleResults([$claim]);
+    $claims = $this->purgeQueue->claim(1, 10);
+    $claims[0]->setStateContext('purger1');
+    $claims[0]->setState(InvalidationInterface::SUCCEEDED);
+    $this->purgeQueue->handleResults($claims);
     sleep(3);
 
     // Claim for 2s, mark all as not-successfull and assert releases.
@@ -202,7 +202,7 @@ class ServiceTest extends KernelServiceTestBase {
     $claims[3]->setState(InvalidationInterface::NOT_SUPPORTED);
     $this->purgeQueue->handleResults($claims);
     sleep(4);
-    $this->assertTrue(3 === count($this->purgeQueue->claim()));
+    $this->assertTrue(3 === count($this->purgeQueue->claim(10, 10)));
   }
 
 }

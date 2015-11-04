@@ -125,10 +125,35 @@ Interested? Reach out any time of day and we'll get you going!
 API examples
 ------------------------------------------------------------------------------
 
+#### Queueing
+Adding invalidations to the queue is the simplest use case and requires a queuer
+object so that the queue knows who is adding the given items.
+
+```
+$purgeInvalidationFactory = \Drupal::service('purge.invalidation.factory');
+$purgeQueue = \Drupal::service('purge.queue');
+
+$invalidations = [
+  $purgeInvalidationFactory->get('tag', 'node:1'),
+  $purgeInvalidationFactory->get('tag', 'node:2'),
+  $purgeInvalidationFactory->get('path', 'contact'),
+  $purgeInvalidationFactory->get('wildcardpath', 'news/*'),
+];
+
+$purgeQueue->add(invalidations);
+```
+
+What happens now depends on the **processors you configured**, as some might
+purge very quickly after adding items to the queue whereas others might need
+a time-based delay before this occurs. Items enter the queue in state ``FRESH``
+and normally leave the processor in the states ``SUCCEEDED``, ``FAILED``,
+``PROCESSING`` or when no single plugins supported it: ``NOT_SUPPORTED``. Items
+that don't succeed, cycle back to the queue until it gets manually cleared.
+
 #### Invalidation without queue
-You can simply invalidate objects by creating them and feeding them to the
-purgers service directly. The purgers service then processes your request and
-sets processing states accordingly.
+Processing invalidations without going through the queue is possible, but not
+the recommended workflow when your invalidations cannot fail. All it takes is to
+instantiate invalidation objects and to feed them to the purgers service.
 
 ```
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
@@ -155,7 +180,8 @@ catch (CapacityException $e) {
 ```
 When this code finished successfully, the ``$invalidations`` array holds the
 objects it had before, but now each object has changed its state. You can now
-verify this by iterating over the objects.
+verify this by iterating over the objects and by calling ``getState()`` or
+``getStateString()`` on them (the latter is only intended for UI presentation):
 
 ```
 foreach ($invalidations as $invalidation) {
@@ -172,38 +198,14 @@ string(9) "SUCCEEDED"
 string(10) "PROCESSING"
 ```
 
-The results reveal why you should ** normally not invalidate without queue**,
-because items can fail or need to run again later to finish entirely.
-
-#### Queueing
-Contrary to direct purging without a queue, going through the queue is in fact
-much easier. Queuers are the entities creating objects and then add them to
-the queue by calling ``add()`` on the queue service.
-
-```
-$purgeInvalidationFactory = \Drupal::service('purge.invalidation.factory');
-$purgeQueue = \Drupal::service('purge.queue');
-
-$invalidations = [
-  $purgeInvalidationFactory->get('tag', 'node:1'),
-  $purgeInvalidationFactory->get('tag', 'node:2'),
-  $purgeInvalidationFactory->get('path', 'contact'),
-  $purgeInvalidationFactory->get('wildcardpath', 'news/*'),
-];
-
-$purgeQueue->add(invalidations);
-```
-
-What happens now depends on the **processors you configured**, as some might
-purge very quickly after adding items to the queue whereas others might need
-a time-based delay before this occurs. Items enter the queue in state ``FRESH``
-and normally leave the processor in the states ``SUCCEEDED``, ``FAILED``,
-``PROCESSING`` or when no single plugins supported it: ``NOT_SUPPORTED``. Items
-that don't succeed, cycle back to the queue until it gets manually cleared.
+The results reveal why you should ** normally not invalidate without going
+through the queue**, because items can fail or need to run again later to finish entirely. The most common use case for direct invalidation is manual UI purging.
 
 #### Queue processing
 Processing items from the queue is handled by processors, which users can add
-and configure according to their configuration.
+and configure according to their configuration. In essence, processors invoke
+the following code to retrieve a dynamically calculated chunk of items from the
+queue and feed those to the purgers service:
 
 ```
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
@@ -211,11 +213,9 @@ use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
 $purgePurgers = \Drupal::service('purge.purgers');
 $purgeQueue = \Drupal::service('purge.queue');
 
-$claim_limit = $this->purgePurgers->capacityTracker()->getLimit();
-$lease_time = $this->purgePurgers->capacityTracker()->getTimeHint();
-$claims = $this->purgeQueue->claim($claim_limit, $lease_time);
+$claims = $purgeQueue->claim();
 try {
-  $purgePurgers->invalidate($invalidations);
+  $purgePurgers->invalidate($claims);
 }
 catch (DiagnosticsException $e) {
   // Diagnostic exceptions happen when the system cannot purge.
@@ -223,6 +223,7 @@ catch (DiagnosticsException $e) {
 catch (CapacityException $e) {
   // Capacity exceptions happen when too much was purged during this request.
 }
-
-$purgeQueue->handleResults($claims);
+finally {
+  $purgeQueue->handleResults($claims);
+}
 ```

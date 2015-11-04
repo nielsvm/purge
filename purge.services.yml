@@ -38,7 +38,7 @@ services:
   # objects returning from 'purge.purgers'.
   purge.queue:
     class: Drupal\purge\Plugin\Purge\Queue\QueueService
-    arguments: ['@plugin.manager.purge.queue', '@config.factory', '@purge.invalidation.factory']
+    arguments: ['@plugin.manager.purge.queue', '@config.factory', '@purge.invalidation.factory', '@purge.purgers']
     tags:
       - { name: needs_destruction }
   plugin.manager.purge.queue:

@@ -47,7 +47,7 @@ class PurgerDeleteForm extends ConfirmFormBase {
    * Constructs a DeletePurgerForm object.
    *
    * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
-   *   The purger service.
+   *   The purgers service.
    *
    * @return void
    */

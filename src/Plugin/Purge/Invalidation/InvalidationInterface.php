@@ -68,7 +68,7 @@ interface InvalidationInterface extends ImmutableInvalidationInterface, Containe
    * handled by PurgersServiceInterface::invalidate() and therefore no
    * understanding of this concept is required outside the purgers service code.
    *
-   * @param string|null $context
+   * @param string|null $purger_instance_id
    *   The instance ID of the purger that is about to process the object, or
    *   NULL when no longer any purgers are processing it. NULL is the default.
    *

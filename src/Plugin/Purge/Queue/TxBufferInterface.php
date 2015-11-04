@@ -159,6 +159,10 @@ interface TxBufferInterface extends \Countable, \Iterator {
    *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::RELEASED
    *     - \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::DELETING
    *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
+   *   Thrown when $invalidations contains other data than derivatives of
+   *   \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface.
+   *
    * @return void
    */
   public function set($invalidations, $state);

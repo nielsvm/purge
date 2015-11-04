@@ -15,5 +15,6 @@ namespace Drupal\purge\Plugin\Purge\Purger\Exception;
  * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface::set().
  * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface::increment().
  * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface::decrement().
+ * @see \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface::set().
  */
 class BadBehaviorException extends \Exception {}

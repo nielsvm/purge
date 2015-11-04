@@ -7,6 +7,7 @@
 
 namespace Drupal\purge\Plugin\Purge\Queue;
 
+use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
 
@@ -174,6 +175,9 @@ class TxBuffer implements TxBufferInterface {
       $invalidations = [$invalidations];
     }
     foreach ($invalidations as $i) {
+      if (!($i instanceof InvalidationInterface)) {
+        throw new BadBehaviorException("Item is not a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface derivative.");
+      }
       if (!$this->has($i)) {
         $this->instances[$i->getId()] = $i;
       }

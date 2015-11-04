@@ -41,24 +41,6 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
   public function createId();
 
   /**
-   * Disable the given purger plugin instances.
-   *
-   * This calls \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::delete()
-   * on the purger(s) just before disabling to allow the plugin to clean up.
-   *
-   * @param string[] $ids
-   *   Non-associative array of instance ids that are about to be uninstalled.
-   *
-   * @throws \LogicException
-   *   Thrown when any of the ids given isn't valid or when $ids is empty.
-   *
-   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::delete()
-   *
-   * @return void
-   */
-  public function deletePluginsEnabled(array $ids);
-
-  /**
    * Retrieve all user-readable labels for all enabled purger instances.
    *
    * @see \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getId()

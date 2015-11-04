@@ -146,25 +146,6 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function deletePluginsEnabled(array $ids) {
-    if (empty($ids)) {
-      throw new \LogicException('Empty $ids in ::deletePluginsEnabled().');
-    }
-    $this->initializePurgers();
-    $enabled = $this->getPluginsEnabled();
-    foreach ($ids as $id) {
-      if (!isset($enabled[$id])) {
-        throw new \LogicException('Invalid id in ::deletePluginsEnabled().');
-      }
-      $this->purgers[$id]->delete();
-      unset($enabled[$id]);
-    }
-    $this->setPluginsEnabled($enabled);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getLabels() {
     if (is_null($this->labels)) {
       $this->initializePurgers();
@@ -262,14 +243,29 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * {@inheritdoc}
    */
   public function setPluginsEnabled(array $plugin_ids) {
-    $setting = [];
+    $this->initializePurgers();
+
+    // Validate that the given plugin_id's and instance ID's make sense.
+    $definitions = $this->pluginManager->getDefinitions();
     foreach ($plugin_ids as $instance_id => $plugin_id) {
       if (!is_string($instance_id) || empty($instance_id)) {
         throw new \LogicException('Invalid instance ID (key).');
       }
-      if (!isset($this->pluginManager->getDefinitions()[$plugin_id])) {
+      if (!isset($definitions[$plugin_id])) {
         throw new \LogicException('Invalid plugin_id.');
       }
+    }
+
+    // Find out which instances are being deleted and let those purgers cleanup.
+    foreach ($this->getPluginsEnabled() as $instance_id => $plugin_id) {
+      if (!isset($plugin_ids[$instance_id])) {
+        $this->purgers[$instance_id]->delete();
+      }
+    }
+
+    // Write the new CMI setting and commit it.
+    $setting = [];
+    foreach ($plugin_ids as $instance_id => $plugin_id) {
       $setting[] = [
         'instance_id' => $instance_id,
         'plugin_id' => $plugin_id
@@ -279,6 +275,8 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
       ->getEditable('purge.plugins')
       ->set('purgers', $setting)
       ->save();
+
+    // Make sure any new call to this service loads the new configuration.
     $this->reload();
   }
 

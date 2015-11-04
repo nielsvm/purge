@@ -144,7 +144,9 @@ class PurgerDeleteForm extends ConfirmFormBase {
     $response->addCommand(new CloseModalDialogCommand());
     if (isset($this->purgePurgers->getPluginsEnabled()[$this->id])) {
       $response->addCommand(new ReloadConfigFormCommand('edit-purgers'));
-      $this->purgePurgers->deletePluginsEnabled([$this->id]);
+      $enabled = $this->purgePurgers->getPluginsEnabled();
+      unset($enabled[$this->id]);
+      $this->purgePurgers->setPluginsEnabled($enabled);
     }
     return $response;
   }

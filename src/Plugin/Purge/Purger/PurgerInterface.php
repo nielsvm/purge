@@ -23,7 +23,7 @@ interface PurgerInterface extends ContainerFactoryPluginInterface, TrackerPurger
    * this gets useful as it allows to remove configuration and perform cleanup
    * prior to when the instance gets uninstalled.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::deletePluginsEnabled()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::setPluginsEnabled()
    *
    * @return void
    */

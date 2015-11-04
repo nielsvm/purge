@@ -252,10 +252,10 @@ class Tracker implements TrackerInterface {
           throw new BadPluginBehaviorException(
             "$method did not return a floating point value.");
         }
-        if ($hint < 0.2) {
+        if ($hint < 0.1) {
           $method = sprintf("%s::getTimeHint()", get_class($purger));
           throw new BadPluginBehaviorException(
-            "$method returned $hint, a value lower than 0.2.");
+            "$method returned $hint, a value lower than 0.1.");
         }
         if ($hint > 10.0) {
           $method = sprintf("%s::getTimeHint()", get_class($purger));

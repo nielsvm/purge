@@ -139,7 +139,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
     $form['performance']['timeout'] = [
       '#type' => 'number',
       '#step' => 0.1,
-      '#min' => 0.2,
+      '#min' => 0.1,
       '#max' => 8,
       '#title' => $this->t('Timeout'),
       '#default_value' => $settings->timeout,
@@ -149,7 +149,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
     $form['performance']['connect_timeout'] = [
       '#type' => 'number',
       '#step' => 0.1,
-      '#min' => 0.2,
+      '#min' => 0.1,
       '#max' => 4,
       '#title' => $this->t('Connection timeout'),
       '#default_value' => $settings->connect_timeout,
@@ -204,9 +204,9 @@ class ConfigurationForm extends PurgerConfigFormBase {
       $form_state->setErrorByName('connect_timeout');
       $form_state->setErrorByName('timeout', $this->t('The sum of both timeouts cannot be higher than 10.00 as this would affect performance too negatively.'));
     }
-    elseif ($timeout < 0.5) {
+    elseif ($timeout < 0.4) {
       $form_state->setErrorByName('connect_timeout');
-      $form_state->setErrorByName('timeout', $this->t('The sum of both timeouts cannot be lower as 0.5 as this can lead to too many failures under real usage conditions.'));
+      $form_state->setErrorByName('timeout', $this->t('The sum of both timeouts cannot be lower as 0.4 as this can lead to too many failures under real usage conditions.'));
     }
   }
 

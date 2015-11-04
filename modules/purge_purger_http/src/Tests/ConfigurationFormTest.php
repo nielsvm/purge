@@ -74,7 +74,7 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
     $form_state->addBuildInfo('args', [$this->formArgs]);
     $form_state->setValues([
         'connect_timeout' => 0.3,
-        'timeout' => 0.2
+        'timeout' => 0.1
       ]);
     $form = $this->getFormInstance();
     $this->formBuilder->submitForm($form, $form_state);
@@ -92,8 +92,8 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
     $form_state = new FormState();
     $form_state->addBuildInfo('args', [$this->formArgs]);
     $form_state->setValues([
-        'connect_timeout' => 0.2,
-        'timeout' => 0.2
+        'connect_timeout' => 0.0,
+        'timeout' => 0.0
       ]);
     $form = $this->getFormInstance();
     $this->formBuilder->submitForm($form, $form_state);
@@ -101,7 +101,6 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
     $this->assertEqual(2, count($errors));
     $this->assertTrue(isset($errors['timeout']));
     $this->assertTrue(isset($errors['connect_timeout']));
-    $this->assertEqual('', $errors['connect_timeout']);
     // Submit timeout values that are too high and confirm the validation error.
     $form_state = new FormState();
     $form_state->addBuildInfo('args', [$this->formArgs]);
@@ -115,7 +114,6 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
     $this->assertEqual(2, count($errors));
     $this->assertTrue(isset($errors['timeout']));
     $this->assertTrue(isset($errors['connect_timeout']));
-    $this->assertEqual('', $errors['connect_timeout']);
   }
 
   /**

@@ -174,7 +174,7 @@ interface TrackerInterface {
    * queue per request.
    *
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
-   *   Thrown when the returned floating point value is lower than 0.2, higher
+   *   Thrown when the returned floating point value is lower than 0.1, higher
    *   than 10 or is not returned as float.
    *
    * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getTimeHint()

@@ -46,10 +46,12 @@ interface TrackerPurgerInterface {
    * as estimate here.
    *
    * General tips:
-   *   - The float must stay between 0.2 and 10.00 seconds.
+   *   - The float must stay between 0.1 and 10.00 seconds.
    *   - Always assume that your purger plugin is the only enabled purger.
    *   - Your returning time will be statically cached during request life-time,
    *     so don't return different values during a single request.
+   *   - If your purger is able to bundle all invalidations in one action,
+   *     try to estimate the smallest fraction of time per object, e.g.: 0.1.
    *   - If your purger executes invalidation in multiple steps (e.g. some CDNs)
    *     that can take many minutes, make sure to keep this value low. Put your
    *     objects into PROCESSING and they return back later to check status

@@ -119,7 +119,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * @return void
    */
   protected function checksBeforeTakeoff(array $invalidations) {
-    $capacity_limit = $this->capacityTracker()->getLimit();
+    $invLimit = $this->capacityTracker()->getRemainingInvalidationsLimit();
     foreach ($invalidations as $i => $invalidation) {
       if (!$invalidation instanceof InvalidationInterface) {
         throw new BadBehaviorException("Item $i is not a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface derivative.");
@@ -128,11 +128,11 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     if ($fire = $this->purgeDiagnostics->isSystemOnFire()) {
       throw new DiagnosticsException($fire->getRecommendation());
     }
-    if (!$capacity_limit) {
+    if (!$invLimit) {
       throw new CapacityException('Capacity limits exceeded.');
     }
-    if (($count = count($invalidations)) > $capacity_limit) {
-      throw new CapacityException("Capacity limit allows $capacity_limit invalidations during this request, $count given.");
+    if (($count = count($invalidations)) > $invLimit) {
+      throw new CapacityException("Capacity limit allows $invLimit invalidations during this request, $count given.");
     }
   }
 

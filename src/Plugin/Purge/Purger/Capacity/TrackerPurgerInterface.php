@@ -44,7 +44,7 @@ interface TrackerPurgerInterface {
    * always be a hard outer limit of how many invalidation objects are being
    * processed during Drupal's request lifetime.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getLimit()
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getRemainingInvalidationsLimit()
    *
    * @return int
    *   The number of invalidations you can process under ideal conditions.

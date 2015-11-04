@@ -66,7 +66,7 @@ class CapacityDiagnosticCheck extends DiagnosticCheckBase implements DiagnosticC
    */
   public function run() {
     $tracker = $this->purgePurgers->capacityTracker();
-    $this->value = $tracker->getLimit();
+    $this->value = $tracker->getRemainingInvalidationsLimit();
     $ideal_limit = $tracker->getIdealConditionsLimit();
     $placeholders = ['@limit' => $this->value, '@ideallimit' => $ideal_limit];
 

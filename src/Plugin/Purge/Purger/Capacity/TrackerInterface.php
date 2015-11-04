@@ -75,13 +75,11 @@ interface TrackerInterface {
    * don't purge more than Drupal's request lifetime allows for, ::getTimeHint()
    * gives us the highest number of seconds a cache invalidation could take.
    *
-   * The first time ::getLimit() gets called, it calculates how many cache
-   * invalidations can take during request lifetime. Its decision is based upon
-   * ::getMaxExecutionTime() and ::getIdealConditionsLimit(). Once it figured
-   * out how many objects are allowed to be purged during this request, it will
-   * always return the latest limit as it stands during request lifetime. When
-   * it returns zero, no more items can be claimed from the queue or fed to the
-   * purgers service.
+   * A call to ::getRemainingInvalidationsLimit() calculates how many cache
+   * invalidations are left to be processed during this request. It bases its
+   * decision on ::getMaxExecutionTime() and ::getIdealConditionsLimit() and
+   * information tracked during request lifetime. When it returns zero, no more
+   * items can be claimed from the queue or fed to the purgers service.
    *
    * In order to track this global limit, ::decrementLimit() gets called every
    * time the purgers service attempted one or more invalidations until the
@@ -93,7 +91,7 @@ interface TrackerInterface {
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
    *   Thrown when $amount is not a integer or when it is zero/negative.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getLimit()
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getRemainingInvalidationsLimit()
    */
   public function decrementLimit($amount = 1);
 
@@ -124,13 +122,11 @@ interface TrackerInterface {
    * don't purge more than Drupal's request lifetime allows for, ::getTimeHint()
    * gives us the highest number of seconds a cache invalidation could take.
    *
-   * The first time ::getLimit() gets called, it calculates how many cache
-   * invalidations can take during request lifetime. Its decision is based upon
-   * ::getMaxExecutionTime() and ::getIdealConditionsLimit(). Once it figured
-   * out how many objects are allowed to be purged during this request, it will
-   * always return the latest limit as it stands during request lifetime. When
-   * it returns zero, no more items can be claimed from the queue or fed to the
-   * purgers service.
+   * A call to ::getRemainingInvalidationsLimit() calculates how many cache
+   * invalidations are left to be processed during this request. It bases its
+   * decision on ::getMaxExecutionTime() and ::getIdealConditionsLimit() and
+   * information tracked during request lifetime. When it returns zero, no more
+   * items can be claimed from the queue or fed to the purgers service.
    *
    * In order to track this global limit, ::decrementLimit() gets called every
    * time the purgers service attempted one or more invalidations until the
@@ -147,6 +143,15 @@ interface TrackerInterface {
   public function getIdealConditionsLimit();
 
   /**
+   * Get the maximum PHP execution time that is available to cache invalidation.
+   *
+   * @return int
+   *   The maximum number of seconds available to cache invalidation. Zero means
+   *   that PHP has no fixed execution time limit, for instance on the CLI.
+   */
+  public function getMaxExecutionTime();
+
+  /**
    * Get the remaining number of allowed cache invalidations for this request.
    *
    * External cache invalidation is expensive and can become exponentially more
@@ -154,13 +159,11 @@ interface TrackerInterface {
    * don't purge more than Drupal's request lifetime allows for, ::getTimeHint()
    * gives us the highest number of seconds a cache invalidation could take.
    *
-   * The first time ::getLimit() gets called, it calculates how many cache
-   * invalidations can take during request lifetime. Its decision is based upon
-   * ::getMaxExecutionTime() and ::getIdealConditionsLimit(). Once it figured
-   * out how many objects are allowed to be purged during this request, it will
-   * always return the latest limit as it stands during request lifetime. When
-   * it returns zero, no more items can be claimed from the queue or fed to the
-   * purgers service.
+   * A call to ::getRemainingInvalidationsLimit() calculates how many cache
+   * invalidations are left to be processed during this request. It bases its
+   * decision on ::getMaxExecutionTime() and ::getIdealConditionsLimit() and
+   * information tracked during request lifetime. When it returns zero, no more
+   * items can be claimed from the queue or fed to the purgers service.
    *
    * In order to track this global limit, ::decrementLimit() gets called every
    * time the purgers service attempted one or more invalidations until the
@@ -174,16 +177,7 @@ interface TrackerInterface {
    *   The remaining number of allowed cache invalidations during the remainder
    *   of Drupal's request lifetime. When 0 is returned, no more can take place.
    */
-  public function getLimit();
-
-  /**
-   * Get the maximum PHP execution time that is available to cache invalidation.
-   *
-   * @return int
-   *   The maximum number of seconds available to cache invalidation. Zero means
-   *   that PHP has no fixed execution time limit, for instance on the CLI.
-   */
-  public function getMaxExecutionTime();
+  public function getRemainingInvalidationsLimit();
 
   /**
    * Get the maximum number of seconds, processing a single invalidation takes.
@@ -206,6 +200,5 @@ interface TrackerInterface {
    *   process a single cache invalidation (regardless of type).
    */
   public function getTimeHint();
-
 
 }

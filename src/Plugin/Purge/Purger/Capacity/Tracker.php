@@ -20,15 +20,6 @@ use Drupal\purge\Plugin\Purge\Purger\Capacity\Counter;
 class Tracker implements TrackerInterface {
 
   /**
-   * The counter tracking the remaining number of allowed cache invalidations
-   * during the remainder of Drupal's request lifetime. When it holds 0, no more
-   * cache invalidations can take place.
-   *
-   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface
-   */
-  protected $counterLimit;
-
-  /**
    * The counter tracking the amount of failed invalidations.
    *
    * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
@@ -84,6 +75,15 @@ class Tracker implements TrackerInterface {
    * @var \Drupal\purge\Plugin\Purge\Purger\PurgerInterface[]
    */
   protected $purgers;
+
+  /**
+   * The counter tracking the remaining number of allowed cache invalidations
+   * during the remainder of Drupal's request lifetime. When it holds 0, no more
+   * cache invalidations can take place.
+   *
+   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface
+   */
+  protected $remainingInvalidationsLimit;
 
   /**
    * The state key value store.
@@ -144,7 +144,7 @@ class Tracker implements TrackerInterface {
    * {@inheritdoc}
    */
   public function decrementLimit($amount = 1) {
-    $this->getLimit();
+    $this->getRemainingInvalidationsLimit();
     if (!is_int($amount)) {
       throw new BadBehaviorException('Given $amount is not a integer.');
     }
@@ -152,9 +152,9 @@ class Tracker implements TrackerInterface {
       throw new BadBehaviorException('Given $amount is zero or negative.');
     }
     try {
-      $this->counterLimit->decrement($amount);
+      $this->remainingInvalidationsLimit->decrement($amount);
     } catch (BadBehaviorException $e) {
-      $this->counterLimit->set(0);
+      $this->remainingInvalidationsLimit->set(0);
     }
   }
 
@@ -221,13 +221,27 @@ class Tracker implements TrackerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getLimit() {
-    if (is_null($this->counterLimit)) {
+  public function getMaxExecutionTime() {
+    if (is_null($this->maxExecutionTime)) {
+      $this->maxExecutionTime = (int) ini_get('max_execution_time');
+      // When the limit isn't infinite, chop 20% off for the rest of Drupal.
+      if ($this->maxExecutionTime !== 0) {
+        $this->maxExecutionTime = intval(0.8 * $this->maxExecutionTime);
+      }
+    }
+    return $this->maxExecutionTime;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRemainingInvalidationsLimit() {
+    if (is_null($this->remainingInvalidationsLimit)) {
 
       // Fail early when no purgers are loaded.
       if (empty($this->purgers)) {
-        $this->counterLimit = new Counter(0);
-        return $this->counterLimit->get();
+        $this->remainingInvalidationsLimit = new Counter(0);
+        return $this->remainingInvalidationsLimit->get();
       }
 
       // When the maximum execution time is zero, Drupal is given a lot more
@@ -235,8 +249,9 @@ class Tracker implements TrackerInterface {
       // hours, therefore we take the lowest ideal conditions limit as value.
       $max_execution_time = $this->getMaxExecutionTime();
       if ($max_execution_time === 0) {
-        $this->counterLimit = new Counter($this->getIdealConditionsLimit());
-        return $this->counterLimit->get();
+        $limit = $this->getIdealConditionsLimit();
+        $this->remainingInvalidationsLimit = new Counter($limit);
+        return $this->remainingInvalidationsLimit->get();
       }
 
       // Though in most conditions, we do have a max execution time to deal with
@@ -250,26 +265,12 @@ class Tracker implements TrackerInterface {
       }
 
       // Wrap the runtime limit into a (non-persistent) counter object.
-      $this->counterLimit = new Counter($runtime_limit);
+      $this->remainingInvalidationsLimit = new Counter($runtime_limit);
     }
 
     // We don't expose the object but just return its value. This protects us
     // from public calls attempting to overwrite or reset our limit.
-    return $this->counterLimit->get();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getMaxExecutionTime() {
-    if (is_null($this->maxExecutionTime)) {
-      $this->maxExecutionTime = (int) ini_get('max_execution_time');
-      // When the limit isn't infinite, chop 20% off for the rest of Drupal.
-      if ($this->maxExecutionTime !== 0) {
-        $this->maxExecutionTime = intval(0.8 * $this->maxExecutionTime);
-      }
-    }
-    return $this->maxExecutionTime;
+    return $this->remainingInvalidationsLimit->get();
   }
 
   /**

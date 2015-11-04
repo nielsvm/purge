@@ -18,7 +18,6 @@ use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
 use Drupal\purge\Plugin\Purge\Purger\Capacity\Tracker;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
-use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 
 /**

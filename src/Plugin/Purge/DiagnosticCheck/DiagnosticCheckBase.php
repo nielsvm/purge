@@ -158,8 +158,8 @@ abstract class DiagnosticCheckBase extends PluginBase implements DiagnosticCheck
     $this->runCheck();
     return [
       'title' => $this->t('Purge - @title', ['@title' => $this->getTitle()]),
-      'value' => $this->getValue(),
-      'description' => $this->getRecommendation(),
+      'value' => (string) $this->getValue(),
+      'description' => (string) $this->getRecommendation(),
       'severity' => $this->getRequirementsSeverity()
     ];
   }
@@ -170,9 +170,9 @@ abstract class DiagnosticCheckBase extends PluginBase implements DiagnosticCheck
   public function getRequirementsArray() {
     $this->runCheck();
     return [
-      'title' => $this->getTitle(),
-      'value' => $this->getValue(),
-      'description' => $this->getRecommendation(),
+      'title' => (string) $this->getTitle(),
+      'value' => (string) $this->getValue(),
+      'description' => (string) $this->getRecommendation(),
       'severity' => $this->getRequirementsSeverity()
     ];
   }

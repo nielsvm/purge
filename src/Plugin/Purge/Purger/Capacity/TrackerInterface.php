@@ -180,6 +180,26 @@ interface TrackerInterface {
   public function getRemainingInvalidationsLimit();
 
   /**
+   * Get the maximum number of seconds, a purger needs for one invalidation.
+   *
+   * @param string $purger_instance_id
+   *   The instance ID of the purger from which to return the time hint.
+   *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
+   *   Thrown when a returned floating point value is lower than 0.1, higher
+   *   than 10 or is not returned as float.
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
+   *   Thrown when $purger_instance_id doesn't exist.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getCooldownTime()
+   *
+   * @return float
+   *   The maximum number of seconds - as a float - it takes this purger to
+   *   process a single cache invalidation.
+   */
+  public function getTimeHint($purger_instance_id);
+
+  /**
    * Get the maximum number of seconds, processing a single invalidation takes.
    *
    * The capacity tracker calls getTimeHint on all loaded purger plugins and

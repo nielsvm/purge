@@ -93,20 +93,20 @@ class Tracker implements TrackerInterface {
   protected $state;
 
   /**
-   * The maximum number of seconds - as a float - it takes all purgers to
-   * process a single cache invalidation (regardless of type).
-   *
-   * @var float
-   */
-  protected $timeHint;
-
-  /**
    * The maximum number of seconds - as a float - it takes each purger to
    * process a single cache invalidation.
    *
    * @var float[]
    */
   protected $timeHints;
+
+  /**
+   * The maximum number of seconds - as a float - it takes all purgers to
+   * process a single cache invalidation (regardless of type).
+   *
+   * @var float
+   */
+  protected $timeHintTotal;
 
   /**
    * {@inheritdoc}
@@ -317,10 +317,21 @@ class Tracker implements TrackerInterface {
   /**
    * {@inheritdoc}
    */
+  public function getTimeHint($purger_instance_id) {
+    $this->gatherTimeHints();
+    if (!isset($this->timeHints[$purger_instance_id])) {
+      throw new BadBehaviorException("Instance id '$purger_instance_id' does not exist!");
+    }
+    return $this->timeHints[$purger_instance_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getTimeHintTotal() {
-    if (is_null($this->timeHint)) {
+    if (is_null($this->timeHintTotal)) {
       $this->gatherTimeHints();
-      $this->timeHint = 1.0;
+      $this->timeHintTotal = 1.0;
       if (count($this->timeHints)) {
         $hints_per_type = [];
 
@@ -335,10 +346,10 @@ class Tracker implements TrackerInterface {
         }
 
         // Find the highest time, so that the system takes the least risk.
-        $this->timeHint = max($hints_per_type);
+        $this->timeHintTotal = max($hints_per_type);
       }
     }
-    return $this->timeHint;
+    return $this->timeHintTotal;
   }
 
   /**

@@ -282,6 +282,24 @@ class Tracker implements TrackerInterface {
   /**
    * {@inheritdoc}
    */
+  public function getLeaseTimeHint($items) {
+    if (($items < 1) || (!is_int($items))) {
+      throw new BadPluginBehaviorException('$items is below 1 or no integer.');
+    }
+
+    // Multiply the number of items with a single time hint and add cooldown.
+    $sec = ($items * $this->getTimeHintTotal()) + $this->getCooldownTimeTotal();
+
+    // Add one second to accommodate for code overhead.
+    $sec++;
+
+    // Round up and return as integer.
+    return (int) ceil($sec);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getMaxExecutionTime() {
     if (is_null($this->maxExecutionTime)) {
       $this->maxExecutionTime = (int) ini_get('max_execution_time');

@@ -130,6 +130,23 @@ interface TrackerInterface {
   public function getIdealConditionsLimit();
 
   /**
+   * Estimate how long a call to ::invalidate() takes for X amount of objects.
+   *
+   * @param int $number_of_objects
+   *   The number of objects about to be offered to the purgers service.
+   *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
+   *   Thrown when $number_of_objects is lower than 1 or not an integer.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHintTotal()
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getCooldownTimeTotal()
+   *
+   * @return int
+   *   The number of seconds cache invalidation will take for this many items.
+   */
+  public function getLeaseTimeHint($items);
+
+  /**
    * Get the maximum PHP execution time that is available to cache invalidation.
    *
    * @return int

@@ -102,18 +102,18 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
 
     // When the claim number or lease_time isn't passed, the capacity tracker
     // will kindly give it to us. Then multiply the lease time with the claims.
-    if (is_null($claims) || is_null($lease_time)) {
-      $tracker = $this->purgePurgers->capacityTracker();
-      if (is_null($claims)) {
-        if (!($claims = $tracker->getRemainingInvalidationsLimit())) {
-          return [];
-        }
-      }
-      if (is_null($lease_time)) {
-        $lease_time = $tracker->getTimeHintTotal();
+    $tracker = $this->purgePurgers->capacityTracker();
+    if (is_null($claims)) {
+      if (!($claims = $tracker->getRemainingInvalidationsLimit())) {
+        return [];
       }
     }
-    $lease_time = $claims * $lease_time;
+    if (is_null($lease_time)) {
+      $lease_time = $tracker->getLeaseTimeHint($claims);
+    }
+    else {
+      $lease_time = $claims * $lease_time;
+    }
 
     // Claim one or several items out of the queue or finish the call.
     if ($claims === 1) {

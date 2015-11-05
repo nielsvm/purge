@@ -20,35 +20,28 @@ use Drupal\Core\DestructableInterface;
 interface StatsTrackerInterface extends DestructableInterface {
 
   /**
-   * Retrieve the counter tracking the amount of failed invalidations.
+   * Get the counter tracking how many invalidations are claimed right now.
    *
    * @return \Drupal\purge\Counter\PersistentCounterInterface
-   *   The counter object.
    */
-  public function counterFailed();
+  public function claimed();
 
   /**
-   * Retrieve the counter tracking failed invalidations that were not supported.
+   * Get the counter tracking how many invalidations have been deleted.
    *
    * @return \Drupal\purge\Counter\PersistentCounterInterface
-   *   The counter object.
    */
-  public function counterNotSupported();
+  public function deleted();
 
   /**
-   * Retrieve the counter tracking currently purging multi-step invalidations.
+   * Get the counter tracking the total amount of invalidations in the queue.
    *
    * @return \Drupal\purge\Counter\PersistentCounterInterface
-   *   The counter object.
    */
-  public function counterProcessing();
+  public function total();
 
   /**
-   * Retrieve the counter tracking the amount of succeeded invalidations.
-   *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
-   *   The counter object.
+   * Wipe all statistics data.
    */
-  public function counterSucceeded();
-
+  public function wipe();
 }

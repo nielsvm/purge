@@ -327,7 +327,9 @@ class CapacityTracker implements CapacityTrackerInterface {
    */
   public function spentExecutionTime() {
     if (is_null($this->spentExecutionTime)) {
-      $this->spentExecutionTime = new Counter(0, FALSE, TRUE, FALSE);
+      $this->spentExecutionTime = new Counter(0);
+      $this->spentExecutionTime->disableDecrement();
+      $this->spentExecutionTime->disableSet();
     }
     return $this->spentExecutionTime;
   }
@@ -337,7 +339,9 @@ class CapacityTracker implements CapacityTrackerInterface {
    */
   public function spentInvalidations() {
     if (is_null($this->spentInvalidations)) {
-      $this->spentInvalidations = new Counter(0, FALSE, TRUE, FALSE);
+      $this->spentInvalidations = new Counter(0);
+      $this->spentInvalidations->disableDecrement();
+      $this->spentInvalidations->disableSet();
     }
     return $this->spentInvalidations;
   }

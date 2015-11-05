@@ -101,6 +101,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
         $this->buffer->set($invalidation, TxBuffer::ADDING);
       }
     }
+    $this->purgeQueueStats->total()->increment(count($invalidations));
   }
 
   /**
@@ -152,7 +153,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
       $this->buffer->setProperty($inv, 'created', $item->created);
       $items[$i] = $inv;
     }
-
+    $this->purgeQueueStats->claimed()->increment(count($items));
     return $items;
   }
 
@@ -281,6 +282,8 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   public function delete(array $invalidations) {
     $this->initializeQueue();
     $this->buffer->set($invalidations, TxBuffer::DELETING);
+    $this->purgeQueueStats->claimed()->decrement(count($invalidations));
+    $this->purgeQueueStats->deleted()->increment(count($invalidations));
   }
 
   /**
@@ -304,6 +307,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
     $this->initializeQueue();
     $this->buffer->deleteEverything();
     $this->queue->deleteQueue();
+    $this->purgeQueueStats->wipe();
   }
 
   /**
@@ -368,14 +372,18 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
       // Mark succeeded objects as deleting in the buffer.
       if ($invalidation->getState() === InvalidationInterface::SUCCEEDED) {
         $this->buffer->set($invalidation, TxBuffer::DELETING);
+        $this->purgeQueueStats->deleted()->increment();
+        $this->purgeQueueStats->claimed()->decrement();
       }
       // FRESH, PROCESSING, FAILED and NOT_SUPPORTED all go back to the queue.
       else {
         if (!$this->buffer->has($invalidation)) {
           $this->buffer->set($invalidation, TxBuffer::ADDING);
+          $this->purgeQueueStats->total()->increment();
         }
         else {
           $this->buffer->set($invalidation, TxBuffer::RELEASING);
+          $this->purgeQueueStats->claimed()->decrement();
         }
       }
     }
@@ -395,6 +403,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   public function release(array $invalidations) {
     $this->initializeQueue();
     $this->buffer->set($invalidations, TxBuffer::RELEASING);
+    $this->purgeQueueStats->claimed()->decrement(count($invalidations));
   }
 
   /**

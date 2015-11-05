@@ -101,6 +101,14 @@ class Tracker implements TrackerInterface {
   protected $timeHint;
 
   /**
+   * The maximum number of seconds - as a float - it takes each purger to
+   * process a single cache invalidation.
+   *
+   * @var float[]
+   */
+  protected $timeHints;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(array $purgers, StateInterface $state) {
@@ -155,6 +163,39 @@ class Tracker implements TrackerInterface {
       $this->remainingInvalidationsLimit->decrement($amount);
     } catch (BadBehaviorException $e) {
       $this->remainingInvalidationsLimit->set(0);
+    }
+  }
+
+  /**
+   * Iterate all purgers and gather ::getTimeHint() information.
+   */
+  protected function gatherTimeHints() {
+    if (is_null($this->timeHints)) {
+      $this->timeHints = [];
+      if (count($this->purgers)) {
+        foreach ($this->purgers as $id => $purger) {
+          $hint = $purger->getTimeHint();
+
+          // Be strict about what values are accepted, better throwing exceptions
+          // than having a crashing website because it is trashing.
+          if (!is_float($hint)) {
+            $method = sprintf("%s::getTimeHint()", get_class($purger));
+            throw new BadPluginBehaviorException(
+              "$method did not return a floating point value.");
+          }
+          if ($hint < 0.1) {
+            $method = sprintf("%s::getTimeHint()", get_class($purger));
+            throw new BadPluginBehaviorException(
+              "$method returned $hint, a value lower than 0.1.");
+          }
+          if ($hint > 10.0) {
+            $method = sprintf("%s::getTimeHint()", get_class($purger));
+            throw new BadPluginBehaviorException(
+              "$method returned $hint, a value higher than 10.0.");
+          }
+          $this->timeHints[$id] = $hint;
+        }
+      }
     }
   }
 
@@ -278,47 +319,24 @@ class Tracker implements TrackerInterface {
    */
   public function getTimeHint() {
     if (is_null($this->timeHint)) {
+      $this->gatherTimeHints();
+      $this->timeHint = 1.0;
+      if (count($this->timeHints)) {
+        $hints_per_type = [];
 
-      // Fail early when no purgers are loaded.
-      if (empty($this->purgers)) {
-        $this->timeHint = 1.0;
-        return $this->timeHint;
-      }
-
-      // Iterate the purgers and gather ::getTimeHint()'s results.
-      $hint_per_type = [];
-      foreach ($this->purgers as $id => $purger) {
-        $hint = $purger->getTimeHint();
-
-        // Be strict about what values are accepted, better throwing exceptions
-        // than having a crashing website because it is trashing.
-        if (!is_float($hint)) {
-          $method = sprintf("%s::getTimeHint()", get_class($purger));
-          throw new BadPluginBehaviorException(
-            "$method did not return a floating point value.");
-        }
-        if ($hint < 0.1) {
-          $method = sprintf("%s::getTimeHint()", get_class($purger));
-          throw new BadPluginBehaviorException(
-            "$method returned $hint, a value lower than 0.1.");
-        }
-        if ($hint > 10.0) {
-          $method = sprintf("%s::getTimeHint()", get_class($purger));
-          throw new BadPluginBehaviorException(
-            "$method returned $hint, a value higher than 10.0.");
-        }
-
-        // Group the values by invalidation type and add up.
-        foreach ($purger->getTypes() as $type) {
-          if (!isset($hint_per_type[$type])) {
-            $hint_per_type[$type] = 0.0;
+        // Iterate all hints and group the values by invalidation type.
+        foreach ($this->timeHints as $id => $hint) {
+          foreach ($this->purgers[$id]->getTypes() as $type) {
+            if (!isset($hint_per_type[$type])) {
+              $hints_per_type[$type] = 0.0;
+            }
+            $hints_per_type[$type] = $hints_per_type[$type] + $hint;
           }
-          $hint_per_type[$type] = $hint_per_type[$type] + $hint;
         }
-      }
 
-      // Take the highest time hint, which means we take the least risk.
-      $this->timeHint = max($hint_per_type);
+        // Find the highest time, so that the system takes the least risk.
+        $this->timeHint = max($hints_per_type);
+      }
     }
     return $this->timeHint;
   }

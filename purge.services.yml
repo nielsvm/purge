@@ -41,12 +41,17 @@ services:
   # objects returning from 'purge.purgers'.
   purge.queue:
     class: Drupal\purge\Plugin\Purge\Queue\QueueService
-    arguments: ['@plugin.manager.purge.queue', '@config.factory', '@purge.queue.txbuffer', '@purge.invalidation.factory', '@purge.purgers']
+    arguments: ['@plugin.manager.purge.queue', '@config.factory', '@purge.queue.txbuffer',  '@purge.queue.stats', '@purge.invalidation.factory', '@purge.purgers']
     tags:
       - { name: needs_destruction }
   purge.queue.txbuffer:
     class: Drupal\purge\Plugin\Purge\Queue\TxBuffer
     public: false
+  purge.queue.stats:
+    class: Drupal\purge\Plugin\Purge\Queue\StatsTracker
+    arguments: ['@state']
+    tags:
+      - { name: needs_destruction }
   plugin.manager.purge.queue:
     class: Drupal\purge\Plugin\Purge\Queue\PluginManager
     parent: default_plugin_manager

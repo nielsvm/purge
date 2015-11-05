@@ -44,6 +44,12 @@ demand multi-step purges that can easily take up 30 minutes. Although the
 queue can technically be left out of the process entirely, it will be required
 in the majority of use cases.
 
+###### Statistics tracker
+The statistics tracker keeps track of queue activity by actively counting how
+many items the queue currently holds and how many have been deleted or released
+back to it. This data can be used to report progress on the queue and is easily
+retrieved, the data resets when the queue is emptied.
+
 #### Invalidations
 Invalidations are small value objects that **decribe and track invalidations**
 on one or more external caching systems within the Purge pipeline. These

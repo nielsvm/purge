@@ -16,15 +16,23 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Plugin\Purge\Queue\Exception\UnexpectedServiceConditionException;
-use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
-use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
 use Drupal\purge\Plugin\Purge\Queue\ProxyItem;
+use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
+use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
+use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
 
 /**
  * Provides the service that lets invalidations interact with a queue backend.
  */
 class QueueService extends ServiceBase implements QueueServiceInterface, DestructableInterface {
   use ModifiableServiceBaseTrait;
+
+  /**
+   * The transaction buffer in which invalidation objects temporarily stay.
+   *
+   * @var \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface
+   */
+  protected $buffer;
 
   /**
    * @var \Drupal\Core\Config\ConfigFactoryInterface
@@ -42,18 +50,16 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   protected $purgePurgers;
 
   /**
+   * @var \Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface
+   */
+  protected $purgeQueueStats;
+
+  /**
    * The Queue (plugin) object in which all items are stored.
    *
    * @var \Drupal\purge\Plugin\Purge\Queue\QueueInterface
    */
   protected $queue;
-
-  /**
-   * The transaction buffer in which invalidation objects temporarily stay.
-   *
-   * @var \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface
-   */
-  protected $buffer;
 
   /**
    * The plugin ID of the fallback backend.
@@ -69,16 +75,19 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    *   The factory for configuration objects.
    * @param \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface $purge_queue_txbuffer
    *   The transaction buffer.
+   * @param \Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface
+   *   The queue statistics tracker.
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface $purge_invalidation_factory
    *   The service that instantiates invalidation objects for queue items.
    * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
    *   The purgers service.
    */
-  function __construct(PluginManagerInterface $plugin_manager, ConfigFactoryInterface $config_factory, TxBufferInterface $purge_queue_txbuffer, InvalidationsServiceInterface $purge_invalidation_factory, PurgersServiceInterface $purge_purgers) {
+  function __construct(PluginManagerInterface $plugin_manager, ConfigFactoryInterface $config_factory, TxBufferInterface $purge_queue_txbuffer, StatsTrackerInterface $purge_queue_stats,InvalidationsServiceInterface $purge_invalidation_factory, PurgersServiceInterface $purge_purgers) {
     $this->pluginManager = $plugin_manager;
     $this->configFactory = $config_factory;
     $this->purgeInvalidationFactory = $purge_invalidation_factory;
     $this->purgePurgers = $purge_purgers;
+    $this->purgeQueueStats = $purge_queue_stats;
     $this->buffer = $purge_queue_txbuffer;
   }
 

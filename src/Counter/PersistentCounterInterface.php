@@ -7,7 +7,6 @@
 
 namespace Drupal\purge\Counter;
 
-use Drupal\Core\State\StateInterface;
 use Drupal\purge\Counter\CounterInterface;
 
 /**

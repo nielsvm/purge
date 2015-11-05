@@ -14,10 +14,12 @@ services:
   # interfaces and allowing users to disable/enable them.
   purge.queuers:
     class: Drupal\purge\Plugin\Purge\Queuer\QueuersService
+    public: true
     arguments: ['@plugin.manager.purge.queuer', '@config.factory']
   plugin.manager.purge.queuer:
     class: Drupal\purge\Plugin\Purge\Queuer\PluginManager
     parent: default_plugin_manager
+    public: false
 
   # PURGE.INVALIDATION.FACTORY
   #
@@ -31,6 +33,7 @@ services:
   plugin.manager.purge.invalidation:
     class: Drupal\purge\Plugin\Purge\Invalidation\PluginManager
     parent: default_plugin_manager
+    public: false
 
   # PURGE.QUEUE:
   #
@@ -44,6 +47,7 @@ services:
   plugin.manager.purge.queue:
     class: Drupal\purge\Plugin\Purge\Queue\PluginManager
     parent: default_plugin_manager
+    public: false
 
   # PURGE.DIAGNOSTICS:
   #
@@ -58,6 +62,7 @@ services:
   plugin.manager.purge.diagnostics:
     class:  Drupal\purge\Plugin\Purge\DiagnosticCheck\PluginManager
     parent: default_plugin_manager
+    public: false
 
   # PURGE.PROCESSORS
   #
@@ -68,6 +73,7 @@ services:
   plugin.manager.purge.processor:
     class: Drupal\purge\Plugin\Purge\Processor\PluginManager
     parent: default_plugin_manager
+    public: false
 
   # PURGE.PURGERS:
   #
@@ -78,6 +84,7 @@ services:
   plugin.manager.purge.purgers:
     class: Drupal\purge\Plugin\Purge\Purger\PluginManager
     parent: default_plugin_manager
+    public: false
 
   # LOGGER.CHANNEL.PURGE
   #
@@ -87,3 +94,4 @@ services:
   logger.channel.purge:
     parent: logger.channel_base
     arguments: ['purge']
+    public: false

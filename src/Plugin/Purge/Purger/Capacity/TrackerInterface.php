@@ -72,8 +72,8 @@ interface TrackerInterface {
    *
    * External cache invalidation is expensive and can become exponentially more
    * expensive when multiple platforms are being invalidated. To assure that we
-   * don't purge more than Drupal's request lifetime allows for, ::getTimeHint()
-   * gives us the highest number of seconds a cache invalidation could take.
+   * don't purge more than request lifetime allows for, ::getTimeHintTotal()
+   * gives the highest number of seconds a cache invalidation could take.
    *
    * A call to ::getRemainingInvalidationsLimit() calculates how many cache
    * invalidations are left to be processed during this request. It bases its
@@ -119,8 +119,8 @@ interface TrackerInterface {
    *
    * External cache invalidation is expensive and can become exponentially more
    * expensive when multiple platforms are being invalidated. To assure that we
-   * don't purge more than Drupal's request lifetime allows for, ::getTimeHint()
-   * gives us the highest number of seconds a cache invalidation could take.
+   * don't purge more than request lifetime allows for, ::getTimeHintTotal()
+   * gives the highest number of seconds a cache invalidation could take.
    *
    * A call to ::getRemainingInvalidationsLimit() calculates how many cache
    * invalidations are left to be processed during this request. It bases its
@@ -156,8 +156,8 @@ interface TrackerInterface {
    *
    * External cache invalidation is expensive and can become exponentially more
    * expensive when multiple platforms are being invalidated. To assure that we
-   * don't purge more than Drupal's request lifetime allows for, ::getTimeHint()
-   * gives us the highest number of seconds a cache invalidation could take.
+   * don't purge more than request lifetime allows for, ::getTimeHintTotal()
+   * gives the highest number of seconds a cache invalidation could take.
    *
    * A call to ::getRemainingInvalidationsLimit() calculates how many cache
    * invalidations are left to be processed during this request. It bases its
@@ -170,7 +170,7 @@ interface TrackerInterface {
    * value becomes zero.
    *
    * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::decrementLimit()
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHint()
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHintTotal()
    * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getIdealConditionsLimit()
    *
    * @return int
@@ -199,6 +199,6 @@ interface TrackerInterface {
    *   The maximum number of seconds - as a float - it takes all purgers to
    *   process a single cache invalidation (regardless of type).
    */
-  public function getTimeHint();
+  public function getTimeHintTotal();
 
 }

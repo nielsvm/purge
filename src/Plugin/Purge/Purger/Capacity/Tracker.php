@@ -297,7 +297,7 @@ class Tracker implements TrackerInterface {
 
       // Though in most conditions, we do have a max execution time to deal with
       // and therefore we divide it through the time hint we calculated.
-      $runtime_limit = intval($max_execution_time / $this->getTimeHint());
+      $runtime_limit = intval($max_execution_time / $this->getTimeHintTotal());
 
       // In the rare case the runtime limit exceeds the ideal conditions limit,
       // we lower the runtime limit to the ideal conditions limit.
@@ -317,7 +317,7 @@ class Tracker implements TrackerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getTimeHint() {
+  public function getTimeHintTotal() {
     if (is_null($this->timeHint)) {
       $this->gatherTimeHints();
       $this->timeHint = 1.0;

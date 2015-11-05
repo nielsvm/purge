@@ -110,7 +110,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
         }
       }
       if (is_null($lease_time)) {
-        $lease_time = $tracker->getTimeHint();
+        $lease_time = $tracker->getTimeHintTotal();
       }
     }
     $lease_time = $claims * $lease_time;

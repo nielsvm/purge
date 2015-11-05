@@ -41,6 +41,16 @@ trait TestTrait {
   protected $purgeQueue;
 
   /**
+   * @var \Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface
+   */
+  protected $purgeQueueStats;
+
+  /**
+   * @var \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface
+   */
+  protected $purgeQueueTxbuffer;
+
+  /**
    * @var \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface
    */
   protected $purgeQueuers;
@@ -84,7 +94,6 @@ trait TestTrait {
       $this->purgePurgers->reload();
       $this->purgePurgers->setPluginsEnabled($ids);
     }
-    $this->initializeDiagnosticsService();
   }
 
   /**
@@ -110,7 +119,6 @@ trait TestTrait {
       $this->purgeQueue->reload();
       $this->purgeQueue->setPluginsEnabled([$plugin_id]);
     }
-    $this->initializeDiagnosticsService();
   }
 
   /**

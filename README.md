@@ -75,16 +75,7 @@ Purge **doesn't ship any purger**, as this is context specific. You could for
 instance have multiple purgers enabled to both clean a local proxy and a CDN
 at the same time.
 
-#### Diagnostic checks
-External cache invalidation usually depends on many parameters, for instance
-configuration settings such as hostname or CDN API keys. In order to prevent
-hard crashes during runtime that affect end-user workflow, Purge allows plugins
-to write preventive diagnostic checks that can check their configurations and
-anything else that affects runtime execution. These checks can block all purging
-but also raise warnings and other diagnostic information. End-users can rely on
-Drupal's status report page where these checks also bubble up.
-
-#### Capacity tracker
+###### Capacity tracker
 The capacity tracker is the central orchestrator between limited system
 resources and a never-ending queue of cache invalidation items.
 
@@ -95,6 +86,15 @@ request lifetime. It is able to predict this since the capacity tracker also
 collects timing estimates from the actual purgers. The intelligence it has
 is used by the queue service and exceeding the limit isn't possible as the
 purgers service refuses to operate when the limits are near zero.
+
+#### Diagnostic checks
+External cache invalidation usually depends on many parameters, for instance
+configuration settings such as hostname or CDN API keys. In order to prevent
+hard crashes during runtime that affect end-user workflow, Purge allows plugins
+to write preventive diagnostic checks that can check their configurations and
+anything else that affects runtime execution. These checks can block all purging
+but also raise warnings and other diagnostic information. End-users can rely on
+Drupal's status report page where these checks also bubble up.
 
 #### Processors
 With queuers adding ``tag`` invalidation objects to the queue, this still leaves

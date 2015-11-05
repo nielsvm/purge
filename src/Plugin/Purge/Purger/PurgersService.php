@@ -16,7 +16,7 @@ use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
-use Drupal\purge\Plugin\Purge\Purger\Capacity\Tracker;
+use Drupal\purge\Plugin\Purge\Purger\CapacityTracker;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 
@@ -26,7 +26,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 class PurgersService extends ServiceBase implements PurgersServiceInterface {
 
   /**
-   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface
+   * @var \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface
    */
   protected $capacityTracker;
 
@@ -100,7 +100,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   public function capacityTracker() {
     if (is_null($this->capacityTracker)) {
       $this->initializePurgers();
-      $this->capacityTracker = new Tracker($this->purgers, $this->state);
+      $this->capacityTracker = new CapacityTracker($this->purgers, $this->state);
     }
     return $this->capacityTracker;
   }

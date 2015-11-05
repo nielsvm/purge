@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface.
+ * Contains \Drupal\purge\Counter\CounterInterface.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger\Capacity;
+namespace Drupal\purge\Counter;
 
 /**
  * Describes a numeric counter.

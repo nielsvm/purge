@@ -34,12 +34,12 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
    * @param int $claims
    *   Determines how many claims should be taken from the queue. When the queue
    *   has less items available, less will be returned. When this parameter is
-   *   left as NULL, TrackerInterface::getRemainingInvalidationsLimit() will be
-   *   used as input.
+   *   left as NULL, CapacityTrackerInterface::getRemainingInvalidationsLimit()
+   *   will be used as input.
    * @param int $lease_time
    *   The expected (maximum) time needed per claim, which will get multiplied
    *   for you by the number of claims you request. When this is left NULL, this
-   *   value comes from TrackerInterface::getTimeHint().
+   *   value comes from CapacityTrackerInterface::getTimeHint().
    *
    *   After the lease_time expires, another running request or CLI process can
    *   also claim the items and process them, therefore too short lease times

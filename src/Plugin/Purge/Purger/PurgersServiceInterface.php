@@ -23,7 +23,7 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
    * always hold a single capacity tracker instance. The capacity tracker tracks
    * runtime resource consumption and maintains activity counters.
    *
-   * @return \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface;
+   * @return \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface;
    */
   public function capacityTracker();
 
@@ -125,7 +125,7 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
    *   and your code should depend on the next processing window.
    *
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState()
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getTimeHint()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerCapacityDataInterface::getTimeHint()
    *
    * @return void
    */

@@ -2,15 +2,15 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger\Capacity;
+namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\Core\State\StateInterface;
 
 /**
- * Describes the capacity tracker API.
+ * Describes the capacity tracker.
  *
  * The capacity tracker is the central orchestrator between limited system
  * resources and an ever growing queue of invalidation objects.
@@ -23,7 +23,7 @@ use Drupal\Core\State\StateInterface;
  * aids queue processors by dynamically giving the number of items that can
  * be processed in one go.
  */
-interface TrackerInterface {
+interface CapacityTrackerInterface {
 
   /**
    * Construct a capacity tracker.
@@ -38,7 +38,7 @@ interface TrackerInterface {
   /**
    * Retrieve the counter tracking the amount of failed invalidations.
    *
-   * @return \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
+   * @return \Drupal\purge\Counter\PersistentCounterInterface
    *   The counter object.
    */
   public function counterFailed();
@@ -46,7 +46,7 @@ interface TrackerInterface {
   /**
    * Retrieve the counter tracking failed invalidations that were not supported.
    *
-   * @return \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
+   * @return \Drupal\purge\Counter\PersistentCounterInterface
    *   The counter object.
    */
   public function counterNotSupported();
@@ -54,7 +54,7 @@ interface TrackerInterface {
   /**
    * Retrieve the counter tracking currently purging multi-step invalidations.
    *
-   * @return \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
+   * @return \Drupal\purge\Counter\PersistentCounterInterface
    *   The counter object.
    */
   public function counterProcessing();
@@ -62,7 +62,7 @@ interface TrackerInterface {
   /**
    * Retrieve the counter tracking the amount of succeeded invalidations.
    *
-   * @return \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
+   * @return \Drupal\purge\Counter\PersistentCounterInterface
    *   The counter object.
    */
   public function counterSucceeded();
@@ -79,8 +79,8 @@ interface TrackerInterface {
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
    *   Thrown when $purger_instance_id doesn't exist.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getCooldownTime()
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::waitCooldownTime()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerCapacityDataInterface::getCooldownTime()
+   * @see \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface::waitCooldownTime()
    *
    * @return float
    *   The maximum number of seconds - as float - to wait after invalidation.
@@ -94,7 +94,7 @@ interface TrackerInterface {
    *   Thrown when the returned floating point value is lower than 0.0, higher
    *   than 3.0 or is not returned as floating point value.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getCooldownTime()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerCapacityDataInterface::getCooldownTime()
    *
    * @return float
    *   The maximum number of seconds - as float - to wait after invalidation.
@@ -122,7 +122,7 @@ interface TrackerInterface {
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
    *   Thrown when a returned value is not a integer or when it equals to 0.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getIdealConditionsLimit()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerCapacityDataInterface::getIdealConditionsLimit()
    *
    * @return int
    *   The number of invalidations that can be processed under ideal conditions.
@@ -138,8 +138,8 @@ interface TrackerInterface {
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
    *   Thrown when $number_of_objects is lower than 1 or not an integer.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHintTotal()
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getCooldownTimeTotal()
+   * @see \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface::getTimeHintTotal()
+   * @see \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface::getCooldownTimeTotal()
    *
    * @return int
    *   The number of seconds cache invalidation will take for this many items.
@@ -173,9 +173,9 @@ interface TrackerInterface {
    * time the purgers service attempted one or more invalidations until the
    * value becomes zero.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::decrementLimit()
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHintTotal()
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getIdealConditionsLimit()
+   * @see \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface::decrementLimit()
+   * @see \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface::getTimeHintTotal()
+   * @see \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface::getIdealConditionsLimit()
    *
    * @return int
    *   The remaining number of allowed cache invalidations during the remainder
@@ -195,7 +195,7 @@ interface TrackerInterface {
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
    *   Thrown when $purger_instance_id doesn't exist.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getCooldownTime()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerCapacityDataInterface::getCooldownTime()
    *
    * @return float
    *   The maximum number of seconds - as float - it takes this purger to
@@ -217,7 +217,7 @@ interface TrackerInterface {
    *   Thrown when a returned floating point value is lower than 0.1, higher
    *   than 10 or is not returned as float.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getTimeHint()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgerCapacityDataInterface::getTimeHint()
    *
    * @return float
    *   The maximum number of seconds - as float - it takes all purgers to
@@ -228,7 +228,7 @@ interface TrackerInterface {
   /**
    * Get the counter tracking actual spent execution time during this request.
    *
-   * @return \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface
+   * @return \Drupal\purge\Counter\CounterInterface
    *   The counter object.
    */
   public function spentExecutionTime();
@@ -236,7 +236,7 @@ interface TrackerInterface {
   /**
    * Get the counter for the number of invalidations touched this request.
    *
-   * @return \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface
+   * @return \Drupal\purge\Counter\CounterInterface
    *   The counter object.
    */
   public function spentInvalidations();
@@ -250,7 +250,7 @@ interface TrackerInterface {
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
    *   Thrown when $purger_instance_id doesn't exist.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getCooldownTime()
+   * @see \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface::getCooldownTime()
    * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidate()
    *
    * @return void

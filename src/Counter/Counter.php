@@ -2,13 +2,13 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\Capacity\Counter.
+ * Contains \Drupal\purge\Counter\Counter.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger\Capacity;
+namespace Drupal\purge\Counter;
 
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
-use Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface;
+use Drupal\purge\Counter\CounterInterface;
 
 /**
  * Provides a numeric counter.

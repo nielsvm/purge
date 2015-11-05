@@ -2,15 +2,15 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounter.
+ * Contains \Drupal\purge\Counter\PersistentCounter.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger\Capacity;
+namespace Drupal\purge\Counter;
 
 use Drupal\Core\State\StateInterface;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
-use Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface;
-use Drupal\purge\Plugin\Purge\Purger\Capacity\Counter;
+use Drupal\purge\Counter\PersistentCounterInterface;
+use Drupal\purge\Counter\Counter;
 
 /**
  * Provides a numeric counter stored in state storage.

@@ -2,15 +2,15 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\PurgerCapacityDataInterface.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger\Capacity;
+namespace Drupal\purge\Plugin\Purge\Purger;
 
 /**
  * Describes what the capacity tracking API expects from purger implementations.
  */
-interface TrackerPurgerInterface {
+interface PurgerCapacityDataInterface {
 
   /**
    * Get the time in seconds to wait after invalidation.
@@ -24,7 +24,7 @@ interface TrackerPurgerInterface {
    * that clear instantly (e.g.: via a socket) are best off leaving this at 0.0.
    *
    * @see \Drupal\purge\Annotation\PurgePurger::$cooldown_time.
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getCooldownTime()
+   * @see \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface::getCooldownTime()
    *
    * @return float
    *   The maximum number of seconds - as a float - to wait after invalidation.
@@ -44,7 +44,7 @@ interface TrackerPurgerInterface {
    * always be a hard outer limit of how many invalidation objects are being
    * processed during Drupal's request lifetime.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getRemainingInvalidationsLimit()
+   * @see \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface::getRemainingInvalidationsLimit()
    *
    * @return int
    *   The number of invalidations you can process under ideal conditions.
@@ -79,7 +79,7 @@ interface TrackerPurgerInterface {
    *   that time out and too high values can lead to queue-processing not being
    *   able to keep up.
    *
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getTimeHint()
+   * @see \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface::getTimeHint()
    *
    * @return float
    *   The maximum number of seconds - as a float - it takes you to process.

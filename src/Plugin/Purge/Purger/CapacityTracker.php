@@ -2,48 +2,48 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\Capacity\Tracker.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\CapacityTracker.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger\Capacity;
+namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\Core\State\StateInterface;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
-use Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface;
-use Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounter;
-use Drupal\purge\Plugin\Purge\Purger\Capacity\Counter;
+use Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface;
+use Drupal\purge\Counter\PersistentCounter;
+use Drupal\purge\Counter\Counter;
 
 /**
- * Provides a capacity tracker.
+ * Provides the capacity tracker.
  */
-class Tracker implements TrackerInterface {
+class CapacityTracker implements CapacityTrackerInterface {
 
   /**
    * The counter tracking the amount of failed invalidations.
    *
-   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
+   * @var \Drupal\purge\Counter\PersistentCounterInterface
    */
   protected $counterFailed;
 
   /**
    * The counter tracking invalidations that were not supported.
    *
-   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
+   * @var \Drupal\purge\Counter\PersistentCounterInterface
    */
   protected $counterNotSupported;
 
   /**
    * The counter tracking currently active multi-step invalidations.
    *
-   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
+   * @var \Drupal\purge\Counter\PersistentCounterInterface
    */
   protected $counterProcessing;
 
   /**
    * The counter tracking the amount of succeeded invalidations.
    *
-   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface
+   * @var \Drupal\purge\Counter\PersistentCounterInterface
    */
   protected $counterSucceeded;
 
@@ -94,14 +94,14 @@ class Tracker implements TrackerInterface {
   /**
    * The execution time spent on cache invalidation during this request.
    *
-   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface
+   * @var \Drupal\purge\Counter\CounterInterface
    */
   protected $spentExecutionTime;
 
   /**
    * Counter represting the number of invalidation objects touched this request.
    *
-   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface
+   * @var \Drupal\purge\Counter\CounterInterface
    */
   protected $spentInvalidations;
 

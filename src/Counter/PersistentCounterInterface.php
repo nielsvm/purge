@@ -2,13 +2,13 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\Capacity\PersistentCounterInterface.
+ * Contains \Drupal\purge\Counter\PersistentCounterInterface.
  */
 
-namespace Drupal\purge\Plugin\Purge\Purger\Capacity;
+namespace Drupal\purge\Counter;
 
 use Drupal\Core\State\StateInterface;
-use Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface;
+use Drupal\purge\Counter\CounterInterface;
 
 /**
  * Describes a numeric counter stored in state storage.

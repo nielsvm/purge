@@ -17,12 +17,6 @@ interface CounterInterface {
    *
    * @param int|float $value
    *   The initial positive number the counter starts its life with.
-   * @param bool $decrement
-   *   Whether it is possible to call ::decrement() or not.
-   * @param bool $increment
-   *   Whether it is possible to call ::increment() or not.
-   * @param bool $set
-   *   Whether it is possible to call ::set() or not.
    */
   public function __construct($value = 0.0);
 
@@ -86,8 +80,7 @@ interface CounterInterface {
    *   Numeric amount to subtract from the current counter value.
    *
    * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
-   *   Thrown when $amount is not a float, integer, when it is zero/negative or
-   *   when the current counter value becomes negative.
+   *   Thrown when $amount is not a float, integer or when it is zero/negative.
    * @throws \LogicException
    *   Thrown when the object got created without decrement permission.
    */

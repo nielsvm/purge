@@ -137,7 +137,7 @@ class Counter implements CounterInterface {
     }
     $new = $this->value - $amount;
     if ($new < 0.0) {
-      throw new BadBehaviorException('Given $amount causes negative counter.');
+      $new = 0.0;
     }
     $this->setDirectly($new);
   }

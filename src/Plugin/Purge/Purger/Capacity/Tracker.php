@@ -84,13 +84,26 @@ class Tracker implements TrackerInterface {
   protected $purgers;
 
   /**
-   * The counter tracking the remaining number of allowed cache invalidations
-   * during the remainder of Drupal's request lifetime. When it holds 0, no more
-   * cache invalidations can take place.
+   * Holds all calculated invalidations limits during runtime, this allows
+   * ::getRemainingInvalidationsLimit() to calculate the least as possible.
+   *
+   * @var int[]
+   */
+  protected $remainingInvalidationsLimits = [];
+
+  /**
+   * The execution time spent on cache invalidation during this request.
    *
    * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface
    */
-  protected $remainingInvalidationsLimit;
+  protected $spentExecutionTime;
+
+  /**
+   * Counter represting the number of invalidation objects touched this request.
+   *
+   * @var \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface
+   */
+  protected $spentInvalidations;
 
   /**
    * The state key value store.
@@ -153,24 +166,6 @@ class Tracker implements TrackerInterface {
   public function counterSucceeded() {
     $this->initializeCounters();
     return $this->counterSucceeded;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function decrementLimit($amount = 1) {
-    $this->getRemainingInvalidationsLimit();
-    if (!is_int($amount)) {
-      throw new BadBehaviorException('Given $amount is not a integer.');
-    }
-    if ($amount < 1) {
-      throw new BadBehaviorException('Given $amount is zero or negative.');
-    }
-    try {
-      $this->remainingInvalidationsLimit->decrement($amount);
-    } catch (BadBehaviorException $e) {
-      $this->remainingInvalidationsLimit->set(0);
-    }
   }
 
   /**
@@ -302,41 +297,43 @@ class Tracker implements TrackerInterface {
    * {@inheritdoc}
    */
   public function getRemainingInvalidationsLimit() {
-    if (is_null($this->remainingInvalidationsLimit)) {
 
-      // Fail early when no purgers are loaded.
+    // Create a closure that calculates the current limit.
+    $calculate = function($spent_inv) {
       if (empty($this->purgers)) {
-        $this->remainingInvalidationsLimit = new Counter(0, TRUE, FALSE, FALSE);
-        return $this->remainingInvalidationsLimit->getInteger();
+        return 0;
       }
 
-      // When the maximum execution time is zero, Drupal is given a lot more
-      // power to finish its request. However, we cannot just run for several
-      // hours, therefore we take the lowest ideal conditions limit as value.
-      $max_execution_time = $this->getMaxExecutionTime();
-      if ($max_execution_time === 0) {
-        $limit = $this->getIdealConditionsLimit();
-        $this->remainingInvalidationsLimit = new Counter($limit, TRUE, FALSE, FALSE);
-        return $this->remainingInvalidationsLimit->getInteger();
+      // Fetch PHP's maximum execution time. However, Purge can run longer when
+      // the returned value is zero (=infinite). If so, we return outer limits.
+      $time_max = $this->getMaxExecutionTime();
+      if ($time_max === 0) {
+        return $this->getIdealConditionsLimit() - $spent_inv;
       }
 
-      // Though in most conditions, we do have a max execution time to deal with
-      // and therefore we divide it through the time hint we calculated.
-      $runtime_limit = intval($max_execution_time / $this->getTimeHintTotal());
+      // We do operate on a time-based limit. Calculate how much time there is
+      // left, to base our estimate on by subtracting time spent and waiting time.
+      $time_left = $time_max - $this->spentExecutionTime()->get() - $this->getCooldownTimeTotal();
 
-      // In the rare case the runtime limit exceeds the ideal conditions limit,
-      // we lower the runtime limit to the ideal conditions limit.
-      if ($runtime_limit > $this->getIdealConditionsLimit()) {
-        $runtime_limit = $this->getIdealConditionsLimit();
+      // Calculate how many invaldiations can still be processed with the time
+      // that is left and substract the number of already invalidated items.
+      $limit = intval(floor($time_left / $this->getTimeHintTotal()) - $spent_inv);
+
+      // In the rare case the limit exceeds ideal conditions, the limit is
+      // lowered. Then return the limit or zero when it turned negative.
+      if ($limit > $this->getIdealConditionsLimit()) {
+        return $this->getIdealConditionsLimit();
       }
+      return ($limit < 0) ? 0 : $limit;
+    };
 
-      // Wrap the runtime limit into a (non-persistent) counter object.
-      $this->remainingInvalidationsLimit = new Counter($runtime_limit, TRUE, FALSE, FALSE);
+    // Fetch calculations from cache or generate new. We use the number of spent
+    // invalidations as cache key, since this makes it change every time.
+    $spent_inv = $this->spentInvalidations()->get();
+    if (!isset($this->remainingInvalidationsLimits[$spent_inv])) {
+      $this->remainingInvalidationsLimits[$spent_inv] = $calculate($spent_inv);
     }
-
-    // We don't expose the object but just return its value. This protects us
-    // from public calls attempting to overwrite or reset our limit.
-    return $this->remainingInvalidationsLimit->getInteger();
+    return $this->remainingInvalidationsLimits[$spent_inv];
   }
 
   /**
@@ -400,6 +397,42 @@ class Tracker implements TrackerInterface {
           $this->$counter = new PersistentCounter();
         }
         $this->$counter->setStateAndId($this->state, $id);
+      }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function spentExecutionTime() {
+    if (is_null($this->spentExecutionTime)) {
+      $this->spentExecutionTime = new Counter(0, FALSE, TRUE, FALSE);
+    }
+    return $this->spentExecutionTime;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function spentInvalidations() {
+    if (is_null($this->spentInvalidations)) {
+      $this->spentInvalidations = new Counter(0, FALSE, TRUE, FALSE);
+    }
+    return $this->spentInvalidations;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function waitCooldownTime($purger_instance_id) {
+    $seconds = $this->getCooldownTime($purger_instance_id);
+    if (!($seconds == 0)) {
+      $fractions = explode('.', (string) $seconds);
+      if (isset($fractions[1])) {
+        call_user_func_array('time_nanosleep', $fractions);
+      }
+      else {
+        sleep($seconds);
       }
     }
   }

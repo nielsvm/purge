@@ -313,7 +313,8 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * {@inheritdoc}
    */
   public function invalidate(array $invalidations) {
-    $this->initializePurgers();
+    $execution_time_start = microtime(TRUE);
+    $capacity_tracker = $this->capacityTracker();
 
     // Stop when the incoming array is empty (no queue claims, DX improvement).
     if (empty($invalidations)) {
@@ -368,6 +369,11 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
         }
         $purger->$method($offers);
       }
+
+      // Wait configured cooldown time before other purgers kick in.
+      if (count($groups)) {
+        $capacity_tracker->waitCooldownTime($id);
+      }
     }
 
     // As processing finished we have the obligation to reset context. A call to
@@ -375,6 +381,11 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     foreach ($invalidations as $i => $invalidation) {
       $invalidation->setStateContext(NULL);
     }
+
+    // Update all counters that the capacity tracker wants maintained.
+    $capacity_tracker->spentInvalidations()->increment(count($invalidations));
+    $capacity_tracker->spentExecutionTime()
+      ->increment(microtime(TRUE) - $execution_time_start);
   }
 
 }

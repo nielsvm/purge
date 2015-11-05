@@ -68,34 +68,6 @@ interface TrackerInterface {
   public function counterSucceeded();
 
   /**
-   * Decrease the number of remaining purges that can happen in this request.
-   *
-   * External cache invalidation is expensive and can become exponentially more
-   * expensive when multiple platforms are being invalidated. To assure that we
-   * don't purge more than request lifetime allows for, ::getTimeHintTotal()
-   * gives the highest number of seconds a cache invalidation could take.
-   *
-   * A call to ::getRemainingInvalidationsLimit() calculates how many cache
-   * invalidations are left to be processed during this request. It bases its
-   * decision on ::getMaxExecutionTime() and ::getIdealConditionsLimit() and
-   * information tracked during request lifetime. When it returns zero, no more
-   * items can be claimed from the queue or fed to the purgers service.
-   *
-   * In order to track this global limit, ::decrementLimit() gets called every
-   * time the purgers service attempted one or more invalidations until the
-   * value becomes zero.
-   *
-   * @param int $amount
-   *   Numeric amount to subtract from the current counter value.
-   *
-   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
-   *   Thrown when $amount is not a integer or when it is zero/negative.
-   *
-   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getRemainingInvalidationsLimit()
-   */
-  public function decrementLimit($amount = 1);
-
-  /**
    * Get the time in seconds to wait after invalidation for a specific purger.
    *
    * @param string $purger_instance_id
@@ -108,6 +80,7 @@ interface TrackerInterface {
    *   Thrown when $purger_instance_id doesn't exist.
    *
    * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getCooldownTime()
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::waitCooldownTime()
    *
    * @return float
    *   The maximum number of seconds - as float - to wait after invalidation.
@@ -234,5 +207,37 @@ interface TrackerInterface {
    *   process a single cache invalidation (regardless of type).
    */
   public function getTimeHintTotal();
+
+  /**
+   * Get the counter tracking actual spent execution time during this request.
+   *
+   * @return \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface
+   *   The counter object.
+   */
+  public function spentExecutionTime();
+
+  /**
+   * Get the counter for the number of invalidations touched this request.
+   *
+   * @return \Drupal\purge\Plugin\Purge\Purger\Capacity\CounterInterface
+   *   The counter object.
+   */
+  public function spentInvalidations();
+
+  /**
+   * Wait the time in seconds for the given purger.
+   *
+   * @param string $purger_instance_id
+   *   The instance ID of the purger for which to await the cooldown time.
+   *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
+   *   Thrown when $purger_instance_id doesn't exist.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerInterface::getCooldownTime()
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidate()
+   *
+   * @return void
+   */
+  public function waitCooldownTime($purger_instance_id);
 
 }

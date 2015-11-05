@@ -17,7 +17,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Plugin\Purge\Queue\Exception\UnexpectedServiceConditionException;
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
-use Drupal\purge\Plugin\Purge\Queue\TxBuffer;
+use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
 use Drupal\purge\Plugin\Purge\Queue\ProxyItem;
 
 /**
@@ -51,7 +51,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   /**
    * The transaction buffer in which invalidation objects temporarily stay.
    *
-   * @var \Drupal\purge\Plugin\Purge\Queue\TxBuffer
+   * @var \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface
    */
   protected $buffer;
 
@@ -67,16 +67,19 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    *   The plugin manager for this service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
+   * @param \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface $purge_queue_txbuffer
+   *   The transaction buffer.
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface $purge_invalidation_factory
    *   The service that instantiates invalidation objects for queue items.
    * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
    *   The purgers service.
    */
-  function __construct(PluginManagerInterface $plugin_manager, ConfigFactoryInterface $config_factory, InvalidationsServiceInterface $purge_invalidation_factory, PurgersServiceInterface $purge_purgers) {
+  function __construct(PluginManagerInterface $plugin_manager, ConfigFactoryInterface $config_factory, TxBufferInterface $purge_queue_txbuffer, InvalidationsServiceInterface $purge_invalidation_factory, PurgersServiceInterface $purge_purgers) {
     $this->pluginManager = $plugin_manager;
     $this->configFactory = $config_factory;
     $this->purgeInvalidationFactory = $purge_invalidation_factory;
     $this->purgePurgers = $purge_purgers;
+    $this->buffer = $purge_queue_txbuffer;
   }
 
   /**
@@ -335,9 +338,6 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
       return;
     }
 
-    // Initialize the transaction buffer.
-    $this->buffer = new TxBuffer();
-
     // Lookup the plugin ID and instantiate the queue.
     $plugin_id = current($this->getPluginsEnabled());
     $this->queue = $this->pluginManager->createInstance($plugin_id);
@@ -395,8 +395,8 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
     parent::reload();
     if (!is_null($this->queue)) {
       $this->commit();
-      $this->buffer->deleteEverything();
     }
+    $this->buffer->deleteEverything();
     $this->configFactory = \Drupal::configFactory();
     $this->queue = NULL;
   }

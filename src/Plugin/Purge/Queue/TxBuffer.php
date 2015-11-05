@@ -39,11 +39,6 @@ class TxBuffer implements TxBufferInterface {
 
   /**
    * {@inheritdoc}
-   */
-  public function __construct() {}
-
-  /**
-   * {@inheritdoc}
    *
    * @see http://php.net/manual/en/countable.count.php
    */

@@ -11,6 +11,14 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 
 /**
  * Describes the transaction buffer.
+ *
+ * \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface derivatives use the
+ * transaction buffer as instance registry for invalidation objects. References
+ * are kept to invalidations and the buffer allows setting properties and queue
+ * specific states. The held object references can be retrieved and deleted.
+ *
+ * What the buffer allows the queue service to do is to reduce actual calls on
+ * the underlying queue backend and by doing so, being a lot more efficient.
  */
 interface TxBufferInterface extends \Countable, \Iterator {
 
@@ -43,17 +51,6 @@ interface TxBufferInterface extends \Countable, \Iterator {
    * Objects in the process of being deleted from the queue.
    */
   const DELETING = 5;
-
-  /**
-   * Constructs the TxBuffer object.
-   *
-   * The transaction buffer is used internally by \Drupal\purge\Plugin\Purge\Queue\QueueService
-   * and holds \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface objects. For each
-   * object, it maintains state and properties about the object in relation to
-   * the queue. This helps \Drupal\purge\Plugin\Purge\Queue\QueueService to commit objects as
-   * rarely and efficiently as possible to its underlying back-end.
-   */
-  public function __construct();
 
   /**
    * Delete the given invalidation object from the buffer.

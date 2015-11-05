@@ -26,7 +26,7 @@ use Drupal\purge_purger_http\Entity\HttpPurgerSettings;
  *   id = "http",
  *   label = @Translation("HTTP"),
  *   configform = "\Drupal\purge_purger_http\Form\ConfigurationForm",
- *   cooldown_time = 0.2,
+ *   cooldown_time = 0.0,
  *   description = @Translation("Generic and highly configurable purger making HTTP requests, best suits custom configurations."),
  *   multi_instance = TRUE,
  *   types = {},
@@ -91,6 +91,13 @@ class HttpPurger extends PurgerBase implements PurgerInterface {
     foreach ($invalidations as $invalidation) {
       $invalidation->setState(InvalidationInterface::FAILED);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCooldownTime() {
+    return $this->settings->cooldown_time;
   }
 
   /**

@@ -73,6 +73,13 @@ class HttpPurgerSettings extends PurgerSettingsBase implements PurgerSettingsInt
   public $connect_timeout = 0.2;
 
   /**
+   * Float between 0.0-3.0 that describes the time to wait after invalidation.
+   *
+   * @var float
+   */
+  public $cooldown_time = 0.0;
+
+  /**
    * Maximum number of HTTP requests that can be made during the runtime of
    * one request (including CLI). The higher this number is set, the more - CLI
    * based - scripts can process but this can also badly influence your end-user

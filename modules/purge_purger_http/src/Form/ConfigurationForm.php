@@ -140,7 +140,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
       '#type' => 'number',
       '#step' => 0.1,
       '#min' => 0.1,
-      '#max' => 8,
+      '#max' => 8.0,
       '#title' => $this->t('Timeout'),
       '#default_value' => $settings->timeout,
       '#required' => TRUE,
@@ -150,11 +150,21 @@ class ConfigurationForm extends PurgerConfigFormBase {
       '#type' => 'number',
       '#step' => 0.1,
       '#min' => 0.1,
-      '#max' => 4,
+      '#max' => 4.0,
       '#title' => $this->t('Connection timeout'),
       '#default_value' => $settings->connect_timeout,
       '#required' => TRUE,
       '#description' => $this->t('Float describing the number of seconds to wait while trying to connect to a server.')
+    ];
+    $form['performance']['cooldown_time'] = [
+      '#type' => 'number',
+      '#step' => 0.1,
+      '#min' => 0.0,
+      '#max' => 3.0,
+      '#title' => $this->t('Cooldown time'),
+      '#default_value' => $settings->cooldown_time,
+      '#required' => TRUE,
+      '#description' => $this->t('Number of seconds to wait after one or more invalidations took place. When you have only one purger, this value can be 0.0.')
     ];
     $form['performance']['max_requests'] = [
       '#type' => 'number',
@@ -222,6 +232,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
     $settings->request_method = $this->request_methods[$form_state->getValue('request_method')];
     $settings->timeout = $form_state->getValue('timeout');
     $settings->connect_timeout = $form_state->getValue('connect_timeout');
+    $settings->cooldown_time = $form_state->getValue('cooldown_time');
     $settings->max_requests = $form_state->getValue('max_requests');
     $settings->save();
   }

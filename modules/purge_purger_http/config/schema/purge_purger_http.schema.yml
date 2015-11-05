@@ -34,6 +34,10 @@ purge_purger_http.settings.*:
       type: float
       label: 'Float describing the number of seconds to wait while trying to connect to a server. Use 0 to wait indefinitely (the default behavior).'
       translatable: false
+    cooldown_time:
+      type: float
+      label: 'Float between 0.0-3.0 that describes the time to wait after invalidation.'
+      translatable: false
     max_requests:
       type: integer
       label: 'Maximum number of HTTP requests that can be made during the runtime of one request (including CLI). The higher this number is set, the more - CLI based - scripts can process but this can also badly influence your end-user performance when using runtime-based queue processors.'

@@ -9,7 +9,6 @@ namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\State\StateInterface;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
@@ -55,13 +54,6 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   protected $purgers;
 
   /**
-   * The state key value store.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
-
-  /**
    * The list of supported invalidation types across all purgers.
    *
    * @var null|string[]
@@ -84,14 +76,11 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    *   The factory for configuration objects.
    * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
    *   The diagnostics service.
-   * @param \Drupal\Core\State\StateInterface $state
-   *   The state key value store.
    */
-  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory, DiagnosticsServiceInterface $purge_diagnostics, StateInterface $state) {
+  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory, DiagnosticsServiceInterface $purge_diagnostics) {
     $this->pluginManager = $pluginManager;
     $this->configFactory = $config_factory;
     $this->purgeDiagnostics = $purge_diagnostics;
-    $this->state = $state;
   }
 
   /**
@@ -100,7 +89,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   public function capacityTracker() {
     if (is_null($this->capacityTracker)) {
       $this->initializePurgers();
-      $this->capacityTracker = new CapacityTracker($this->purgers, $this->state);
+      $this->capacityTracker = new CapacityTracker($this->purgers);
     }
     return $this->capacityTracker;
   }

@@ -85,16 +85,16 @@ but also raise warnings and other diagnostic information. End-users can rely on
 Drupal's status report page where these checks also bubble up.
 
 #### Capacity tracker
-The capacity tracker is the central orchestrator between limited - request
-lifetime - system resources and an ever growing queue of invalidation objects.
+The capacity tracker is the central orchestrator between limited system
+resources and a never-ending queue of cache invalidation items.
 
-The tracker aggregates capacity hints given by loaded purgers and sets
-uniformized purging capacity boundaries. It tracks how much purges are taking
-place - counts successes and failures - and actively protects the set
-limits. This protects end-users against requests exceeding resource limits
-such as maximum execution time and memory exhaustion. At the same time it
-aids queue processors by dynamically giving the number of items that can
-be processed in one go.
+The tracker actively tracks how much items are invalidated during Drupal's
+request lifetime and how much PHP execution time has been spent. With this
+information it can predict how much processing can happen during the rest of
+request lifetime. It is able to predict this since the capacity tracker also
+collects timing estimates from the actual purgers. The intelligence it has
+is used by the queue service and exceeding the limit isn't possible as the
+purgers service refuses to operate when the limits are near zero.
 
 #### Processors
 With queuers adding ``tag`` invalidation objects to the queue, this still leaves

@@ -19,9 +19,9 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
   /**
    * Get the capacity tracker.
    *
-   * Implementations of \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
+   * \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface implementations
    * always hold a single capacity tracker instance. The capacity tracker tracks
-   * runtime resource consumption and maintains activity counters.
+   * runtime resource consumption and predicts capacity information.
    *
    * @return \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface;
    */

@@ -8,7 +8,7 @@
 namespace Drupal\purge\Plugin\Purge\Purger;
 
 /**
- * Describes what the capacity tracking API expects from purger implementations.
+ * Describes what the capacity tracker expects from purger implementations.
  */
 interface PurgerCapacityDataInterface {
 

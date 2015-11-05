@@ -7,45 +7,15 @@
 
 namespace Drupal\purge\Plugin\Purge\Purger;
 
-use Drupal\Core\State\StateInterface;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface;
-use Drupal\purge\Counter\PersistentCounter;
 use Drupal\purge\Counter\Counter;
 
 /**
  * Provides the capacity tracker.
  */
 class CapacityTracker implements CapacityTrackerInterface {
-
-  /**
-   * The counter tracking the amount of failed invalidations.
-   *
-   * @var \Drupal\purge\Counter\PersistentCounterInterface
-   */
-  protected $counterFailed;
-
-  /**
-   * The counter tracking invalidations that were not supported.
-   *
-   * @var \Drupal\purge\Counter\PersistentCounterInterface
-   */
-  protected $counterNotSupported;
-
-  /**
-   * The counter tracking currently active multi-step invalidations.
-   *
-   * @var \Drupal\purge\Counter\PersistentCounterInterface
-   */
-  protected $counterProcessing;
-
-  /**
-   * The counter tracking the amount of succeeded invalidations.
-   *
-   * @var \Drupal\purge\Counter\PersistentCounterInterface
-   */
-  protected $counterSucceeded;
 
   /**
    * Associative array of cooldown times per purger, as int values.
@@ -106,13 +76,6 @@ class CapacityTracker implements CapacityTrackerInterface {
   protected $spentInvalidations;
 
   /**
-   * The state key value store.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
-
-  /**
    * The maximum number of seconds - as a float - it takes each purger to
    * process a single cache invalidation.
    *
@@ -131,41 +94,8 @@ class CapacityTracker implements CapacityTrackerInterface {
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $purgers, StateInterface $state) {
+  public function __construct(array $purgers) {
     $this->purgers = $purgers;
-    $this->state = $state;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function counterFailed() {
-    $this->initializeCounters();
-    return $this->counterFailed;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function counterNotSupported() {
-    $this->initializeCounters();
-    return $this->counterNotSupported;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function counterProcessing() {
-    $this->initializeCounters();
-    return $this->counterProcessing;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function counterSucceeded() {
-    $this->initializeCounters();
-    return $this->counterSucceeded;
   }
 
   /**
@@ -390,33 +320,6 @@ class CapacityTracker implements CapacityTrackerInterface {
       }
     }
     return $this->timeHintTotal;
-  }
-
-  /**
-   * Initialize the persistent counters.
-   */
-  protected function initializeCounters() {
-    if (is_null($this->counterFailed)) {
-
-      // Mapping of counter variables and their state API ID's.
-      $counters = [
-        'counterFailed' => 'purge_counter_failed',
-        'counterSucceeded' => 'purge_counter_succeeded',
-        'counterProcessing' => 'purge_counter_processing',
-        'counterNotSupported' => 'purge_counter_notsupported'];
-      $values = $this->state->getMultiple($counters);
-
-      // Spin up the instances and pass on the state object.
-      foreach ($counters as $counter => $id) {
-        if (isset($values[$id])) {
-          $this->$counter = new PersistentCounter($values[$id]);
-        }
-        else {
-          $this->$counter = new PersistentCounter();
-        }
-        $this->$counter->setStateAndId($this->state, $id);
-      }
-    }
   }
 
   /**

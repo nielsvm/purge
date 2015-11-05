@@ -7,21 +7,19 @@
 
 namespace Drupal\purge\Plugin\Purge\Purger;
 
-use Drupal\Core\State\StateInterface;
-
 /**
  * Describes the capacity tracker.
  *
  * The capacity tracker is the central orchestrator between limited system
- * resources and an ever growing queue of invalidation objects.
+ * resources and a never-ending queue of cache invalidation items.
  *
- * The tracker aggregates capacity hints given by loaded purgers and sets
- * uniformized purging capacity boundaries. It tracks how much purges are taking
- * place - counts successes and failures - and actively protects the set
- * limits. This protects end-users against requests exceeding resource limits
- * such as maximum execution time and memory exhaustion. At the same time it
- * aids queue processors by dynamically giving the number of items that can
- * be processed in one go.
+ * The tracker actively tracks how much items are invalidated during Drupal's
+ * request lifetime and how much PHP execution time has been spent. With this
+ * information it can predict how much processing can happen during the rest of
+ * request lifetime. It is able to predict this since the capacity tracker also
+ * collects timing estimates from the actual purgers. The intelligence it has
+ * is used by the queue service and exceeding the limit isn't possible as the
+ * purgers service refuses to operate when the limits are near zero.
  */
 interface CapacityTrackerInterface {
 
@@ -30,42 +28,8 @@ interface CapacityTrackerInterface {
    *
    * @param \Drupal\purge\Plugin\Purge\Purger\PurgerInterface[] $purgers
    *   All purger plugins instantiated by \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface.
-   * @param \Drupal\Core\State\StateInterface $state
-   *   The state key value store.
    */
-  public function __construct(array $purgers, StateInterface $state);
-
-  /**
-   * Retrieve the counter tracking the amount of failed invalidations.
-   *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
-   *   The counter object.
-   */
-  public function counterFailed();
-
-  /**
-   * Retrieve the counter tracking failed invalidations that were not supported.
-   *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
-   *   The counter object.
-   */
-  public function counterNotSupported();
-
-  /**
-   * Retrieve the counter tracking currently purging multi-step invalidations.
-   *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
-   *   The counter object.
-   */
-  public function counterProcessing();
-
-  /**
-   * Retrieve the counter tracking the amount of succeeded invalidations.
-   *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
-   *   The counter object.
-   */
-  public function counterSucceeded();
+  public function __construct(array $purgers);
 
   /**
    * Get the time in seconds to wait after invalidation for a specific purger.

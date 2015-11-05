@@ -55,6 +55,13 @@ class Tracker implements TrackerInterface {
   protected $cooldownTimes;
 
   /**
+   * The total (theoretic) time all purgers wait after invalidation.
+   *
+   * @var float
+   */
+  protected $cooldownTimeTotal;
+
+  /**
    * The number of invalidations that can be processed under ideal conditions.
    *
    * @var int
@@ -167,7 +174,35 @@ class Tracker implements TrackerInterface {
   }
 
   /**
-   * Iterate all purgers and gather ::getTimeHint() information.
+   * Gather ::getCooldownTime() data by iterating all loaded purgers.
+   */
+  protected function gatherCooldownTimes() {
+    if (is_null($this->cooldownTimes)) {
+     $this->cooldownTimes = [];
+      foreach ($this->purgers as $id => $purger) {
+       $cooldown_time = $purger->getCooldownTime();
+       if (!is_float($cooldown_time)) {
+         $method = sprintf("%s::getCooldownTime()", get_class($purger));
+         throw new BadPluginBehaviorException(
+           "$method did not return a floating point value.");
+       }
+       if ($cooldown_time < 0.0) {
+         $method = sprintf("%s::getCooldownTime()", get_class($purger));
+         throw new BadPluginBehaviorException(
+           "$method returned $cooldown_time, a value lower than 0.0.");
+       }
+       if ($cooldown_time > 3.0) {
+         $method = sprintf("%s::getCooldownTime()", get_class($purger));
+         throw new BadPluginBehaviorException(
+           "$method returned $cooldown_time, a value higher than 3.0.");
+       }
+       $this->cooldownTimes[$id] = $cooldown_time;
+      }
+    }
+  }
+
+  /**
+   * Gather ::getTimeHint() data by iterating all loaded purgers.
    */
   protected function gatherTimeHints() {
     if (is_null($this->timeHints)) {
@@ -203,32 +238,22 @@ class Tracker implements TrackerInterface {
    * {@inheritdoc}
    */
   public function getCooldownTime($purger_instance_id) {
-    if (is_null($this->cooldownTimes)) {
-      $this->cooldownTimes = [];
-      foreach ($this->purgers as $id => $purger) {
-        $cooldown_time = $purger->getCooldownTime();
-        if (!is_float($cooldown_time)) {
-          $method = sprintf("%s::getCooldownTime()", get_class($purger));
-          throw new BadPluginBehaviorException(
-            "$method did not return a floating point value.");
-        }
-        if ($cooldown_time < 0.0) {
-          $method = sprintf("%s::getCooldownTime()", get_class($purger));
-          throw new BadPluginBehaviorException(
-            "$method returned $cooldown_time, a value lower than 0.0.");
-        }
-        if ($cooldown_time > 3.0) {
-          $method = sprintf("%s::getCooldownTime()", get_class($purger));
-          throw new BadPluginBehaviorException(
-            "$method returned $cooldown_time, a value higher than 3.0.");
-        }
-        $this->cooldownTimes[$id] = $cooldown_time;
-      }
-    }
+    $this->gatherCooldownTimes();
     if (!isset($this->cooldownTimes[$purger_instance_id])) {
       throw new BadBehaviorException("Instance id '$purger_instance_id' does not exist!");
     }
     return $this->cooldownTimes[$purger_instance_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCooldownTimeTotal() {
+    if (is_null($this->cooldownTimeTotal)) {
+      $this->gatherCooldownTimes();
+      $this->cooldownTimeTotal = array_sum($this->cooldownTimes);
+    }
+    return $this->cooldownTimeTotal;
   }
 
   /**

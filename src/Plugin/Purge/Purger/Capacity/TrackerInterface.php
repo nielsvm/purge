@@ -110,9 +110,23 @@ interface TrackerInterface {
    * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getCooldownTime()
    *
    * @return float
-   *   The maximum number of seconds - as a float - to wait after invalidation.
+   *   The maximum number of seconds - as float - to wait after invalidation.
    */
   public function getCooldownTime($purger_instance_id);
+
+  /**
+   * Get the time in seconds to wait after invalidation for all purgers.
+   *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException
+   *   Thrown when the returned floating point value is lower than 0.0, higher
+   *   than 3.0 or is not returned as floating point value.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getCooldownTime()
+   *
+   * @return float
+   *   The maximum number of seconds - as float - to wait after invalidation.
+   */
+  public function getCooldownTimeTotal();
 
   /**
    * Get the maximum number of invalidations that can be processed.
@@ -194,7 +208,7 @@ interface TrackerInterface {
    * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getCooldownTime()
    *
    * @return float
-   *   The maximum number of seconds - as a float - it takes this purger to
+   *   The maximum number of seconds - as float - it takes this purger to
    *   process a single cache invalidation.
    */
   public function getTimeHint($purger_instance_id);
@@ -216,7 +230,7 @@ interface TrackerInterface {
    * @see \Drupal\purge\Plugin\Purge\Purger\Capacity\TrackerPurgerInterface::getTimeHint()
    *
    * @return float
-   *   The maximum number of seconds - as a float - it takes all purgers to
+   *   The maximum number of seconds - as float - it takes all purgers to
    *   process a single cache invalidation (regardless of type).
    */
   public function getTimeHintTotal();

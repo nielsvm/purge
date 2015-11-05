@@ -24,7 +24,31 @@ interface CounterInterface {
    * @param bool $set
    *   Whether it is possible to call ::set() or not.
    */
-  public function __construct($value = 0.0, $decrement = TRUE, $increment = TRUE, $set = TRUE);
+  public function __construct($value = 0.0);
+
+  /**
+   * Disable the possibility to decrement the counter.
+   *
+   * @warning
+   *   This works self-destructive! Once called, it cannot be enabled again.
+   */
+  public function disableDecrement();
+
+  /**
+   * Disable the possibility to increment the counter.
+   *
+   * @warning
+   *   This works self-destructive! Once called, it cannot be enabled again.
+   */
+  public function disableIncrement();
+
+  /**
+   * Disable the possibility of setting counter.
+   *
+   * @warning
+   *   This works self-destructive! Once called, it cannot be enabled again.
+   */
+  public function disableSet();
 
   /**
    * Get the current value.

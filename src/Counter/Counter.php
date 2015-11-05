@@ -46,11 +46,29 @@ class Counter implements CounterInterface {
   /**
    * {@inheritdoc}
    */
-  public function __construct($value = 0.0, $decrement = TRUE, $increment = TRUE, $set = TRUE) {
+  public function __construct($value = 0.0) {
     $this->set($value);
-    $this->permission_decrement = $decrement;
-    $this->permission_increment = $increment;
-    $this->permission_set = $set;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function disableDecrement() {
+    $this->permission_decrement = FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function disableIncrement() {
+    $this->permission_increment = FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function disableSet() {
+    $this->permission_set = FALSE;
   }
 
   /**

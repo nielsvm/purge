@@ -11,18 +11,22 @@ use Drupal\Core\State\StateInterface;
 use Drupal\purge\Counter\CounterInterface;
 
 /**
- * Describes a numeric counter stored in state storage.
+ * Describes a numeric counter that can be stored elsewhere.
  */
 interface PersistentCounterInterface extends CounterInterface {
 
   /**
-   * Inject the state API and its storage key.
+   * Set the callback that gets called when writes occur.
    *
-   * @param \Drupal\Core\State\StateInterface $state
-   *   The state key value store.
+   * The callback is called every time the counter changes value. The first
+   * parameter passed to the callback is the given $id parameter and the second
+   * parameter is the new value of the counter.
+   *
    * @param string $id
    *   A unique identifier which describes this counter.
+   * @param callable $callback
+   *   Any PHP callable.
    */
-  public function setStateAndId(StateInterface $state, $id);
+  public function setWriteCallback($id, callable $callback);
 
 }

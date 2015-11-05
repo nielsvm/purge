@@ -17,32 +17,33 @@ use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
 class StatsTracker implements StatsTrackerInterface {
 
   /**
-   * The counter tracking the amount of failed invalidations.
+   * Buffer of values that need to be written back to state storage. Items
+   * present in the buffer take priority over state data.
    *
-   * @var \Drupal\purge\Counter\PersistentCounterInterface
+   * @var float[]
    */
-  protected $counterFailed;
+  protected $buffer = [];
 
   /**
-   * The counter tracking invalidations that were not supported.
+   * The counter tracking how many invalidations are claimed right now.
    *
    * @var \Drupal\purge\Counter\PersistentCounterInterface
    */
-  protected $counterNotSupported;
+  protected $claimed;
 
   /**
-   * The counter tracking currently active multi-step invalidations.
+   * The counter tracking how many invalidations have been deleted.
    *
    * @var \Drupal\purge\Counter\PersistentCounterInterface
    */
-  protected $counterProcessing;
+  protected $deleted;
 
   /**
-   * The counter tracking the amount of succeeded invalidations.
+   * The counter tracking the total amount of invalidations in the queue.
    *
    * @var \Drupal\purge\Counter\PersistentCounterInterface
    */
-  protected $counterSucceeded;
+  protected $total;
 
   /**
    * The state key value store.
@@ -52,6 +53,17 @@ class StatsTracker implements StatsTrackerInterface {
   protected $state;
 
   /**
+   * Mapping of counter objects and state key names.
+   *
+   * @var string[]
+   */
+  protected $stateKeys = [
+    'claimed' => 'purge_queue_claimed',
+    'deleted' => 'purge_queue_deleted',
+    'total' => 'purge_queue_total',
+  ];
+
+  /**
    * Construct a statistics tracker.
    *
    * @param \Drupal\Core\State\StateInterface $state
@@ -59,72 +71,77 @@ class StatsTracker implements StatsTrackerInterface {
    */
   public function __construct(StateInterface $state) {
     $this->state = $state;
+    $this->initializeCounters();
+  }
+
+  /**
+   * Intialize or reinitialize the counter objects.
+   */
+  protected function initializeCounters() {
+
+    // Prefetch counter values from either the local buffer or the state API.
+    $values = $this->state->getMultiple($this->stateKeys);
+    foreach ($this->stateKeys as $counter => $key) {
+      if (isset($this->buffer[$key])) {
+        $values[$key] = $this->buffer[$key];
+      }
+      if (!isset($values[$key])) {
+        $values[$key] = 0;
+      }
+
+      // Instantiate (or overwrite) the counter objects and pass a closure as
+      // write callback. The closure writes changed values to $this->buffer.
+      $this->$counter = new PersistentCounter($values[$key]);
+      $this->$counter->disableSet();
+      $this->$counter->setWriteCallback($key, function($id, $value) {
+        $this->buffer[$id] = $value;
+      });
+    }
+
+    // As deleted and total can only increase, disable decrementing on them.
+    $this->deleted->disableDecrement();
+    $this->total->disableDecrement();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function counterFailed() {
-    $this->initializeCounters();
-    return $this->counterFailed;
+  public function claimed() {
+    return $this->claimed;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function counterNotSupported() {
-    $this->initializeCounters();
-    return $this->counterNotSupported;
+  public function deleted() {
+    return $this->deleted;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function counterProcessing() {
-    $this->initializeCounters();
-    return $this->counterProcessing;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function counterSucceeded() {
-    $this->initializeCounters();
-    return $this->counterSucceeded;
+  public function total() {
+    return $this->total;
   }
 
   /**
    * {@inheritdoc}
    */
   public function destruct() {
-    // to be implemented.
+
+    // When the buffer contains changes, write them to the state API in one go.
+    if (count($this->buffer)) {
+      $this->state->setMultiple($this->buffer);
+    }
   }
 
   /**
-   * Initialize the persistent counters.
+   * Wipe all statistics data.
    */
-  protected function initializeCounters() {
-    if (is_null($this->counterFailed)) {
-
-      // Mapping of counter variables and their state API ID's.
-      $counters = [
-        'counterFailed' => 'purge_counter_failed',
-        'counterSucceeded' => 'purge_counter_succeeded',
-        'counterProcessing' => 'purge_counter_processing',
-        'counterNotSupported' => 'purge_counter_notsupported'];
-      $values = $this->state->getMultiple($counters);
-
-      // Spin up the instances and pass on the state object.
-      foreach ($counters as $counter => $id) {
-        if (isset($values[$id])) {
-          $this->$counter = new PersistentCounter($values[$id]);
-        }
-        else {
-          $this->$counter = new PersistentCounter();
-        }
-        $this->$counter->setStateAndId($this->state, $id);
-      }
-    }
+  public function wipe() {
+    $this->buffer = [];
+    $this->state->deleteMultiple($this->stateKeys);
+    $this->initializeCounters();
   }
 
   /**

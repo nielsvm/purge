@@ -100,6 +100,13 @@ purge_ui.queuer_add_form:
     _controller: '\Drupal\purge_ui\Controller\QueuerFormController::addForm'
   requirements:
     _permission: 'administer site configuration'
+purge_ui.queuer_detail_form:
+  path: '/admin/config/development/performance/purge/queuer/{id}'
+  defaults:
+    _controller: '\Drupal\purge_ui\Controller\QueuerFormController::detailForm'
+    _title_callback: '\Drupal\purge_ui\Controller\QueuerFormController::detailFormTitle'
+  requirements:
+    _permission: 'administer site configuration'
 purge_ui.queuer_config_form:
   path: '/admin/config/development/performance/purge/queuer/{id}/config'
   defaults:

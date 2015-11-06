@@ -13,9 +13,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
 
 /**
- * Controller for:
- *  - \Drupal\purge_ui\Form\QueuerDeleteForm.
- *  - \Drupal\purge_ui\Form\QueuerAddForm.
+ * Controller for queuer configuration forms.
  */
 class QueuerFormController extends ControllerBase {
 
@@ -128,6 +126,37 @@ class QueuerFormController extends ControllerBase {
       return $this->t('Delete @label', ['@label' => $label]);
     }
     return $this->t('Delete');
+  }
+
+  /**
+   * Render the queuer detail form.
+   *
+   * @param string $id
+   *   The plugin id of the queuer to retrieve.
+   *
+   * @return array
+   */
+  public function detailForm($id) {
+    if ($this->purgeQueuers->isPluginEnabled($id)) {
+      return $this->formBuilder()->getForm(
+        "\Drupal\purge_ui\Form\PluginDetailsForm",
+        ['details' => $this->purgeQueuers->getPlugins()[$id]['description']]
+      );
+    }
+    throw new NotFoundHttpException();
+  }
+
+  /**
+   * Route title callback.
+   *
+   * @param string $id
+   *   The plugin id of the queuer to retrieve.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   *   The page title.
+   */
+  public function detailFormTitle($id) {
+    return $this->purgeQueuers->getPlugins()[$id]['label'];
   }
 
 }

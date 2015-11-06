@@ -155,19 +155,25 @@ class PurgerFormController extends ControllerBase {
   }
 
   /**
-   * Route title callback.
+   * Render the purger move form.
    *
    * @param string $id
    *   Unique instance ID for the purger instance.
+   * @param string $direction
+   *   Either 'up' or 'down' are valid directions to move execution order in.
    *
-   * @return \Drupal\Core\StringTranslation\TranslationWrapper
-   *   The page title.
+   * @return array
    */
-  public function deleteFormTitle($id) {
+  public function moveForm($id, $direction) {
     if ($definition = $this->getPurgerPluginDefinition($id)) {
-      return $this->t('Delete @label', ['@label' => $definition['label']]);
+      if (in_array($direction, ['up', 'down'])) {
+        return $this->formBuilder()->getForm(
+          "\Drupal\purge_ui\Form\PurgerMoveForm",
+          ['id' => $id, 'direction' => $direction, 'definition' => $definition]
+        );
+      }
     }
-    return $this->t('Delete');
+    throw new NotFoundHttpException();
   }
 
 }

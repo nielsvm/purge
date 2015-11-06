@@ -32,7 +32,21 @@ purge_ui.purger_delete_form:
   path: '/admin/config/development/performance/purge/purger/{id}/delete'
   defaults:
     _controller: '\Drupal\purge_ui\Controller\PurgerFormController::deleteForm'
-    _title_callback: '\Drupal\purge_ui\Controller\PurgerFormController::deleteFormTitle'
+  requirements:
+    _permission: 'administer site configuration'
+purge_ui.purger_move_down_form:
+  path: '/admin/config/development/performance/purge/purger/{id}/down'
+  defaults:
+    _controller: '\Drupal\purge_ui\Controller\PurgerFormController::moveForm'
+    _title_callback: '\Drupal\purge_ui\Controller\PurgerFormController::moveFormTitle'
+    direction: 'down'
+  requirements:
+    _permission: 'administer site configuration'
+purge_ui.purger_move_up_form:
+  path: '/admin/config/development/performance/purge/purger/{id}/up'
+  defaults:
+    _controller: '\Drupal\purge_ui\Controller\PurgerFormController::moveForm'
+    direction: 'up'
   requirements:
     _permission: 'administer site configuration'
 purge_ui.processor_config_form:

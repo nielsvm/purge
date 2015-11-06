@@ -13,9 +13,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
 
 /**
- * Controller for:
- *  - \Drupal\purge_ui\Form\ProcessorDeleteForm.
- *  - \Drupal\purge_ui\Form\ProcessorAddForm.
+ * Controller for processor configuration forms.
  */
 class ProcessorFormController extends ControllerBase {
 
@@ -128,6 +126,37 @@ class ProcessorFormController extends ControllerBase {
       return $this->t('Delete @label', ['@label' => $label]);
     }
     return $this->t('Delete');
+  }
+
+  /**
+   * Render the processor detail form.
+   *
+   * @param string $id
+   *   The plugin id of the processor to retrieve.
+   *
+   * @return array
+   */
+  public function detailForm($id) {
+    if ($this->purgeProcessors->isPluginEnabled($id)) {
+      return $this->formBuilder()->getForm(
+        "\Drupal\purge_ui\Form\PluginDetailsForm",
+        ['details' => $this->purgeProcessors->getPlugins()[$id]['description']]
+      );
+    }
+    throw new NotFoundHttpException();
+  }
+
+  /**
+   * Route title callback.
+   *
+   * @param string $id
+   *   The plugin id of the processor to retrieve.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   *   The page title.
+   */
+  public function detailFormTitle($id) {
+    return $this->purgeProcessors->getPlugins()[$id]['label'];
   }
 
 }

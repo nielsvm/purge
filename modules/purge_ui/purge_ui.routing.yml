@@ -63,6 +63,13 @@ purge_ui.processor_add_form:
     _controller: '\Drupal\purge_ui\Controller\ProcessorFormController::addForm'
   requirements:
     _permission: 'administer site configuration'
+purge_ui.processor_detail_form:
+  path: '/admin/config/development/performance/purge/processor/{id}'
+  defaults:
+    _controller: '\Drupal\purge_ui\Controller\ProcessorFormController::detailForm'
+    _title_callback: '\Drupal\purge_ui\Controller\ProcessorFormController::detailFormTitle'
+  requirements:
+    _permission: 'administer site configuration'
 purge_ui.processor_config_form:
   path: '/admin/config/development/performance/purge/processor/{id}/config'
   defaults:

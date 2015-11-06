@@ -142,13 +142,16 @@ class PurgerFormController extends ControllerBase {
    * @return array
    */
   public function deleteForm($id) {
-    if ($definition = $this->getPurgerPluginDefinition($id)) {
-      return $this->formBuilder()->getForm(
-        "\Drupal\purge_ui\Form\PurgerDeleteForm",
-        ['id' => $id, 'definition' => $definition]
-      );
+    // Although it might look like a logic bug that we aren't checking whether
+    // the ID exists and always return the form, this is a must. Else submitting
+    // the form never works as the purger has been deleted before.
+    if (!($definition = $this->getPurgerPluginDefinition($id))) {
+      $definition = ['label' => ''];
     }
-    throw new NotFoundHttpException();
+    return $this->formBuilder()->getForm(
+      "\Drupal\purge_ui\Form\PurgerDeleteForm",
+      ['id' => $id, 'definition' => $definition]
+    );
   }
 
   /**

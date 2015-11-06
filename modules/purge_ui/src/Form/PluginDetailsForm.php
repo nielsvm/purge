@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Form\PurgerDetailForm.
+ * Contains \Drupal\purge_ui\Form\PluginDetailsForm.
  */
 
 namespace Drupal\purge_ui\Form;
@@ -12,9 +12,9 @@ use Drupal\Core\Form\FormBase;
 use Drupal\purge_ui\Form\CloseDialogTrait;
 
 /**
- * Show more information on purger {id}.
+ * Render plugin details.
  */
-class PurgerDetailForm extends FormBase {
+class PluginDetailsForm extends FormBase {
   use CloseDialogTrait;
 
   /**
@@ -28,16 +28,17 @@ class PurgerDetailForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormID() {
-    return 'purge_ui.purger_detail_form';
+    return 'purge_ui.plugin_details_form';
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $definition = $form_state->getBuildInfo()['args'][0]['definition'];
     $form['description'] = [
-      '#markup' => $definition['description']
+      '#prefix' => '<h3>',
+      '#markup' => $form_state->getBuildInfo()['args'][0]['details'],
+      '#suffix' => '</h3>',
     ];
 
     // Set dialog code and add the close button.
@@ -45,6 +46,7 @@ class PurgerDetailForm extends FormBase {
     $form['actions'] = ['#type' => 'actions'];
     $form['actions']['close'] = [
       '#type' => 'submit',
+      '#button_type' => 'primary',
       '#value' => $this->t('Close'),
       '#weight' => -10,
       '#ajax' => ['callback' => '::closeDialog']

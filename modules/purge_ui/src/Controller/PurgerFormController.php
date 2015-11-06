@@ -13,15 +13,11 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 
 /**
- * Controller for forms working with purgers that are enabled, e.g.:
- *   - \Drupal\purge_ui\Form\PurgerDeleteForm
- *   - \Drupal\purge_ui\Form\PurgerConfigFormBase derivatives.
+ * Controller for purger configuration forms.
  */
 class PurgerFormController extends ControllerBase {
 
   /**
-   * The purge executive service, which wipes content from external caches.
-   *
    * @var \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
    */
   protected $purgePurgers;
@@ -165,8 +161,8 @@ class PurgerFormController extends ControllerBase {
   public function detailForm($id) {
     if ($definition = $this->getPurgerPluginDefinition($id)) {
       return $this->formBuilder()->getForm(
-        "\Drupal\purge_ui\Form\PurgerDetailForm",
-        ['definition' => $definition]
+        "\Drupal\purge_ui\Form\PluginDetailsForm",
+        ['details' => $definition['description']]
       );
     }
     throw new NotFoundHttpException();

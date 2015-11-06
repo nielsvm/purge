@@ -17,7 +17,6 @@ purge_ui.purger_detail_form:
   defaults:
     _controller: '\Drupal\purge_ui\Controller\PurgerFormController::detailForm'
     _title_callback: '\Drupal\purge_ui\Controller\PurgerFormController::detailFormTitle'
-    dialog: TRUE
   requirements:
     _permission: 'administer site configuration'
 purge_ui.purger_config_form:

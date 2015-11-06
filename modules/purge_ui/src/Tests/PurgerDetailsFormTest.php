@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\PurgerDetailFormTest.
+ * Contains \Drupal\purge_ui\Tests\PurgerDetailsFormTest.
  */
 
 namespace Drupal\purge_ui\Tests;
@@ -11,11 +11,14 @@ use Drupal\Core\Url;
 use Drupal\purge\Tests\WebTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Form\PurgerDetailForm.
+ * Tests:
+ *   - \Drupal\purge_ui\Form\PluginDetailsForm.
+ *   - \Drupal\purge_ui\Controller\PurgerFormController::detailForm().
+ *   - \Drupal\purge_ui\Controller\PurgerFormController::detailFormTitle().
  *
  * @group purge_ui
  */
-class PurgerDetailFormTest extends WebTestBase {
+class PurgerDetailsFormTest extends WebTestBase {
 
   /**
    * @var \Drupal\user\Entity\User
@@ -61,7 +64,7 @@ class PurgerDetailFormTest extends WebTestBase {
   }
 
   /**
-   * Tests that the "No" cancel button works and that content exists.
+   * Tests that the close button works and that content exists.
    *
    * @see \Drupal\purge_ui\Form\PurgerDetailForm::buildForm
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog

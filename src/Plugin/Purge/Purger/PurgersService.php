@@ -387,4 +387,66 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
       ->increment(microtime(TRUE) - $execution_time_start);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function movePurgerDown($purger_instance_id) {
+    $enabled = $this->getPluginsEnabled();
+    if (!isset($enabled[$purger_instance_id])) {
+      throw new BadBehaviorException("Instance id '$purger_instance_id' is not enabled!");
+    }
+
+    // Build a numerically ordered copy of the enabled plugins array and put
+    // only even numbers in. Then move $purger_instance_id in the odd spot down.
+    $ordered = [];
+    foreach ($enabled as $instance_id => $plugin_id) {
+      $index = isset($index) ? $index+2 : 0;
+      if ($instance_id === $purger_instance_id) {
+        $ordered[$index+3] = [$instance_id, $plugin_id];
+      }
+      else {
+        $ordered[$index] = [$instance_id, $plugin_id];
+      }
+    }
+
+    // Sort the array on key and rebuild the original array, reordered.
+    ksort($ordered);
+    $enabled = [];
+    foreach ($ordered as $inst) {
+      $enabled[$inst[0]] = $inst[1];
+    }
+    $this->setPluginsEnabled($enabled);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function movePurgerUp($purger_instance_id) {
+    $enabled = $this->getPluginsEnabled();
+    if (!isset($enabled[$purger_instance_id])) {
+      throw new BadBehaviorException("Instance id '$purger_instance_id' is not enabled!");
+    }
+
+    // Build a numerically ordered copy of the enabled plugins array and put
+    // only even numbers in. Then move $purger_instance_id in the odd spot up.
+    $ordered = [];
+    foreach ($enabled as $instance_id => $plugin_id) {
+      $index = isset($index) ? $index+2 : 0;
+      if ($instance_id === $purger_instance_id) {
+        $ordered[$index-3] = [$instance_id, $plugin_id];
+      }
+      else {
+        $ordered[$index] = [$instance_id, $plugin_id];
+      }
+    }
+
+    // Sort the array on key and rebuild the original array, reordered.
+    ksort($ordered);
+    $enabled = [];
+    foreach ($ordered as $inst) {
+      $enabled[$inst[0]] = $inst[1];
+    }
+    $this->setPluginsEnabled($enabled);
+  }
+
 }

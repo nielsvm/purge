@@ -131,4 +131,34 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
    */
   public function invalidate(array $invalidations);
 
+  /**
+   * Move the purger instance down in the plugin execution order.
+   *
+   * @param string $purger_instance_id
+   *   The instance ID of the purger that should move one place down.
+   *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
+   *   Thrown when $purger_instance_id is not enabled or does not exist.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::setPluginsEnabled()
+   *
+   * @return void
+   */
+  public function movePurgerDown($purger_instance_id);
+
+  /**
+   * Move the purger instance up in the plugin execution order.
+   *
+   * @param string $purger_instance_id
+   *   The instance ID of the purger that should move one place up.
+   *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
+   *   Thrown when $purger_instance_id is not enabled or does not exist.
+   *
+   * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::setPluginsEnabled()
+   *
+   * @return void
+   */
+  public function movePurgerUp($purger_instance_id);
+
 }

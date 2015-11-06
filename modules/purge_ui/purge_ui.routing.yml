@@ -12,8 +12,16 @@ purge_ui.purger_add_form:
     _controller: '\Drupal\purge_ui\Controller\PurgerFormController::addForm'
   requirements:
     _permission: 'administer site configuration'
-purge_ui.purger_config_form:
+purge_ui.purger_detail_form:
   path: '/admin/config/development/performance/purge/purger/{id}'
+  defaults:
+    _controller: '\Drupal\purge_ui\Controller\PurgerFormController::detailForm'
+    _title_callback: '\Drupal\purge_ui\Controller\PurgerFormController::detailFormTitle'
+    dialog: TRUE
+  requirements:
+    _permission: 'administer site configuration'
+purge_ui.purger_config_form:
+  path: '/admin/config/development/performance/purge/purger/{id}/config'
   defaults:
     _controller: '\Drupal\purge_ui\Controller\PurgerFormController::configForm'
     _title_callback: '\Drupal\purge_ui\Controller\PurgerFormController::configFormTitle'
@@ -21,7 +29,7 @@ purge_ui.purger_config_form:
   requirements:
     _permission: 'administer site configuration'
 purge_ui.purger_config_dialog_form:
-  path: '/admin/config/development/performance/purge/purger/{id}/dialog'
+  path: '/admin/config/development/performance/purge/purger/{id}/config/dialog'
   defaults:
     _controller: '\Drupal\purge_ui\Controller\PurgerFormController::configForm'
     _title_callback: '\Drupal\purge_ui\Controller\PurgerFormController::configFormTitle'
@@ -49,8 +57,15 @@ purge_ui.purger_move_up_form:
     direction: 'up'
   requirements:
     _permission: 'administer site configuration'
+purge_ui.processor_add_form:
+  path: '/admin/config/development/performance/purge/processor/add'
+  defaults:
+    _title: 'Which processor would you like to add?'
+    _controller: '\Drupal\purge_ui\Controller\ProcessorFormController::addForm'
+  requirements:
+    _permission: 'administer site configuration'
 purge_ui.processor_config_form:
-  path: '/admin/config/development/performance/purge/processor/{id}'
+  path: '/admin/config/development/performance/purge/processor/{id}/config'
   defaults:
     _controller: '\Drupal\purge_ui\Controller\ProcessorFormController::configForm'
     _title_callback: '\Drupal\purge_ui\Controller\ProcessorFormController::configFormTitle'
@@ -58,18 +73,11 @@ purge_ui.processor_config_form:
   requirements:
     _permission: 'administer site configuration'
 purge_ui.processor_config_dialog_form:
-  path: '/admin/config/development/performance/purge/processor/{id}/dialog'
+  path: '/admin/config/development/performance/purge/processor/{id}/config/dialog'
   defaults:
     _controller: '\Drupal\purge_ui\Controller\ProcessorFormController::configForm'
     _title_callback: '\Drupal\purge_ui\Controller\ProcessorFormController::configFormTitle'
     dialog: TRUE
-  requirements:
-    _permission: 'administer site configuration'
-purge_ui.processor_add_form:
-  path: '/admin/config/development/performance/purge/processor/add'
-  defaults:
-    _title: 'Which processor would you like to add?'
-    _controller: '\Drupal\purge_ui\Controller\ProcessorFormController::addForm'
   requirements:
     _permission: 'administer site configuration'
 purge_ui.processor_delete_form:
@@ -79,8 +87,15 @@ purge_ui.processor_delete_form:
     _title_callback: '\Drupal\purge_ui\Controller\ProcessorFormController::deleteFormTitle'
   requirements:
     _permission: 'administer site configuration'
+purge_ui.queuer_add_form:
+  path: '/admin/config/development/performance/purge/queuer/add'
+  defaults:
+    _title: 'Which queuer would you like to add?'
+    _controller: '\Drupal\purge_ui\Controller\QueuerFormController::addForm'
+  requirements:
+    _permission: 'administer site configuration'
 purge_ui.queuer_config_form:
-  path: '/admin/config/development/performance/purge/queuer/{id}'
+  path: '/admin/config/development/performance/purge/queuer/{id}/config'
   defaults:
     _controller: '\Drupal\purge_ui\Controller\QueuerFormController::configForm'
     _title_callback: '\Drupal\purge_ui\Controller\QueuerFormController::configFormTitle'
@@ -88,18 +103,11 @@ purge_ui.queuer_config_form:
   requirements:
     _permission: 'administer site configuration'
 purge_ui.queuer_config_dialog_form:
-  path: '/admin/config/development/performance/purge/queuer/{id}/dialog'
+  path: '/admin/config/development/performance/purge/queuer/{id}/config/dialog'
   defaults:
     _controller: '\Drupal\purge_ui\Controller\QueuerFormController::configForm'
     _title_callback: '\Drupal\purge_ui\Controller\QueuerFormController::configFormTitle'
     dialog: TRUE
-  requirements:
-    _permission: 'administer site configuration'
-purge_ui.queuer_add_form:
-  path: '/admin/config/development/performance/purge/queuer/add'
-  defaults:
-    _title: 'Which queuer would you like to add?'
-    _controller: '\Drupal\purge_ui\Controller\QueuerFormController::addForm'
   requirements:
     _permission: 'administer site configuration'
 purge_ui.queuer_delete_form:

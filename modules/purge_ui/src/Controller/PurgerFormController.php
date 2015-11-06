@@ -155,6 +155,37 @@ class PurgerFormController extends ControllerBase {
   }
 
   /**
+   * Render the purger detail form.
+   *
+   * @param string $id
+   *   Unique instance ID for the purger instance.
+   *
+   * @return array
+   */
+  public function detailForm($id) {
+    if ($definition = $this->getPurgerPluginDefinition($id)) {
+      return $this->formBuilder()->getForm(
+        "\Drupal\purge_ui\Form\PurgerDetailForm",
+        ['definition' => $definition]
+      );
+    }
+    throw new NotFoundHttpException();
+  }
+
+  /**
+   * Route title callback.
+   *
+   * @param string $id
+   *   Unique instance ID for the purger instance.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   *   The page title.
+   */
+  public function detailFormTitle($id) {
+    return $this->purgePurgers->getLabels()[$id];
+  }
+
+  /**
    * Render the purger move form.
    *
    * @param string $id

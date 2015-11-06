@@ -115,6 +115,7 @@ class ConfigForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $form['#attached']['library'][] = 'core/drupal.ajax';
     $form['info'] = [
       '#type' => 'item',
       '#markup' => $this->t('When content on your website changes, your purge setup will take care of refreshing external caching systems and CDNs.'),
@@ -394,26 +395,26 @@ class ConfigForm extends FormBase {
     $enabledlabels = $this->purgePurgers->getLabels();
     $types_by_purger = $this->purgePurgers->getTypesByPurger();
 
-    // Include the ajax library as we'll need it.
-    $form['#attached']['library'][] = 'core/drupal.ajax';
+    // Define the main form section and the closures we use for the buttons.
     $form['purgers'] = [
       '#description' => '<p>' . $this->t('Purgers are provided by third-party modules and clear content from external caching systems.') . '</p>',
       '#type' => 'details',
       '#title' => $this->t('Purgers'),
       '#open' => (!count($enabled) || $this->getRequest()->get('edit-purgers', FALSE)),
     ];
+    $add_delete_link = function(&$links, $id, $definition) {
+      $links['delete'] = $this->getDialogButton($this->t("Delete"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]));
+    };
+    $add_configure_link = function(&$links, $id, $definition) {
+      if (isset($definition['configform']) && !empty($definition['configform'])) {
+        $url = Url::fromRoute('purge_ui.purger_config_dialog_form', ['id' => $id]);
+        $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
+      }
+    };
 
     // If purgers have been enabled, we build up a type-purgers matrix table.
     if (count($enabled)) {
-      $add_delete_link = function(&$links, $id, $definition) {
-        $links['delete'] = $this->getDialogButton($this->t("Delete"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]));
-      };
-      $add_configure_link = function(&$links, $id, $definition) {
-        if (isset($definition['configform']) && !empty($definition['configform'])) {
-          $url = Url::fromRoute('purge_ui.purger_config_dialog_form', ['id' => $id]);
-          $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
-        }
-      };
+
       $form['purgers']['table'] = [
         '#type' => 'table',
         '#responsive' => TRUE,

@@ -18,10 +18,10 @@ use Drupal\purge_ui\Form\ReloadConfigFormCommand;
 /**
  * Provides a base class for (dialog-driven) plugin configuration forms.
  *
- * Derived forms will be rendered by purge_ui as modal dialogs through links
- * pointing at /admin/config/development/performance/purge/PLUGIN/ID/dialog. You
- * can use /admin/config/development/performance/purge/PLUGIN/ID as testing
- * variant that works without the modal dialog.
+ * Derived forms will be rendered by purge_ui as modal dialogs through links at
+ * /admin/config/development/performance/purge/PLUGIN/ID/config/dialog. You
+ * can use /admin/config/development/performance/purge/PLUGIN/config/ID as
+ * testing variant that works outside modal dialogs.
  */
 abstract class PluginConfigFormBase extends ConfigFormBase {
   use CloseDialogTrait;

@@ -49,9 +49,9 @@ class ConfigFormPurgersTest extends ConfigFormTestBase {
     $this->drupalGet($this->route);
     $this->assertRaw('<th title="Test purger A." class="priority-medium">Purger A</th>');
     $this->assertRaw('<th title="Test purger with a form attached." class="priority-medium">Configurable purger</th>');
-    $this->assertNoRaw('href="/admin/config/development/performance/purge/purger/id0/dialog"');
+    $this->assertNoRaw('href="/admin/config/development/performance/purge/purger/id0/config/dialog"');
     $this->assertRaw('href="/admin/config/development/performance/purge/purger/id0/delete"');
-    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id1/dialog"');
+    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id1/config/dialog"');
     $this->assertRaw('href="/admin/config/development/performance/purge/purger/id1/delete"');
     // Assert that the purger-type supportability matrix shows the checkmarks.
     $padding = str_repeat(' ', 22);

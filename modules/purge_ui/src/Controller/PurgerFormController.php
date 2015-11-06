@@ -142,16 +142,13 @@ class PurgerFormController extends ControllerBase {
    * @return array
    */
   public function deleteForm($id) {
-    if (!($definition = $this->getPurgerPluginDefinition($id))) {
-      $definition = ['label' => ''];
+    if ($definition = $this->getPurgerPluginDefinition($id)) {
+      return $this->formBuilder()->getForm(
+        "\Drupal\purge_ui\Form\PurgerDeleteForm",
+        ['id' => $id, 'definition' => $definition]
+      );
     }
-    return $this->formBuilder()->getForm(
-      "\Drupal\purge_ui\Form\PurgerDeleteForm",
-      [
-        'id' => $id,
-        'definition' => $definition
-      ]
-    );
+    throw new NotFoundHttpException();
   }
 
   /**

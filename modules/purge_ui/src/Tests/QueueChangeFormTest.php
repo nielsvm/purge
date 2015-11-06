@@ -48,7 +48,6 @@ class QueueChangeFormTest extends WebTestBase {
    * Tests permissions, the form controller and general form returning.
    */
   public function testAccess() {
-    $this->initializeQueueService('a');
     $this->drupalGet(Url::fromRoute($this->route, []));
     $this->assertResponse(403);
     $this->drupalLogin($this->admin_user);
@@ -63,7 +62,6 @@ class QueueChangeFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testChangeForm() {
-    $this->initializeQueueService('a');
     $this->drupalLogin($this->admin_user);
     $this->drupalGet(Url::fromRoute($this->route, []));
     // Assert some of the page presentation.
@@ -72,8 +70,8 @@ class QueueChangeFormTest extends WebTestBase {
     $this->assertRaw('Description');
     $this->assertRaw('Cancel');
     $this->assertRaw('Change');
-    // Assert that 'a' is selected queue.
-    $this->assertFieldChecked('edit-plugin-id-a');
+    // Assert that 'memory' is selected queue.
+    $this->assertFieldChecked('edit-plugin-id-memory');
     // Assert that submitting a different queue changes it.
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, [])->toString(), [], ['op' => t('Change'), 'plugin_id' => 'b']);
     $this->assertEqual('closeDialog', $json[1]['command']);

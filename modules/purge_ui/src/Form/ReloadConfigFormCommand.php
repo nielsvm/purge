@@ -23,7 +23,7 @@ class ReloadConfigFormCommand extends RedirectCommand implements CommandInterfac
    *
    * @var string
    */
-  protected $route = 'purge_ui.config_form';
+  protected $route = 'purge_ui.dashboard';
 
   /**
    * Constructs an ReloadConfigFormCommand object.

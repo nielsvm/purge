@@ -75,14 +75,14 @@ interface DiagnosticCheckInterface extends PluginInspectionInterface, ContainerF
   /**
    * Gets the title of the check.
    *
-   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    */
   public function getTitle();
 
   /**
    * Gets the description of the check.
    *
-   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    */
   public function getDescription();
 
@@ -109,14 +109,14 @@ interface DiagnosticCheckInterface extends PluginInspectionInterface, ContainerF
   /**
    * Get a recommendation matching the severity level, may return NULL.
    *
-   * @return NULL or \Drupal\Core\StringTranslation\TranslationWrapper
+   * @return NULL or \Drupal\Core\StringTranslation\TranslatableMarkup
    */
   public function getRecommendation();
 
   /**
    * Get an optional value for the check output, may return NULL.
    *
-   * @return NULL or \Drupal\Core\StringTranslation\TranslationWrapper
+   * @return NULL or \Drupal\Core\StringTranslation\TranslatableMarkup
    */
   public function getValue();
 

@@ -48,14 +48,14 @@ class QueueFormController extends ControllerBase {
     $id = current($this->purgeQueue->getPluginsEnabled());
     return $this->formBuilder()->getForm(
       "\Drupal\purge_ui\Form\PluginDetailsForm",
-      ['details' => $this->purgeQueue->getPlugins()[$id]['description']]
+      ['details' => $this->purgeQueue->getDescription()]
     );
   }
 
   /**
    * Route title callback.
    *
-   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The page title.
    */
   public function detailFormTitle() {

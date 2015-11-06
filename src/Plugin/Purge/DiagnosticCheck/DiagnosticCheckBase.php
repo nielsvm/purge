@@ -20,14 +20,14 @@ abstract class DiagnosticCheckBase extends PluginBase implements DiagnosticCheck
   /**
    * The title of the check as described in the plugin's metadata.
    *
-   * @var \Drupal\Core\StringTranslation\TranslationWrapper
+   * @var \Drupal\Core\StringTranslation\TranslatableMarkup
    */
   private $title;
 
   /**
    * The description of the check as described in the plugin's metadata.
    *
-   * @var \Drupal\Core\StringTranslation\TranslationWrapper
+   * @var \Drupal\Core\StringTranslation\TranslatableMarkup
    */
   private $description;
 
@@ -45,7 +45,7 @@ abstract class DiagnosticCheckBase extends PluginBase implements DiagnosticCheck
   /**
    * A recommendation matching the severity level, may contain NULL.
    *
-   * @var \Drupal\Core\StringTranslation\TranslationWrapper
+   * @var \Drupal\Core\StringTranslation\TranslatableMarkup
    */
   protected $recommendation;
 

@@ -46,7 +46,7 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
    * @see \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getId()
    * @see \Drupal\purge\Plugin\Purge\Purger\PurgerInterface::getLabel()
    *
-   * @return \Drupal\Core\StringTranslation\TranslationWrapper[]
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup[]
    *   Associative array with instance ID's in the key and the label as value.
    */
   public function getLabels();

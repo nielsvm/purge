@@ -83,7 +83,7 @@ class QueuerFormController extends ControllerBase {
    * @param string $id
    *   The plugin id of the queuer to retrieve.
    *
-   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The page title.
    */
   public function configFormTitle($id) {
@@ -117,7 +117,7 @@ class QueuerFormController extends ControllerBase {
    * @param string $id
    *   The plugin id of the queuer to retrieve.
    *
-   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The page title.
    */
   public function deleteFormTitle($id) {
@@ -152,7 +152,7 @@ class QueuerFormController extends ControllerBase {
    * @param string $id
    *   The plugin id of the queuer to retrieve.
    *
-   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The page title.
    */
   public function detailFormTitle($id) {

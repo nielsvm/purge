@@ -75,6 +75,20 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
   public function emptyQueue();
 
   /**
+   * Retrieve the description of the queue backend.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   */
+  public function getDescription();
+
+  /**
+   * Retrieve the label of the queue backend.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   */
+  public function getLabel();
+
+  /**
    * Handle processing results and either release back, or delete objects.
    *
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations

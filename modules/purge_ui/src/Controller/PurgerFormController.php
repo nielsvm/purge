@@ -116,7 +116,7 @@ class PurgerFormController extends ControllerBase {
    * @param string $id
    *   Unique instance ID for the purger instance.
    *
-   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The page title.
    */
   public function configFormTitle($id) {
@@ -174,7 +174,7 @@ class PurgerFormController extends ControllerBase {
    * @param string $id
    *   Unique instance ID for the purger instance.
    *
-   * @return \Drupal\Core\StringTranslation\TranslationWrapper
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The page title.
    */
   public function detailFormTitle($id) {

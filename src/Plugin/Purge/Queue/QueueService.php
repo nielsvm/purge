@@ -313,6 +313,20 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   /**
    * {@inheritdoc}
    */
+  public function getDescription() {
+    return $this->getPlugins()[current($this->getPluginsEnabled())]['description'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getLabel() {
+    return $this->getPlugins()[current($this->getPluginsEnabled())]['label'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPlugins() {
     if (is_null($this->plugins)) {
       $this->plugins = $this->pluginManager->getDefinitions();

@@ -154,10 +154,12 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    */
   public function getPluginsEnabled() {
     if (is_null($this->plugins_enabled)) {
-      $setting = $this->configFactory->get('purge.plugins')->get('purgers');
+      $plugins = $this->configFactory->get('purge.plugins');
       $plugin_ids = array_keys($this->getPlugins());
-      $this->plugins_enabled = [];
-      foreach ($setting as $inst) {
+      $this->plugins_enabled = $setting = [];
+
+      // Put the plugin instances into $setting and use the order as key.
+      foreach ($plugins->get('purgers') as $inst) {
         if (!in_array($inst['plugin_id'], $plugin_ids)) {
           // When a third-party provided purger was configured and its module
           // got uninstalled, the configuration renders invalid. Instead of
@@ -165,8 +167,14 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
           continue;
         }
         else {
-          $this->plugins_enabled[$inst['instance_id']] = $inst['plugin_id'];
+          $setting[$inst['order_index']] = $inst;
         }
+      }
+
+      // Recreate the plugin ordering and propagate the enabled plugins array.
+      ksort($setting);
+      foreach ($setting as $inst) {
+        $this->plugins_enabled[$inst['instance_id']] = $inst['plugin_id'];
       }
     }
     return $this->plugins_enabled;
@@ -255,9 +263,11 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     // Write the new CMI setting and commit it.
     $setting = [];
     foreach ($plugin_ids as $instance_id => $plugin_id) {
+      $order_index = isset($order_index) ? $order_index+1 : 1;
       $setting[] = [
+        'order_index' => $order_index,
         'instance_id' => $instance_id,
-        'plugin_id' => $plugin_id
+        'plugin_id' => $plugin_id,
       ];
     }
     $this->configFactory

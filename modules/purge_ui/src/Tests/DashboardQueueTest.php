@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\ConfigFormQueueTest.
+ * Contains \Drupal\purge_ui\Tests\DashboardQueueTest.
  */
 
 namespace Drupal\purge_ui\Tests;
 
 use Drupal\Core\Url;
-use Drupal\purge_ui\Tests\ConfigFormTestBase;
+use Drupal\purge_ui\Tests\DashboardTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Form\ConfigForm - queue section.
+ * Tests \Drupal\purge_ui\Controller\DashboardController - queue section.
  *
  * @group purge_ui
  */
-class ConfigFormQueueTest extends ConfigFormTestBase {
+class DashboardQueueTest extends DashboardTestBase {
 
   /**
    * Test the queue section of the configuration form.
@@ -23,7 +23,6 @@ class ConfigFormQueueTest extends ConfigFormTestBase {
    * @see \Drupal\purge_ui\Form\ConfigForm::buildFormQueue
    */
   public function testFormQueueSection() {
-    $this->initializeQueueService();
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->route);
     $this->assertRaw("Memory");

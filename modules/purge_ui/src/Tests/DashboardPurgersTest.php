@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\ConfigFormPurgersTest.
+ * Contains \Drupal\purge_ui\Tests\DashboardPurgersTest.
  */
 
 namespace Drupal\purge_ui\Tests;
 
 use Drupal\Core\Url;
-use Drupal\purge_ui\Tests\ConfigFormTestBase;
+use Drupal\purge_ui\Tests\DashboardTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Form\ConfigForm - purgers section.
+ * Tests \Drupal\purge_ui\Controller\DashboardController - purgers section.
  *
  * @group purge_ui
  */
-class ConfigFormPurgersTest extends ConfigFormTestBase {
+class DashboardPurgersTest extends DashboardTestBase {
 
   /**
    * Modules to enable.

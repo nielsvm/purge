@@ -1,8 +1,8 @@
-purge_ui.config_form:
+purge_ui.dashboard:
   path: '/admin/config/development/performance/purge'
   defaults:
     _title: 'Purge'
-    _form: 'Drupal\purge_ui\Form\ConfigForm'
+    _controller: '\Drupal\purge_ui\Controller\DashboardController::build'
   requirements:
     _permission: 'administer site configuration'
 purge_ui.purger_add_form:

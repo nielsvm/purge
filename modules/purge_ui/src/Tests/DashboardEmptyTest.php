@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\ConfigEmptyFormTest.
+ * Contains \Drupal\purge_ui\Tests\DashboardEmptyTest.
  */
 
 namespace Drupal\purge_ui\Tests;
 
 use Drupal\Core\Url;
-use Drupal\purge_ui\Tests\ConfigFormTestBase;
+use Drupal\purge_ui\Tests\DashboardTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Form\ConfigForm in almost default (no modules state).
+ * Tests \Drupal\purge_ui\Controller\DashboardController in almost default (no modules state).
  *
  * @group purge_ui
  */
-class ConfigEmptyFormTest extends ConfigFormTestBase {
+class DashboardEmptyTest extends DashboardTestBase {
 
   /**
    * Test the visual status report on the configuration form.

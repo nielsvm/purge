@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\ConfigFormQueuersTest.
+ * Contains \Drupal\purge_ui\Tests\DashboardQueuersTest.
  */
 
 namespace Drupal\purge_ui\Tests;
 
 use Drupal\Core\Url;
-use Drupal\purge_ui\Tests\ConfigFormTestBase;
+use Drupal\purge_ui\Tests\DashboardTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Form\ConfigForm - queuers section.
+ * Tests \Drupal\purge_ui\Controller\DashboardController - queuers section.
  *
  * @group purge_ui
  */
-class ConfigFormQueuersTest extends ConfigFormTestBase {
+class DashboardQueuersTest extends DashboardTestBase {
 
   /**
    * Modules to enable.

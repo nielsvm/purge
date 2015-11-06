@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\ConfigFormTestBase.
+ * Contains \Drupal\purge_ui\Tests\DashboardTestBase.
  */
 
 namespace Drupal\purge_ui\Tests;
@@ -11,9 +11,9 @@ use Drupal\Core\Url;
 use Drupal\purge\Tests\WebTestBase;
 
 /**
- * Testbase for tests testing \Drupal\purge_ui\Form\ConfigForm.
+ * Testbase for tests testing \Drupal\purge_ui\Controller\DashboardController.
  */
-abstract class ConfigFormTestBase extends WebTestBase {
+abstract class DashboardTestBase extends WebTestBase {
 
   /**
    * @var \Drupal\user\Entity\User
@@ -25,7 +25,7 @@ abstract class ConfigFormTestBase extends WebTestBase {
    *
    * @var string|\Drupal\Core\Url
    */
-  protected $route = 'purge_ui.config_form';
+  protected $route = 'purge_ui.dashboard';
 
   /**
    * Modules to enable.
@@ -53,7 +53,7 @@ abstract class ConfigFormTestBase extends WebTestBase {
     $this->assertResponse(403);
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->route);
-    $this->assertRaw('<form class="purge-uiconfig-form"');
+    $this->assertRaw('When content on your website changes, your purge setup will take care of refreshing external caching systems and CDNs.');
     $this->assertResponse(200);
     $this->drupalGet(Url::fromRoute('system.performance_settings'));
   }

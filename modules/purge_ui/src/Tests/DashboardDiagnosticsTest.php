@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\ConfigFormDiagnosticReportTest.
+ * Contains \Drupal\purge_ui\Tests\DashboardDiagnosticsTest.
  */
 
 namespace Drupal\purge_ui\Tests;
 
 use Drupal\Core\Url;
-use Drupal\purge_ui\Tests\ConfigFormTestBase;
+use Drupal\purge_ui\Tests\DashboardTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Form\ConfigForm - diagnostics section.
+ * Tests \Drupal\purge_ui\Controller\DashboardController - diagnostics section.
  *
  * @group purge_ui
  */
-class ConfigFormDiagnosticReportTest extends ConfigFormTestBase {
+class DashboardDiagnosticsTest extends DashboardTestBase {
 
   /**
    * Modules to enable.
@@ -36,10 +36,8 @@ class ConfigFormDiagnosticReportTest extends ConfigFormTestBase {
   public function testFormDiagnosticReport() {
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->route);
-    $this->assertRaw('edit-diagnostics');
     $this->assertRaw('system-status-report');
     $this->assertRaw('open="open"');
-    $this->assertText('When content on your website changes, your purge setup will take care of refreshing external caching systems and CDNs.');
     $this->assertText('Status');
     $this->assertText('Capacity');
     $this->assertText('Queuers');

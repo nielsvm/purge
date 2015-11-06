@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Contains \Drupal\purge_ui\Tests\ConfigFormProcessorsTest.
+ * Contains \Drupal\purge_ui\Tests\DashboardProcessorsTest.
  */
 
 namespace Drupal\purge_ui\Tests;
 
 use Drupal\Core\Url;
-use Drupal\purge_ui\Tests\ConfigFormTestBase;
+use Drupal\purge_ui\Tests\DashboardTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Form\ConfigForm - processors section.
+ * Tests \Drupal\purge_ui\Controller\DashboardController - processors section.
  *
  * @group purge_ui
  */
-class ConfigFormProcessorsTest extends ConfigFormTestBase {
+class DashboardProcessorsTest extends DashboardTestBase {
 
   /**
    * Modules to enable.

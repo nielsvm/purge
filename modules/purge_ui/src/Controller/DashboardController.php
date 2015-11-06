@@ -1,39 +1,34 @@
 <?php
 /**
  * @file
- * Contains \Drupal\purge_ui\Form\ConfigForm.
+ * Contains \Drupal\purge_ui\Controller\DashboardController.
  */
 
-namespace Drupal\purge_ui\Form;
+namespace Drupal\purge_ui\Controller;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Drupal\Core\Controller\ControllerBase;
 use Drupal\Component\Serialization\Json;
-use Drupal\Component\Utility\SafeMarkup;
-use Drupal\Core\Form\FormBase;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
-use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
+use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 
 /**
- * Configure the Purge pipeline for this site.
+ * Configuration dashboard for configuring the cache invalidation pipeline.
  */
-class ConfigForm extends FormBase {
+class DashboardController extends ControllerBase {
 
   /**
-   * Diagnostics service that reports any preliminary issues regarding purge.
-   *
    * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
    */
   protected $purgeDiagnostics;
 
   /**
-   * The service that generates invalidation objects on-demand.
-   *
    * @var \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface
    */
   protected $purgeInvalidationFactory;
@@ -59,7 +54,14 @@ class ConfigForm extends FormBase {
   protected $purgeQueuers;
 
   /**
-   * Constructs a PurgeConfigForm object.
+   * The request stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
+
+  /**
+   * Constructs a DashboardController object.
    *
    * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface $purge_diagnostics
    *   Diagnostics service that reports any preliminary issues regarding purge.
@@ -73,14 +75,339 @@ class ConfigForm extends FormBase {
    *   The purge queue service.
    * @param \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface $purge_queuers
    *   The purge queuers service.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request from the request stack.
    */
-  public function __construct(DiagnosticsServiceInterface $purge_diagnostics, InvalidationsServiceInterface $purge_invalidation_factory, ProcessorsServiceInterface $purge_processors, PurgersServiceInterface $purge_purgers, QueueServiceInterface $purge_queue, QueuersServiceInterface $purge_queuers) {
+  public function __construct(DiagnosticsServiceInterface $purge_diagnostics, InvalidationsServiceInterface $purge_invalidation_factory, ProcessorsServiceInterface $purge_processors, PurgersServiceInterface $purge_purgers, QueueServiceInterface $purge_queue, QueuersServiceInterface $purge_queuers, Request $request) {
     $this->purgeDiagnostics = $purge_diagnostics;
     $this->purgeInvalidationFactory = $purge_invalidation_factory;
     $this->purgeProcessors = $purge_processors;
     $this->purgePurgers = $purge_purgers;
     $this->purgeQueue = $purge_queue;
     $this->purgeQueuers = $purge_queuers;
+    $this->request = $request;
+  }
+
+  /**
+   * Return the main dashboard with all sections.
+   *
+   * @return array
+   */
+  public function build() {
+    $build = [];
+    $build['#attached']['library'][] = 'core/drupal.ajax';
+    $build['info'] = [
+      '#type' => 'item',
+      '#markup' => $this->t('When content on your website changes, your purge setup will take care of refreshing external caching systems and CDNs.'),
+    ];
+
+    $build[' diagnostics'] = $this->buildDiagnosticReport();
+    $build[' queuers']     = $this->buildQueuers();
+    $build[' queue']       = $this->buildQueue();
+    $build[' purgers']     = $this->buildPurgers();
+    $build[' processors']  = $this->buildProcessors();
+    return $build;
+  }
+
+  /**
+   * Add a visual report on the current state of the purge module.
+   *
+   * @return array
+   *   The elements inside the queue fieldset.
+   */
+  protected function buildDiagnosticReport() {
+    $build['diagnostics'] = [
+      '#open' => TRUE,
+      '#type' => 'details',
+      '#title' => t('Status'),
+    ];
+    $build['diagnostics']['report'] = [
+      '#theme' => 'status_report',
+      '#requirements' => $this->purgeDiagnostics->getRequirementsArray()
+    ];
+    return $build;
+  }
+
+  /**
+   * Visualize enabled queuers.
+   *
+   * @return array
+   */
+  protected function buildQueuers() {
+    $available = $this->purgeQueuers->getPluginsAvailable();
+    $build = [
+      '#description' => '<p>' . $this->t('Queuers queue items in the queue upon certain events.') . '</p>',
+      '#type' => 'details',
+      '#title' => t('Queuers'),
+      '#open' => $this->request->get('edit-queuers', FALSE) || (!count($this->purgeQueuers)),
+    ];
+    if (count($this->purgeQueuers)) {
+      $add_delete_link = function(&$links, $id) {
+        $links['delete'] = $this->getDialogButton(
+          $this->t("Delete"),
+          Url::fromRoute('purge_ui.queuer_delete_form',
+          ['id' => $id])
+        );
+      };
+      $add_configure_link = function(&$links, $queuer) {
+        $definition = $queuer->getPluginDefinition();
+        if (isset($definition['configform']) && !empty($definition['configform'])) {
+          $url = Url::fromRoute('purge_ui.queuer_config_dialog_form', ['id' => $queuer->getPluginId()]);
+          $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
+        }
+      };
+      $build['table'] = [
+        '#type' => 'table',
+        '#responsive' => TRUE,
+        '#header' => [
+          'title' => $this->t('Queuer'),
+          'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
+          'operations' => $this->t('Operations'),
+        ],
+      ];
+      foreach ($this->purgeQueuers as $queuer) {
+        $id = $queuer->getPluginId();
+        $ops = [];
+        $add_delete_link($ops, $id);
+        $add_configure_link($ops, $queuer);
+        $build['table']['#rows'][$id] = [
+          'data' => [
+            'title' => ['data' => ['#markup' => $queuer->getLabel()]],
+            'description' => ['data' => ['#markup' => $queuer->getDescription()]],
+            'operations' => ['data' => ['#type' => 'operations', '#links' => $ops]],
+          ],
+        ];
+      }
+    }
+    if (count($available)) {
+      $build['add'] = [
+        '#type' => 'operations',
+        '#links' => [$this->getDialogButton($this->t("Add queuer"), Url::fromRoute('purge_ui.queuer_add_form'))]
+      ];
+    }
+    elseif (!count($this->purgeQueuers)) {
+      $build['#description'] = '<p><b>' . $this->t("No queuers available, install module(s) that provide them!") . '</b></p>';
+    }
+    return $build;
+  }
+
+  /**
+   * Add configuration elements for selecting the queue backend.
+   *
+   * @return array
+   */
+  protected function buildQueue() {
+    $build = [
+      '#description' => '<p>' . $this->t('Purge instructions are stored in a queue.') . '</p>',
+      '#type' => 'details',
+      '#title' => t('Queue'),
+      '#open' => $this->request->get('edit-queue', FALSE),
+    ];
+    $build['change'] = $this->getDialogLink($this->purgeQueue->getLabel(), Url::fromRoute('purge_ui.queue_change_form'), '900');
+    $build['browser'] = $this->getDialogLink($this->t("Inspect data"), Url::fromRoute('purge_ui.queue_browser_form'), '900');
+    $build['empty'] = $this->getDialogLink($this->t("Empty the queue"), Url::fromRoute('purge_ui.queue_empty_form'));
+    return $build;
+  }
+
+  /**
+   * Visualize enabled processors.
+   *
+   * @return array
+   */
+  protected function buildProcessors() {
+    $available = $this->purgeProcessors->getPluginsAvailable();
+    $build = [
+      '#description' => '<p>' . $this->t('Processors queue items in the queue upon certain events.') . '</p>',
+      '#type' => 'details',
+      '#title' => t('Processors'),
+      '#open' => $this->request->get('edit-processors', FALSE) || (!count($this->purgeProcessors)),
+    ];
+    if (count($this->purgeProcessors)) {
+      $add_delete_link = function(&$links, $id) {
+        $links['delete'] = $this->getDialogButton(
+          $this->t("Delete"),
+          Url::fromRoute('purge_ui.processor_delete_form',
+          ['id' => $id])
+        );
+      };
+      $add_configure_link = function(&$links, $processor) {
+        $definition = $processor->getPluginDefinition();
+        if (isset($definition['configform']) && !empty($definition['configform'])) {
+          $url = Url::fromRoute('purge_ui.processor_config_dialog_form', ['id' => $processor->getPluginId()]);
+          $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
+        }
+      };
+      $build['table'] = [
+        '#type' => 'table',
+        '#responsive' => TRUE,
+        '#header' => [
+          'title' => $this->t('Processor'),
+          'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
+          'operations' => $this->t('Operations'),
+        ],
+      ];
+      foreach ($this->purgeProcessors as $processor) {
+        $id = $processor->getPluginId();
+        $ops = [];
+        $add_delete_link($ops, $id);
+        $add_configure_link($ops, $processor);
+        $build['table']['#rows'][$id] = [
+          'data' => [
+            'title' => ['data' => ['#markup' => $processor->getLabel()]],
+            'description' => ['data' => ['#markup' => $processor->getDescription()]],
+            'operations' => ['data' => ['#type' => 'operations', '#links' => $ops]],
+          ],
+        ];
+      }
+    }
+    if (count($available)) {
+      $build['add'] = [
+        '#type' => 'operations',
+        '#links' => [$this->getDialogButton($this->t("Add processor"), Url::fromRoute('purge_ui.processor_add_form'))]
+      ];
+    }
+    elseif (!count($this->purgeProcessors)) {
+      $build['#description'] = '<p><b>' . $this->t("No processors available, install module(s) that provide them!") . '</b></p>';
+    }
+    return $build;
+  }
+
+  /**
+   * Add new- and configure enabled purgers, support matrix.
+   *
+   * @return array
+   */
+  protected function buildPurgers() {
+    $all = $this->purgePurgers->getPlugins();
+    $available = $this->purgePurgers->getPluginsAvailable();
+    $enabled = $this->purgePurgers->getPluginsEnabled();
+    $enabledlabels = $this->purgePurgers->getLabels();
+    $types_by_purger = $this->purgePurgers->getTypesByPurger();
+
+    // Define the main form section and the closures we use for the buttons.
+    $build = [
+      '#description' => '<p>' . $this->t('Purgers are provided by third-party modules and clear content from external caching systems.') . '</p>',
+      '#type' => 'details',
+      '#title' => $this->t('Purgers'),
+      '#open' => (!count($enabled) || $this->request->get('edit-purgers', FALSE)),
+    ];
+    $add_delete_link = function(&$links, $id, $definition) {
+      $links['delete'] = $this->getDialogButton($this->t("Delete"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]));
+    };
+    $add_configure_link = function(&$links, $id, $definition) {
+      if (isset($definition['configform']) && !empty($definition['configform'])) {
+        $url = Url::fromRoute('purge_ui.purger_config_dialog_form', ['id' => $id]);
+        $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
+      }
+    };
+
+    // If purgers have been enabled, we build up a type-purgers matrix table.
+    if (count($enabled)) {
+
+      $build['table'] = [
+        '#type' => 'table',
+        '#responsive' => TRUE,
+        '#header' => [
+          'type' => [
+            'data' => $this->t('Type'),
+            'title' => $this->t('The type of external cache invalidation.')],
+          ],
+      ];
+
+      // Build the table header.
+      $cols = 0;
+      foreach($types_by_purger as $id => $types) {
+        $cols++;
+        $build['table']['#header'][$id] = [
+          'data' => $enabledlabels[$id],
+          'title' => $all[$enabled[$id]]['description'],
+          'class' => [$cols < 3 ? RESPONSIVE_PRIORITY_MEDIUM : RESPONSIVE_PRIORITY_LOW],
+        ];
+      }
+      if (count($available)) {
+        $build['table']['#header']['add'] = ['data' => '',];
+      }
+
+      // Register the columns for the (last) operations row.
+      $operationsrow_cols = ['type' => ['data' => '']];
+
+      // Iterate the invalidation types and add checkmarks for supported types.
+      foreach ($this->purgeInvalidationFactory->getPlugins() as $type) {
+        $typeid = $type['id'];
+        $build['table']['#rows'][$typeid] = [
+          'id' => $typeid,
+          'data' => [
+            'type' => [
+              'title' => $type['description'],
+              'data' => [
+                '#markup' => $type['label'],
+              ]
+            ],
+          ],
+        ];
+        foreach ($build['table']['#header'] as $id => $header) {
+          if (in_array($id, ['type', 'add'])) {
+            continue;
+          }
+
+          $build['table']['#rows'][$typeid]['data'][$id] = [
+            'data' => ['#markup' => '&nbsp;']
+          ];
+          if (in_array($typeid, $types_by_purger[$id])) {
+            $build['table']['#rows'][$typeid]['data'][$id]['data'] = [
+              '#theme' => 'image',
+              '#width' => 18,
+              '#height' => 18,
+              '#uri' => 'core/misc/icons/73b355/check.svg',
+              '#alt' => $this->t("Supported"),
+              '#title' => $this->t("Supported"),
+            ];
+          }
+          $operationsrow_cols[$id] = [
+            'data' => [
+              '#type' => 'operations',
+              '#links' => []
+            ]
+          ];
+          $add_configure_link($operationsrow_cols[$id]['data']['#links'], $id, $all[$enabled[$id]]);
+          $add_delete_link($operationsrow_cols[$id]['data']['#links'], $id,  $all[$enabled[$id]]);
+        }
+
+        // Add the last spacer column when it exists.
+        if (isset($build['table']['#header']['add'])) {
+          $build['table']['#rows'][$typeid]['data']['add'] = [
+            'data' => ['#markup' => str_repeat('&nbsp;', 30)]
+          ];
+        }
+      }
+
+      // Place the add-purger button or set a message.
+      if (count($available)) {
+        $operationsrow_cols['add'] = [
+          'data' => [
+            '#type' => 'operations',
+            '#links' => [$this->getDialogButton($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'))]
+          ]
+        ];
+      }
+
+      // Add the operations row to the table.
+      $build['table']['#rows']['ops'] = [
+        'data' => $operationsrow_cols,
+      ];
+    }
+
+    // Render add-purger button when the table is hidden.
+    elseif (count($available)) {
+      $build['add'] = [
+        '#type' => 'operations',
+        '#links' => [$this->getDialogButton($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'))]
+      ];
+    }
+    else {
+      $build['#description'] = '<p><b>' . $this->t("No purgers available, install module(s) that provide them!") . '</b></p>';
+    }
+    return $build;
   }
 
   /**
@@ -93,40 +420,9 @@ class ConfigForm extends FormBase {
       $container->get('purge.processors'),
       $container->get('purge.purgers'),
       $container->get('purge.queue'),
-      $container->get('purge.queuers')
+      $container->get('purge.queuers'),
+      $container->get('request_stack')->getCurrentRequest()
     );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function getEditableConfigNames() {
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getFormID() {
-    return 'purge_ui.config_form';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['#attached']['library'][] = 'core/drupal.ajax';
-    $form['info'] = [
-      '#type' => 'item',
-      '#markup' => $this->t('When content on your website changes, your purge setup will take care of refreshing external caching systems and CDNs.'),
-    ];
-
-    $this->buildFormDiagnosticReport($form, $form_state);
-    $this->buildFormQueuers($form, $form_state);
-    $this->buildFormQueue($form, $form_state);
-    $this->buildFormPurgers($form, $form_state);
-    $this->buildFormProcessors($form, $form_state);
-    return $form;
   }
 
   /**
@@ -176,339 +472,6 @@ class ConfigForm extends FormBase {
         'data-dialog-options' => Json::encode(['width' => $width]),
       ],
     ];
-  }
-
-  /**
-   * Add a visual report on the current state of the purge module.
-   *
-   * @param array &$form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return array
-   *   The elements inside the queue fieldset.
-   */
-  protected function buildFormDiagnosticReport(array &$form, FormStateInterface $form_state) {
-    $form['diagnostics'] = [
-      '#open' => TRUE,
-      '#type' => 'details',
-      '#title' => t('Status'),
-    ];
-    $form['diagnostics']['report'] = [
-      '#theme' => 'status_report',
-      '#requirements' => $this->purgeDiagnostics->getRequirementsArray()
-    ];
-  }
-
-  /**
-   * Visualize enabled queuers.
-   *
-   * @param array &$form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return void
-   */
-  protected function buildFormQueuers(array &$form, FormStateInterface $form_state) {
-    $available = $this->purgeQueuers->getPluginsAvailable();
-    $form['queuers'] = [
-      '#description' => '<p>' . $this->t('Queuers queue items in the queue upon certain events.') . '</p>',
-      '#type' => 'details',
-      '#title' => t('Queuers'),
-      '#open' => $this->getRequest()->get('edit-queuers', FALSE) || (!count($this->purgeQueuers)),
-    ];
-    if (count($this->purgeQueuers)) {
-      $add_delete_link = function(&$links, $id) {
-        $links['delete'] = $this->getDialogButton(
-          $this->t("Delete"),
-          Url::fromRoute('purge_ui.queuer_delete_form',
-          ['id' => $id])
-        );
-      };
-      $add_configure_link = function(&$links, $queuer) {
-        $definition = $queuer->getPluginDefinition();
-        if (isset($definition['configform']) && !empty($definition['configform'])) {
-          $url = Url::fromRoute('purge_ui.queuer_config_dialog_form', ['id' => $queuer->getPluginId()]);
-          $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
-        }
-      };
-      $form['queuers']['table'] = [
-        '#type' => 'table',
-        '#responsive' => TRUE,
-        '#header' => [
-          'title' => $this->t('Queuer'),
-          'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
-          'operations' => $this->t('Operations'),
-        ],
-      ];
-      foreach ($this->purgeQueuers as $queuer) {
-        $id = $queuer->getPluginId();
-        $ops = [];
-        $add_delete_link($ops, $id);
-        $add_configure_link($ops, $queuer);
-        $form['queuers']['table']['#rows'][$id] = [
-          'data' => [
-            'title' => ['data' => ['#markup' => $queuer->getLabel()]],
-            'description' => ['data' => ['#markup' => $queuer->getDescription()]],
-            'operations' => ['data' => ['#type' => 'operations', '#links' => $ops]],
-          ],
-        ];
-      }
-    }
-    if (count($available)) {
-      $form['queuers']['add'] = [
-        '#type' => 'operations',
-        '#links' => [$this->getDialogButton($this->t("Add queuer"), Url::fromRoute('purge_ui.queuer_add_form'))]
-      ];
-    }
-    elseif (!count($this->purgeQueuers)) {
-      $form['queuers']['#description'] = '<p><b>' . $this->t("No queuers available, install module(s) that provide them!") . '</b></p>';
-    }
-  }
-
-  /**
-   * Add configuration elements for selecting the queue backend.
-   *
-   * @param array &$form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return void
-   */
-  protected function buildFormQueue(array &$form, FormStateInterface $form_state) {
-    $form['queue'] = [
-      '#description' => '<p>' . $this->t('Purge instructions are stored in a queue.') . '</p>',
-      '#type' => 'details',
-      '#title' => t('Queue'),
-      '#open' => $this->getRequest()->get('edit-queue', FALSE),
-    ];
-    $form['queue']['change'] = $this->getDialogLink($this->purgeQueue->getLabel(), Url::fromRoute('purge_ui.queue_change_form'), '900');
-    $form['queue']['browser'] = $this->getDialogLink($this->t("Inspect data"), Url::fromRoute('purge_ui.queue_browser_form'), '900');
-    $form['queue']['empty'] = $this->getDialogLink($this->t("Empty the queue"), Url::fromRoute('purge_ui.queue_empty_form'));
-  }
-
-  /**
-   * Visualize enabled processors.
-   *
-   * @param array &$form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return void
-   */
-  protected function buildFormProcessors(array &$form, FormStateInterface $form_state) {
-    $available = $this->purgeProcessors->getPluginsAvailable();
-    $form['processors'] = [
-      '#description' => '<p>' . $this->t('Processors queue items in the queue upon certain events.') . '</p>',
-      '#type' => 'details',
-      '#title' => t('Processors'),
-      '#open' => $this->getRequest()->get('edit-processors', FALSE) || (!count($this->purgeProcessors)),
-    ];
-    if (count($this->purgeProcessors)) {
-      $add_delete_link = function(&$links, $id) {
-        $links['delete'] = $this->getDialogButton(
-          $this->t("Delete"),
-          Url::fromRoute('purge_ui.processor_delete_form',
-          ['id' => $id])
-        );
-      };
-      $add_configure_link = function(&$links, $processor) {
-        $definition = $processor->getPluginDefinition();
-        if (isset($definition['configform']) && !empty($definition['configform'])) {
-          $url = Url::fromRoute('purge_ui.processor_config_dialog_form', ['id' => $processor->getPluginId()]);
-          $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
-        }
-      };
-      $form['processors']['table'] = [
-        '#type' => 'table',
-        '#responsive' => TRUE,
-        '#header' => [
-          'title' => $this->t('Processor'),
-          'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
-          'operations' => $this->t('Operations'),
-        ],
-      ];
-      foreach ($this->purgeProcessors as $processor) {
-        $id = $processor->getPluginId();
-        $ops = [];
-        $add_delete_link($ops, $id);
-        $add_configure_link($ops, $processor);
-        $form['processors']['table']['#rows'][$id] = [
-          'data' => [
-            'title' => ['data' => ['#markup' => $processor->getLabel()]],
-            'description' => ['data' => ['#markup' => $processor->getDescription()]],
-            'operations' => ['data' => ['#type' => 'operations', '#links' => $ops]],
-          ],
-        ];
-      }
-    }
-    if (count($available)) {
-      $form['processors']['add'] = [
-        '#type' => 'operations',
-        '#links' => [$this->getDialogButton($this->t("Add processor"), Url::fromRoute('purge_ui.processor_add_form'))]
-      ];
-    }
-    elseif (!count($this->purgeProcessors)) {
-      $form['processors']['#description'] = '<p><b>' . $this->t("No processors available, install module(s) that provide them!") . '</b></p>';
-    }
-  }
-
-  /**
-   * Add new- and configure enabled purgers, support matrix.
-   *
-   * @param array &$form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return void
-   */
-  protected function buildFormPurgers(array &$form, FormStateInterface $form_state) {
-    $all = $this->purgePurgers->getPlugins();
-    $available = $this->purgePurgers->getPluginsAvailable();
-    $enabled = $this->purgePurgers->getPluginsEnabled();
-    $enabledlabels = $this->purgePurgers->getLabels();
-    $types_by_purger = $this->purgePurgers->getTypesByPurger();
-
-    // Define the main form section and the closures we use for the buttons.
-    $form['purgers'] = [
-      '#description' => '<p>' . $this->t('Purgers are provided by third-party modules and clear content from external caching systems.') . '</p>',
-      '#type' => 'details',
-      '#title' => $this->t('Purgers'),
-      '#open' => (!count($enabled) || $this->getRequest()->get('edit-purgers', FALSE)),
-    ];
-    $add_delete_link = function(&$links, $id, $definition) {
-      $links['delete'] = $this->getDialogButton($this->t("Delete"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]));
-    };
-    $add_configure_link = function(&$links, $id, $definition) {
-      if (isset($definition['configform']) && !empty($definition['configform'])) {
-        $url = Url::fromRoute('purge_ui.purger_config_dialog_form', ['id' => $id]);
-        $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
-      }
-    };
-
-    // If purgers have been enabled, we build up a type-purgers matrix table.
-    if (count($enabled)) {
-
-      $form['purgers']['table'] = [
-        '#type' => 'table',
-        '#responsive' => TRUE,
-        '#header' => [
-          'type' => [
-            'data' => $this->t('Type'),
-            'title' => $this->t('The type of external cache invalidation.')],
-          ],
-      ];
-
-      // Build the table header.
-      $cols = 0;
-      foreach($types_by_purger as $id => $types) {
-        $cols++;
-        $form['purgers']['table']['#header'][$id] = [
-          'data' => $enabledlabels[$id],
-          'title' => $all[$enabled[$id]]['description'],
-          'class' => [$cols < 3 ? RESPONSIVE_PRIORITY_MEDIUM : RESPONSIVE_PRIORITY_LOW],
-        ];
-      }
-      if (count($available)) {
-        $form['purgers']['table']['#header']['add'] = ['data' => '',];
-      }
-
-      // Register the columns for the (last) operations row.
-      $operationsrow_cols = ['type' => ['data' => '']];
-
-      // Iterate the invalidation types and add checkmarks for supported types.
-      foreach ($this->purgeInvalidationFactory->getPlugins() as $type) {
-        $typeid = $type['id'];
-        $form['purgers']['table']['#rows'][$typeid] = [
-          'id' => $typeid,
-          'data' => [
-            'type' => [
-              'title' => $type['description'],
-              'data' => [
-                '#markup' => $type['label'],
-              ]
-            ],
-          ],
-        ];
-        foreach ($form['purgers']['table']['#header'] as $id => $header) {
-          if (in_array($id, ['type', 'add'])) {
-            continue;
-          }
-
-          $form['purgers']['table']['#rows'][$typeid]['data'][$id] = [
-            'data' => ['#markup' => '&nbsp;']
-          ];
-          if (in_array($typeid, $types_by_purger[$id])) {
-            $form['purgers']['table']['#rows'][$typeid]['data'][$id]['data'] = [
-              '#theme' => 'image',
-              '#width' => 18,
-              '#height' => 18,
-              '#uri' => 'core/misc/icons/73b355/check.svg',
-              '#alt' => $this->t("Supported"),
-              '#title' => $this->t("Supported"),
-            ];
-          }
-          $operationsrow_cols[$id] = [
-            'data' => [
-              '#type' => 'operations',
-              '#links' => []
-            ]
-          ];
-          $add_configure_link($operationsrow_cols[$id]['data']['#links'], $id, $all[$enabled[$id]]);
-          $add_delete_link($operationsrow_cols[$id]['data']['#links'], $id,  $all[$enabled[$id]]);
-        }
-
-        // Add the last spacer column when it exists.
-        if (isset($form['purgers']['table']['#header']['add'])) {
-          $form['purgers']['table']['#rows'][$typeid]['data']['add'] = [
-            'data' => ['#markup' => str_repeat('&nbsp;', 30)]
-          ];
-        }
-      }
-
-      // Place the add-purger button or set a message.
-      if (count($available)) {
-        $operationsrow_cols['add'] = [
-          'data' => [
-            '#type' => 'operations',
-            '#links' => [$this->getDialogButton($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'))]
-          ]
-        ];
-      }
-
-      // Add the operations row to the table.
-      $form['purgers']['table']['#rows']['ops'] = [
-        'data' => $operationsrow_cols,
-      ];
-    }
-
-    // Render add-purger button when the table is hidden.
-    elseif (count($available)) {
-      $form['purgers']['add'] = [
-        '#type' => 'operations',
-        '#links' => [$this->getDialogButton($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'))]
-      ];
-    }
-    else {
-      $form['purgers']['#description'] = '<p><b>' . $this->t("No purgers available, install module(s) that provide them!") . '</b></p>';
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
   }
 
 }

@@ -89,7 +89,7 @@ class DashboardController extends ControllerBase {
   }
 
   /**
-   * Return the main dashboard with all sections.
+   * Build all dashboard sections.
    *
    * @return array
    */
@@ -100,12 +100,11 @@ class DashboardController extends ControllerBase {
       '#type' => 'item',
       '#markup' => $this->t('When content on your website changes, your purge setup will take care of refreshing external caching systems and CDNs.'),
     ];
-
-    $build[' diagnostics'] = $this->buildDiagnosticReport();
-    $build[' queuers']     = $this->buildQueuers();
-    $build[' queue']       = $this->buildQueue();
-    $build[' purgers']     = $this->buildPurgers();
-    $build[' processors']  = $this->buildProcessors();
+    $build[] = $this->buildDiagnosticReport();
+    $build[] = $this->buildQueuers();
+    $build[] = $this->buildQueue();
+    $build[] = $this->buildPurgers();
+    $build[] = $this->buildProcessors();
     return $build;
   }
 
@@ -117,7 +116,7 @@ class DashboardController extends ControllerBase {
    */
   protected function buildDiagnosticReport() {
     $build['diagnostics'] = [
-      '#open' => TRUE,
+      '#open' => $this->purgeDiagnostics->isSystemShowingSmoke() || $this->purgeDiagnostics->isSystemOnFire(),
       '#type' => 'details',
       '#title' => t('Status'),
     ];
@@ -139,7 +138,7 @@ class DashboardController extends ControllerBase {
       '#description' => '<p>' . $this->t('Queuers queue items in the queue upon certain events.') . '</p>',
       '#type' => 'details',
       '#title' => t('Queuers'),
-      '#open' => $this->request->get('edit-queuers', FALSE) || (!count($this->purgeQueuers)),
+      '#open' => TRUE,
     ];
     if (count($this->purgeQueuers)) {
       $add_delete_link = function(&$links, $id) {
@@ -201,7 +200,7 @@ class DashboardController extends ControllerBase {
       '#description' => '<p>' . $this->t('Purge instructions are stored in a queue.') . '</p>',
       '#type' => 'details',
       '#title' => t('Queue'),
-      '#open' => $this->request->get('edit-queue', FALSE),
+      '#open' => TRUE,
     ];
     $build['change'] = $this->getDialogLink($this->purgeQueue->getLabel(), Url::fromRoute('purge_ui.queue_change_form'), '900');
     $build['browser'] = $this->getDialogLink($this->t("Inspect data"), Url::fromRoute('purge_ui.queue_browser_form'), '900');
@@ -220,7 +219,7 @@ class DashboardController extends ControllerBase {
       '#description' => '<p>' . $this->t('Processors queue items in the queue upon certain events.') . '</p>',
       '#type' => 'details',
       '#title' => t('Processors'),
-      '#open' => $this->request->get('edit-processors', FALSE) || (!count($this->purgeProcessors)),
+      '#open' => TRUE,
     ];
     if (count($this->purgeProcessors)) {
       $add_delete_link = function(&$links, $id) {
@@ -289,7 +288,7 @@ class DashboardController extends ControllerBase {
       '#description' => '<p>' . $this->t('Purgers are provided by third-party modules and clear content from external caching systems.') . '</p>',
       '#type' => 'details',
       '#title' => $this->t('Purgers'),
-      '#open' => (!count($enabled) || $this->request->get('edit-purgers', FALSE)),
+      '#open' => TRUE,
     ];
     $add_delete_link = function(&$links, $id, $definition) {
       $links['delete'] = $this->getDialogButton($this->t("Delete"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]));

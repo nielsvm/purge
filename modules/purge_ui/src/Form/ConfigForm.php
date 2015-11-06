@@ -283,30 +283,9 @@ class ConfigForm extends FormBase {
       '#description' => '<p>' . $this->t('Purge instructions are stored in a queue.') . '</p>',
       '#type' => 'details',
       '#title' => t('Queue'),
-      '#open' => FALSE,
+      '#open' => $this->getRequest()->get('edit-queue', FALSE),
     ];
-    $form['queue']['queue_plugin'] = [
-      '#type' => 'tableselect',
-      '#default_value' => current($this->purgeQueue->getPluginsEnabled()),
-      '#responsive' => TRUE,
-      '#multiple' => FALSE,
-      '#options' => [],
-      '#header' => [
-        'label' => $this->t('Queue'),
-        'description' => [
-          'data' => $this->t('Description'),
-          'class' => [RESPONSIVE_PRIORITY_MEDIUM],
-        ],
-      ],
-    ];
-    foreach ($this->purgeQueue->getPlugins() as $plugin_id => $definition) {
-      $form['queue']['queue_plugin']['#options'][$plugin_id] = [
-        'label' => $definition['label'],
-        'description' => $definition['description'],
-      ];
-    }
-    // Add the buttons.
-    $form['queue']['save'] = ['#type' => 'submit', '#button_type' => 'primary', '#value' => $this->t('Change')];
+    $form['queue']['change'] = $this->getDialogLink($this->purgeQueue->getLabel(), Url::fromRoute('purge_ui.queue_change_form'), '900');
     $form['queue']['browser'] = $this->getDialogLink($this->t("Inspect data"), Url::fromRoute('purge_ui.queue_browser_form'), '900');
     $form['queue']['empty'] = $this->getDialogLink($this->t("Empty the queue"), Url::fromRoute('purge_ui.queue_empty_form'));
   }
@@ -524,20 +503,12 @@ class ConfigForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    if (!$form_state->hasValue('queue_plugin')) {
-      $form_state->setError($form['queue']['queue_plugin'], $this->t('Value missing.'));
-    }
-    $plugins = array_keys($this->purgeQueue->getPlugins());
-    if (!in_array($form_state->getValue('queue_plugin'), $plugins)) {
-      $form_state->setError($form['queue']['queue_plugin'], $this->t('Invalid input.'));
-    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->purgeQueue->setPluginsEnabled([$form_state->getValue('queue_plugin')]);
   }
 
 }

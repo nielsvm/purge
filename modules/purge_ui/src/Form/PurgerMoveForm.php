@@ -120,7 +120,7 @@ class PurgerMoveForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    $label = ['@label' => $this->definition['label']];
+    $label = ['@label' => $this->purgePurgers->getLabels()[$this->id]];
     if ($this->direction === 'up') {
       return $this->t('Do you want to move @label up in the execution order?', $label);
     }

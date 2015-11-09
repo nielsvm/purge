@@ -61,6 +61,35 @@ class DashboardController extends ControllerBase {
   protected $requestStack;
 
   /**
+   * Central listing of code-used aliases and the routes we open modals for.
+   *
+   * @var string[]
+   */
+  protected $routes = [
+    'purger_add'        => 'purge_ui.purger_add_form',
+    'purger_detail'     => 'purge_ui.purger_detail_form',
+    'purger_config'     => 'purge_ui.purger_config_form',
+    'purger_configd'    => 'purge_ui.purger_config_dialog_form',
+    'purger_delete'     => 'purge_ui.purger_delete_form',
+    'purger_up'         => 'purge_ui.purger_move_down_form',
+    'purger_down'       => 'purge_ui.purger_move_up_form',
+    'processor_add'     => 'purge_ui.processor_add_form',
+    'processor_detail'  => 'purge_ui.processor_detail_form',
+    'processor_config'  => 'purge_ui.processor_config_form',
+    'processor_configd' => 'purge_ui.processor_config_dialog_form',
+    'processor_delete'  => 'purge_ui.processor_delete_form',
+    'queuer_add'        => 'purge_ui.queuer_add_form',
+    'queuer_detail'     => 'purge_ui.queuer_detail_form',
+    'queuer_config'     => 'purge_ui.queuer_config_form',
+    'queuer_configd'    => 'purge_ui.queuer_config_dialog_form',
+    'queuer_delete'     => 'purge_ui.queuer_delete_form',
+    'queue_detail'      => 'purge_ui.queue_detail_form',
+    'queue_change'      => 'purge_ui.queue_change_form',
+    'queue_browser'     => 'purge_ui.queue_browser_form',
+    'queue_empty'       => 'purge_ui.queue_empty_form',
+  ];
+
+  /**
    * Constructs a DashboardController object.
    *
    * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface $purge_diagnostics
@@ -144,17 +173,12 @@ class DashboardController extends ControllerBase {
     ];
     if (count($this->purgeQueuers)) {
       $add_delete_link = function(&$links, $id) {
-        $links['delete'] = $this->getDialogButton(
-          $this->t("Delete"),
-          Url::fromRoute('purge_ui.queuer_delete_form',
-          ['id' => $id])
-        );
+        $links['delete'] = $this->button($this->t("Delete"), ['queuer_delete', 'id' => $id]);
       };
       $add_configure_link = function(&$links, $queuer) {
         $definition = $queuer->getPluginDefinition();
         if (isset($definition['configform']) && !empty($definition['configform'])) {
-          $url = Url::fromRoute('purge_ui.queuer_config_dialog_form', ['id' => $queuer->getPluginId()]);
-          $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
+          $links['configure'] = $this->button($this->t("Configure"), ['queuer_configd', 'id' => $queuer->getPluginId()]);
         }
       };
       $build['table'] = [
@@ -183,7 +207,7 @@ class DashboardController extends ControllerBase {
     if (count($available)) {
       $build['add'] = [
         '#type' => 'operations',
-        '#links' => [$this->getDialogButton($this->t("Add queuer"), Url::fromRoute('purge_ui.queuer_add_form'))]
+        '#links' => [$this->button($this->t("Add queuer"), 'queuer_add')]
       ];
     }
     elseif (!count($this->purgeQueuers)) {
@@ -204,9 +228,9 @@ class DashboardController extends ControllerBase {
       '#title' => t('Queue'),
       '#open' => TRUE,
     ];
-    $build['change'] = $this->getDialogLink($this->purgeQueue->getLabel(), Url::fromRoute('purge_ui.queue_change_form'), '900');
-    $build['browser'] = $this->getDialogLink($this->t("Inspect data"), Url::fromRoute('purge_ui.queue_browser_form'), '900');
-    $build['empty'] = $this->getDialogLink($this->t("Empty the queue"), Url::fromRoute('purge_ui.queue_empty_form'));
+    $build['change'] = $this->link($this->purgeQueue->getLabel(), 'queue_change', '900');
+    $build['browser'] = $this->link($this->t("Inspect data"), 'queue_browser', '900');
+    $build['empty'] = $this->link($this->t("Empty the queue"),'queue_empty');
     return $build;
   }
 
@@ -225,17 +249,12 @@ class DashboardController extends ControllerBase {
     ];
     if (count($this->purgeProcessors)) {
       $add_delete_link = function(&$links, $id) {
-        $links['delete'] = $this->getDialogButton(
-          $this->t("Delete"),
-          Url::fromRoute('purge_ui.processor_delete_form',
-          ['id' => $id])
-        );
+        $links['delete'] = $this->button($this->t("Delete"), ['processor_delete', 'id' => $id]);
       };
       $add_configure_link = function(&$links, $processor) {
         $definition = $processor->getPluginDefinition();
         if (isset($definition['configform']) && !empty($definition['configform'])) {
-          $url = Url::fromRoute('purge_ui.processor_config_dialog_form', ['id' => $processor->getPluginId()]);
-          $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
+          $links['configure'] = $this->button($this->t("Configure"), ['processor_configd', 'id' => $processor->getPluginId()]);
         }
       };
       $build['table'] = [
@@ -264,7 +283,7 @@ class DashboardController extends ControllerBase {
     if (count($available)) {
       $build['add'] = [
         '#type' => 'operations',
-        '#links' => [$this->getDialogButton($this->t("Add processor"), Url::fromRoute('purge_ui.processor_add_form'))]
+        '#links' => [$this->button($this->t("Add processor"), 'processor_add')]
       ];
     }
     elseif (!count($this->purgeProcessors)) {
@@ -293,12 +312,11 @@ class DashboardController extends ControllerBase {
       '#open' => TRUE,
     ];
     $add_delete_link = function(&$links, $id, $definition) {
-      $links['delete'] = $this->getDialogButton($this->t("Delete"), Url::fromRoute('purge_ui.purger_delete_form', ['id' => $id]));
+      $links['delete'] = $this->button($this->t("Delete"), ['purger_delete', 'id' => $id]);
     };
     $add_configure_link = function(&$links, $id, $definition) {
       if (isset($definition['configform']) && !empty($definition['configform'])) {
-        $url = Url::fromRoute('purge_ui.purger_config_dialog_form', ['id' => $id]);
-        $links['configure'] = $this->getDialogButton($this->t("Configure"), $url);
+        $links['configure'] = $this->button($this->t("Configure"), ['purger_configd', 'id' => $id]);
       }
     };
 
@@ -387,7 +405,7 @@ class DashboardController extends ControllerBase {
         $operationsrow_cols['add'] = [
           'data' => [
             '#type' => 'operations',
-            '#links' => [$this->getDialogButton($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'))]
+            '#links' => [$this->button($this->t("Add purger"), 'purger_add')]
           ]
         ];
       }
@@ -402,7 +420,7 @@ class DashboardController extends ControllerBase {
     elseif (count($available)) {
       $build['add'] = [
         '#type' => 'operations',
-        '#links' => [$this->getDialogButton($this->t("Add purger"), Url::fromRoute('purge_ui.purger_add_form'))]
+        '#links' => [$this->button($this->t("Add purger"), 'purger_add')]
       ];
     }
     else {
@@ -431,14 +449,23 @@ class DashboardController extends ControllerBase {
    *
    * @param string $title
    *   The title of the button.
-   * @param \Drupal\Core\Url $url
-   *   The route to the modal dialog provider.
+   * @param string|array $route
+   *   The aliased route in $this->route or when passed in as array, element 0
+   *   is then the route alias and all other keys are passed on as arguments.
    * @param string $width
    *   Optional width of the dialog button to be generated.
    *
    *  @return array
    */
-  protected function getDialogButton($title, $url, $width = '60%') {
+  protected function button($title, $route, $width = '60%') {
+    if (is_array($route)) {
+      $args = $route;
+      $route = array_shift($args);
+      $url = Url::fromRoute($this->routes[$route], $args);
+    }
+    else {
+      $url = Url::fromRoute($this->routes[$route]);
+    }
     return [
       'title' => $title,
       'url' => $url,
@@ -455,14 +482,23 @@ class DashboardController extends ControllerBase {
    *
    * @param string $title
    *   The title of the link.
-   * @param \Drupal\Core\Url $url
-   *   The route to the modal dialog provider.
+   * @param string|array $route
+   *   The aliased route in $this->route or when passed in as array, element 0
+   *   is then the route alias and all other keys are passed on as arguments.
    * @param string $width
    *   Optional width of the dialog button to be generated.
    *
    *  @return array
    */
-  protected function getDialogLink($title, $url, $width = '60%') {
+  protected function link($title, $route, $width = '60%') {
+    if (is_array($route)) {
+      $args = $route;
+      $route = array_shift($args);
+      $url = Url::fromRoute($this->routes[$route], $args);
+    }
+    else {
+      $url = Url::fromRoute($this->routes[$route]);
+    }
     return [
       '#type' => 'link',
       '#title' => $title,

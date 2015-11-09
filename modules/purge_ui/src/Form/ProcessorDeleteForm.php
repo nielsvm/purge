@@ -140,7 +140,7 @@ class ProcessorDeleteForm extends ConfirmFormBase {
         }
       }
       $this->purgeProcessors->setPluginsEnabled($enabled);
-      $response->addCommand(new ReloadConfigFormCommand('edit-processors'));
+      $response->addCommand(new ReloadConfigFormCommand('edit-queue'));
     }
     $response->addCommand(new CloseModalDialogCommand());
     return $response;

@@ -22,6 +22,6 @@ abstract class ProcessorConfigFormBase extends PluginConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  protected $parent_id = 'edit-processors';
+  protected $parent_id = 'edit-queue';
 
 }

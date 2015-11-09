@@ -65,7 +65,7 @@ class QueuersAvailableDiagnosticCheck extends DiagnosticCheckBase implements Dia
   public function run() {
     if (count($this->purgeQueuers) === 0) {
       $this->value = '';
-      $this->recommendation = $this->t("There are no queuing services enabled, this means that you can only invalidate external caches manually or programmatically.");
+      $this->recommendation = $this->t("You have no queuers populating the queue!");
       return SELF::SEVERITY_WARNING;
     }
     elseif (count($this->purgeQueuers) === 1) {
@@ -81,7 +81,7 @@ class QueuersAvailableDiagnosticCheck extends DiagnosticCheckBase implements Dia
         $this->value[] = $queuer->getLabel();
       }
       $this->value = implode(', ', $this->value);
-      $this->recommendation = $this->t("You have multiple queueing services configured.");
+      $this->recommendation = $this->t("You have multiple queuers populating the queue.");
       return SELF::SEVERITY_OK;
     }
   }

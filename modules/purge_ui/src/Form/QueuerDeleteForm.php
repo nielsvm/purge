@@ -140,7 +140,7 @@ class QueuerDeleteForm extends ConfirmFormBase {
         }
       }
       $this->purgeQueuers->setPluginsEnabled($enabled);
-      $response->addCommand(new ReloadConfigFormCommand('edit-queuers'));
+      $response->addCommand(new ReloadConfigFormCommand('edit-queue'));
     }
     $response->addCommand(new CloseModalDialogCommand());
     return $response;

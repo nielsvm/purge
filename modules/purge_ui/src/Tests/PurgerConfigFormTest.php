@@ -14,7 +14,7 @@ use Drupal\purge\Tests\WebTestBase;
  * Tests the drop-in configuration form for purgers (modal dialog).
  *
  * @group purge_ui
- * @see \Drupal\purge_ui\Form\ConfigForm
+ * @see \Drupal\purge_ui\Controller\DashboardController
  * @see \Drupal\purge_ui\Controller\PurgerFormController
  * @see \Drupal\purge_ui\Form\PurgerConfigFormBase
  */

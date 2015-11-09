@@ -132,10 +132,8 @@ class DashboardController extends ControllerBase {
       '#markup' => $this->t('When content on your website changes, your purge setup will take care of refreshing external caching systems and CDNs.'),
     ];
     $build['diagnostics'] = $this->buildDiagnosticReport();
-    $build['purgers'] = $this->buildPurgers();
-    $build['processors'] = $this->buildProcessors();
-    $build['queuers'] = $this->buildQueuers();
-    $build['queue'] = $this->buildQueue();
+    $build['purgers']     = $this->buildPurgers();
+    $build['queue']       = $this->buildQueuersQueueProcessors();
     return $build;
   }
 
@@ -159,136 +157,126 @@ class DashboardController extends ControllerBase {
   }
 
   /**
-   * Visualize enabled queuers.
+   * Manage queuers, the queue itself and processors.
    *
    * @return array
    */
-  protected function buildQueuers() {
-    $available = $this->purgeQueuers->getPluginsAvailable();
+  protected function buildQueuersQueueProcessors() {
     $build = [
-      '#description' => '<p>' . $this->t('Queuers queue items in the queue upon certain events.') . '</p>',
-      '#type' => 'details',
-      '#title' => t('Queuers'),
-      '#open' => TRUE,
-    ];
-    if (count($this->purgeQueuers)) {
-      $add_delete_link = function(&$links, $id) {
-        $links['delete'] = $this->button($this->t("Delete"), ['queuer_delete', 'id' => $id]);
-      };
-      $add_configure_link = function(&$links, $queuer) {
-        $definition = $queuer->getPluginDefinition();
-        if (isset($definition['configform']) && !empty($definition['configform'])) {
-          $links['configure'] = $this->button($this->t("Configure"), ['queuer_configd', 'id' => $queuer->getPluginId()]);
-        }
-      };
-      $build['table'] = [
-        '#type' => 'table',
-        '#responsive' => TRUE,
-        '#header' => [
-          'title' => $this->t('Queuer'),
-          'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
-          'operations' => $this->t('Operations'),
-        ],
-      ];
-      foreach ($this->purgeQueuers as $queuer) {
-        $id = $queuer->getPluginId();
-        $ops = [];
-        $add_delete_link($ops, $id);
-        $add_configure_link($ops, $queuer);
-        $build['table']['#rows'][$id] = [
-          'data' => [
-            'title' => ['data' => ['#markup' => $queuer->getLabel()]],
-            'description' => ['data' => ['#markup' => $queuer->getDescription()]],
-            'operations' => ['data' => ['#type' => 'operations', '#links' => $ops]],
-          ],
-        ];
-      }
-    }
-    if (count($available)) {
-      $build['add'] = [
-        '#type' => 'operations',
-        '#links' => [$this->button($this->t("Add queuer"), 'queuer_add')]
-      ];
-    }
-    elseif (!count($this->purgeQueuers)) {
-      $build['#description'] = '<p><b>' . $this->t("No queuers available, install module(s) that provide them!") . '</b></p>';
-    }
-    return $build;
-  }
-
-  /**
-   * Add configuration elements for selecting the queue backend.
-   *
-   * @return array
-   */
-  protected function buildQueue() {
-    $build = [
-      '#description' => '<p>' . $this->t('Purge instructions are stored in a queue.') . '</p>',
+      '#description' => '<p>' . $this->t("The queue holds items that need refreshing, hold your mouse over the column titles for more details.") . '</p>',
       '#type' => 'details',
       '#title' => t('Queue'),
-      '#open' => TRUE,
+      '#open' => $this->request->get('edit-queue', FALSE) || (!count($this->purgeQueuers)) || (!count($this->purgeProcessors)),
     ];
-    $build['change'] = $this->link($this->purgeQueue->getLabel(), 'queue_change', '900');
-    $build['browser'] = $this->link($this->t("Inspect data"), 'queue_browser', '900');
-    $build['empty'] = $this->link($this->t("Empty the queue"),'queue_empty');
-    return $build;
-  }
-
-  /**
-   * Configure processors.
-   *
-   * @return array
-   */
-  protected function buildProcessors() {
-    $available = $this->purgeProcessors->getPluginsAvailable();
-    $build = [
-      '#description' => '<p>' . $this->t('Processors queue items in the queue upon certain events.') . '</p>',
-      '#type' => 'details',
-      '#title' => t('Processors'),
-      '#open' => TRUE,
-    ];
-    if (count($this->purgeProcessors)) {
-      $add_delete_link = function(&$links, $id) {
-        $links['delete'] = $this->button($this->t("Delete"), ['processor_delete', 'id' => $id]);
-      };
-      $add_configure_link = function(&$links, $processor) {
-        $definition = $processor->getPluginDefinition();
-        if (isset($definition['configform']) && !empty($definition['configform'])) {
-          $links['configure'] = $this->button($this->t("Configure"), ['processor_configd', 'id' => $processor->getPluginId()]);
-        }
-      };
-      $build['table'] = [
-        '#type' => 'table',
-        '#responsive' => TRUE,
-        '#header' => [
-          'title' => $this->t('Processor'),
-          'description' => ['data' => $this->t('Description'), 'class' => [RESPONSIVE_PRIORITY_LOW]],
-          'operations' => $this->t('Operations'),
+    $build['table'] = [
+      '#type' => 'table',
+      '#responsive' => TRUE,
+      '#header' => [
+        'queuers' => [
+          'data' => $this->t('Queuers'),
+          'title' => $this->t('Queuers add items to the queue upon certain events, that processors process later on.'),
         ],
-      ];
-      foreach ($this->purgeProcessors as $processor) {
-        $id = $processor->getPluginId();
-        $ops = [];
-        $add_delete_link($ops, $id);
-        $add_configure_link($ops, $processor);
-        $build['table']['#rows'][$id] = [
-          'data' => [
-            'title' => ['data' => ['#markup' => $processor->getLabel()]],
-            'description' => ['data' => ['#markup' => $processor->getDescription()]],
-            'operations' => ['data' => ['#type' => 'operations', '#links' => $ops]],
-          ],
-        ];
+        'queue' => [
+          'data' => $this->t('Queue'),
+          'title' => $this->t("The queue holds 'invalidation items', which instruct what needs to be invalidated from external caches."),
+        ],
+        'processors' => [
+          'data' => $this->t('Processors'),
+          'title' => $this->t('Processors are responsible for emptying the queue and putting the purgers to work each time they process. Processors can work the queue constantly or at timed intervals, it is up to you to configure a policy that makes sense for the traffic nature of your website. Multiple processors will not lead to any parallel-processing or conflicts, instead it simply means the queue is checked more often.'),
+        ],
+      ],
+    ];
+
+    /**
+     * Build the vertical colums.
+     */
+    $cols = [];
+    // Queuers.
+    $cols['queuers'] = [];
+    foreach ($this->purgeQueuers as $queuer) {
+      $definition = $queuer->getPluginDefinition();
+      $id = $queuer->getPluginId();
+      $ops = [];
+      $ops['details'] = $this->button($queuer->getLabel(), ['queuer_detail', 'id' => $id]);
+      if (isset($definition['configform']) && !empty($definition['configform'])) {
+        $ops['configure'] = $this->button($this->t("Configure"), ['queuer_configd', 'id' => $id]);
       }
+      $ops['delete'] = $this->button($this->t("Delete"), ['queuer_delete', 'id' => $id]);
+      $cols['queuers'][] = ['data' => ['#type' => 'operations', '#links' => $ops]];
     }
-    if (count($available)) {
-      $build['add'] = [
-        '#type' => 'operations',
-        '#links' => [$this->button($this->t("Add processor"), 'processor_add')]
-      ];
+    // Queue.
+    $ops = [];
+    $ops['details'] = $this->button($this->purgeQueue->getLabel(), 'queue_detail');
+    $ops['browser'] = $this->button($this->t('Inspect'), 'queue_browser', '900');
+    $ops['change'] = $this->button($this->t('Change engine'), 'queue_change', '900');
+    $ops['empty'] = $this->button($this->t('Empty'), 'queue_empty');
+    $cols['queue'][] = ['data' => ['#type' => 'operations', '#links' => $ops]];
+    // Processors.
+    $cols['processors'] = [];
+    foreach ($this->purgeProcessors as $processor) {
+      $definition = $processor->getPluginDefinition();
+      $id = $processor->getPluginId();
+      $ops = [];
+      $ops['details'] = $this->button($processor->getLabel(), ['processor_detail', 'id' => $id]);
+      if (isset($definition['configform']) && !empty($definition['configform'])) {
+        $ops['configure'] = $this->button($this->t("Configure"), ['processor_configd', 'id' => $id]);
+      }
+      $ops['delete'] = $this->button($this->t("Delete"), ['processor_delete', 'id' => $id]);
+      $cols['processors'][] = ['data' => ['#type' => 'operations', '#links' => $ops]];
+    }
+
+    /**
+     * Make all columns equal in length by adding padding rows (+closure.)
+     */
+    $equalize_columns = function(&$cols, $extrarows = 0) {
+      $rowstotal = 1;
+      foreach ($cols as $col => $rows) {
+        if (($rowcount = count($rows)) > $rowstotal) {
+          $rowstotal = $rowcount;
+        }
+      }
+      $rowstotal = $rowstotal + $extrarows;
+      $emptycell = ['data' => ['#markup' => '&nbsp;']];
+      foreach ($cols as $col => $rows) {
+        if ($missing = $rowstotal - count($rows)) {
+          for ($i = 0; $i < $missing; $i++) {
+            $cols[$col][] = $emptycell;
+          }
+        }
+      }
+    };
+    $equalize_columns($cols);
+
+    /**
+     * Add one last row with 'Add ...' buttons.
+     */
+    $equalize_columns($cols, 1);
+    if (count($this->purgeQueuers->getPluginsAvailable())) {
+      $cols['queuers'][] = ['data' => ['#type' => 'operations', '#links' => [$this->button($this->t("Add queuer"), 'queuer_add')]]];
+    }
+    elseif (!count($this->purgeQueuers)) {
+      $cols['queuers'][] = ['data' => ['#markup' => '<p><b>' . $this->t("Please install a module to add at least one queuer.") . '</b></p>']];
+    }
+    if (count($this->purgeProcessors->getPluginsAvailable())) {
+      $cols['processors'][] = ['data' => ['#type' => 'operations', '#links' => [$this->button($this->t("Add processor"), 'processor_add')]]];
     }
     elseif (!count($this->purgeProcessors)) {
-      $build['#description'] = '<p><b>' . $this->t("No processors available, install module(s) that provide them!") . '</b></p>';
+      $cols['processors'][] = ['data' => ['#markup' => '<p><b>' . $this->t("Please install a module to add at least one processor.") . '</b></p>']];
     }
+    $equalize_columns($cols);
+
+    /**
+     * Build the table rows.
+     */
+    foreach ($cols as $col => $rows) {
+      foreach ($rows as $i => $row) {
+        if (!isset($build['table']['#rows'][$i])) {
+          $build['table']['#rows'][$i] = ['data' => []];
+        }
+        $build['table']['#rows'][$i]['data'][$col] = $row;
+      }
+    }
+
     return $build;
   }
 
@@ -424,7 +412,7 @@ class DashboardController extends ControllerBase {
       ];
     }
     else {
-      $build['#description'] = '<p><b>' . $this->t("No purgers available, install module(s) that provide them!") . '</b></p>';
+      $build['#description'] = '<p><b>' . $this->t("Please install a module to add at least one purger.") . '</b></p>';
     }
     return $build;
   }

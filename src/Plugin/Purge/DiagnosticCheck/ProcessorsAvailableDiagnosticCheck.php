@@ -65,7 +65,7 @@ class ProcessorsAvailableDiagnosticCheck extends DiagnosticCheckBase implements 
   public function run() {
     if (count($this->purgeProcessors) === 0) {
       $this->value = '';
-      $this->recommendation = $this->t("There are no processors enabled, which means that your queue can build up and grow quickly.");
+      $this->recommendation = $this->t("You have no processors, the queue can now build up because of this.");
       return SELF::SEVERITY_WARNING;
     }
     elseif (count($this->purgeProcessors) === 1) {
@@ -81,7 +81,7 @@ class ProcessorsAvailableDiagnosticCheck extends DiagnosticCheckBase implements 
         $this->value[] = $processor->getLabel();
       }
       $this->value = implode(', ', $this->value);
-      $this->recommendation = $this->t("You have multiple processing services configured.");
+      $this->recommendation = $this->t("You have multiple processors working the queue.");
       return SELF::SEVERITY_OK;
     }
   }

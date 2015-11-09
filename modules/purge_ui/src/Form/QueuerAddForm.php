@@ -118,7 +118,7 @@ class QueuerAddForm extends ConfigFormBase {
       $enabled = $this->purgeQueuers->getPluginsEnabled();
       $enabled[] = $id;
       $this->purgeQueuers->setPluginsEnabled($enabled);
-      $response->addCommand(new ReloadConfigFormCommand('edit-queuers'));
+      $response->addCommand(new ReloadConfigFormCommand('edit-queue'));
     }
     return $response;
   }

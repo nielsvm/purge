@@ -22,6 +22,6 @@ abstract class QueuerConfigFormBase extends PluginConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  protected $parent_id = 'edit-queuers';
+  protected $parent_id = 'edit-queue';
 
 }

@@ -11,7 +11,7 @@ use Drupal\Core\Url;
 use Drupal\purge_ui\Tests\DashboardTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Controller\DashboardController - diagnostics section.
+ * Tests \Drupal\purge_ui\Controller\DashboardController::buildDiagnosticReport().
  *
  * @group purge_ui
  */
@@ -29,11 +29,11 @@ class DashboardDiagnosticsTest extends DashboardTestBase {
   ];
 
   /**
-   * Test the visual status report on the configuration form.
+   * Test the visual status report.
    *
-   * @see \Drupal\purge_ui\Form\ConfigForm::buildFormDiagnosticReport
+   * @see \Drupal\purge_ui\Controller\DashboardController::buildDiagnosticReport
    */
-  public function testFormDiagnosticReport() {
+  public function testDiagnosticReport() {
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->route);
     $this->assertRaw('system-status-report');

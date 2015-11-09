@@ -11,7 +11,7 @@ use Drupal\Core\Url;
 use Drupal\purge_ui\Tests\DashboardTestBase;
 
 /**
- * Tests \Drupal\purge_ui\Controller\DashboardController - purgers section.
+ * Tests \Drupal\purge_ui\Controller\DashboardController::buildPurgers().
  *
  * @group purge_ui
  */
@@ -32,9 +32,9 @@ class DashboardPurgersTest extends DashboardTestBase {
    *   the same time, core's markup guarantees should keep us safe. Having that
    *   said, for the purpose of testing, raw HTML checking is very accurate :-).
    *
-   * @see \Drupal\purge_ui\Form\ConfigForm::buildFormPurgers
+   * @see \Drupal\purge_ui\Controller\DashboardController::buildPurgers
    */
-  public function testFormPurgersSection() {
+  public function testPurgersSection() {
     $this->drupalLogin($this->admin_user);
     // Assert that without any enabled purgers, the form stays empty.
     $this->initializePurgersService();

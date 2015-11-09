@@ -118,7 +118,7 @@ class ProcessorAddForm extends ConfigFormBase {
       $enabled = $this->purgeProcessors->getPluginsEnabled();
       $enabled[] = $id;
       $this->purgeProcessors->setPluginsEnabled($enabled);
-      $response->addCommand(new ReloadConfigFormCommand('edit-processors'));
+      $response->addCommand(new ReloadConfigFormCommand('edit-queue'));
     }
     return $response;
   }

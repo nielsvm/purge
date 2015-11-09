@@ -80,6 +80,15 @@ class ConfigurationForm extends PurgerConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $settings = HttpPurgerSettings::load($this->getId($form_state));
 
+    // Name.
+    $form['name'] = [
+      '#title' => $this->t('Name'),
+      '#type' => 'textfield',
+      '#description' => $this->t('Unique name to describe this configuration with.'),
+      '#default_value' => $settings->name,
+      '#required' => TRUE,
+    ];
+
     // Invalidation type.
     $types = [];
     foreach ($this->purgeInvalidationFactory->getPlugins() as $type => $definition) {
@@ -225,6 +234,7 @@ class ConfigurationForm extends PurgerConfigFormBase {
    */
   public function submitFormSuccess(array &$form, FormStateInterface $form_state) {
     $settings = HttpPurgerSettings::load($this->getId($form_state));
+    $settings->name = $form_state->getValue('name');
     $settings->invalidationtype = $form_state->getValue('invalidationtype');
     $settings->hostname = $form_state->getValue('hostname');
     $settings->port = $form_state->getValue('port');

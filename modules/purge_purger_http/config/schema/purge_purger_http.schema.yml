@@ -2,6 +2,10 @@ purge_purger_http.settings.*:
   type: config_entity
   label: 'HTTP Purger'
   mapping:
+    name:
+      type: string
+      label: 'Name'
+      translatable: false
     id:
       type: string
       label: 'ID'

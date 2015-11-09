@@ -23,6 +23,13 @@ use Drupal\purge\Plugin\Purge\Purger\PurgerSettingsInterface;
 class HttpPurgerSettings extends PurgerSettingsBase implements PurgerSettingsInterface {
 
   /**
+   * The user interface readable name of this instance.
+   *
+   * @var string
+   */
+  public $name = '';
+
+  /**
    * The invalidation plugin ID that this instance is configured to invalidate.
    *
    * @var string

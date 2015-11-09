@@ -44,6 +44,7 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
   public function testFieldExistence() {
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->route);
+    $this->assertField('edit-name');
     $this->assertField('edit-invalidationtype');
     // Verify every HTTP settings field exists.
     $this->assertField('edit-hostname');
@@ -76,7 +77,8 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
     $form_state->addBuildInfo('args', [$this->formArgs]);
     $form_state->setValues([
         'connect_timeout' => 0.3,
-        'timeout' => 0.1
+        'timeout' => 0.1,
+        'name' => 'foobar',
       ]);
     $form = $this->getFormInstance();
     $this->formBuilder->submitForm($form, $form_state);
@@ -85,7 +87,8 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
     $form_state->addBuildInfo('args', [$this->formArgs]);
     $form_state->setValues([
         'connect_timeout' => 2.3,
-        'timeout' => 7.7
+        'timeout' => 7.7,
+        'name' => 'foobar',
       ]);
     $form = $this->getFormInstance();
     $this->formBuilder->submitForm($form, $form_state);
@@ -95,7 +98,8 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
     $form_state->addBuildInfo('args', [$this->formArgs]);
     $form_state->setValues([
         'connect_timeout' => 0.0,
-        'timeout' => 0.0
+        'timeout' => 0.0,
+        'name' => 'foobar',
       ]);
     $form = $this->getFormInstance();
     $this->formBuilder->submitForm($form, $form_state);
@@ -108,7 +112,8 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
     $form_state->addBuildInfo('args', [$this->formArgs]);
     $form_state->setValues([
         'connect_timeout' => 2.4,
-        'timeout' => 7.7
+        'timeout' => 7.7,
+        'name' => 'foobar',
       ]);
     $form = $this->getFormInstance();
     $this->formBuilder->submitForm($form, $form_state);
@@ -124,6 +129,7 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
   public function testFormSubmit() {
     $this->drupalLogin($this->admin_user);
     $edit = [
+      'name' => 'foobar',
       'invalidationtype' => 'wildcardurl',
       'hostname' => 'example.com',
       'port' => 8080,
@@ -137,6 +143,7 @@ class ConfigurationFormTest extends PurgerConfigFormTestBase {
     $this->drupalPostForm($this->route, $edit, t('Save configuration'));
     $this->drupalGet($this->route);
     // Load settings form page and test for new values.
+    $this->assertFieldById('edit-name', $edit['name']);
     $this->assertFieldById('edit-invalidationtype', $edit['invalidationtype']);
     // HTTP settings
     $this->assertFieldById('edit-hostname', $edit['hostname']);

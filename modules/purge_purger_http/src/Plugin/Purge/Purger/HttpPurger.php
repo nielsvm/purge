@@ -110,6 +110,18 @@ class HttpPurger extends PurgerBase implements PurgerInterface {
   /**
    * {@inheritdoc}
    */
+  public function getLabel() {
+    if ($this->settings->name) {
+      return $this->settings->name;
+    }
+    else {
+      return parent::getLabel();
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getTimeHint() {
     // Theoretically connection timeouts and general timeouts can add up, so
     // we add up our assumption of the worst possible time it takes as well.

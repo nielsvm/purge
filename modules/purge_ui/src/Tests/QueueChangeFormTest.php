@@ -67,6 +67,7 @@ class QueueChangeFormTest extends WebTestBase {
     // Assert some of the page presentation.
     $this->assertRaw('Change queue engine');
     $this->assertRaw('The queue engine is the underlying plugin which stores');
+    $this->assertRaw('when you change the queue, it will be emptied as well');
     $this->assertRaw('Description');
     $this->assertRaw('Cancel');
     $this->assertRaw('Change');

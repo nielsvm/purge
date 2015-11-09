@@ -61,7 +61,7 @@ class QueueChangeForm extends FormBase {
     $form['warning'] = [
       '#prefix' => '<p>',
       '#suffix' => '</p>',
-      '#markup' => $this->t("The queue engine is the underlying plugin which stores, retrieves and deletes invalidation instructions in the system. When queuers add items to the queue or when processors claim items from it, it is this engine that stores it physically. For most cases the <b>database</b> engine is sufficient, however, in extremely busy scenarios more efficient engines can bring the necessary relief."),
+      '#markup' => $this->t("<p>The queue engine is the underlying plugin which stores, retrieves and deletes invalidation instructions in the system. When queuers add items to the queue or when processors claim items from it, it is this engine that stores it physically. For most cases the <b>database</b> engine is sufficient, however, in extremely busy scenarios more efficient engines can bring the necessary relief.</p><p><b>Warning: </b> when you change the queue, it will be emptied as well!</p>"),
     ];
     $form['plugin_id'] = [
       '#type' => 'tableselect',

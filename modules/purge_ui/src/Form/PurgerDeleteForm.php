@@ -114,7 +114,10 @@ class PurgerDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to delete @label?', ['@label' => $this->purgePurgers->getLabels()[$this->id]]);
+    if (isset($this->purgePurgers->getLabels()[$this->id])) {
+      return $this->t('Are you sure you want to delete @label?', ['@label' => $this->purgePurgers->getLabels()[$this->id]]);
+    }
+    return $this->t('Are you sure you want to delete this purger?');
   }
 
   /**

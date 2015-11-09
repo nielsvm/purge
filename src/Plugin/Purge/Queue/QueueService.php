@@ -478,6 +478,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
     }
     $this->configFactory->getEditable('purge.plugins')->set('queue', $plugin_id)->save();
     $this->reload();
+    $this->emptyQueue();
   }
 
   /**

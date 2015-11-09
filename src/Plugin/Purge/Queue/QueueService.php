@@ -95,7 +95,6 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    * {@inheritdoc}
    */
   public function add(array $invalidations) {
-    $this->initializeQueue();
     foreach ($invalidations as $invalidation) {
       if (!$this->buffer->has($invalidation)) {
         $this->buffer->set($invalidation, TxBuffer::ADDING);
@@ -108,7 +107,6 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    * {@inheritdoc}
    */
   public function claim($claims = NULL, $lease_time = NULL) {
-    $this->initializeQueue();
     $this->commitAdding();
     $this->commitReleasing();
     $this->commitDeleting();
@@ -129,6 +127,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
     }
 
     // Claim one or several items out of the queue or finish the call.
+    $this->initializeQueue();
     if ($claims === 1) {
       if (!($item = $this->queue->claimItem($lease_time))) {
         return [];
@@ -161,8 +160,6 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    * Commit all actions in the internal buffer to the queue.
    */
   public function commit() {
-    $this->initializeQueue();
-
     if (!count($this->buffer)) {
       return;
     }
@@ -175,12 +172,13 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    * Commit all adding invalidations in the buffer to the queue.
    */
   private function commitAdding() {
-    $this->initializeQueue();
-
     $items = $this->buffer->getFiltered(TxBuffer::ADDING);
     if (empty($items)) {
       return;
     }
+
+    // Since we do have items to add, initialize the queue.
+    $this->initializeQueue();
 
     // Small anonymous function that fetches the 'data' field for createItem()
     // and createItemMultiple() - keeps queue plugins out of Purge specifics.
@@ -230,12 +228,11 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    * Commit all releasing invalidations in the buffer to the queue.
    */
   private function commitReleasing() {
-    $this->initializeQueue();
-
     $items = $this->buffer->getFiltered(TxBuffer::RELEASING);
     if (empty($items)) {
       return;
     }
+    $this->initializeQueue();
     if (count($items) === 1) {
       $invalidation = current($items);
       $this->queue->releaseItem(new ProxyItem($invalidation, $this->buffer));
@@ -255,12 +252,11 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    * Commit all deleting invalidations in the buffer to the queue.
    */
   private function commitDeleting() {
-    $this->initializeQueue();
-
     $items = $this->buffer->getFiltered(TxBuffer::DELETING);
     if (empty($items)) {
       return;
     }
+    $this->initializeQueue();
     if (count($items) === 1) {
       $invalidation = current($items);
       $this->queue->deleteItem(new ProxyItem($invalidation, $this->buffer));
@@ -280,7 +276,6 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    * {@inheritdoc}
    */
   public function delete(array $invalidations) {
-    $this->initializeQueue();
     $this->buffer->set($invalidations, TxBuffer::DELETING);
     $this->purgeQueueStats->claimed()->decrement(count($invalidations));
     $this->purgeQueueStats->deleted()->increment(count($invalidations));
@@ -374,8 +369,6 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    * {@inheritdoc}
    */
   public function handleResults(array $invalidations) {
-    $this->initializeQueue();
-
     foreach($invalidations as $invalidation) {
 
       // Although PurgersServiceInterface::invalidate() always resets context
@@ -415,7 +408,6 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    * {@inheritdoc}
    */
   public function release(array $invalidations) {
-    $this->initializeQueue();
     $this->buffer->set($invalidations, TxBuffer::RELEASING);
     $this->purgeQueueStats->claimed()->decrement(count($invalidations));
   }
@@ -438,9 +430,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    */
   public function selectPage($page = 1) {
     $this->initializeQueue();
-    $this->commitAdding();
-    $this->commitReleasing();
-    $this->commitDeleting();
+    $this->commit();
     $immutables = [];
     foreach ($this->queue->selectPage($page) as $item) {
       $immutables[] = $this->purgeInvalidationFactory

@@ -94,17 +94,19 @@ class DashboardController extends ControllerBase {
    * @return array
    */
   public function build() {
-    $build = [];
-    $build['#attached']['library'][] = 'core/drupal.ajax';
+    $build = [
+      '#theme' => ['purge_ui_dashboard'],
+      '#attached' => ['library' => ['purge_ui/purge_ui.dashboard']],
+    ];
     $build['info'] = [
       '#type' => 'item',
       '#markup' => $this->t('When content on your website changes, your purge setup will take care of refreshing external caching systems and CDNs.'),
     ];
-    $build[] = $this->buildDiagnosticReport();
-    $build[] = $this->buildQueuers();
-    $build[] = $this->buildQueue();
-    $build[] = $this->buildPurgers();
-    $build[] = $this->buildProcessors();
+    $build['diagnostics'] = $this->buildDiagnosticReport();
+    $build['purgers'] = $this->buildPurgers();
+    $build['processors'] = $this->buildProcessors();
+    $build['queuers'] = $this->buildQueuers();
+    $build['queue'] = $this->buildQueue();
     return $build;
   }
 
@@ -115,12 +117,12 @@ class DashboardController extends ControllerBase {
    *   The elements inside the queue fieldset.
    */
   protected function buildDiagnosticReport() {
-    $build['diagnostics'] = [
-      '#open' => $this->purgeDiagnostics->isSystemShowingSmoke() || $this->purgeDiagnostics->isSystemOnFire(),
-      '#type' => 'details',
+    $build['status'] = [
+      '#type' => 'fieldset',
       '#title' => t('Status'),
+      '#attributes' => [],
     ];
-    $build['diagnostics']['report'] = [
+    $build['status']['report'] = [
       '#theme' => 'status_report',
       '#requirements' => $this->purgeDiagnostics->getRequirementsArray()
     ];
@@ -209,7 +211,7 @@ class DashboardController extends ControllerBase {
   }
 
   /**
-   * Visualize enabled processors.
+   * Configure processors.
    *
    * @return array
    */
@@ -272,7 +274,7 @@ class DashboardController extends ControllerBase {
   }
 
   /**
-   * Add new- and configure enabled purgers, support matrix.
+   * Add new- and configure purgers, support matrix.
    *
    * @return array
    */

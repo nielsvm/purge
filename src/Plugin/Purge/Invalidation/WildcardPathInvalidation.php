@@ -16,7 +16,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
  *
  * @PurgeInvalidation(
  *   id = "wildcardpath",
- *   label = @Translation("Path with wildcard"),
+ *   label = @Translation("Path wildcard"),
  *   description = @Translation("Invalidates by path."),
  *   examples = {"news/*"},
  *   expression_required = TRUE,

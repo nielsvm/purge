@@ -16,7 +16,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
  *
  * @PurgeInvalidation(
  *   id = "wildcardurl",
- *   label = @Translation("Url with wildcard"),
+ *   label = @Translation("Url wildcard"),
  *   description = @Translation("Invalidates by URL."),
  *   examples = {"http://site.com/node/*"},
  *   expression_required = TRUE,

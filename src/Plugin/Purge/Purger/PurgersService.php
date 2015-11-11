@@ -11,13 +11,14 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
+use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
 use Drupal\purge\Plugin\Purge\Purger\CapacityTracker;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
-use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 
 /**
  * Provides the service that distributes access to one or more purgers.
@@ -311,7 +312,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function invalidate(array $invalidations) {
+  public function invalidate(ProcessorInterface $processor, array $invalidations) {
     $execution_time_start = microtime(TRUE);
     $capacity_tracker = $this->capacityTracker();
 

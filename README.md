@@ -174,8 +174,10 @@ instantiate invalidation objects and to feed them to the purgers service.
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
 $purgeInvalidationFactory = \Drupal::service('purge.invalidation.factory');
+$purgeProcessors = \Drupal::service('purge.processors');
 $purgePurgers = \Drupal::service('purge.purgers');
 
+$processor = $purgeProcessors->get('myprocessor');
 $invalidations = [
   $purgeInvalidationFactory->get('tag', 'node:1'),
   $purgeInvalidationFactory->get('tag', 'node:2'),
@@ -184,7 +186,7 @@ $invalidations = [
 ];
 
 try {
-  $purgePurgers->invalidate($invalidations);
+  $purgePurgers->invalidate($processor, $invalidations);
 }
 catch (DiagnosticsException $e) {
   // Diagnostic exceptions happen when the system cannot purge.
@@ -226,11 +228,13 @@ queue and feed those to the purgers service:
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
 $purgePurgers = \Drupal::service('purge.purgers');
+$purgeProcessors = \Drupal::service('purge.processors');
 $purgeQueue = \Drupal::service('purge.queue');
 
 $claims = $purgeQueue->claim();
+$processor = $purgeProcessors->get('myprocessor');
 try {
-  $purgePurgers->invalidate($claims);
+  $purgePurgers->invalidate($processor, $claims);
 }
 catch (DiagnosticsException $e) {
   // Diagnostic exceptions happen when the system cannot purge.

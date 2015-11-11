@@ -7,9 +7,10 @@
 
 namespace Drupal\purge\Plugin\Purge\Purger;
 
-use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\ServiceInterface;
 use Drupal\purge\ModifiableServiceInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
+use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
 
 /**
  * Describes a service that distributes access to one or more purgers.
@@ -98,6 +99,8 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
    * invalidation at that given time, you can set it as such and it will be
    * offered again later.
    *
+   * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorInterface $processor
+   *   The processor plugin that is initiating cache invalidation.
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations
    *   Non-associative array of invalidation objects that each describe what
    *   needs to be invalidated by the external caching system. Usually these
@@ -129,7 +132,7 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
    *
    * @return void
    */
-  public function invalidate(array $invalidations);
+  public function invalidate(ProcessorInterface $processor, array $invalidations);
 
   /**
    * Move the purger instance down in the plugin execution order.

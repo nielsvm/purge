@@ -25,7 +25,12 @@ class ServiceTest extends KernelServiceTestBase {
    *
    * @var array
    */
-  public static $modules = ['system'];
+  public static $modules = ['system', 'purge_queuer_test'];
+
+  /**
+   * @var \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface
+   */
+  protected $queuer;
 
   /**
    * {@inheritdoc}
@@ -34,6 +39,8 @@ class ServiceTest extends KernelServiceTestBase {
     parent::setUp();
     $this->installSchema('system', ['queue']);
     $this->initializeQueueService();
+    $this->initializeQueuersService();
+    $this->queuer = $this->purgeQueuers->get('a');
     $this->purgeQueue->emptyQueue();
     $this->initializeInvalidationFactoryService();
   }
@@ -86,7 +93,7 @@ class ServiceTest extends KernelServiceTestBase {
   public function testAddClaim() {
     $this->assertTrue(empty($this->purgeQueue->claim(10, 10)));
     $i = $this->getInvalidations(1);
-    $this->assertNull($this->purgeQueue->add([$i]));
+    $this->assertNull($this->purgeQueue->add($this->queuer, [$i]));
     $claims = $this->purgeQueue->claim(100, 10);
     $this->assertTrue(is_array($claims));
     $this->assertEqual(1, count($claims));
@@ -95,7 +102,7 @@ class ServiceTest extends KernelServiceTestBase {
     $this->assertEqual($claims[0]->getState(), InvalidationInterface::FRESH);
     // Now test with more objects.
     $this->purgeQueue->emptyQueue();
-    $this->purgeQueue->add($this->getInvalidations(50));
+    $this->purgeQueue->add($this->queuer, $this->getInvalidations(50));
     $this->assertEqual(50, $this->purgeQueue->numberOfItems());
     $this->assertTrue(37 === count($this->purgeQueue->claim(37, 10)));
     $this->assertTrue(13 === count($this->purgeQueue->claim(15, 10)));
@@ -105,7 +112,7 @@ class ServiceTest extends KernelServiceTestBase {
    * Tests \Drupal\purge\Plugin\Purge\Queue\QueueService::emptyQueue
    */
   public function testEmptyQueue() {
-    $this->purgeQueue->add($this->getInvalidations(10));
+    $this->purgeQueue->add($this->queuer, $this->getInvalidations(10));
     $this->purgeQueue->emptyQueue();
     $this->assertTrue(empty($this->purgeQueue->claim(10, 10)));
     $this->assertTrue(is_int($this->purgeQueue->numberOfItems()));
@@ -132,7 +139,7 @@ class ServiceTest extends KernelServiceTestBase {
     foreach($invalidations as $i => $invalidation) {
       $invalidation->setStateContext(NULL);
     }
-    $this->purgeQueue->add($invalidations);
+    $this->purgeQueue->add($this->queuer, $invalidations);
     // Reload so that \Drupal\purge\Plugin\Purge\Queue\QueueService::$buffer gets cleaned too.
     $this->purgeQueue->reload();
     // Now it has to refetch all objects, assure their states.
@@ -148,7 +155,7 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testRelease() {
     $this->assertTrue(empty($this->purgeQueue->claim(10, 10)));
-    $this->purgeQueue->add($this->getInvalidations(4));
+    $this->purgeQueue->add($this->queuer, $this->getInvalidations(4));
     $claims = $this->purgeQueue->claim(4, 10);
     $this->assertTrue(empty($this->purgeQueue->claim(10, 10)));
     $this->purgeQueue->release([$claims[0]]);
@@ -166,7 +173,7 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testDelete() {
     $this->assertTrue(empty($this->purgeQueue->claim(10, 10)));
-    $this->purgeQueue->add($this->getInvalidations(3));
+    $this->purgeQueue->add($this->queuer, $this->getInvalidations(3));
     $claims = $this->purgeQueue->claim(3, 1);
     $this->purgeQueue->delete([array_pop($claims)]);
     sleep(4);
@@ -181,7 +188,7 @@ class ServiceTest extends KernelServiceTestBase {
    * Tests \Drupal\purge\Plugin\Purge\Queue\QueueService::handleResults
    */
   public function testHandleResults() {
-    $this->purgeQueue->add($this->getInvalidations(5));
+    $this->purgeQueue->add($this->queuer, $this->getInvalidations(5));
 
     // Claim for 1s, mark as purged and assert it gets deleted.
     $claims = $this->purgeQueue->claim(1, 10);

@@ -77,7 +77,10 @@ class PurgerAddForm extends ConfigFormBase {
         unset($plugins[$plugin_id]);
       }
       else {
-        $plugins[$plugin_id] = $definition['label'];
+        $plugins[$plugin_id] = $this->t('<b>@label</b><br />@description', [
+          '@label' => $definition['label'],
+          '@description' => $definition['description'],
+        ]);
       }
     }
     $form['plugin_id'] = [

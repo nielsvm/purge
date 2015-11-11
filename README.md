@@ -1,6 +1,5 @@
 # Purge
 ##### _The modular external cache invalidation framework_
-------------------------------------------------------------------------------
 
 The Purge module for Drupal 8 enables invalidation of content from external
 caches, reverse proxies and CDN platforms. The technology-agnostic plugin

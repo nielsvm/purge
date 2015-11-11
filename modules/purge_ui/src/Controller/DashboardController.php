@@ -119,6 +119,21 @@ class DashboardController extends ControllerBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('purge.diagnostics'),
+      $container->get('purge.invalidation.factory'),
+      $container->get('purge.processors'),
+      $container->get('purge.purgers'),
+      $container->get('purge.queue'),
+      $container->get('purge.queuers'),
+      $container->get('request_stack')->getCurrentRequest()
+    );
+  }
+
+  /**
    * Build all dashboard sections.
    *
    * @return array
@@ -151,6 +166,98 @@ class DashboardController extends ControllerBase {
       '#theme' => 'status_report',
       '#requirements' => $this->purgeDiagnostics->getRequirementsArray()
     ];
+    return $build;
+  }
+
+  /**
+   * Manage purgers and visualize the types they support.
+   *
+   * @return array
+   */
+  protected function buildPurgers() {
+    extract($this->getRenderLocals());
+    $build = $details($this->t('Cache Invalidation'));
+    $build['#description'] = $p($this->t("Each layer of caching on top of your site is cleared by a purger. Purgers are provided by third-party modules and support one or more types of cache invalidation."));
+    $build['t'] = $table(['layer' => $this->t('Caching layer'),]);
+    foreach ($this->purgeInvalidationFactory->getPlugins() as $type) {
+      $label = $type['label'];
+      if (strlen($type['label']) > 4) {
+        $label = Unicode::truncate($type['label'], 1, FALSE);
+      }
+      $build['t']['#header'][$type['id']] = [
+        'data' => $label,
+        'title' => $this->t('@type - @description', array('@type' => $type['label'], '@description' => $type['description'])),
+        'class' => [in_array($type['id'], ['tag', 'path', 'url']) ? RESPONSIVE_PRIORITY_MEDIUM : RESPONSIVE_PRIORITY_LOW],
+      ];
+    }
+
+    // Visualize Drupal core as part of the cache invalidation onion.
+    $row_new($build['t'], '_drupal');
+    foreach ($build['t']['#header'] as $type => $definition) {
+      if ($type === 'layer') {
+        $row_set($build['t'], '_drupal', $type, $cell_markup($b($this->t("Drupal Origin"))));
+      }
+      elseif ($type === 'tag') {
+        $checkmark = $cell_checked($this->t('Supported'));
+        $checkmark['data']['#attributes']['supports'] = 'drupal-' . $type;
+        $row_set($build['t'], '_drupal', $type, $checkmark);
+      }
+    }
+
+    // Iterate the purgers and add controls and checkmarks.
+    $definitions = $this->purgePurgers->getPlugins();
+    $types_by_purger = $this->purgePurgers->getTypesByPurger();
+    $enabled = $this->purgePurgers->getPluginsEnabled();
+    $rindex = 1;
+    foreach ($this->purgePurgers->getLabels() as $id => $label) {
+      $row_new($build['t'], $id);
+      // Add checkmarks to visualize which purgers support invalidating what.
+      foreach ($build['t']['#header'] as $type => $definition) {
+        if (in_array($type, $types_by_purger[$id])) {
+          $checkmark = $cell_checked($this->t('Supported'));
+          $checkmark['data']['#attributes']['supports'] = $id . '-' . $type;
+          $row_set($build['t'], $id, $type, $checkmark);
+        }
+      }
+      // Build the operation links from which users can select common actions.
+      $definition = $definitions[$enabled[$id]];
+      $ops = [];
+      $ops['detail'] = $button($label, ['purger_detail', 'id' => $id]);
+      if (isset($definition['configform']) && !empty($definition['configform'])) {
+        $ops['configure'] = $button($this->t("Configure"), ['purger_configd', 'id' => $id]);
+      }
+      $ops['delete'] = $button($this->t("Delete"), ['purger_delete', 'id' => $id]);
+      if (count($enabled) !== 1) {
+        if ($rindex !== 1) {
+          $ops['up'] = $button($this->t("Move up"), ['purger_up', 'id' => $id]);
+        }
+        if ($rindex !== count($enabled)) {
+          $ops['down'] = $button($this->t("Move down"), ['purger_down', 'id' => $id]);
+        }
+      }
+      // Render the operation links into the 'layer' cell.
+      $row_set($build['t'], $id, 'layer', $cell_ops($ops));
+      $rindex++;
+      // Add another visual layer if the purger comes with a cooldown time.
+      if ($sec = $this->purgePurgers->capacityTracker()->getCooldownTime($id)) {
+        $row_new($build['t'], $id . '_wait');
+        $row_set($build['t'], $id . '_wait', 'layer', $cell_markup($i($this->t("@sec seconds cooldown", ['@sec' => $sec]))));
+      }
+    }
+
+    // Add two rows - the first is just spacing - with a button to add purgers.
+    $row_new($build['t'], '_add');
+    if (count($this->purgePurgers->getPluginsAvailable())) {
+      $row_set($build['t'], '_add', 'layer', $cell_ops([$button($this->t("Add purger"), 'purger_add')]));
+    }
+    elseif (!count($this->purgePurgers->getPluginsEnabled())) {
+      $row_set($build['t'], '_add', 'layer', $cell_markup($b($this->t("Please install a module to add at least one purger."))));
+    }
+
+    // Add a row that visualizes www as part of the cache invalidation onion.
+    $row_new($build['t'], '_www');
+    $row_set($build['t'], '_www', 'layer', $cell_markup($b($this->t("Public Endpoint"))));
+
     return $build;
   }
 
@@ -242,113 +349,6 @@ class DashboardController extends ControllerBase {
     }
 
     return $build;
-  }
-
-  /**
-   * Manage purgers and visualize the types they support.
-   *
-   * @return array
-   */
-  protected function buildPurgers() {
-    extract($this->getRenderLocals());
-    $build = $details($this->t('Cache Invalidation'));
-    $build['#description'] = $p($this->t("Purgers are provided by third-party modules and clear content from external caching systems."));
-    $build['t'] = $table(['layer' => $this->t('Caching layer'),]);
-    foreach ($this->purgeInvalidationFactory->getPlugins() as $type) {
-      $label = $type['label'];
-      if (strlen($type['label']) > 4) {
-        $label = Unicode::truncate($type['label'], 1, FALSE);
-      }
-      $build['t']['#header'][$type['id']] = [
-        'data' => $label,
-        'title' => $this->t('@type - @description', array('@type' => $type['label'], '@description' => $type['description'])),
-        'class' => [in_array($type['id'], ['tag', 'path', 'url']) ? RESPONSIVE_PRIORITY_MEDIUM : RESPONSIVE_PRIORITY_LOW],
-      ];
-    }
-
-    // Visualize Drupal core as part of the cache invalidation onion.
-    $row_new($build['t'], '_drupal');
-    foreach ($build['t']['#header'] as $type => $definition) {
-      if ($type === 'layer') {
-        $row_set($build['t'], '_drupal', $type, $cell_markup($b($this->t("Drupal Origin"))));
-      }
-      elseif ($type === 'tag') {
-        $checkmark = $cell_checked($this->t('Supported'));
-        $checkmark['data']['#attributes']['supports'] = 'drupal-' . $type;
-        $row_set($build['t'], '_drupal', $type, $checkmark);
-      }
-    }
-
-    // Iterate the purgers and add controls and checkmarks.
-    $definitions = $this->purgePurgers->getPlugins();
-    $types_by_purger = $this->purgePurgers->getTypesByPurger();
-    $enabled = $this->purgePurgers->getPluginsEnabled();
-    $rindex = 1;
-    foreach ($this->purgePurgers->getLabels() as $id => $label) {
-      $row_new($build['t'], $id);
-      // Add checkmarks to visualize which purgers support invalidating what.
-      foreach ($build['t']['#header'] as $type => $definition) {
-        if (in_array($type, $types_by_purger[$id])) {
-          $checkmark = $cell_checked($this->t('Supported'));
-          $checkmark['data']['#attributes']['supports'] = $id . '-' . $type;
-          $row_set($build['t'], $id, $type, $checkmark);
-        }
-      }
-      // Build the operation links from which users can select common actions.
-      $definition = $definitions[$enabled[$id]];
-      $ops = [];
-      $ops['detail'] = $button($label, ['purger_detail', 'id' => $id]);
-      if (isset($definition['configform']) && !empty($definition['configform'])) {
-        $ops['configure'] = $button($this->t("Configure"), ['purger_configd', 'id' => $id]);
-      }
-      $ops['delete'] = $button($this->t("Delete"), ['purger_delete', 'id' => $id]);
-      if (count($enabled) !== 1) {
-        if ($rindex !== 1) {
-          $ops['up'] = $button($this->t("Move up"), ['purger_up', 'id' => $id]);
-        }
-        if ($rindex !== count($enabled)) {
-          $ops['down'] = $button($this->t("Move down"), ['purger_down', 'id' => $id]);
-        }
-      }
-      // Render the operation links into the 'layer' cell.
-      $row_set($build['t'], $id, 'layer', $cell_ops($ops));
-      $rindex++;
-      // Add another visual layer if the purger comes with a cooldown time.
-      if ($sec = $this->purgePurgers->capacityTracker()->getCooldownTime($id)) {
-        $row_new($build['t'], $id . '_wait');
-        $row_set($build['t'], $id . '_wait', 'layer', $cell_markup($i($this->t("@sec seconds cooldown", ['@sec' => $sec]))));
-      }
-    }
-
-    // Add two rows - the first is just spacing - with a button to add purgers.
-    $row_new($build['t'], '_add');
-    if (count($this->purgePurgers->getPluginsAvailable())) {
-      $row_set($build['t'], '_add', 'layer', $cell_ops([$button($this->t("Add purger"), 'purger_add')]));
-    }
-    elseif (!count($this->purgePurgers->getPluginsEnabled())) {
-      $row_set($build['t'], '_add', 'layer', $cell_markup($b($this->t("Please install a module to add at least one purger."))));
-    }
-
-    // Add a row that visualizes www as part of the cache invalidation onion.
-    $row_new($build['t'], '_www');
-    $row_set($build['t'], '_www', 'layer', $cell_markup($b($this->t("Public Endpoint"))));
-
-    return $build;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('purge.diagnostics'),
-      $container->get('purge.invalidation.factory'),
-      $container->get('purge.processors'),
-      $container->get('purge.purgers'),
-      $container->get('purge.queue'),
-      $container->get('purge.queuers'),
-      $container->get('request_stack')->getCurrentRequest()
-    );
   }
 
   /**

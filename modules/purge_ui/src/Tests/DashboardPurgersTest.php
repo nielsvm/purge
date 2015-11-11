@@ -39,7 +39,7 @@ class DashboardPurgersTest extends DashboardTestBase {
     // Assert that without any enabled purgers, the form stays empty.
     $this->initializePurgersService();
     $this->drupalGet($this->route);
-    $this->assertRaw('Purgers are provided by third-party modules and clear content from external caching systems.');
+    $this->assertRaw('Each layer of caching on top of your site is cleared by a purger. Purgers are provided by third-party modules and support one or more types of cache invalidation.');
     $this->assertRaw('Drupal Origin');
     $this->assertRaw('Public Endpoint');
     $this->assertNoRaw('Purger A</th>');

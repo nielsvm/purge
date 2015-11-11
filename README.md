@@ -146,8 +146,10 @@ object so that the queue knows who is adding the given items.
 
 ```
 $purgeInvalidationFactory = \Drupal::service('purge.invalidation.factory');
+$purgeQueuers = \Drupal::service('purge.queuers');
 $purgeQueue = \Drupal::service('purge.queue');
 
+$queuer = $purgeQueuers->get('myqueuer');
 $invalidations = [
   $purgeInvalidationFactory->get('tag', 'node:1'),
   $purgeInvalidationFactory->get('tag', 'node:2'),
@@ -155,7 +157,7 @@ $invalidations = [
   $purgeInvalidationFactory->get('wildcardpath', 'news/*'),
 ];
 
-$purgeQueue->add(invalidations);
+$purgeQueue->add($queuer, $invalidations);
 ```
 
 What happens now depends on the **processors you configured**, as some might

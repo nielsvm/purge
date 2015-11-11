@@ -10,6 +10,7 @@ namespace Drupal\purge\Plugin\Purge\Queue;
 use Drupal\purge\ServiceInterface;
 use Drupal\purge\ModifiableServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
+use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
 
 /**
  * Describes a service that lets invalidations interact with a queue backend.
@@ -19,6 +20,8 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
   /**
    * Add invalidation objects to the queue, schedule for later purging.
    *
+   * @param \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface $queuer
+   *   The queuer plugin that is queueing the invalidation objects.
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations
    *   A non-associative array with invalidation objects to be added to the
    *   queue. After the items have been added to the queue, they can be claimed
@@ -26,7 +29,7 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
    *
    * @return void
    */
-  public function add(array $invalidations);
+  public function add(QueuerInterface $queuer, array $invalidations);
 
   /**
    * Claim invalidation objects from the queue.

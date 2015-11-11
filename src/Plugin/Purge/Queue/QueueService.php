@@ -15,6 +15,7 @@ use Drupal\purge\ModifiableServiceBaseTrait;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
+use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
 use Drupal\purge\Plugin\Purge\Queue\Exception\UnexpectedServiceConditionException;
 use Drupal\purge\Plugin\Purge\Queue\ProxyItem;
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
@@ -94,7 +95,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   /**
    * {@inheritdoc}
    */
-  public function add(array $invalidations) {
+  public function add(QueuerInterface $queuer, array $invalidations) {
     foreach ($invalidations as $invalidation) {
       if (!$this->buffer->has($invalidation)) {
         $this->buffer->set($invalidation, TxBuffer::ADDING);

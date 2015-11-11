@@ -16,7 +16,7 @@ For most simple configurations, start with:
 * ``drush en purge purge_ui purge_queuer_coretags purge_processor_cron --yes``
 * Head over to [http://mysite/admin/config/development/performance/purge](http://mysite/admin/config/development/performance/purge)
 * Now you need to install (and probably configure) a third-party module that
-  provides a **Purger**. If no module supports invalidation of your cache layer
+  provides a **purger**. If no module supports invalidation of your cache layer
   and doing so works over HTTP, then use the generic ``purge_purger_http``.
 
 The framework explained

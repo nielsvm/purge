@@ -17,19 +17,17 @@ For most simple configurations, start with:
 * Head over to [http://mysite/admin/config/development/performance/purge](http://mysite/admin/config/development/performance/purge)
 * Now you need to install (and probably configure) a third-party module that
   provides a **purger**. If no module supports invalidation of your cache layer
-  and doing so works over HTTP, then use the generic ``purge_purger_http``.
+  and doing so works over HTTP, then use the generic [``purge_purger_http``](https://www.drupal.org/project/purge_purger_http).
 
 ##### Third-party integration
-The purge project aims to get as many Drupal modules integrating with reverse
-proxies and CDNs on board to integrate with it, this doesn't only offer the
-shared benefit of saving work - **it will actually make the end user experience
-better**.
+This project aims to get all modules dealing with proxies and CDNs on board and
+to integrate with Purge. As known to date, these modules are or are being
+integrated:
 
-As known to date, these modules are or are being integrated:
- * [https://www.drupal.org/project/purge_purger_http](https://www.drupal.org/project/purge_purger_http)
- * [https://www.drupal.org/project/acquia_purge](https://www.drupal.org/project/acquia_purge)
- * [https://github.com/aweingarten/cloudflare](https://www.drupal.org/project/cloudflare)
- * [https://github.com/cam8001/akamai](https://www.drupal.org/project/akamai)
+ * [https://www.drupal.org/project/**purge_purger_http**](https://www.drupal.org/project/purge_purger_http)
+ * [https://www.drupal.org/project/**acquia_purge**](https://www.drupal.org/project/acquia_purge)
+ * [https://www.drupal.org/project/**cloudflare**](https://github.com/aweingarten/cloudflare)
+ * [https://www.drupal.org/project/**akamai**](https://github.com/cam8001/akamai)
 
 Interested? Reach out any time of day and we'll get you going!
 

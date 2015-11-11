@@ -13,7 +13,7 @@ use Drupal\purge_ui\Tests\PurgerConfigFormTestBase;
 /**
  * Tests \Drupal\purge_purger_http\Form\ConfigurationForm.
  *
- * @group purge
+ * @group purge_purger_http
  */
 class ConfigurationFormTest extends PurgerConfigFormTestBase {
 

@@ -1,0 +1,8 @@
+name: Purge Tokens
+type: module
+description: 'Adds tokens support for external cache invalidation.'
+package: Purge
+version: VERSION
+core: 8.x
+dependencies:
+  - purge

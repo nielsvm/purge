@@ -1,8 +1,0 @@
-name: HTTP Purger
-type: module
-description: 'Generic and highly configurable purger making HTTP requests, best suits custom configurations.'
-package: "Purge - reverse proxies & CDNs"
-version: VERSION
-core: 8.x
-dependencies:
-  - purge

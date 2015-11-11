@@ -83,7 +83,7 @@ function purge_tokens_tokens($type, $tokens, array $data, array $options, Bubble
     $join = function($invalidations, $separator) {
       $expressions = [];
       foreach ($invalidations as $invalidation) {
-        if (is_string($expression = $data['invalidation']->getExpression())) {
+        if (is_string($expression = $invalidation->getExpression())) {
           $expressions[] = $expression;
         }
       }

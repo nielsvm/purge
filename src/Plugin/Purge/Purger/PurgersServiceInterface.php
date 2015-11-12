@@ -127,6 +127,9 @@ interface PurgersServiceInterface extends ServiceInterface, ModifiableServiceInt
    *   objects should be released back to the queue (or will expire naturally)
    *   and your code should depend on the next processing window.
    *
+   * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\LockException
+   *   Thrown when other processors are currently busy.
+   *
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState()
    * @see \Drupal\purge\Plugin\Purge\Purger\PurgerCapacityDataInterface::getTimeHint()
    *

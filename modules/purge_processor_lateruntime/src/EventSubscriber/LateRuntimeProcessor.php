@@ -13,6 +13,7 @@ use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\LockException;
 
 /**
  * Processes queue items at the end of every request.
@@ -93,6 +94,9 @@ class LateRuntimeProcessor implements EventSubscriberInterface, ContainerAwareIn
     }
     catch (CapacityException $e) {
       // Capacity exceptions happen when too much was purged this request.
+    }
+    catch (LockException $e) {
+      // Lock exceptions happen when another code path is currently processing.
     }
     finally {
       $this->purgeQueue->handleResults($claims);

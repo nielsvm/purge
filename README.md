@@ -174,6 +174,7 @@ instantiate invalidation objects and to feed them to the purgers service.
 ```
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\LockException;
 $purgeInvalidationFactory = \Drupal::service('purge.invalidation.factory');
 $purgeProcessors = \Drupal::service('purge.processors');
 $purgePurgers = \Drupal::service('purge.purgers');
@@ -194,6 +195,9 @@ catch (DiagnosticsException $e) {
 }
 catch (CapacityException $e) {
   // Capacity exceptions happen when too much was purged during this request.
+}
+catch (LockException $e) {
+  // Lock exceptions happen when another code path is currently processing.
 }
 ```
 When this code finished successfully, the ``$invalidations`` array holds the
@@ -228,6 +232,7 @@ queue and feed those to the purgers service:
 ```
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\LockException;
 $purgePurgers = \Drupal::service('purge.purgers');
 $purgeProcessors = \Drupal::service('purge.processors');
 $purgeQueue = \Drupal::service('purge.queue');
@@ -242,6 +247,9 @@ catch (DiagnosticsException $e) {
 }
 catch (CapacityException $e) {
   // Capacity exceptions happen when too much was purged during this request.
+}
+catch (LockException $e) {
+  // Lock exceptions happen when another code path is currently processing.
 }
 finally {
   $purgeQueue->handleResults($claims);

@@ -39,6 +39,13 @@ class CapacityTracker implements CapacityTrackerInterface {
   protected $idealConditionsLimit;
 
   /**
+   * Keeps cached copies of all calculated lease time hints.
+   *
+   * @var int[]
+   */
+  protected $leaseTimeHints = [];
+
+  /**
    * The maximum number of seconds available to cache invalidation. Zero means
    * that PHP has no fixed execution time limit, for instance on the CLI.
    *
@@ -217,14 +224,19 @@ class CapacityTracker implements CapacityTrackerInterface {
       throw new BadPluginBehaviorException('$items is below 1 or no integer.');
     }
 
-    // Multiply the number of items with a single time hint and add cooldown.
-    $sec = ($items * $this->getTimeHintTotal()) + $this->getCooldownTimeTotal();
+    // Create a closure that calculates how much time it would take. It takes
+    // cooldown time as well as potential code overhead into account.
+    $calculate = function($items) {
+      $s = ($items * $this->getTimeHintTotal()) + $this->getCooldownTimeTotal();
+      $s++;
+      return (int) ceil($s);
+    };
 
-    // Add one second to accommodate for code overhead.
-    $sec++;
-
-    // Round up and return as integer.
-    return (int) ceil($sec);
+    // Use the items number as cache key and fetch/add calculations from/to it.
+    if (!isset($this->leaseTimeHints[$items])) {
+      $this->leaseTimeHints[$items] = $calculate($items);
+    }
+    return $this->leaseTimeHints[$items];
   }
 
   /**

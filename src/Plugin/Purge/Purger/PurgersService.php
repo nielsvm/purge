@@ -8,6 +8,7 @@
 namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
+use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
@@ -17,6 +18,7 @@ use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\LockException;
 use Drupal\purge\Plugin\Purge\Purger\CapacityTracker;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 
@@ -24,6 +26,13 @@ use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
  * Provides the service that distributes access to one or more purgers.
  */
 class PurgersService extends ServiceBase implements PurgersServiceInterface {
+
+  /**
+   * The name of the lock the purger service uses.
+   *
+   * @var string
+   */
+  const LOCKNAME = 'purge_purgers_service';
 
   /**
    * @var \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface
@@ -36,11 +45,6 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   protected $configFactory;
 
   /**
-   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
-   */
-  protected $purgeDiagnostics;
-
-  /**
    * Holds all generated user-readable purger labels per instance ID.
    *
    * @var null|string[]
@@ -48,11 +52,23 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   protected $labels = NULL;
 
   /**
+   * The lock backend.
+   *
+   * @var \Drupal\Core\Lock\LockBackendInterface
+   */
+  protected $lock;
+
+  /**
    * Holds all loaded purgers plugins.
    *
    * @var \Drupal\purge\Plugin\Purge\Purger\PurgerInterface[]
    */
   protected $purgers;
+
+  /**
+   * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
+   */
+  protected $purgeDiagnostics;
 
   /**
    * The list of supported invalidation types across all purgers.
@@ -75,13 +91,16 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    *   The plugin manager for this service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
+   * @param \Drupal\Core\Lock\LockBackendInterface $lock
+   *   The lock backend.
    * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
    *   The diagnostics service.
    */
-  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory, DiagnosticsServiceInterface $purge_diagnostics) {
+  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory, LockBackendInterface $lock, DiagnosticsServiceInterface $purge_diagnostics) {
     $this->pluginManager = $pluginManager;
     $this->configFactory = $config_factory;
     $this->purgeDiagnostics = $purge_diagnostics;
+    $this->lock = $lock;
   }
 
   /**
@@ -109,20 +128,30 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * @return void
    */
   protected function checksBeforeTakeoff(array $invalidations) {
-    $invLimit = $this->capacityTracker()->getRemainingInvalidationsLimit();
     foreach ($invalidations as $i => $invalidation) {
       if (!$invalidation instanceof InvalidationInterface) {
         throw new BadBehaviorException("Item $i is not a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface derivative.");
       }
     }
+
+    // Block cache invalidation if there's a serious diagnostic severity.
     if ($fire = $this->purgeDiagnostics->isSystemOnFire()) {
       throw new DiagnosticsException($fire->getRecommendation());
     }
-    if (!$invLimit) {
+
+    // Verify that we have the runtime capacity to process anything at all.
+    $inv_limit = $this->capacityTracker()->getRemainingInvalidationsLimit();
+    if (!$inv_limit) {
       throw new CapacityException('Capacity limits exceeded.');
     }
-    if (($count = count($invalidations)) > $invLimit) {
-      throw new CapacityException("Capacity limit allows $invLimit invalidations during this request, $count given.");
+    if (($count = count($invalidations)) > $inv_limit) {
+      throw new CapacityException("Capacity limit allows $inv_limit invalidations during this request, $count given.");
+    }
+
+    // Attempt to claim the lock to guard that we're the only one processing.
+    $lease = $this->capacityTracker()->getLeaseTimeHint(count($invalidations));
+    if (!$this->lock->acquire(SELF::LOCKNAME, (float)$lease)) {
+      throw new LockException("Could not acquire processing lock.");
     }
   }
 
@@ -382,10 +411,10 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
       $invalidation->setStateContext(NULL);
     }
 
-    // Update all counters that the capacity tracker wants maintained.
+    // Update the counters with runtime information and release the lock.
     $capacity_tracker->spentInvalidations()->increment(count($invalidations));
-    $capacity_tracker->spentExecutionTime()
-      ->increment(microtime(TRUE) - $execution_time_start);
+    $capacity_tracker->spentExecutionTime()->increment(microtime(TRUE) - $execution_time_start);
+    $this->lock->release(SELF::LOCKNAME);
   }
 
   /**

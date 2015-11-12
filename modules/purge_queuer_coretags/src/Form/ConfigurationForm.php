@@ -64,10 +64,10 @@ class ConfigurationForm extends QueuerConfigFormBase {
     ];
     for ($delta = 0; $delta < $max; $delta++) {
       if (!isset($form['blacklist']['blacklist'][$delta])) {
-        $element = array(
+        $element = [
           '#type' => 'textfield',
           '#default_value' => isset($blacklist[$delta]) ? $blacklist[$delta] : ''
-        );
+        ];
         $form['blacklist']['blacklist'][$delta] = $element;
       }
     }

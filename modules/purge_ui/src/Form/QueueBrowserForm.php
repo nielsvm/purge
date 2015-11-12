@@ -88,15 +88,16 @@ class QueueBrowserForm extends FormBase {
     };
 
     // Generate the table filled with the paged data.
-    $header = array(
-      array('data' => $this->t('Type')),
-      array('data' => $this->t('State')),
-      array('data' => $this->t('Expression')));
-    $form['wrapper']['table'] = array(
+    $header = [
+      ['data' => $this->t('Type')],
+      ['data' => $this->t('State')],
+      ['data' => $this->t('Expression')]
+    ];
+    $form['wrapper']['table'] = [
       '#theme' => 'table',
       '#header' => $header,
       '#rows' => []
-    );
+    ];
     $this->purgeQueue->selectPageLimit($this->number_of_items);
     foreach ($this->purgeQueue->selectPage($page) as $immutable) {
       $form['wrapper']['table']['#rows'][] = [

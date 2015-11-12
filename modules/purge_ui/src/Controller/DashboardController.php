@@ -186,7 +186,7 @@ class DashboardController extends ControllerBase {
       }
       $build['t']['#header'][$type['id']] = [
         'data' => $label,
-        'title' => $this->t('@type - @description', array('@type' => $type['label'], '@description' => $type['description'])),
+        'title' => $this->t('@type - @description', ['@type' => $type['label'], '@description' => $type['description']]),
         'class' => [in_array($type['id'], ['tag', 'path', 'url']) ? RESPONSIVE_PRIORITY_MEDIUM : RESPONSIVE_PRIORITY_LOW],
       ];
     }

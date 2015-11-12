@@ -216,7 +216,7 @@ string(9) "SUCCEEDED"
 string(10) "PROCESSING"
 ```
 
-The results reveal why you should ** normally not invalidate without going
+The results reveal why you should **normally not invalidate without going
 through the queue**, because items can fail or need to run again later to finish entirely. The most common use case for direct invalidation is manual UI purging.
 
 #### Queue processing

@@ -7,7 +7,6 @@
 
 namespace Drupal\purge_queuer_coretags\Tests;
 
-use Drupal\Core\Form\FormState;
 use Drupal\purge_ui\Tests\QueuerConfigFormTestBase;
 
 /**
@@ -65,7 +64,7 @@ class ConfigurationFormTest extends QueuerConfigFormTestBase {
     $this->assertNoField('edit-blacklist-4');
     // Submit 1 valid and three empty values, test the re-rendered form.
     $form = $this->getFormInstance();
-    $form_state = new FormState();
+    $form_state = $this->getFormStateInstance();
     $form_state->addBuildInfo('args', [$this->formArgs]);
     $form_state->setValue('blacklist', ['testvalue', '', '', '']);
     $this->formBuilder->submitForm($form, $form_state);

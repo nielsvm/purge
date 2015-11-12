@@ -127,6 +127,15 @@ abstract class PluginConfigFormTestBase extends WebTestBase {
   }
 
   /**
+   * Retrieve a new formstate instance.
+   *
+   * @return \Drupal\Core\Form\FormStateInterface
+   */
+  protected function getFormStateInstance() {
+    return new FormState();
+  }
+
+  /**
    * Return the ID argument given to the form.
    */
   protected function getId() {

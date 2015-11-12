@@ -7,7 +7,6 @@
 
 namespace Drupal\purge_queuer_test\Tests;
 
-use Drupal\Core\Form\FormState;
 use Drupal\purge_ui\Tests\QueuerConfigFormTestBase;
 
 /**
@@ -53,7 +52,7 @@ class QueuerConfigFormTest extends QueuerConfigFormTestBase {
    */
   public function testFormValidation() {
     // Assert that no validation errors occur in the testing form.
-    $form_state = new FormState();
+    $form_state = $this->getFormStateInstance();
     $form_state->addBuildInfo('args', [$this->formArgs]);
     $form_state->setValues([
         'textfield' => "The moose in the noose ate the goose who was loose."]);

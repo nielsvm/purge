@@ -7,7 +7,6 @@
 
 namespace Drupal\purge_processor_test\Tests;
 
-use Drupal\Core\Form\FormState;
 use Drupal\purge_ui\Tests\ProcessorConfigFormTestBase;
 
 /**
@@ -53,7 +52,7 @@ class ProcessorConfigFormTest extends ProcessorConfigFormTestBase {
    */
   public function testFormValidation() {
     // Assert that no validation errors occur in the testing form.
-    $form_state = new FormState();
+    $form_state = $this->getFormStateInstance();
     $form_state->addBuildInfo('args', [$this->formArgs]);
     $form_state->setValues([
         'textfield' => "The moose in the noose ate the goose who was loose."]);

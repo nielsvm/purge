@@ -36,7 +36,7 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
 function drush_purge_drush_p_queue_add($format, QueueServiceInterface $purgeQueue, QueuersServiceInterface $purgeQueuers, InvalidationsServiceInterface $purgeInvalidationFactory, $type, $expression = NULL) {
   $return_exception = function($exception, $message = '') use($format) {
     if ($format === 'string') {
-      return drush_set_error($message ? $message : $e->getMessage());
+      return drush_set_error('ERROR', $message ? $message : $e->getMessage());
     }
     return FALSE;
   };

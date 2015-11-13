@@ -23,14 +23,5 @@ use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
  *   Drush render/format array.
  */
 function drush_purge_drush_p_queue_browse($format, QueueServiceInterface $purgeQueue, $limit, $page) {
-  $args = func_get_args();
-  foreach ($args as $i => $arg) {
-    if (is_object($arg)) {
-      var_dump(get_class($arg));
-    }
-    else {
-      var_dump($arg);
-    }
-  }
-  return [];
+  throw new \Exception('NOT YET IMPLEMENTED!');
 }

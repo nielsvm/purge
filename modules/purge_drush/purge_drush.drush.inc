@@ -169,3 +169,14 @@ function purge_drush_drush_command() {
   ];
   return $items;
 }
+
+// For code organization purposes, each command is split out into its own file.
+$directory = dirname(__FILE__);
+require_once $module_directory . "purge_drush.drush_p_processors.inc";
+require_once $module_directory . "purge_drush.drush_p_diagnostics.inc";
+require_once $module_directory . "purge_drush.drush_p_invalidate.inc";
+require_once $module_directory . "purge_drush.drush_p_queuers.inc";
+require_once $module_directory . "purge_drush.drush_p_queue_add.inc";
+require_once $module_directory . "purge_drush.drush_p_queue_browse.inc";
+require_once $module_directory . "purge_drush.drush_p_queue_empty.inc";
+require_once $module_directory . "purge_drush.drush_p_queue_work.inc";

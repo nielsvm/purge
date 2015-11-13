@@ -160,6 +160,8 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     if (!$this->lock->acquire(SELF::LOCKNAME, (float)$lease)) {
       throw new LockException("Could not acquire processing lock.");
     }
+
+    return TRUE;
   }
 
   /**

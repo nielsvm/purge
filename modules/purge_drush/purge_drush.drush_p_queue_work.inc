@@ -7,6 +7,9 @@
 
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
+use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\LockException;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 
 /**
@@ -25,6 +28,12 @@ use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
  *   Drush render/format array.
  */
 function drush_purge_drush_p_queue_work($format, QueueServiceInterface $purgeQueue, ProcessorsServiceInterface $purgeProcessors, PurgersServiceInterface $purgePurgers) {
+  $return_exception = function($exception, $message = '') use($format) {
+    if ($format === 'string') {
+      return drush_set_error($message ? $message : $e->getMessage());
+    }
+    return FALSE;
+  };
 
   // Retrieve our queuer object and fail when it is not returned.
   if (!($processor = $purgeProcessors->get('drush_purge_queue_work'))) {
@@ -34,15 +43,33 @@ function drush_purge_drush_p_queue_work($format, QueueServiceInterface $purgeQue
     return drush_set_error('NOT_AUTHORIZED', dt('Not authorized, processor missing!'));
   }
 
-
-  $args = func_get_args();
-  foreach ($args as $i => $arg) {
-    if (is_object($arg)) {
-      var_dump(get_class($arg));
+  // Claim items from the queue.
+  if (!($claims = $purgeQueue->claim())) {
+    if (in_array($format, ['yaml', 'json'])) {
+      return TRUE;
     }
-    else {
-      var_dump($arg);
-    }
+    return dt('There were no items to be claimed from the queue.');
   }
-  return [];
+  // Attempt the cache invalidation and deal with errors.
+  try {
+    $purgePurgers->invalidate($processor, $claims);
+  }
+  catch (DiagnosticsException $e) {
+    return $return_exception($e);
+  }
+  catch (CapacityException $e) {
+    return $return_exception($e);
+  }
+  catch (LockException $e) {
+    return $return_exception($e);
+  }
+  finally {
+    $purgeQueue->handleResults($claims);
+  }
+
+  // Return messaging.
+  if (in_array($format, ['yaml', 'json'])) {
+    return TRUE;
+  }
+  return dt('Processed @number objects...', ['@number' => count($claims)]);
 }

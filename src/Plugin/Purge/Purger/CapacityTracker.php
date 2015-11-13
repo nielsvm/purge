@@ -268,7 +268,7 @@ class CapacityTracker implements CapacityTrackerInterface {
       // the returned value is zero (=infinite). If so, we return outer limits.
       $time_max = $this->getMaxExecutionTime();
       if ($time_max === 0) {
-        return $this->getIdealConditionsLimit() - $spent_inv;
+        return (int) ($this->getIdealConditionsLimit() - $spent_inv);
       }
 
       // We do operate on a time-based limit. Calculate how much time there is
@@ -282,9 +282,9 @@ class CapacityTracker implements CapacityTrackerInterface {
       // In the rare case the limit exceeds ideal conditions, the limit is
       // lowered. Then return the limit or zero when it turned negative.
       if ($limit > $this->getIdealConditionsLimit()) {
-        return $this->getIdealConditionsLimit();
+        return (int)$this->getIdealConditionsLimit();
       }
-      return ($limit < 0) ? 0 : $limit;
+      return (int)(($limit < 0) ? 0 : $limit);
     };
 
     // Fetch calculations from cache or generate new. We use the number of spent

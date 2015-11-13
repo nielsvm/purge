@@ -12,7 +12,7 @@ Getting started
 For most simple configurations, start with:
 
 * ``drush dl purge --yes``
-* ``drush en purge purge_ui purge_queuer_coretags purge_processor_cron --yes``
+* ``drush en purge purge_ui purge_drush purge_queuer_coretags purge_processor_cron --yes``
 * Head over to [http://mysite/admin/config/development/performance/purge](http://mysite/admin/config/development/performance/purge)
 * Now you need to install (and probably configure) a third-party module that
   provides a **purger**. If no module supports invalidation of your cache layer
@@ -29,6 +29,24 @@ integrated:
  * [https://www.drupal.org/project/**akamai**](https://github.com/cam8001/akamai)
 
 Interested? Reach out any time of day and we'll get you going!
+
+##### Drush commands
+The ``purge_drush`` module adds the following commands for Drush administration:
+
+| Command                | Alias    | Description                                                  |
+|------------------------|----------|--------------------------------------------------------------|
+| **``p-diagnostics``**  | ``pdia`` | Generate a diagnostic self-service report.                   |
+| **``p-invalidate``**   | ``pinv`` | Directly invalidate an item without going through the queue. |
+| **``p-processors``**   | ``ppro`` | List all enabled processors.                                 |
+| **``p-queue-add``**    | ``pqa``  | Schedule an item for later processing.                       |
+| **``p-queue-browse``** | ``pqb``  | Inspect what is in the queue by paging through it.           |
+| **``p-queue-empty``**  | ``pqe``  | Clear the queue and reset all statistics.                    |
+| **``p-queue-work``**   | ``pqw``  | Claim a chunk of items from the queue and process them.      |
+| **``p-queuers``**      | ``pqrs`` | List all enabled queuers.                                    |
+
+Several commands understand the ``--format`` parameter allowing you to integrate
+the commands in external scripts with JSON or YAML output. See the respective
+``drush help <command>`` information for more command detail.
 
 The framework explained
 ------------------------------------------------------------------------------

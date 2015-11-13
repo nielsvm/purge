@@ -50,11 +50,12 @@ function purge_drush_drush_command() {
       'type' => 'The type of invalidation to perform, e.g.: tag, path, url.',
       'expression' => 'The string expression of what needs to be invalidated.',
     ],
-    'required-arguments' => 2,
+    'required-arguments' => 1,
     'options' => [],
     'examples' => [
       'drush purge-invalidate tag node:1' => 'Clears URLs tagged with "node:1" from external caching platforms.',
       'drush purge-invalidate url http://www.drupal.org/' => 'Clears "http://www.drupal.org/" from external caching platforms.',
+      'drush purge-invalidate everything' => 'Clears everything on external caching platforms.',
     ],
     'outputformat' => [],
     'aliases' => ['pinv'],
@@ -88,7 +89,7 @@ function purge_drush_drush_command() {
       'type' => 'The type of invalidation to queue, e.g.: tag, path, url.',
       'expression' => 'The string expression of what needs to be invalidated.',
     ],
-    'required-arguments' => TRUE,
+    'required-arguments' => 1,
     'options' => [],
     'examples' => [
       'drush purge-queue-add tag node:1' => 'Clears URLs tagged with "node:1" from external caching platforms.',
@@ -109,11 +110,13 @@ function purge_drush_drush_command() {
         'description' => 'The number of items to show on a single page.',
         'example-value' => '20',
         'value' => 'optional',
+        '_default' => 20,
       ],
       'page' => [
         'description' => 'The page to show data for, pages start at 1.',
         'example-value' => '1',
         'value' => 'optional',
+        '_default' => 1,
       ],
     ],
     'examples' => [
@@ -204,8 +207,15 @@ function purge_drush_callback_router() {
   $file = 'purge_drush.drush_' . str_replace('-', '_', $command) . '.inc';
   require_once dirname(__FILE__) . '/' .  $file;
 
-  // Prepend requested container services to the arguments to inject them.
+  // Add options after the arguments if the option has our '_default' defined.
   $args = func_get_args();
+  foreach ($command_context['options'] as $option => $definition) {
+    if (isset($definition['_default'])) {
+      $args[] = drush_get_option($option, $definition['_default']);
+    }
+  }
+
+  // Prepend requested container services to the arguments to inject them.
   $services = [];
   foreach ($command_context['callback services'] as $service) {
     $services[] = \Drupal::service($service);

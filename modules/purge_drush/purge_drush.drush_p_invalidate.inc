@@ -31,6 +31,15 @@ use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
  *   Drush render/format array.
  */
 function drush_purge_drush_p_invalidate($format, InvalidationsServiceInterface $purgeInvalidationFactory, ProcessorsServiceInterface $purgeProcessors, PurgersServiceInterface $purgePurgers, $type, $expression = NULL) {
+
+  // Retrieve our queuer object and fail when it is not returned.
+  if (!($processor = $purgeProcessors->get('drush_purge_invalidate'))) {
+    if (in_array($format, ['yaml', 'json'])) {
+      return FALSE;
+    }
+    return drush_set_error('NOT_AUTHORIZED', dt('Not authorized, processor missing!'));
+  }
+
   $args = func_get_args();
   foreach ($args as $i => $arg) {
     if (is_object($arg)) {

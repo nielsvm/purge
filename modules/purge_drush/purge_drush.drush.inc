@@ -223,6 +223,32 @@ function purge_drush_drush_command() {
     'aliases' => ['pqrs'],
     'core' => ['8+'],
   ];
+  $items['p-types'] = [
+    'description' => 'List all supported cache invalidation types.',
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.invalidation.factory', 'purge.purgers'],
+    'arguments' => [],
+    'required-arguments' => 0,
+    'options' => [],
+    'examples' => [
+      'drush p-types' => 'List all supported cache invalidation types.',
+      'drush p-types --format=json' => 'Export as JSON.',
+      'drush p-types --format=yaml' => 'Export as YAML.',
+    ],
+    '_outputformats' => ['table', 'yaml', 'json', 'list'],
+    'outputformat' => [
+      'default' => 'table',
+      'pipe-format' => 'list',
+      'field-labels' => [
+        'label' => 'Type',
+      ],
+    ],
+    'aliases' => ['ptyp'],
+    'core' => ['8+'],
+  ];
+  foreach (\Drupal::service('purge.purgers')->getLabels() as $id => $label) {
+    $items['p-types']['outputformat']['field-labels'][$id] = (string)$label;
+  }
   return $items;
 }
 

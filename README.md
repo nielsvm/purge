@@ -43,6 +43,7 @@ The ``purge_drush`` module adds the following commands for Drush administration:
 | **``p-queue-empty``**  | ``pqe``  | Clear the queue and reset all statistics.                    |
 | **``p-queue-work``**   | ``pqw``  | Claim a chunk of items from the queue and process them.      |
 | **``p-queuers``**      | ``pqrs`` | List all enabled queuers.                                    |
+| **``p-types``**        | ``ptyp`` | List all supported cache invalidation types.                 |
 
 Several commands understand the ``--format`` parameter allowing you to integrate
 the commands in external scripts with JSON or YAML output. See the respective

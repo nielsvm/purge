@@ -19,14 +19,20 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
  *   Drush render/format array.
  */
 function drush_purge_drush_p_queuers($format, QueuersServiceInterface $purgeQueuers) {
-  $args = func_get_args();
-  foreach ($args as $i => $arg) {
-    if (is_object($arg)) {
-      var_dump(get_class($arg));
-    }
-    else {
-      var_dump($arg);
+  $output = [];
+  if (in_array($format, ['table', 'yaml', 'json'])) {
+    foreach ($purgeQueuers as $queuer) {
+      $output[] = [
+        'id' => (string)$queuer->getPluginId(),
+        'label' => (string)$queuer->getLabel(),
+        'description' => (string)$queuer->getDescription(),
+      ];
     }
   }
-  return [];
+  elseif ($format == 'list') {
+    foreach ($purgeQueuers as $queuer) {
+      $output[] = $queuer->getPluginId();
+    }
+  }
+  return $output;
 }

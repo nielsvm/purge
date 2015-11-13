@@ -34,6 +34,7 @@ function purge_drush_drush_command() {
       'drush purge-diagnostics --format=json' => 'Export as JSON.',
       'drush purge-diagnostics --format=yaml' => 'Export as YAML.',
     ],
+    '_outputformats' => ['table', 'yaml', 'json',],
     'outputformat' => [
       'default' => 'table',
       'pipe-format' => 'yaml',
@@ -57,6 +58,7 @@ function purge_drush_drush_command() {
       'drush purge-invalidate url http://www.drupal.org/' => 'Clears "http://www.drupal.org/" from external caching platforms.',
       'drush purge-invalidate everything' => 'Clears everything on external caching platforms.',
     ],
+    '_outputformats' => ['message', 'yaml', 'json'],
     'outputformat' => [
       'default' => 'message',
       'pipe-format' => 'yaml',
@@ -76,6 +78,7 @@ function purge_drush_drush_command() {
       'drush purge-processor-list --table=json' => 'Export all processors in JSON.',
       'drush purge-processor-list --table=yaml' => 'Export all processors in YAML.',
     ],
+    '_outputformats' => ['table', 'yaml', 'json', 'list'],
     'outputformat' => [
       'default' => 'table',
       'pipe-format' => 'list',
@@ -102,6 +105,7 @@ function purge_drush_drush_command() {
       'drush purge-queue-add tag node:1' => 'Clears URLs tagged with "node:1" from external caching platforms.',
       'drush purge-queue-add url http://www.drupal.org/' => 'Clears "http://www.drupal.org/" from external caching platforms.',
     ],
+    '_outputformats' => ['message', 'yaml', 'json'],
     'outputformat' => [
       'default' => 'message',
       'pipe-format' => 'yaml',
@@ -136,6 +140,7 @@ function purge_drush_drush_command() {
       'drush purge-queue-browse --format=json' => 'Fetch a page from the queue exported as JSON.',
       'drush purge-queue-browse --format=yaml' => 'Fetch a page from the queue exported as JSON.',
     ],
+    '_outputformats' => ['table', 'yaml', 'json', 'list'],
     'outputformat' => [
       'default' => 'table',
       'pipe-format' => 'list',
@@ -154,6 +159,7 @@ function purge_drush_drush_command() {
     'examples' => [
       'drush purge-queue-empty' => 'Clear the queue and reset all statistics.',
     ],
+    '_outputformats' => ['message', 'yaml', 'json'],
     'outputformat' => [
       'default' => 'message',
       'pipe-format' => 'yaml',
@@ -171,6 +177,7 @@ function purge_drush_drush_command() {
     'examples' => [
       'drush purge-queuer-workchunk' => 'Claim a chunk of items from the queue and process them.',
     ],
+    '_outputformats' => ['message', 'yaml', 'json'],
     'outputformat' => [
       'default' => 'message',
       'pipe-format' => 'yaml',
@@ -190,6 +197,7 @@ function purge_drush_drush_command() {
       'drush purge-queuer-list --table=json' => 'Export all queuers in JSON.',
       'drush purge-queuer-list --table=yaml' => 'Export all queuers in YAML.',
     ],
+    '_outputformats' => ['table', 'yaml', 'json', 'list'],
     'outputformat' => [
       'default' => 'table',
       'pipe-format' => 'list',
@@ -228,13 +236,22 @@ function purge_drush_callback_router() {
     }
   }
 
+  // Verify that the given --format is listed in our '_outputformats'.
+  $format = drush_get_option('format', $command_context['outputformat']['default']);
+  if (!in_array($format, $command_context['_outputformats'])) {
+    drush_set_default_outputformat('string');
+    $formats = ['@formats' => implode(', ', $command_context['_outputformats'])];
+    $message = dt('Unsupported output format, options: @formats.', $formats);
+    return drush_log($message ,'error');
+  }
+
   // Require the actual file in which the callback resides.
   $file = 'purge_drush.drush_' . $command . '.inc';
   require_once dirname(__FILE__) . '/' .  $file;
 
   // Build up the final structure of the arguments and dispatch code execution.
   $final_args = array_merge(
-    [drush_get_option('format', $command_context['outputformat']['default'])],
+    [$format],
     $services, $args);
   return call_user_func_array('drush_purge_drush_' . $command, $final_args);
 }

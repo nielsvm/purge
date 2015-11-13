@@ -34,8 +34,5 @@ function drush_purge_drush_p_processors($format, ProcessorsServiceInterface $pur
       $output[] = $processor->getPluginId();
     }
   }
-  else {
-    drush_log(dt('Unsupported output format for this command.') ,'error');
-  }
   return $output;
 }

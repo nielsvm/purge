@@ -6,11 +6,11 @@
  */
 
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
-use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
-use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
+use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
+use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
 
 /**
  * Schedule an item for later processing.
@@ -34,6 +34,12 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
  *   Drush render/format array.
  */
 function drush_purge_drush_p_queue_add($format, QueueServiceInterface $purgeQueue, QueuersServiceInterface $purgeQueuers, InvalidationsServiceInterface $purgeInvalidationFactory, $type, $expression = NULL) {
+  $return_exception = function($exception, $message = '') use($format) {
+    if ($format === 'string') {
+      return drush_set_error($message ? $message : $e->getMessage());
+    }
+    return FALSE;
+  };
 
   // Retrieve our queuer object and fail when it is not returned.
   if (!($queuer = $purgeQueuers->get('drush_purge_queue_add'))) {
@@ -48,16 +54,13 @@ function drush_purge_drush_p_queue_add($format, QueueServiceInterface $purgeQueu
     $invalidation = $purgeInvalidationFactory->get($type, $expression);
   }
   catch (PluginNotFoundException $e) {
-    if (in_array($format, ['yaml', 'json'])) return FALSE;
-    return drush_set_error(dt("Type '@type' does not exist, see 'drush p-types' for available types.", ['@type' => $type]));
+    return $return_exception($e, dt("Type '@type' does not exist, see 'drush p-types' for available types.", ['@type' => $type]));
   }
   catch (InvalidExpressionException $e) {
-    if (in_array($format, ['yaml', 'json'])) return FALSE;
-    return drush_set_error($e->getMessage());
+    return $return_exception($e);
   }
   catch (MissingExpressionException $e) {
-    if (in_array($format, ['yaml', 'json'])) return FALSE;
-    return drush_set_error($e->getMessage());
+    return $return_exception($e);
   }
 
   // Add the object and return TRUE/message.
@@ -65,7 +68,5 @@ function drush_purge_drush_p_queue_add($format, QueueServiceInterface $purgeQueu
   if (in_array($format, ['yaml', 'json'])) {
     return TRUE;
   }
-  else {
-    return dt('Item successfully queued, will be processed later...');
-  }
+  return dt('Item successfully queued, will be processed later...');
 }

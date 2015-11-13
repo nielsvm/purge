@@ -5,27 +5,32 @@
  * Administrative Drush commands for Purge - Command File.
  */
 
+use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
+use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
+use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
+
 /**
- * TITLE
+ * Claim a chunk of items from the queue and process them.
  *
- * @param TYPE $name
- *   Description.
- * @param TYPE $name
- *   Description.
- *
- * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
- *   Description.
- *
- * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState()
- * @see \Drupal\purge\Plugin\Purge\Purger\PurgerCapacityDataInterface::getTimeHint()
+ * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $purgeQueue
+ *   The purge queue service.
+ * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface $purgeProcessors
+ *   The purge processors service.
+ * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purgePurgers
+ *   The purge purgers service.
  *
  * @return string[]
  *   Array with the purger instance ID as key, and list of invalidation types.
  */
-function drush_purge_drush_p_queue_work() {
+function drush_purge_drush_p_queue_work(QueueServiceInterface $purgeQueue, ProcessorsServiceInterface $purgeProcessors, PurgersServiceInterface $purgePurgers) {
   $args = func_get_args();
-  print_r($args);
-  echo "----\n";
-  var_dump($args);
-  die("----\n");
+  foreach ($args as $i => $arg) {
+    if (is_object($arg)) {
+      var_dump(get_class($arg));
+    }
+    else {
+      var_dump($arg);
+    }
+  }
+  return [];
 }

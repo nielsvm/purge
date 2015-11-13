@@ -24,6 +24,8 @@ function purge_drush_drush_command() {
   $items = [];
   $items['p-diagnostics'] = [
     'description' => 'Generate a diagnostic self-service report.',
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.diagnostics',],
     'arguments' => [],
     'required-arguments' => 0,
     'options' => [],
@@ -42,6 +44,8 @@ function purge_drush_drush_command() {
   ];
   $items['p-invalidate'] = [
     'description' => 'Directly invalidate an item without going through the queue.',
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.invalidation.factory', 'purge.processors', 'purge.purgers'],
     'arguments' => [
       'type' => 'The type of invalidation to perform, e.g.: tag, path, url.',
       'expression' => 'The string expression of what needs to be invalidated.',
@@ -58,6 +62,8 @@ function purge_drush_drush_command() {
   ];
   $items['p-processors'] = [
     'description' => 'List all enabled processors.',
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.processors',],
     'arguments' => [],
     'required-arguments' => FALSE,
     'options' => [],
@@ -76,6 +82,8 @@ function purge_drush_drush_command() {
   ];
   $items['p-queue-add'] = [
     'description' => 'Schedule an item for later processing.',
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.queue', 'purge.queuers', 'purge.invalidation.factory'],
     'arguments' => [
       'type' => 'The type of invalidation to queue, e.g.: tag, path, url.',
       'expression' => 'The string expression of what needs to be invalidated.',
@@ -92,6 +100,8 @@ function purge_drush_drush_command() {
   ];
   $items['p-queue-browse'] = [
     'description' => 'Inspect what is in the queue by paging through it.',
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.queue',],
     'arguments' => [],
     'required-arguments' => FALSE,
     'options' => [
@@ -123,6 +133,8 @@ function purge_drush_drush_command() {
   ];
   $items['p-queue-empty'] = [
     'description' => 'Clear the queue and reset all statistics.',
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.queue',],
     'arguments' => [],
     'required-arguments' => FALSE,
     'options' => [],
@@ -135,6 +147,8 @@ function purge_drush_drush_command() {
   ];
   $items['p-queue-work'] = [
     'description' => 'Claim a chunk of items from the queue and process them.',
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.queue', 'purge.processors', 'purge.purgers'],
     'arguments' => [],
     'required-arguments' => FALSE,
     'options' => [],
@@ -151,6 +165,8 @@ function purge_drush_drush_command() {
   ];
   $items['p-queuers'] = [
     'description' => 'List all enabled queuers.',
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.queuers',],
     'arguments' => [],
     'required-arguments' => FALSE,
     'options' => [],
@@ -170,13 +186,33 @@ function purge_drush_drush_command() {
   return $items;
 }
 
-// For code organization purposes, each command is split out into its own file.
-$directory = dirname(__FILE__);
-require_once $module_directory . "purge_drush.drush_p_processors.inc";
-require_once $module_directory . "purge_drush.drush_p_diagnostics.inc";
-require_once $module_directory . "purge_drush.drush_p_invalidate.inc";
-require_once $module_directory . "purge_drush.drush_p_queuers.inc";
-require_once $module_directory . "purge_drush.drush_p_queue_add.inc";
-require_once $module_directory . "purge_drush.drush_p_queue_browse.inc";
-require_once $module_directory . "purge_drush.drush_p_queue_empty.inc";
-require_once $module_directory . "purge_drush.drush_p_queue_work.inc";
+/**
+ * Route command execution to the right function and load its file.
+ *
+ * @param mixed $...
+ *   One or more parameters passed depending on the routed command definition.
+ *
+ * @return mixed
+ *   The command response.
+ */
+
+function purge_drush_callback_router() {
+  $command_context = drush_get_command();
+  $command = $command_context['command'];
+
+  // Require the actual file in which the callback resides.
+  $file = 'purge_drush.drush_' . str_replace('-', '_', $command) . '.inc';
+  require_once dirname(__FILE__) . '/' .  $file;
+
+  // Prepend requested container services to the arguments to inject them.
+  $args = func_get_args();
+  $services = [];
+  foreach ($command_context['callback services'] as $service) {
+    $services[] = \Drupal::service($service);
+  }
+  $args = array_merge($services, $args);
+
+  // Dispatch code execution to the callback.
+  $function = 'drush_purge_drush_' . str_replace('-', '_', $command);
+  return call_user_func_array($function, $args);
+}

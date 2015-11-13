@@ -5,27 +5,26 @@
  * Administrative Drush commands for Purge - Command File.
  */
 
+use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
+
 /**
- * TITLE
+ * Clear the queue and reset all statistics.
  *
- * @param TYPE $name
- *   Description.
- * @param TYPE $name
- *   Description.
- *
- * @throws \Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException
- *   Description.
- *
- * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState()
- * @see \Drupal\purge\Plugin\Purge\Purger\PurgerCapacityDataInterface::getTimeHint()
+ * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $purgeQueue
+ *   The purge queue service.
  *
  * @return string[]
  *   Array with the purger instance ID as key, and list of invalidation types.
  */
-function drush_purge_drush_p_queue_empty() {
+function drush_purge_drush_p_queue_empty(QueueServiceInterface $purgeQueue) {
   $args = func_get_args();
-  print_r($args);
-  echo "----\n";
-  var_dump($args);
-  die("----\n");
+  foreach ($args as $i => $arg) {
+    if (is_object($arg)) {
+      var_dump(get_class($arg));
+    }
+    else {
+      var_dump($arg);
+    }
+  }
+  return [];
 }

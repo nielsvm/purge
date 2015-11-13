@@ -350,7 +350,6 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    */
   public function invalidate(ProcessorInterface $processor, array $invalidations) {
     $execution_time_start = microtime(TRUE);
-    $capacity_tracker = $this->capacityTracker();
 
     // Perform various (exception-throwing) pre-flight checks before we start.
     if (!$this->checksBeforeTakeoff($invalidations)) {
@@ -416,8 +415,8 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     }
 
     // Update the counters with runtime information and release the lock.
-    $capacity_tracker->spentInvalidations()->increment(count($invalidations));
-    $capacity_tracker->spentExecutionTime()->increment(microtime(TRUE) - $execution_time_start);
+    $this->capacityTracker()->spentInvalidations()->increment(count($invalidations));
+    $this->capacityTracker()->spentExecutionTime()->increment(microtime(TRUE) - $execution_time_start);
     $this->lock->release(SELF::LOCKNAME);
   }
 

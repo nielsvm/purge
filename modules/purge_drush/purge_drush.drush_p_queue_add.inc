@@ -12,6 +12,8 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 /**
  * Schedule an item for later processing.
  *
+ * @param string $format
+ *   The default or selected output format of the command.
  * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $purgeQueue
  *   The purge queue service.
  * @param \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface $purgeQueuers
@@ -28,7 +30,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
  * @return string[]
  *   Array with the purger instance ID as key, and list of invalidation types.
  */
-function drush_purge_drush_p_queue_add(QueueServiceInterface $purgeQueue, QueuersServiceInterface $purgeQueuers, InvalidationsServiceInterface $purgeInvalidationFactory, $type, $expression = NULL) {
+function drush_purge_drush_p_queue_add($format, QueueServiceInterface $purgeQueue, QueuersServiceInterface $purgeQueuers, InvalidationsServiceInterface $purgeInvalidationFactory, $type, $expression = NULL) {
   $args = func_get_args();
   foreach ($args as $i => $arg) {
     if (is_object($arg)) {

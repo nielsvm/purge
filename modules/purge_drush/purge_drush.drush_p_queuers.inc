@@ -10,13 +10,15 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
 /**
  * List all enabled queuers.
  *
+ * @param string $format
+ *   The default or selected output format of the command.
  * @param \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface $purgeQueuers
  *   The purge queuers service.
  *
  * @return string[]
  *   Array with the purger instance ID as key, and list of invalidation types.
  */
-function drush_purge_drush_p_queuers(QueuersServiceInterface $purgeQueuers) {
+function drush_purge_drush_p_queuers($format, QueuersServiceInterface $purgeQueuers) {
   $args = func_get_args();
   foreach ($args as $i => $arg) {
     if (is_object($arg)) {

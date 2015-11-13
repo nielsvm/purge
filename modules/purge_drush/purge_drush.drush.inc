@@ -36,8 +36,8 @@ function purge_drush_drush_command() {
     ],
     'outputformat' => [
       'default' => 'table',
-      'json' => 'json',
-      'yaml' => 'yaml',
+      'pipe-format' => 'yaml',
+      'require-engine-capability' => ['format-table'],
     ],
     'aliases' => ['pdia'],
     'core' => ['8+'],
@@ -57,7 +57,10 @@ function purge_drush_drush_command() {
       'drush purge-invalidate url http://www.drupal.org/' => 'Clears "http://www.drupal.org/" from external caching platforms.',
       'drush purge-invalidate everything' => 'Clears everything on external caching platforms.',
     ],
-    'outputformat' => [],
+    'outputformat' => [
+      'default' => 'message',
+      'pipe-format' => 'yaml',
+    ],
     'aliases' => ['pinv'],
     'core' => ['8+'],
   ];
@@ -75,8 +78,12 @@ function purge_drush_drush_command() {
     ],
     'outputformat' => [
       'default' => 'table',
-      'json' => 'json',
-      'yaml' => 'yaml',
+      'pipe-format' => 'list',
+      'field-labels' => [
+        'id' => 'Id',
+        'label' => 'Label',
+        'description' => 'Description',
+      ],
     ],
     'aliases' => ['ppro'],
     'core' => ['8+'],
@@ -95,7 +102,10 @@ function purge_drush_drush_command() {
       'drush purge-queue-add tag node:1' => 'Clears URLs tagged with "node:1" from external caching platforms.',
       'drush purge-queue-add url http://www.drupal.org/' => 'Clears "http://www.drupal.org/" from external caching platforms.',
     ],
-    'outputformat' => [],
+    'outputformat' => [
+      'default' => 'message',
+      'pipe-format' => 'yaml',
+    ],
     'aliases' => ['pqa'],
     'core' => ['8+'],
   ];
@@ -128,8 +138,8 @@ function purge_drush_drush_command() {
     ],
     'outputformat' => [
       'default' => 'table',
-      'json' => 'json',
-      'yaml' => 'yaml',
+      'pipe-format' => 'list',
+      'require-engine-capability' => ['format-table'],
     ],
     'aliases' => ['pqb'],
     'core' => ['8+'],
@@ -144,7 +154,10 @@ function purge_drush_drush_command() {
     'examples' => [
       'drush purge-queue-empty' => 'Clear the queue and reset all statistics.',
     ],
-    'outputformat' => [],
+    'outputformat' => [
+      'default' => 'message',
+      'pipe-format' => 'yaml',
+    ],
     'aliases' => ['pqe'],
     'core' => ['8+'],
   ];
@@ -160,8 +173,7 @@ function purge_drush_drush_command() {
     ],
     'outputformat' => [
       'default' => 'message',
-      'json' => 'json',
-      'yaml' => 'yaml',
+      'pipe-format' => 'yaml',
     ],
     'aliases' => ['pqw'],
     'core' => ['8+'],
@@ -180,8 +192,7 @@ function purge_drush_drush_command() {
     ],
     'outputformat' => [
       'default' => 'table',
-      'json' => 'json',
-      'yaml' => 'yaml',
+      'pipe-format' => 'list',
     ],
     'aliases' => ['pqrs'],
     'core' => ['8+'],
@@ -201,13 +212,15 @@ function purge_drush_drush_command() {
 
 function purge_drush_callback_router() {
   $command_context = drush_get_command();
-  $command = $command_context['command'];
+  $command = str_replace('-', '_', $command_context['command']);
 
-  // Require the actual file in which the callback resides.
-  $file = 'purge_drush.drush_' . str_replace('-', '_', $command) . '.inc';
-  require_once dirname(__FILE__) . '/' .  $file;
+  // Load requested container services in our own 'callback services' field.
+  $services = [];
+  foreach ($command_context['callback services'] as $service) {
+    $services[] = \Drupal::service($service);
+  }
 
-  // Add options after the arguments if the option has our '_default' defined.
+  // Append options with '_default' as arguments to keep callbacks simple.
   $args = func_get_args();
   foreach ($command_context['options'] as $option => $definition) {
     if (isset($definition['_default'])) {
@@ -215,14 +228,13 @@ function purge_drush_callback_router() {
     }
   }
 
-  // Prepend requested container services to the arguments to inject them.
-  $services = [];
-  foreach ($command_context['callback services'] as $service) {
-    $services[] = \Drupal::service($service);
-  }
-  $args = array_merge($services, $args);
+  // Require the actual file in which the callback resides.
+  $file = 'purge_drush.drush_' . $command . '.inc';
+  require_once dirname(__FILE__) . '/' .  $file;
 
-  // Dispatch code execution to the callback.
-  $function = 'drush_purge_drush_' . str_replace('-', '_', $command);
-  return call_user_func_array($function, $args);
+  // Build up the final structure of the arguments and dispatch code execution.
+  $final_args = array_merge(
+    [drush_get_option('format', $command_context['outputformat']['default'])],
+    $services, $args);
+  return call_user_func_array('drush_purge_drush_' . $command, $final_args);
 }

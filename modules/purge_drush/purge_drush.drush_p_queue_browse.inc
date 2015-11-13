@@ -10,6 +10,8 @@ use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 /**
  * Inspect what is in the queue by paging through it.
  *
+ * @param string $format
+ *   The default or selected output format of the command.
  * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $purgeQueue
  *   The purge queue service.
  * @param string|int $limit
@@ -20,7 +22,7 @@ use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
  * @return string[]
  *   Array with the purger instance ID as key, and list of invalidation types.
  */
-function drush_purge_drush_p_queue_browse(QueueServiceInterface $purgeQueue, $limit, $page) {
+function drush_purge_drush_p_queue_browse($format, QueueServiceInterface $purgeQueue, $limit, $page) {
   $args = func_get_args();
   foreach ($args as $i => $arg) {
     if (is_object($arg)) {

@@ -19,8 +19,8 @@ use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
  * @param string|int $page
  *   The page to show data for, pages start at 1.
  *
- * @return string[]
- *   Array with the purger instance ID as key, and list of invalidation types.
+ * @return array
+ *   Drush render/format array.
  */
 function drush_purge_drush_p_queue_browse($format, QueueServiceInterface $purgeQueue, $limit, $page) {
   $args = func_get_args();

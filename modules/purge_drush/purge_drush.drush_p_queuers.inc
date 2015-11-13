@@ -15,8 +15,8 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
  * @param \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface $purgeQueuers
  *   The purge queuers service.
  *
- * @return string[]
- *   Array with the purger instance ID as key, and list of invalidation types.
+ * @return array
+ *   Drush render/format array.
  */
 function drush_purge_drush_p_queuers($format, QueuersServiceInterface $purgeQueuers) {
   $args = func_get_args();

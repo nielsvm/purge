@@ -15,8 +15,8 @@ use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
  * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface $purgeDiagnostics
  *   The purge diagnostics service.
  *
- * @return string[]
- *   Array with the purger instance ID as key, and list of invalidation types.
+ * @return array
+ *   Drush render/format array.
  */
 function drush_purge_drush_p_diagnostics($format, DiagnosticsServiceInterface $purgeDiagnostics) {
   $args = func_get_args();

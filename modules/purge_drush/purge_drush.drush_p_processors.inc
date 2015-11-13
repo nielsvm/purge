@@ -15,8 +15,8 @@ use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
  * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface $purgeProcessors
  *   The purge processors service.
  *
- * @return string[]
- *   Array with the purger instance ID as key, and list of invalidation types.
+ * @return array
+ *   Drush render/format array.
  */
 function drush_purge_drush_p_processors($format, ProcessorsServiceInterface $purgeProcessors) {
   $output = [];

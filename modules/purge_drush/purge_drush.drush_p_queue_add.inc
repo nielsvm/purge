@@ -27,8 +27,8 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
  *   when the type of invalidation doesn't require $expression. Types usually
  *   validate the given expression and throw exceptions for bad input.
  *
- * @return string[]
- *   Array with the purger instance ID as key, and list of invalidation types.
+ * @return array
+ *   Drush render/format array.
  */
 function drush_purge_drush_p_queue_add($format, QueueServiceInterface $purgeQueue, QueuersServiceInterface $purgeQueuers, InvalidationsServiceInterface $purgeInvalidationFactory, $type, $expression = NULL) {
   $args = func_get_args();

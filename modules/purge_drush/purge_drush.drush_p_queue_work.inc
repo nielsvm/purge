@@ -21,8 +21,8 @@ use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
  * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purgePurgers
  *   The purge purgers service.
  *
- * @return string[]
- *   Array with the purger instance ID as key, and list of invalidation types.
+ * @return array
+ *   Drush render/format array.
  */
 function drush_purge_drush_p_queue_work($format, QueueServiceInterface $purgeQueue, ProcessorsServiceInterface $purgeProcessors, PurgersServiceInterface $purgePurgers) {
   $args = func_get_args();

@@ -239,10 +239,9 @@ function purge_drush_callback_router() {
   // Verify that the given --format is listed in our '_outputformats'.
   $format = drush_get_option('format', $command_context['outputformat']['default']);
   if (!in_array($format, $command_context['_outputformats'])) {
-    drush_set_default_outputformat('string');
     $formats = ['@formats' => implode(', ', $command_context['_outputformats'])];
     $message = dt('Unsupported output format, options: @formats.', $formats);
-    return drush_log($message ,'error');
+    return drush_set_error('DRUSH_FORMAT_ERROR', $message);
   }
 
   // Require the actual file in which the callback resides.

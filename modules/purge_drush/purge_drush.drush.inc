@@ -30,9 +30,9 @@ function purge_drush_drush_command() {
     'required-arguments' => 0,
     'options' => [],
     'examples' => [
-      'drush purge-diagnostics' => 'Build the diagnostic report as a table.',
-      'drush purge-diagnostics --format=json' => 'Export as JSON.',
-      'drush purge-diagnostics --format=yaml' => 'Export as YAML.',
+      'drush p-diagnostics' => 'Build the diagnostic report as a table.',
+      'drush p-diagnostics --format=json' => 'Export as JSON.',
+      'drush p-diagnostics --format=yaml' => 'Export as YAML.',
     ],
     '_outputformats' => ['table', 'yaml', 'json',],
     'outputformat' => [
@@ -72,9 +72,9 @@ function purge_drush_drush_command() {
     'required-arguments' => 1,
     'options' => [],
     'examples' => [
-      'drush purge-invalidate tag node:1' => 'Clears URLs tagged with "node:1" from external caching platforms.',
-      'drush purge-invalidate url http://www.drupal.org/' => 'Clears "http://www.drupal.org/" from external caching platforms.',
-      'drush purge-invalidate everything' => 'Clears everything on external caching platforms.',
+      'drush p-invalidate tag node:1' => 'Clears URLs tagged with "node:1" from external caching platforms.',
+      'drush p-invalidate url http://www.drupal.org/' => 'Clears "http://www.drupal.org/" from external caching platforms.',
+      'drush p-invalidate everything' => 'Clears everything on external caching platforms.',
     ],
     '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [
@@ -92,9 +92,9 @@ function purge_drush_drush_command() {
     'required-arguments' => FALSE,
     'options' => [],
     'examples' => [
-      'drush purge-processor-list' => 'List all processors in a table.',
-      'drush purge-processor-list --table=json' => 'Export all processors in JSON.',
-      'drush purge-processor-list --table=yaml' => 'Export all processors in YAML.',
+      'drush p-processor-list' => 'List all processors in a table.',
+      'drush p-processor-list --table=json' => 'Export all processors in JSON.',
+      'drush p-processor-list --table=yaml' => 'Export all processors in YAML.',
     ],
     '_outputformats' => ['table', 'yaml', 'json', 'list'],
     'outputformat' => [
@@ -120,8 +120,8 @@ function purge_drush_drush_command() {
     'required-arguments' => 1,
     'options' => [],
     'examples' => [
-      'drush purge-queue-add tag node:1' => 'Clears URLs tagged with "node:1" from external caching platforms.',
-      'drush purge-queue-add url http://www.drupal.org/' => 'Clears "http://www.drupal.org/" from external caching platforms.',
+      'drush p-queue-add tag node:1' => 'Clears URLs tagged with "node:1" from external caching platforms.',
+      'drush p-queue-add url http://www.drupal.org/' => 'Clears "http://www.drupal.org/" from external caching platforms.',
     ],
     '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [
@@ -152,11 +152,11 @@ function purge_drush_drush_command() {
       ],
     ],
     'examples' => [
-      'drush purge-queue-browse' => 'Browse queue content and press space to load more.',
-      'drush purge-queue-browse --limit=30' => 'Browse the queue content and show 30 items at a time.',
-      'drush purge-queue-browse --page=3' => 'Show page 3 of the queue.',
-      'drush purge-queue-browse --format=json' => 'Fetch a page from the queue exported as JSON.',
-      'drush purge-queue-browse --format=yaml' => 'Fetch a page from the queue exported as JSON.',
+      'drush p-queue-browse' => 'Browse queue content and press space to load more.',
+      'drush p-queue-browse --limit=30' => 'Browse the queue content and show 30 items at a time.',
+      'drush p-queue-browse --page=3' => 'Show page 3 of the queue.',
+      'drush p-queue-browse --format=json' => 'Fetch a page from the queue exported as JSON.',
+      'drush p-queue-browse --format=yaml' => 'Fetch a page from the queue exported as JSON.',
     ],
     '_outputformats' => ['table', 'yaml', 'json', 'list'],
     'outputformat' => [
@@ -175,7 +175,7 @@ function purge_drush_drush_command() {
     'required-arguments' => FALSE,
     'options' => [],
     'examples' => [
-      'drush purge-queue-empty' => 'Clear the queue and reset all statistics.',
+      'drush p-queue-empty' => 'Clear the queue and reset all statistics.',
     ],
     '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [
@@ -193,7 +193,7 @@ function purge_drush_drush_command() {
     'required-arguments' => FALSE,
     'options' => [],
     'examples' => [
-      'drush purge-queuer-workchunk' => 'Claim a chunk of items from the queue and process them.',
+      'drush p-queuer-workchunk' => 'Claim a chunk of items from the queue and process them.',
     ],
     '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [
@@ -211,9 +211,9 @@ function purge_drush_drush_command() {
     'required-arguments' => FALSE,
     'options' => [],
     'examples' => [
-      'drush purge-queuer-list' => 'List all queuers in a table.',
-      'drush purge-queuer-list --table=json' => 'Export all queuers in JSON.',
-      'drush purge-queuer-list --table=yaml' => 'Export all queuers in YAML.',
+      'drush p-queuer-list' => 'List all queuers in a table.',
+      'drush p-queuer-list --table=json' => 'Export all queuers in JSON.',
+      'drush p-queuer-list --table=yaml' => 'Export all queuers in YAML.',
     ],
     '_outputformats' => ['table', 'yaml', 'json', 'list'],
     'outputformat' => [

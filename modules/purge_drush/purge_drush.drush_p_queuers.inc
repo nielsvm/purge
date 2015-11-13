@@ -33,6 +33,7 @@ function drush_purge_drush_p_queuers($format, QueuersServiceInterface $purgeQueu
     foreach ($purgeQueuers as $queuer) {
       $output[] = $queuer->getPluginId();
     }
+    $output[] = '';
   }
   return $output;
 }

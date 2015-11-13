@@ -33,6 +33,7 @@ function drush_purge_drush_p_processors($format, ProcessorsServiceInterface $pur
     foreach ($purgeProcessors as $processor) {
       $output[] = $processor->getPluginId();
     }
+    $output[] = '';
   }
   return $output;
 }

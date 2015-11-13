@@ -76,9 +76,9 @@ function purge_drush_drush_command() {
       'drush purge-invalidate url http://www.drupal.org/' => 'Clears "http://www.drupal.org/" from external caching platforms.',
       'drush purge-invalidate everything' => 'Clears everything on external caching platforms.',
     ],
-    '_outputformats' => ['message', 'yaml', 'json'],
+    '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [
-      'default' => 'message',
+      'default' => 'string',
       'pipe-format' => 'yaml',
     ],
     'aliases' => ['pinv'],
@@ -123,9 +123,9 @@ function purge_drush_drush_command() {
       'drush purge-queue-add tag node:1' => 'Clears URLs tagged with "node:1" from external caching platforms.',
       'drush purge-queue-add url http://www.drupal.org/' => 'Clears "http://www.drupal.org/" from external caching platforms.',
     ],
-    '_outputformats' => ['message', 'yaml', 'json'],
+    '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [
-      'default' => 'message',
+      'default' => 'string',
       'pipe-format' => 'yaml',
     ],
     'aliases' => ['pqa'],
@@ -170,16 +170,16 @@ function purge_drush_drush_command() {
   $items['p-queue-empty'] = [
     'description' => 'Clear the queue and reset all statistics.',
     'callback' => 'purge_drush_callback_router',
-    'callback services' => ['purge.queue',],
+    'callback services' => ['purge.queue.stats', 'purge.queue',],
     'arguments' => [],
     'required-arguments' => FALSE,
     'options' => [],
     'examples' => [
       'drush purge-queue-empty' => 'Clear the queue and reset all statistics.',
     ],
-    '_outputformats' => ['message', 'yaml', 'json'],
+    '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [
-      'default' => 'message',
+      'default' => 'string',
       'pipe-format' => 'yaml',
     ],
     'aliases' => ['pqe'],
@@ -195,9 +195,9 @@ function purge_drush_drush_command() {
     'examples' => [
       'drush purge-queuer-workchunk' => 'Claim a chunk of items from the queue and process them.',
     ],
-    '_outputformats' => ['message', 'yaml', 'json'],
+    '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [
-      'default' => 'message',
+      'default' => 'string',
       'pipe-format' => 'yaml',
     ],
     'aliases' => ['pqw'],

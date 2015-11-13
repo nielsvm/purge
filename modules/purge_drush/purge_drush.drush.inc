@@ -39,6 +39,24 @@ function purge_drush_drush_command() {
       'default' => 'table',
       'pipe-format' => 'yaml',
       'require-engine-capability' => ['format-table'],
+      'concatenate-columns' => ['recommendation' => ['value', 'recommendation']],
+      'fields-default' => ['title', 'recommendation', 'severity'],
+      'field-labels' => [
+        'id' => 'Id',
+        'title' => 'Title',
+        'description' => 'Description',
+        'recommendation' => 'Recommendation',
+        'value' => 'Value',
+        'severity' => 'Severity',
+        'severity_int' => 'SevInt',
+        'blocks_processing' => 'Blocking?',
+      ],
+      'column-widths' => [
+        'severity' => 8,
+        'value' => 20,
+        'recommendation' => 50,
+        'severity_int' => 6,
+      ],
     ],
     'aliases' => ['pdia'],
     'core' => ['8+'],
@@ -219,27 +237,32 @@ function purge_drush_drush_command() {
  */
 
 function purge_drush_callback_router() {
-  $command_context = drush_get_command();
-  $command = str_replace('-', '_', $command_context['command']);
+  $context = drush_get_command();
+  $command = str_replace('-', '_', $context['command']);
 
   // Load requested container services in our own 'callback services' field.
   $services = [];
-  foreach ($command_context['callback services'] as $service) {
+  foreach ($context['callback services'] as $service) {
     $services[] = \Drupal::service($service);
   }
 
   // Append options with '_default' as arguments to keep callbacks simple.
   $args = func_get_args();
-  foreach ($command_context['options'] as $option => $definition) {
+  foreach ($context['options'] as $option => $definition) {
     if (isset($definition['_default'])) {
       $args[] = drush_get_option($option, $definition['_default']);
     }
   }
 
   // Verify that the given --format is listed in our '_outputformats'.
-  $format = drush_get_option('format', $command_context['outputformat']['default']);
-  if (!in_array($format, $command_context['_outputformats'])) {
-    $formats = ['@formats' => implode(', ', $command_context['_outputformats'])];
+  if (drush_get_option('pipe', FALSE)) {
+    $format = $context['outputformat']['pipe-format'];
+  }
+  else {
+    $format = drush_get_option('format', $context['outputformat']['default']);
+  }
+  if (!in_array($format, $context['_outputformats'])) {
+    $formats = ['@formats' => implode(', ', $context['_outputformats'])];
     $message = dt('Unsupported output format, options: @formats.', $formats);
     return drush_set_error('DRUSH_FORMAT_ERROR', $message);
   }

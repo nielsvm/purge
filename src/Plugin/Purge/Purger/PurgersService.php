@@ -406,7 +406,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
 
       // Wait configured cooldown time before other purgers kick in.
       if (count($groups)) {
-        $capacity_tracker->waitCooldownTime($id);
+        $this->capacityTracker()->waitCooldownTime($id);
       }
     }
 

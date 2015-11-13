@@ -125,9 +125,16 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    *
    * @see \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface::invalidate()
    *
-   * @return void
+   * @return bool
+   *   TRUE if all checks passed, FALSE if there's reason to stop.
    */
   protected function checksBeforeTakeoff(array $invalidations) {
+
+    // Stop when no invalidations are given (DX improvement) and then verify if
+    // all incoming objects are InvalidationInterface compliant.
+    if (empty($invalidations)) {
+      return FALSE;
+    }
     foreach ($invalidations as $i => $invalidation) {
       if (!$invalidation instanceof InvalidationInterface) {
         throw new BadBehaviorException("Item $i is not a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface derivative.");
@@ -345,14 +352,10 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     $execution_time_start = microtime(TRUE);
     $capacity_tracker = $this->capacityTracker();
 
-    // Stop when the incoming array is empty (no queue claims, DX improvement).
-    if (empty($invalidations)) {
+    // Perform various (exception-throwing) pre-flight checks before we start.
+    if (!$this->checksBeforeTakeoff($invalidations)) {
       return;
     }
-
-    // Prepare before we start processing.
-    $types_by_purger = $this->getTypesByPurger();
-    $this->checksBeforeTakeoff($invalidations);
 
     // Discover types in need of processing and - just to be sure - reset state.
     $types = [];
@@ -362,6 +365,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     }
 
     // Iterate the purgers and start invalidating the items each one supports.
+    $types_by_purger = $this->getTypesByPurger();
     foreach ($this->purgers as $id => $purger) {
       $supported = $groups = [];
 

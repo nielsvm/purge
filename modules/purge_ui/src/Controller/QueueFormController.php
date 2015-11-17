@@ -45,7 +45,6 @@ class QueueFormController extends ControllerBase {
    * @return array
    */
   public function detailForm() {
-    $id = current($this->purgeQueue->getPluginsEnabled());
     return $this->formBuilder()->getForm(
       "\Drupal\purge_ui\Form\PluginDetailsForm",
       ['details' => $this->purgeQueue->getDescription()]

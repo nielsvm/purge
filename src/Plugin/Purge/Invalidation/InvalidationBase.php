@@ -102,7 +102,6 @@ abstract class InvalidationBase extends ImmutableInvalidationBase implements Inv
 
     // Find out if states returning from purgers are actually valid.
     $old_is_string = is_string($this->context);
-    $old_is_null = is_null($this->context);
     $both_strings = $old_is_string && $new_is_string;
     $transferring = $both_strings && ($this->context != $purger_instance_id);
     if ($transferring || ($old_is_string && $new_is_null)) {
@@ -118,7 +117,6 @@ abstract class InvalidationBase extends ImmutableInvalidationBase implements Inv
    * {@inheritdoc}
    */
   public function validateExpression() {
-    $plugin_id = $this->getPluginId();
     $d = $this->getPluginDefinition();
     $topt = ['@type' => strtolower($d['label'])];
     if ($d['expression_required'] && is_null($this->expression)) {

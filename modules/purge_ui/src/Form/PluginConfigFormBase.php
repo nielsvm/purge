@@ -115,7 +115,7 @@ abstract class PluginConfigFormBase extends ConfigFormBase {
 
   /**
    * Form submission handler which ONLY gets called when no validation errors
-   * occured. Normally this would be the case, however with AJAX driven form
+   * occurred. Normally this would be the case, however with AJAX driven form
    * dialogs this handler is needed for standard behavior.
    *
    * @param array $form

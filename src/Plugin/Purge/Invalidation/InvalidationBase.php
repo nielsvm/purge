@@ -18,7 +18,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException;
 /**
  * Provides base implementations for the invalidation object.
  *
- * Invalidations are small value objects that decribe and track invalidations
+ * Invalidations are small value objects that describe and track invalidations
  * on one or more external caching systems within the Purge pipeline. These
  * objects can be directly instantiated from InvalidationsService and float
  * freely between the QueueService and the PurgersService.

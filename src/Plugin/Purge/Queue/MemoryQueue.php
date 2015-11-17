@@ -210,7 +210,7 @@ class MemoryQueue extends QueueBase implements QueueInterface {
    */
   public function selectPage($page = 1) {
     if (($page < 1) || !is_int($page)) {
-      throw new \LogicException('Parameter $page has to be a postive integer.');
+      throw new \LogicException('Parameter $page has to be a positive integer.');
     }
     $this->bufferInitialize();
 

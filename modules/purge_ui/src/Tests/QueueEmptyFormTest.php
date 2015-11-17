@@ -89,7 +89,7 @@ class QueueEmptyFormTest extends WebTestBase {
       $tags[] = $this->purgeInvalidationFactory->get('tag', "$i");
     }
     $this->purgeQueue->add($tags);
-    // Assert that - after reloading/comitting the queue - we still have these.
+    // Assert that - after reloading/committing the queue - we still have these.
     $this->purgeQueue->reload();
     $this->assertEqual(7, $this->purgeQueue->numberOfItems());
     // Call the confirm form and assert the AJAX responses.

@@ -93,7 +93,7 @@ back to it. This data can be used to report progress on the queue and is easily
 retrieved, the data resets when the queue is emptied.
 
 #### Invalidations
-Invalidations are small value objects that **decribe and track invalidations**
+Invalidations are small value objects that **describe and track invalidations**
 on one or more external caching systems within the Purge pipeline. These
 objects float freely between **queue** and **purgers** but can also be created
 on the fly and in third-party code.

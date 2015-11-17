@@ -45,7 +45,7 @@ function purge_drush_p_queue_browse($format, QueueServiceInterface $purgeQueue, 
       }
       print(implode("\n", $lines) . "\n");
 
-      // Read input to let users stop or continue the proces.
+      // Read input to let users stop or continue the process.
       if ($page != $max) {
         $msg = sprintf("[%d/%d] Press any key for more, [q] to quit...", $page, $max);
         $term = shell_exec("stty -g");

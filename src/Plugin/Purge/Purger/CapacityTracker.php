@@ -276,7 +276,7 @@ class CapacityTracker implements CapacityTrackerInterface {
       $time_left = $time_max - $this->spentExecutionTime()->get() - $this->getCooldownTimeTotal();
 
       // Calculate how many invaldiations can still be processed with the time
-      // that is left and substract the number of already invalidated items.
+      // that is left and subtract the number of already invalidated items.
       $limit = intval(floor($time_left / $this->getTimeHintTotal()) - $spent_inv);
 
       // In the rare case the limit exceeds ideal conditions, the limit is

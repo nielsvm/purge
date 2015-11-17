@@ -38,7 +38,6 @@ function purge_drush_drush_command() {
     'outputformat' => [
       'default' => 'table',
       'pipe-format' => 'yaml',
-      'require-engine-capability' => ['format-table'],
       'concatenate-columns' => ['recommendation' => ['value', 'recommendation']],
       'fields-default' => ['title', 'recommendation', 'severity'],
       'field-labels' => [
@@ -162,7 +161,11 @@ function purge_drush_drush_command() {
     'outputformat' => [
       'default' => 'table',
       'pipe-format' => 'list',
-      'require-engine-capability' => ['format-table'],
+      'field-labels' => [
+        'typetr' => 'Type',
+        'statetr' => 'State',
+        'expression' => 'Expression',
+      ],
     ],
     'aliases' => ['pqb'],
     'core' => ['8+'],

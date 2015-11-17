@@ -188,6 +188,36 @@ function purge_drush_drush_command() {
     'aliases' => ['pqe'],
     'core' => ['8+'],
   ];
+  $items['p-queue-stats'] = [
+    'description' => 'Retrieve the queue statistics.',
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.queue.stats',],
+    'arguments' => [],
+    'required-arguments' => FALSE,
+    'options' => [],
+    'examples' => [
+      'drush p-queue-stats' => 'Retrieve the queue statistics.',
+      'drush p-queue-stats --format=json' => 'Fetch the data as JSON.',
+      'drush p-queue-stats --format=yaml' => 'Fetch the data as YAML.',
+    ],
+    '_outputformats' => ['table', 'yaml', 'json',],
+    'outputformat' => [
+      'default' => 'table',
+      'pipe-format' => 'yaml',
+      'field-labels' => [
+        'title' => '',
+        'description' => 'Description',
+        'value' => 'Value',
+      ],
+      'column-widths' => [
+        'title' => 15,
+        'value' => 10,
+        'description' => 40,
+      ],
+    ],
+    'aliases' => ['pqs'],
+    'core' => ['8+'],
+  ];
   $items['p-queue-work'] = [
     'description' => 'Claim a chunk of items from the queue and process them.',
     'callback' => 'purge_drush_callback_router',

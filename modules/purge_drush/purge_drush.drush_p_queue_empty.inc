@@ -13,7 +13,7 @@ use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
  *
  * @param string $format
  *   The default or selected output format of the command.
- * @param \Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface $purgeQueueStat
+ * @param \Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface $purgeQueueStats
  *   The purge queue statistics service.
  * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $purgeQueue
  *   The purge queue service.

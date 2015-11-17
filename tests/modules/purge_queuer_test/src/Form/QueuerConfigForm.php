@@ -11,6 +11,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\purge_ui\Form\QueuerConfigFormBase;
 
 /**
+ * Queuer with a configuration form.
+ *
  * @see \Drupal\purge_queuer_test\Plugin\Purge\Queuer\WithFormQueuer.
  */
 class QueuerConfigForm extends QueuerConfigFormBase {

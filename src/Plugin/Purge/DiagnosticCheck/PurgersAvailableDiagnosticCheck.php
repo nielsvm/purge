@@ -75,7 +75,6 @@ class PurgersAvailableDiagnosticCheck extends DiagnosticCheckBase implements Dia
    * {@inheritdoc}
    */
   public function run() {
-    $purgers = $this->purgePurgers->getPlugins();
     $purgerlabels  = $this->purgePurgers->getLabels();
 
     // Put all enabled in a comma separated value.

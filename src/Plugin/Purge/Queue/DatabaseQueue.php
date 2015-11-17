@@ -210,7 +210,7 @@ class DatabaseQueue extends QueueBase implements QueueInterface {
 
     // Update the items (marking them claimed) in one query.
     if (count($returned_items)) {
-      $update = $this->connection->update('queue')
+      $this->connection->update('queue')
         ->fields([
           'expire' => time() + $lease_time,
         ])

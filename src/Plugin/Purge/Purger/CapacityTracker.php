@@ -320,7 +320,7 @@ class CapacityTracker implements CapacityTrackerInterface {
         // Iterate all hints and group the values by invalidation type.
         foreach ($this->timeHints as $id => $hint) {
           foreach ($this->purgers[$id]->getTypes() as $type) {
-            if (!isset($hint_per_type[$type])) {
+            if (!isset($hints_per_type[$type])) {
               $hints_per_type[$type] = 0.0;
             }
             $hints_per_type[$type] = $hints_per_type[$type] + $hint;

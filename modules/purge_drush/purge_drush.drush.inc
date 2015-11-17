@@ -327,12 +327,11 @@ function purge_drush_callback_router() {
   }
 
   // Require the actual file in which the callback resides.
-  $file = 'purge_drush.drush_' . $command . '.inc';
-  require_once dirname(__FILE__) . '/' .  $file;
+  require_once dirname(__FILE__) . '/' .  'purge_drush.' . $command . '.inc';
 
   // Build up the final structure of the arguments and dispatch code execution.
   $final_args = array_merge(
     [$format],
     $services, $args);
-  return call_user_func_array('drush_purge_drush_' . $command, $final_args);
+  return call_user_func_array('purge_drush_' . $command, $final_args);
 }

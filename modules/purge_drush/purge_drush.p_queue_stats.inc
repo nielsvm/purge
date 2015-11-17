@@ -18,7 +18,7 @@ use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
  * @return array
  *   Drush render/format array.
  */
-function drush_purge_drush_p_queue_stats($format, StatsTrackerInterface $purgeQueueStats) {
+function purge_drush_p_queue_stats($format, StatsTrackerInterface $purgeQueueStats) {
   if ($format === 'table') {
     return [
       [

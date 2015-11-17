@@ -37,7 +37,7 @@ use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
  * @return array
  *   Drush render/format array.
  */
-function drush_purge_drush_p_invalidate($format, InvalidationsServiceInterface $purgeInvalidationFactory, ProcessorsServiceInterface $purgeProcessors, PurgersServiceInterface $purgePurgers, $type, $expression = NULL) {
+function purge_drush_p_invalidate($format, InvalidationsServiceInterface $purgeInvalidationFactory, ProcessorsServiceInterface $purgeProcessors, PurgersServiceInterface $purgePurgers, $type, $expression = NULL) {
   $return_exception = function($exception, $message = '') use($format) {
     if ($format === 'string') {
       return drush_set_error('ERROR', $message ? $message : $e->getMessage());

@@ -21,7 +21,7 @@ use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
  * @return array
  *   Drush render/format array.
  */
-function drush_purge_drush_p_queue_empty($format, StatsTrackerInterface $purgeQueueStats, QueueServiceInterface $purgeQueue) {
+function purge_drush_p_queue_empty($format, StatsTrackerInterface $purgeQueueStats, QueueServiceInterface $purgeQueue) {
   $total = (int)$purgeQueueStats->total()->get();
   $purgeQueue->emptyQueue();
   if (in_array($format, ['yaml', 'json'])) {

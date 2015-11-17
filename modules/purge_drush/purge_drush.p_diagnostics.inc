@@ -19,7 +19,7 @@ use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
  * @return array
  *   Drush render/format array.
  */
-function drush_purge_drush_p_diagnostics($format, DiagnosticsServiceInterface $purgeDiagnostics) {
+function purge_drush_p_diagnostics($format, DiagnosticsServiceInterface $purgeDiagnostics) {
   if (!in_array($format, ['table', 'yaml', 'json'])) {
     return [];
   }

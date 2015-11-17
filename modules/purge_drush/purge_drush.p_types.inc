@@ -21,7 +21,7 @@ use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
  * @return array
  *   Drush render/format array.
  */
-function drush_purge_drush_p_types($format, InvalidationsServiceInterface $purgeInvalidationFactory, PurgersServiceInterface $purgePurgers) {
+function purge_drush_p_types($format, InvalidationsServiceInterface $purgeInvalidationFactory, PurgersServiceInterface $purgePurgers) {
   $types_by_purger = $purgePurgers->getTypesByPurger();
   $types = $purgePurgers->getTypes();
   $output = [];

@@ -27,7 +27,7 @@ use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
  * @return array
  *   Drush render/format array.
  */
-function drush_purge_drush_p_queue_work($format, QueueServiceInterface $purgeQueue, ProcessorsServiceInterface $purgeProcessors, PurgersServiceInterface $purgePurgers) {
+function purge_drush_p_queue_work($format, QueueServiceInterface $purgeQueue, ProcessorsServiceInterface $purgeProcessors, PurgersServiceInterface $purgePurgers) {
   $return_exception = function($exception, $message = '') use($format) {
     if ($format === 'string') {
       return drush_set_error($message ? $message : $e->getMessage());

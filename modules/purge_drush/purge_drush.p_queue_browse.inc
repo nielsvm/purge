@@ -22,7 +22,7 @@ use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
  * @return array
  *   Drush render/format array.
  */
-function drush_purge_drush_p_queue_browse($format, QueueServiceInterface $purgeQueue, $limit, $page) {
+function purge_drush_p_queue_browse($format, QueueServiceInterface $purgeQueue, $limit, $page) {
   $purgeQueue->selectPageLimit(intval($limit));
 
   // Make the output pageable and interactive for first-page table renders.
@@ -33,7 +33,7 @@ function drush_purge_drush_p_queue_browse($format, QueueServiceInterface $purgeQ
       ob_start();
       drush_handle_command_output(
         drush_get_command(),
-        drush_purge_drush_p_queue_browse($format, $purgeQueue, $limit, "$page")
+        purge_drush_p_queue_browse($format, $purgeQueue, $limit, "$page")
       );
       $output = ob_get_contents();
       ob_end_clean();

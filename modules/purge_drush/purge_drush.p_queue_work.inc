@@ -30,7 +30,7 @@ use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 function purge_drush_p_queue_work($format, QueueServiceInterface $purgeQueue, ProcessorsServiceInterface $purgeProcessors, PurgersServiceInterface $purgePurgers) {
   $return_exception = function($exception, $message = '') use($format) {
     if ($format === 'string') {
-      return drush_set_error($message ? $message : $e->getMessage());
+      return drush_set_error($message ? $message : $exception->getMessage());
     }
     return FALSE;
   };

@@ -40,7 +40,7 @@ use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 function purge_drush_p_invalidate($format, InvalidationsServiceInterface $purgeInvalidationFactory, ProcessorsServiceInterface $purgeProcessors, PurgersServiceInterface $purgePurgers, $type, $expression = NULL) {
   $return_exception = function($exception, $message = '') use($format) {
     if ($format === 'string') {
-      return drush_set_error('ERROR', $message ? $message : $e->getMessage());
+      return drush_set_error('ERROR', $message ? $message : $exception->getMessage());
     }
     return FALSE;
   };

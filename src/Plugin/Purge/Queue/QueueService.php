@@ -402,6 +402,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    */
   public function numberOfItems() {
     $this->commit();
+    $this->initializeQueue();
     return $this->queue->numberOfItems();
   }
 

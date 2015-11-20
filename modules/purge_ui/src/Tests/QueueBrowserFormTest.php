@@ -34,13 +34,20 @@ class QueueBrowserFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_ui'];
+  public static $modules = ['purge_ui', 'purge_queuer_test'];
+
+  /**
+   * @var \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface
+   */
+  protected $queuer;
 
   /**
    * Setup the test.
    */
   function setUp() {
     parent::setUp();
+    $this->initializeQueuersService();
+    $this->queuer = $this->purgeQueuers->get('a');
     $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
   }
 
@@ -88,7 +95,7 @@ class QueueBrowserFormTest extends WebTestBase {
       $needles[$i] = "node:$i";
       $tags[] = $this->purgeInvalidationFactory->get('tag', $needles[$i]);
     }
-    $this->purgeQueue->add($tags);
+    $this->purgeQueue->add($this->queuer, $tags);
     // Assert that the pager works and returns our objects.
     $this->assertEqual(15, count($this->purgeQueue->selectPage()));
     $this->assertEqual(50, $this->purgeQueue->selectPageLimit(50));

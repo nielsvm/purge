@@ -36,13 +36,20 @@ class QueueEmptyFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_ui'];
+  public static $modules = ['purge_ui', 'purge_queuer_test'];
+
+  /**
+   * @var \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface
+   */
+  protected $queuer;
 
   /**
    * Setup the test.
    */
   function setUp() {
     parent::setUp();
+    $this->initializeQueuersService();
+    $this->queuer = $this->purgeQueuers->get('a');
     $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
   }
 
@@ -88,7 +95,7 @@ class QueueEmptyFormTest extends WebTestBase {
     for ($i = 1; $i <= 7; $i++) {
       $tags[] = $this->purgeInvalidationFactory->get('tag', "$i");
     }
-    $this->purgeQueue->add($tags);
+    $this->purgeQueue->add($this->queuer, $tags);
     // Assert that - after reloading/committing the queue - we still have these.
     $this->purgeQueue->reload();
     $this->assertEqual(7, $this->purgeQueue->numberOfItems());

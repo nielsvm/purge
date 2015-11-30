@@ -5,6 +5,8 @@
  * Administrative Drush commands for Purge.
  */
 
+use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
+
 /**
  * Implements hook_drush_help().
  */
@@ -272,17 +274,32 @@ function purge_drush_drush_command() {
     'outputformat' => [
       'default' => 'table',
       'pipe-format' => 'list',
-      'field-labels' => [
-        'label' => 'Type',
-      ],
+      'field-labels' => ['label' => 'Type',],
     ],
     'aliases' => ['ptyp'],
     'core' => ['8+'],
   ];
-  foreach (\Drupal::service('purge.purgers')->getLabels() as $id => $label) {
-    $items['p-types']['outputformat']['field-labels'][$id] = (string)$label;
-  }
   return $items;
+}
+
+/**
+ * Implementation of hook_drush_command_alter().
+ */
+function purge_drush_drush_command_alter(&$command) {
+
+  // P-TYPES: Add a column for each enabled purger.
+  if ($command['command'] === 'p-types') {
+    try {
+      foreach (\Drupal::service('purge.purgers')->getLabels() as $id => $label) {
+        $label = (string) $label;
+        $command['outputformat']['field-labels'][$id] = $label;
+        $command['engines']['outputformat']['field-labels'][$id] = $label;
+      }
+    }
+    catch (ContainerNotInitializedException $e) {
+      // This happens barely, but when it does we simply don't add any columns.
+    }
+  }
 }
 
 /**

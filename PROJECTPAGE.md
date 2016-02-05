@@ -31,7 +31,8 @@ This project aims to get all modules dealing with proxies and CDNs on board and
 to integrate with Purge. As known to date, these modules are or are being
 integrated:
 
- * [``purge_purger_http``](https://www.drupal.org/project/purge_purger_http)
+ * [``purge_purger_http``](https://www.drupal.org/project/purge_purger_http) for
+   generic HTTP based cache invalidation, e.g. Varnish, Squid and Nginx.
  * [``acquia_purge``](https://www.drupal.org/project/acquia_purge)
  * [``cloudflare``](https://www.drupal.org/project/cloudflare)
  * [``akamai``](https://github.com/cam8001/akamai)
@@ -49,13 +50,12 @@ bundled in the code repository.
 ###### Mind the coverage gap
 Due to the architectural nature of Drupal 7 and versions below, it is impossible
 for [cache expiration](http://drupal.org/project/expire) to detect _every single
-content change_. Most likely you will need to create rules for blocks and views
-as these are much harder to automatically detect, its therefore recommended to
-thoroughly test your setup.
+content change_. In some cases you may need to use the [expire](http://drupal.org/project/expire)
+module API or [rules](http://drupal.org/project/rules) integration to cover
+views, blocks and places left undetected. In all cases we recommend testing
+thoroughly before increasing your ``page_cache_maximum_age`` variable.
 
-###### Future releases
-The ``1.x`` versions are in maintenance mode and receive mostly fixes regarding
-security and bugs. Although ``2.x`` is the upcoming branch for Drupal 7 and
-below, there is no short-term expectation that this becomes production
-quality. This is partly due the quite complex problem  to solve and partly due
-the much improved architectural situation on Drupal 8.
+###### Release expectations
+As our focus is on Drupal 8, the ``1.x`` branch is in maintenance-only mode and
+receives mostly bug- and security fixes. The ``2.x`` branch is considered
+experimental, unmaintained and will likely never reach a production release.

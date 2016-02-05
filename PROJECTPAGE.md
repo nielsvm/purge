@@ -20,7 +20,7 @@ not least, it enforces a separation of concerns and should be seen as a
 ###### Getting started
 For most simple configurations, start with:
 
-* ``drush en purge purge_ui purge_drush purge_queuer_coretags purge_processor_cron --yes``
+* ``drush en purge purge_ui purge_drush purge_queuer_coretags purge_processor_cron``
 * Head over to [``admin/config/development/performance/purge``](http://mysite/admin/config/development/performance/purge).
 * Now you need to install - and probably configure -  a third-party module that
   provides a **purger**. If no module supports invalidation of your cache layer
@@ -32,7 +32,7 @@ to integrate with Purge. As known to date, these modules are or are being
 integrated:
 
  * [``purge_purger_http``](https://www.drupal.org/project/purge_purger_http) for
-   generic HTTP based cache invalidation, e.g. Varnish, Squid and Nginx.
+   generic HTTP-based invalidation, e.g. Varnish, Squid and Nginx.
  * [``acquia_purge``](https://www.drupal.org/project/acquia_purge)
  * [``cloudflare``](https://www.drupal.org/project/cloudflare)
  * [``akamai``](https://github.com/cam8001/akamai)

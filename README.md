@@ -1,34 +1,14 @@
+[//]: # ( clear&&curl -s -F input_files[]=@README.md -F from=markdown -F to=html http://c.docverter.com/convert|tail -n+11|head -n-2 )
+[//]: # ( curl -s -F input_files[]=@README.md -F from=markdown -F to=pdf http://c.docverter.com/convert>README.pdf )
+
 # Purge
-##### _The modular external cache invalidation framework_
+##### _The modular external cache invalidation framework._
 
 The Purge module for Drupal 8 enables invalidation of content from external
 caches, reverse proxies and CDN platforms. The technology-agnostic plugin
 architecture allows for different server configurations and use cases. Last but
 not least, it enforces a separation of concerns and should be seen as a
 **middleware** solution.
-
-Getting started
-------------------------------------------------------------------------------
-For most simple configurations, start with:
-
-* ``drush dl purge --yes``
-* ``drush en purge purge_ui purge_drush purge_queuer_coretags purge_processor_cron --yes``
-* Head over to [http://mysite/admin/config/development/performance/purge](http://mysite/admin/config/development/performance/purge)
-* Now you need to install (and probably configure) a third-party module that
-  provides a **purger**. If no module supports invalidation of your cache layer
-  and doing so works over HTTP, then use the generic [``purge_purger_http``](https://www.drupal.org/project/purge_purger_http).
-
-##### Third-party integration
-This project aims to get all modules dealing with proxies and CDNs on board and
-to integrate with Purge. As known to date, these modules are or are being
-integrated:
-
- * [https://www.drupal.org/project/**purge_purger_http**](https://www.drupal.org/project/purge_purger_http)
- * [https://www.drupal.org/project/**acquia_purge**](https://www.drupal.org/project/acquia_purge)
- * [https://www.drupal.org/project/**cloudflare**](https://github.com/aweingarten/cloudflare)
- * [https://www.drupal.org/project/**akamai**](https://github.com/cam8001/akamai)
-
-Interested? Reach out any time of day and we'll get you going!
 
 ##### Drush commands
 The ``purge_drush`` module adds the following commands for Drush administration:

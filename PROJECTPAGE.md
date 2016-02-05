@@ -14,7 +14,7 @@ leveraging Drupal's brand new cache architecture. The technology-agnostic plugin
 architecture allows for different server configurations and use cases. Last but
 not least, it enforces a separation of concerns and should be seen as a
 **middleware** solution (see ``README``
-[``.pdf``](http://cgit.drupalcode.org/purge/plain/README.pdf?h=8.x-3.x)
+[``.pdf``](http://cgit.drupalcode.org/purge/blob/README.pdf?h=8.x-3.x)
 [``.md``](http://cgit.drupalcode.org/purge/plain/README.md?h=8.x-3.x)).
 
 ###### Getting started

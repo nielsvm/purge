@@ -33,6 +33,7 @@ integrated:
 
  * [``purge_purger_http``](https://www.drupal.org/project/purge_purger_http) for
    generic HTTP-based invalidation, e.g. Varnish, Squid and Nginx.
+ * [``purge_queuer_url``](https://www.drupal.org/project/purge_queuer_url)
  * [``acquia_purge``](https://www.drupal.org/project/acquia_purge)
  * [``cloudflare``](https://www.drupal.org/project/cloudflare)
  * [``akamai``](https://github.com/cam8001/akamai)

@@ -46,7 +46,7 @@ services:
       - { name: needs_destruction }
   purge.queue.txbuffer:
     class: Drupal\purge\Plugin\Purge\Queue\TxBuffer
-    public: false
+    public: true
   purge.queue.stats:
     class: Drupal\purge\Plugin\Purge\Queue\StatsTracker
     arguments: ['@state']

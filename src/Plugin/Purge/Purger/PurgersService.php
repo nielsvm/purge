@@ -344,6 +344,8 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     $this->purgers = [];
     foreach ($this->getPluginsEnabled() as $id => $plugin_id) {
       $this->purgers[$id] = $this->pluginManager->createInstance($plugin_id, ['id' => $id]);
+      $this->purgers[$id]->setRuntimeMeasurement(
+        new \Drupal\purge\Plugin\Purge\Purger\RuntimeMeasurement(0.2));
     }
   }
 

@@ -7,8 +7,10 @@
 
 namespace Drupal\purge\Plugin\Purge\Purger;
 
+use Drupal\purge\Plugin\Purge\Purger\RuntimeMeasurementInterface;
+
 /**
- * Describes what the capacity tracker expects from purger implementations.
+ * Describes what capacity tracking expects from purger implementations.
  */
 interface PurgerCapacityDataInterface {
 
@@ -52,6 +54,14 @@ interface PurgerCapacityDataInterface {
   public function getIdealConditionsLimit();
 
   /**
+   * Get the runtime measurement counter.
+   *
+   * @return null|\Drupal\purge\Plugin\Purge\Purger\RuntimeMeasurementInterface
+   *   The runtime measurement counter if set, or NULL otherwise.
+   */
+  public function getRuntimeMeasurement();
+
+  /**
    * Get the maximum number of seconds, processing a single invalidation takes.
    *
    * Implementations need to return the maximum number of seconds it would take
@@ -85,5 +95,41 @@ interface PurgerCapacityDataInterface {
    *   The maximum number of seconds - as a float - it takes you to process.
    */
   public function getTimeHint();
+
+  /**
+   * Indicates whether your purger utilizes dynamic runtime measurement.
+   *
+   * Implementations of this method should simply return TRUE or FALSE but the
+   * consequences of it have to be thouroughly understood. Either scenarios and
+   * the resulting bahvior explained:
+   *
+   * Dynamic runtime measurement enabled (TRUE):
+   *  - Your counter will be injected using ::setRuntimeMeasurement().
+   *  - The injected counter will be returned by ::getRuntimeMeasurement().
+   *  - RuntimeMeasurementInterface::start() is called before ::invalidate().
+   *  - RuntimeMeasurementInterface::stopped() is called after ::invalidate().
+   *  - Your ::getTimeHint() implementation is assumed to utilize the latest
+   *    runtime measurement by calling RuntimeMeasurementInterface::get().
+   *
+   * Dynamic runtime measurement disabled (FALSE):
+   *  - No calls will be made to ::setRuntimeMeasurement().
+   *  - No calls will be made to ::getRuntimeMeasurement().
+   *  - Your ::getTimeHint() implementation will not use dynamic runtime
+   *    tracking and carefully and responsibly define the right time hints.
+   *
+   * @return bool
+   *   Whether dynamic runtime measurement is used and should be injected.
+   */
+  public function hasRuntimeMeasurement();
+
+  /**
+   * Inject the runtime measurement counter.
+   *
+   * @param \Drupal\purge\Plugin\Purge\Purger\RuntimeMeasurementInterface $measurement
+   *   The runtime measurement counter.
+   *
+   * @return void
+   */
+  public function setRuntimeMeasurement(RuntimeMeasurementInterface $measurement);
 
 }

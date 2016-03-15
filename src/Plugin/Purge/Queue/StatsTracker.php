@@ -132,6 +132,7 @@ class StatsTracker implements StatsTrackerInterface {
     // When the buffer contains changes, write them to the state API in one go.
     if (count($this->buffer)) {
       $this->state->setMultiple($this->buffer);
+      $this->buffer = [];
     }
   }
 

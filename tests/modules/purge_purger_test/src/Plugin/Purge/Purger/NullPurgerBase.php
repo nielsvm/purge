@@ -40,8 +40,8 @@ abstract class NullPurgerBase extends PurgerBase implements PurgerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getTimeHint() {
-    return 1.0;
+  public function hasRuntimeMeasurement() {
+    return TRUE;
   }
 
 }

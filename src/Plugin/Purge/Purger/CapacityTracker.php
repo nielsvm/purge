@@ -58,7 +58,7 @@ class CapacityTracker implements CapacityTrackerInterface {
    *
    * @var \Drupal\purge\Plugin\Purge\Purger\PurgerInterface[]
    */
-  protected $purgers;
+  protected $purgers = NULL;
 
   /**
    * Holds all calculated invalidations limits during runtime, this allows
@@ -99,18 +99,14 @@ class CapacityTracker implements CapacityTrackerInterface {
   protected $timeHintTotal;
 
   /**
-   * {@inheritdoc}
-   */
-  public function __construct(array $purgers) {
-    $this->purgers = $purgers;
-  }
-
-  /**
    * Gather ::getCooldownTime() data by iterating all loaded purgers.
    */
   protected function gatherCooldownTimes() {
     if (is_null($this->cooldownTimes)) {
-     $this->cooldownTimes = [];
+      if (is_null($this->purgers)) {
+        throw new \LogicException("::setPurgers() hasn't been called!");
+      }
+      $this->cooldownTimes = [];
       foreach ($this->purgers as $id => $purger) {
        $cooldown_time = $purger->getCooldownTime();
        if (!is_float($cooldown_time)) {
@@ -138,6 +134,9 @@ class CapacityTracker implements CapacityTrackerInterface {
    */
   protected function gatherTimeHints() {
     if (is_null($this->timeHints)) {
+      if (is_null($this->purgers)) {
+        throw new \LogicException("::setPurgers() hasn't been called!");
+      }
       $this->timeHints = [];
       if (count($this->purgers)) {
         foreach ($this->purgers as $id => $purger) {
@@ -193,6 +192,9 @@ class CapacityTracker implements CapacityTrackerInterface {
    */
   public function getIdealConditionsLimit() {
     if (is_null($this->idealConditionsLimit)) {
+      if (is_null($this->purgers)) {
+        throw new \LogicException("::setPurgers() hasn't been called!");
+      }
 
       // Fail early when no purgers are loaded.
       if (empty($this->purgers)) {
@@ -257,6 +259,9 @@ class CapacityTracker implements CapacityTrackerInterface {
    * {@inheritdoc}
    */
   public function getRemainingInvalidationsLimit() {
+    if (is_null($this->purgers)) {
+      throw new \LogicException("::setPurgers() hasn't been called!");
+    }
 
     // Create a closure that calculates the current limit.
     $calculate = function($spent_inv) {
@@ -332,6 +337,13 @@ class CapacityTracker implements CapacityTrackerInterface {
       }
     }
     return $this->timeHintTotal;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setPurgers(array $purgers) {
+    $this->purgers = $purgers;
   }
 
   /**

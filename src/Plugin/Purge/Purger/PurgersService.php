@@ -19,7 +19,7 @@ use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\LockException;
-use Drupal\purge\Plugin\Purge\Purger\CapacityTracker;
+use Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 
 /**
@@ -89,6 +89,8 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
    *   The plugin manager for this service.
+   * @param \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface $CapacityTracker
+   *   The capacity tracker.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
    * @param \Drupal\Core\Lock\LockBackendInterface $lock
@@ -96,8 +98,9 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
    *   The diagnostics service.
    */
-  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory, LockBackendInterface $lock, DiagnosticsServiceInterface $purge_diagnostics) {
+  function __construct(PluginManagerInterface $pluginManager, CapacityTrackerInterface $capacityTracker, ConfigFactoryInterface $config_factory, LockBackendInterface $lock, DiagnosticsServiceInterface $purge_diagnostics) {
     $this->pluginManager = $pluginManager;
+    $this->capacityTracker = $capacityTracker;
     $this->configFactory = $config_factory;
     $this->purgeDiagnostics = $purge_diagnostics;
     $this->lock = $lock;
@@ -107,10 +110,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * {@inheritdoc}
    */
   public function capacityTracker() {
-    if (is_null($this->capacityTracker)) {
-      $this->initializePurgers();
-      $this->capacityTracker = new CapacityTracker($this->purgers);
-    }
+    $this->initializePurgers();
     return $this->capacityTracker;
   }
 
@@ -345,6 +345,9 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     foreach ($this->getPluginsEnabled() as $id => $plugin_id) {
       $this->purgers[$id] = $this->pluginManager->createInstance($plugin_id, ['id' => $id]);
     }
+
+    // Pass the purgers onto the capacity tracker.
+    $this->capacityTracker->setPurgers($this->purgers);
   }
 
   /**

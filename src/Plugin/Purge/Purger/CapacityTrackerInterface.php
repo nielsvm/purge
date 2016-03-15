@@ -24,14 +24,6 @@ namespace Drupal\purge\Plugin\Purge\Purger;
 interface CapacityTrackerInterface {
 
   /**
-   * Construct a capacity tracker.
-   *
-   * @param \Drupal\purge\Plugin\Purge\Purger\PurgerInterface[] $purgers
-   *   All purger plugins instantiated by \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface.
-   */
-  public function __construct(array $purgers);
-
-  /**
    * Get the time in seconds to wait after invalidation for a specific purger.
    *
    * @param string $purger_instance_id
@@ -188,6 +180,14 @@ interface CapacityTrackerInterface {
    *   process a single cache invalidation (regardless of type).
    */
   public function getTimeHintTotal();
+
+  /**
+   * Set all purger plugin instances.
+   *
+   * @param \Drupal\purge\Plugin\Purge\Purger\PurgerInterface[] $purgers
+   *   All purger plugins instantiated by \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface.
+   */
+  public function setPurgers(array $purgers);
 
   /**
    * Get the counter tracking actual spent execution time during this request.

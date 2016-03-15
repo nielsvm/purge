@@ -413,7 +413,18 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
         if (!count($offers)) {
           continue;
         }
-        $purger->$method($offers);
+
+        // Feed the offers either with runtime measurement running or without.
+        $has_runtime_measurement = $purger->hasRuntimeMeasurement();
+        if ($has_runtime_measurement) {
+          $instrument = $purger->getRuntimeMeasurement();
+          $instrument->start();
+          $purger->$method($offers);
+          $instrument->stop($offers);
+        }
+        else {
+          $purger->$method($offers);
+        }
       }
 
       // Wait configured cooldown time before other purgers kick in.

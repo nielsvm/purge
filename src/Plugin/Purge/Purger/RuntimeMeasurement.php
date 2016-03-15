@@ -71,7 +71,7 @@ class RuntimeMeasurement extends PersistentCounter implements RuntimeMeasurement
     // through the number of invalidations processed. We're also adding 15% of
     // time for theoretic overhead and ensure that the final value remains
     // within the boundaries of ::getTimeHint().
-    if (!($spent = (microtime(TRUE) - $this->start) !== 0.0)) {
+    if (($spent = microtime(TRUE) - $this->start) === 0.0) {
       return;
     }
     $spent = $this->getSafeTimeHintValue(

@@ -2,17 +2,17 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Counter\InvalidationRuntimeMeasurementInterface.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\RuntimeMeasurementInterface.
  */
 
-namespace Drupal\purge\Counter;
+namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\purge\Counter\PersistentCounterInterface;
 
 /**
  * Describes a execution time measurer for invalidation processing.
  */
-interface InvalidationRuntimeMeasurementInterface extends PersistentCounterInterface {
+interface RuntimeMeasurementInterface extends PersistentCounterInterface {
 
   /**
    * Return a value safe for time hints, between 0.1 and 10.00.

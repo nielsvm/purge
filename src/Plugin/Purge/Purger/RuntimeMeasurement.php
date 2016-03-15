@@ -2,19 +2,19 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Counter\InvalidationRuntimeMeasurement.
+ * Contains \Drupal\purge\Plugin\Purge\Purger\RuntimeMeasurement.
  */
 
-namespace Drupal\purge\Counter;
+namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
-use Drupal\purge\Counter\InvalidationRuntimeMeasurementInterface;
+use Drupal\purge\Plugin\Purge\Purger\RuntimeMeasurementInterface;
 use Drupal\purge\Counter\PersistentCounter;
 
 /**
  * Provides a execution time measurer for invalidation processing.
  */
-class InvalidationRuntimeMeasurement extends PersistentCounter implements InvalidationRuntimeMeasurementInterface {
+class RuntimeMeasurement extends PersistentCounter implements RuntimeMeasurementInterface {
 
   /**
    * The initial time measurement.

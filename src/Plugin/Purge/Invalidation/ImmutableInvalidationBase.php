@@ -114,6 +114,19 @@ abstract class ImmutableInvalidationBase extends PluginBase implements Immutable
       elseif (in_array(SELF::PROCESSING, $this->states)) {
         return SELF::PROCESSING;
       }
+      // Catch combination states where one or more purgers added NOT_SUPPROTED
+      // but other purgers added states as well.
+      elseif (in_array(SELF::NOT_SUPPORTED, $this->states)) {
+        if (in_array(SELF::FAILED, $this->states)) {
+          return SELF::FAILED;
+        }
+        elseif (in_array(SELF::PROCESSING, $this->states)) {
+          return SELF::PROCESSING;
+        }
+        elseif (in_array(SELF::SUCCEEDED, $this->states)) {
+          return SELF::SUCCEEDED;
+        }
+      }
       throw new \LogicException("Invalidation state data integrity violation");
     }
 

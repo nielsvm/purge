@@ -44,6 +44,14 @@ abstract class ImmutableInvalidationBase extends PluginBase implements Immutable
   protected $expression = NULL;
 
   /**
+   * Associative array in which the keys point to purger instances and where
+   * each value represents a associative array with key-value stored metadata.
+   *
+   * @var array[]
+   */
+  protected $properties = [];
+
+  /**
    * Associative list of which the keys refer to purger instances and the values
    * are \Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface constants.
    *
@@ -76,6 +84,29 @@ abstract class ImmutableInvalidationBase extends PluginBase implements Immutable
    */
   public function getExpression() {
     return $this->expression;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getProperties() {
+    if (!is_null($this->context)) {
+      throw new \LogicException('Cannot retrieve properties in purger context.');
+    }
+    return $this->properties;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getProperty($key) {
+    if (is_null($this->context)) {
+      throw new \LogicException('Call ::setStateContext() before retrieving properties!');
+    }
+    if (isset($this->properties[$this->context][$key])) {
+      return $this->properties[$this->context][$key];
+    }
+    return NULL;
   }
 
   /**

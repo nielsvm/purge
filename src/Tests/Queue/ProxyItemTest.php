@@ -42,6 +42,8 @@ class ProxyItemTest extends KernelTestBase {
     $i = $this->getInvalidations(1);
     $i->setStateContext('a');
     $i->setState(InvalidationInterface::PROCESSING);
+    $i->setProperty('foo', 'bar');
+    $i->setStateContext(NULL);
     $p = new ProxyItem($i, $this->buffer);
     $this->buffer->set($i, TxBuffer::CLAIMED);
 
@@ -56,13 +58,15 @@ class ProxyItemTest extends KernelTestBase {
 
     // Test the 'data' array property and its peculiar format.
     $this->assertTrue(is_array($p->data));
-    $this->assertEqual($i->getPluginId(), $p->data[0]);
-    $this->assertEqual($i->getType(), $p->data[0]);
-    $this->assertTrue(is_array($p->data[1]));
-    $this->assertEqual(1, count($p->data[1]));
-    $this->assertTrue(isset($p->data[1]['a']));
-    $this->assertEqual(InvalidationInterface::PROCESSING, $p->data[1]['a']);
-    $this->assertEqual($i->getExpression(), $p->data[2]);
+    $this->assertEqual($i->getPluginId(), $p->data[ProxyItem::DATA_INDEX_TYPE]);
+    $this->assertEqual($i->getType(), $p->data[ProxyItem::DATA_INDEX_TYPE]);
+    $this->assertTrue(is_array($p->data[ProxyItem::DATA_INDEX_STATES]));
+    $this->assertEqual(1, count($p->data[ProxyItem::DATA_INDEX_STATES]));
+    $this->assertTrue(isset($p->data[ProxyItem::DATA_INDEX_STATES]['a']));
+    $this->assertEqual(InvalidationInterface::PROCESSING, $p->data[ProxyItem::DATA_INDEX_STATES]['a']);
+    $this->assertEqual($i->getExpression(), $p->data[ProxyItem::DATA_INDEX_EXPRESSION]);
+    $this->assertTrue(isset($p->data[ProxyItem::DATA_INDEX_PROPERTIES]['a']['foo']));
+    $this->assertEqual('bar', $p->data[ProxyItem::DATA_INDEX_PROPERTIES]['a']['foo']);
 
     // Test the 'created' property and changing it directly on the buffer.
     $this->assertNull($p->created);

@@ -37,6 +37,37 @@ interface ImmutableInvalidationInterface extends InvStatesInterface, PluginInspe
   public function getExpression();
 
   /**
+   * Get all stored properties.
+   *
+   * @throws \LogicException
+   *   Thrown when NOT operating in general context.
+   *
+   * @return array[]
+   *   Associative array in which the keys point to purger instances and where
+   *   each value represents a associative array with key-value stored metadata.
+   */
+  public function getProperties();
+
+  /**
+   * Retrieve a purger specific property value.
+   *
+   * Once ::setStateContext() has been called, purgers can call ::setProperty()
+   * and ::getProperty() to store specific metadata on the invalidation. The
+   * most common usecase for setting properties is for multi-step cache
+   * invalidation, for instance CDNs returning IDs to check against later.
+   *
+   * @param string $key
+   *   The key of the stored property, unique to the current purger context.
+   *
+   * @throws \LogicException
+   *   Thrown when operating in general context, call ::setStateContext() first.
+   *
+   * @return null|mixed
+   *   The property value or NULL when no such property exists.
+   */
+  public function getProperty($key);
+
+  /**
    * Get the current or general state of the invalidation.
    *
    * New, freshly claimed invalidations and those exiting the PurgersService

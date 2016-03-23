@@ -11,6 +11,7 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidation;
+use Drupal\purge\Plugin\Purge\Queue\ProxyItemInterface;
 
 /**
  * Provides a service that instantiates invalidation objects on-demand.

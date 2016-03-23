@@ -42,6 +42,8 @@ class ProxyItemTest extends KernelTestBase {
     $i = $this->getInvalidations(1);
     $i->setStateContext('a');
     $i->setState(InvalidationInterface::PROCESSING);
+    $i->setProperty('foo', 'bar');
+    $i->setStateContext(NULL);
     $p = new ProxyItem($i, $this->buffer);
     $this->buffer->set($i, TxBuffer::CLAIMED);
 

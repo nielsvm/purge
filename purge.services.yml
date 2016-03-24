@@ -15,7 +15,6 @@ services:
   # interfaces and allowing users to disable/enable them.
   purge.queuers:
     class: Drupal\purge\Plugin\Purge\Queuer\QueuersService
-    public: true
     arguments: ['@plugin.manager.purge.queuer', '@config.factory']
   plugin.manager.purge.queuer:
     class: Drupal\purge\Plugin\Purge\Queuer\PluginManager
@@ -47,7 +46,6 @@ services:
       - { name: needs_destruction }
   purge.queue.txbuffer:
     class: Drupal\purge\Plugin\Purge\Queue\TxBuffer
-    public: true
   purge.queue.stats:
     class: Drupal\purge\Plugin\Purge\Queue\StatsTracker
     arguments: ['@state']

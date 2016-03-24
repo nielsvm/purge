@@ -49,11 +49,8 @@ class RuntimeMeasurementTracker implements RuntimeMeasurementTrackerInterface {
    *
    * @var string[]
    */
-  protected $stateKeys = [
-    // 'claimed' => 'purge_queue_claimed',
-    // 'deleted' => 'purge_queue_deleted',
-    // 'total' => 'purge_queue_total',
-  ];
+  protected $stateKeys = [];
+
   /**
    * Construct a RuntimeMeasurementTracker.
    *

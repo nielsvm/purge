@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\purge\EventSubscriber\CacheTagsHeaderSubscriber.
+ * Contains \Drupal\purge\EventSubscriber\CacheableResponseSubscriber.
  */
 
 namespace Drupal\purge\EventSubscriber;
@@ -10,11 +10,19 @@ namespace Drupal\purge\EventSubscriber;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Drupal\Core\Cache\CacheableResponseInterface;
 
 /**
- * Adds the X-Cache-Tags response header, to aid external caching systems.
+ * Adds the Purge-Cache-Tags response header, to aid external caching systems.
  */
-class CacheTagsHeaderSubscriber implements EventSubscriberInterface {
+class CacheableResponseSubscriber implements EventSubscriberInterface {
+
+  /**
+   * The name of the cache tags header sent.
+   *
+   * @var string
+   */
+  const HEADER = 'Purge-Cache-Tags';
 
   /**
    * {@inheritdoc}
@@ -25,12 +33,10 @@ class CacheTagsHeaderSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * Subscribed callback to the KernelEvents::RESPONSE event.
+   * Sets the Purge-Cache-Tags header on cacheable responses.
    *
    * @param \Symfony\Component\HttpKernel\Event\FilterResponseEvent $event
    *   The event to process.
-   *
-   * @return void.
    */
   public function onRespond(FilterResponseEvent $event) {
     if (!$event->isMasterRequest()) {
@@ -39,13 +45,11 @@ class CacheTagsHeaderSubscriber implements EventSubscriberInterface {
 
     // First ensure that ::getCacheableMetadata() exists on the object.
     $response = $event->getResponse();
-    if (method_exists($response, 'getCacheableMetadata')) {
+    if ($response instanceof CacheableResponseInterface) {
 
       // Only proceed setting the tags when it isn't yet set by other modules.
-      if (is_null($response->headers->get('X-Cache-Tags'))) {
-        $tags = $response->getCacheableMetadata()->getCacheTags();
-        $response->headers->set('X-Cache-Tags', implode(' ', $tags));
-      }
+      $tags = $response->getCacheableMetadata()->getCacheTags();
+      $response->headers->set(SELF::HEADER, implode(' ', $tags));
     }
   }
 

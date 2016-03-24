@@ -2,10 +2,10 @@ services:
 
   # PURGE.CACHE_TAGS_HEADER_SUBSCRIBER
   #
-  # Solely responsible for outputting the X-Cache-Tags header, which external
-  # caching systems and CDNs should store when caching Drupal's responses.
-  purge.cache_tags_header_subscriber:
-    class: Drupal\purge\EventSubscriber\CacheTagsHeaderSubscriber
+  # Solely responsible for outputting the Purge-Cache-Tags header, which external
+  # caching systems and CDNs should store for tag-based cache invalidation.
+  purge.cacheable_response_subscriber:
+    class: Drupal\purge\EventSubscriber\CacheableResponseSubscriber
     tags:
       - { name: event_subscriber }
 

@@ -54,6 +54,17 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
+   * Tests \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersService::getPluginsEnabled
+   */
+  public function testGetPluginsEnabled() {
+    $this->initializeService();
+    $plugin_ids = $this->service->getPluginsEnabled();
+    foreach ($this->plugins as $plugin_id) {
+      $this->assertTrue(in_array($plugin_id, $plugin_ids));
+    }
+  }
+
+  /**
    * Tests the \Iterator implementation.
    *
    * @see \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersService::current

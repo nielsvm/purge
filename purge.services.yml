@@ -1,18 +1,5 @@
 services:
 
-  # PURGE.CACHE_TAGS_HEADER_SUBSCRIBER
-  #
-  # Solely responsible for outputting the Purge-Cache-Tags header, which external
-  # caching systems and CDNs should store for tag-based cache invalidation.
-  purge.cacheable_response_subscriber:
-    class: Drupal\purge\EventSubscriber\CacheableResponseSubscriber
-    tags:
-      - { name: event_subscriber }
-  plugin.manager.purge.tagsheader:
-    class: Drupal\purge\Plugin\Purge\TagsHeader\PluginManager
-    parent: default_plugin_manager
-    public: false
-
   # PURGE.QUEUERS
   #
   # Manages services tagged 'purge_queuer' by exposing them in end-user
@@ -104,11 +91,27 @@ services:
     parent: default_plugin_manager
     public: false
 
+  # PURGE.TAGSHEADERS
+  #
+  # Discovered tagsheader plugins, register required response headers using the
+  # CacheableResponseSubscriber declared below. Each plugin defines the name
+  # of the header to be send out and can override header value formatting.
+  purge.tagsheaders:
+    class: Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersService
+    arguments: ['@plugin.manager.purge.tagsheader']
+  purge.tagsheaders.cacheable_response_subscriber:
+    class: Drupal\purge\EventSubscriber\CacheableResponseSubscriber
+    arguments: ['@purge.tagsheaders']
+    tags:
+      - { name: event_subscriber }
+  plugin.manager.purge.tagsheader:
+    class: Drupal\purge\Plugin\Purge\TagsHeader\PluginManager
+    parent: default_plugin_manager
+    public: false
+
   # LOGGER.CHANNEL.PURGE
   #
-  # Unified logger channel for the purge module and all its submodules. The core
-  # purge APIs won't log anything at all, but leaves that up to purgers,
-  # processing policies and other submodules.
+  # Unified logger channel for the purge module and all its submodules.
   logger.channel.purge:
     parent: logger.channel_base
     arguments: ['purge']

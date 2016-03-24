@@ -61,6 +61,11 @@ trait TestTrait {
   protected $purgeDiagnostics;
 
   /**
+   * @var \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersServiceInterface
+   */
+  protected $purgeTagsHeaders;
+
+  /**
    * Assert that the named exception is thrown.
    *
    * @param string $exception
@@ -194,6 +199,18 @@ trait TestTrait {
     }
     else {
       $this->purgeDiagnostics->reload();
+    }
+  }
+
+  /**
+   * Make $this->purgeTagsheaders available.
+   */
+  protected function initializeTagsHeadersService() {
+    if (is_null($this->purgeTagsHeaders)) {
+      $this->purgeTagsHeaders = $this->container->get('purge.tagsheaders');
+    }
+    else {
+      $this->purgeTagsHeaders->reload();
     }
   }
 

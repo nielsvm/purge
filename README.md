@@ -115,6 +115,18 @@ collects timing estimates from the actual purgers. The intelligence it has
 is used by the queue service and exceeding the limit isn't possible as the
 purgers service refuses to operate when the limits are near zero.
 
+**Runtime measurement**
+
+Purgers are required to provide timing estimates for a single invalidation,
+the capacity tracker operates based on this information. Runtime measurement is
+a feature available to purgers (most use it) which performs live time tracking
+of invalidation processing, and reports gathered measurements back to the
+capacity tracker. When a single invalidation was exceptionally slow - let's say
+a server was under load - the capacity for this purger drastically drops, but
+every faster measure collected after that will result in slow 10% upwards
+adjustments. Combined with the capacity tracker, this provides the best balance
+between performance and safety.
+
 #### Diagnostic checks
 External cache invalidation usually depends on many parameters, for instance
 configuration settings such as hostname or CDN API keys. In order to prevent
@@ -135,6 +147,14 @@ Possibilities:
 * **``ajaxui``** AJAX-based progress bar working the queue after a piece of
 content has been updated.
 * **``lateruntime``** purges items from the queue on every request (**SLOW**).
+
+#### Tags Headers
+By default, Purge sends a response header ``Purge-Cache-Tags`` on all pages to
+allow reverse proxies and CDNs to save these _tags_. These headers are not
+standardized across the web and different systems can require differently named
+headers or with specialized formatting. Therefore Purge allows the creation of
+tiny plugins that can set their own header name and override the tag formatting
+if required.
 
 API examples
 ------------------------------------------------------------------------------

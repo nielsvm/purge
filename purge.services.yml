@@ -1,12 +1,13 @@
-parameters:
-
-  # Enable Drupal's X-Drupal-Cache-Tags response header. This HTTP response
-  # header describes what got rendered onto every page with descriptive text
-  # keys uniquely identifying every rendered object. This then enables external
-  # caching platforms - exactly what this module is for - to leverage this.
-  http.response.debug_cacheability_headers: true
-
 services:
+
+  # PURGE.CACHE_TAGS_HEADER_SUBSCRIBER
+  #
+  # Solely responsible for outputting the X-Cache-Tags header, which external
+  # caching systems and CDNs should store when caching Drupal's responses.
+  purge.cache_tags_header_subscriber:
+    class: Drupal\purge\EventSubscriber\CacheTagsHeaderSubscriber
+    tags:
+      - { name: event_subscriber }
 
   # PURGE.QUEUERS
   #

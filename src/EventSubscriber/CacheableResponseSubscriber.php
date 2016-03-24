@@ -18,7 +18,7 @@ use Drupal\Core\Cache\CacheableResponseInterface;
 class CacheableResponseSubscriber implements EventSubscriberInterface {
 
   /**
-   * The name of the cache tags header sent.
+   * The name of the cache tags header to send.
    *
    * @var string
    */

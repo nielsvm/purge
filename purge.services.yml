@@ -8,6 +8,10 @@ services:
     class: Drupal\purge\EventSubscriber\CacheableResponseSubscriber
     tags:
       - { name: event_subscriber }
+  plugin.manager.purge.tagsheader:
+    class: Drupal\purge\Plugin\Purge\TagsHeader\PluginManager
+    parent: default_plugin_manager
+    public: false
 
   # PURGE.QUEUERS
   #

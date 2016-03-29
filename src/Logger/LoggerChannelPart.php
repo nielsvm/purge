@@ -51,7 +51,7 @@ class LoggerChannelPart implements LoggerChannelPartInterface {
   /**
    * {@inheritdoc}
    */
-  public function emergency($message, array $context = array()) {
+  public function emergency($message, array $context = []) {
     if (in_array(RfcLogLevel::EMERGENCY, $this->grants)) {
       $this->log(LogLevel::EMERGENCY, $message, $context);
     }
@@ -60,7 +60,7 @@ class LoggerChannelPart implements LoggerChannelPartInterface {
   /**
    * {@inheritdoc}
    */
-  public function alert($message, array $context = array()) {
+  public function alert($message, array $context = []) {
     if (in_array(RfcLogLevel::ALERT, $this->grants)) {
       $this->log(LogLevel::ALERT, $message, $context);
     }
@@ -69,7 +69,7 @@ class LoggerChannelPart implements LoggerChannelPartInterface {
   /**
    * {@inheritdoc}
    */
-  public function critical($message, array $context = array()) {
+  public function critical($message, array $context = []) {
     if (in_array(RfcLogLevel::CRITICAL, $this->grants)) {
       $this->log(LogLevel::CRITICAL, $message, $context);
     }
@@ -78,7 +78,7 @@ class LoggerChannelPart implements LoggerChannelPartInterface {
   /**
    * {@inheritdoc}
    */
-  public function error($message, array $context = array()) {
+  public function error($message, array $context = []) {
     if (in_array(RfcLogLevel::ERROR, $this->grants)) {
       $this->log(LogLevel::ERROR, $message, $context);
     }
@@ -87,7 +87,7 @@ class LoggerChannelPart implements LoggerChannelPartInterface {
   /**
    * {@inheritdoc}
    */
-  public function warning($message, array $context = array()) {
+  public function warning($message, array $context = []) {
     if (in_array(RfcLogLevel::WARNING, $this->grants)) {
       $this->log(LogLevel::WARNING, $message, $context);
     }
@@ -96,7 +96,7 @@ class LoggerChannelPart implements LoggerChannelPartInterface {
   /**
    * {@inheritdoc}
    */
-  public function notice($message, array $context = array()) {
+  public function notice($message, array $context = []) {
     if (in_array(RfcLogLevel::NOTICE, $this->grants)) {
       $this->log(LogLevel::NOTICE, $message, $context);
     }
@@ -105,7 +105,7 @@ class LoggerChannelPart implements LoggerChannelPartInterface {
   /**
    * {@inheritdoc}
    */
-  public function info($message, array $context = array()) {
+  public function info($message, array $context = []) {
     if (in_array(RfcLogLevel::INFO, $this->grants)) {
       $this->log(LogLevel::INFO, $message, $context);
     }
@@ -114,7 +114,7 @@ class LoggerChannelPart implements LoggerChannelPartInterface {
   /**
    * {@inheritdoc}
    */
-  public function debug($message, array $context = array()) {
+  public function debug($message, array $context = []) {
     if (in_array(RfcLogLevel::DEBUG, $this->grants)) {
       $this->log(LogLevel::DEBUG, $message, $context);
     }
@@ -123,7 +123,7 @@ class LoggerChannelPart implements LoggerChannelPartInterface {
   /**
    * {@inheritdoc}
    */
-  public function log($level, $message, array $context = array()) {
+  public function log($level, $message, array $context = []) {
     $context += ['@purge_channel_part' => $this->id];
     $message = '@purge_channel_part: ' . $message;
     $this->loggerChannelPurge->log($level, $message, $context);

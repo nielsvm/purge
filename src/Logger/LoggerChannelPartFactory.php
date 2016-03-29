@@ -37,7 +37,7 @@ class LoggerChannelPartFactory extends ServiceProviderBase implements LoggerChan
    * {@inheritdoc}
    */
   public function create($id, array $grants = []) {
-    return new LoggerChannelPart($id, $grants);
+    return new LoggerChannelPart($this->loggerChannelPurge, $id, $grants);
   }
 
 }

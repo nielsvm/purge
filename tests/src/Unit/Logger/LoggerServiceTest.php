@@ -23,7 +23,7 @@ class LoggerServiceTest extends UnitTestCase {
    *
    * @var array[]
    */
-  const DEFAULT_CONFIG = [
+  protected $defaultConfig = [
     'purge.logger_channels' => [
       'channels' => [
         ['id' => 'exists', 'grants' => [1,2,3]],
@@ -63,7 +63,7 @@ class LoggerServiceTest extends UnitTestCase {
    * @dataProvider providerTestDestruct()
    */
   public function testDestruct($expect_write, $call = NULL, $arguments = []) {
-    $config_factory = $this->getConfigFactoryStub(SELF::DEFAULT_CONFIG);
+    $config_factory = $this->getConfigFactoryStub($this->defaultConfig);
     $config_factory
       ->expects($expect_write ? $this->once() : $this->never())
       ->method('getEditable')
@@ -95,7 +95,7 @@ class LoggerServiceTest extends UnitTestCase {
    * @dataProvider providerTestDeleteChannel()
    */
   public function testDeleteChannel($id, $exists) {
-    $config_factory = $this->getConfigFactoryStub(SELF::DEFAULT_CONFIG);
+    $config_factory = $this->getConfigFactoryStub($this->defaultConfig);
     $service = new LoggerService($config_factory, $this->loggerChannelPartFactory);
     $this->assertEquals($exists, $service->hasChannel($id));
     $this->assertEquals(NULL, $service->deleteChannel($id));
@@ -119,7 +119,7 @@ class LoggerServiceTest extends UnitTestCase {
    * @dataProvider providerTestDeleteChannels()
    */
   public function testDeleteChannels($id_starts_with, $has, $hasnot) {
-    $config_factory = $this->getConfigFactoryStub(SELF::DEFAULT_CONFIG);
+    $config_factory = $this->getConfigFactoryStub($this->defaultConfig);
     $service = new LoggerService($config_factory, $this->loggerChannelPartFactory);
     foreach($has as $id) {
       $this->assertEquals(TRUE, $service->hasChannel($id));
@@ -166,7 +166,7 @@ class LoggerServiceTest extends UnitTestCase {
    * @dataProvider providerTestGet()
    */
   public function testGet($id, $shouldexist) {
-    $config_factory = $this->getConfigFactoryStub(SELF::DEFAULT_CONFIG);
+    $config_factory = $this->getConfigFactoryStub($this->defaultConfig);
     $service = new LoggerService($config_factory, $this->loggerChannelPartFactory);
     if ($shouldexist) {
       $uncached = $service->get($id);
@@ -203,7 +203,7 @@ class LoggerServiceTest extends UnitTestCase {
    * @dataProvider providerTestHasChannel()
    */
   public function testHasChannel($id, $shouldexist) {
-    $config_factory = $this->getConfigFactoryStub(SELF::DEFAULT_CONFIG);
+    $config_factory = $this->getConfigFactoryStub($this->defaultConfig);
     $service = new LoggerService($config_factory, $this->loggerChannelPartFactory);
     $this->assertEquals($service->hasChannel($id), $shouldexist);
   }
@@ -228,7 +228,7 @@ class LoggerServiceTest extends UnitTestCase {
    * @dataProvider providerTestSetChannel()
    */
   public function testSetChannel($id, $preexists) {
-    $config_factory = $this->getConfigFactoryStub(SELF::DEFAULT_CONFIG);
+    $config_factory = $this->getConfigFactoryStub($this->defaultConfig);
     $service = new LoggerService($config_factory, $this->loggerChannelPartFactory);
     $this->assertEquals($preexists, $service->hasChannel($id));
     $this->assertEquals(NULL, $service->setChannel($id, [1,2,3]));

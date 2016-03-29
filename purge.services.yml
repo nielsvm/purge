@@ -1,5 +1,22 @@
 services:
 
+  # PURGE.LOGGER
+  #
+  # Provides logging services to purge and its submodules, via a single channel.
+  purge.logger:
+    class: Drupal\purge\Logger\LoggerService
+    arguments: ['@config.factory', '@purge.logger.parts_factory']
+    tags:
+      - { name: needs_destruction }
+  purge.logger.parts_factory:
+    class: Drupal\purge\Logger\LoggerChannelPartFactory
+    arguments: ['@logger.channel.purge']
+    public: false
+  logger.channel.purge:
+    parent: logger.channel_base
+    arguments: ['purge']
+    public: false
+
   # PURGE.QUEUERS
   #
   # Manages services tagged 'purge_queuer' by exposing them in end-user
@@ -107,12 +124,4 @@ services:
   plugin.manager.purge.tagsheader:
     class: Drupal\purge\Plugin\Purge\TagsHeader\PluginManager
     parent: default_plugin_manager
-    public: false
-
-  # LOGGER.CHANNEL.PURGE
-  #
-  # Unified logger channel for the purge module and all its submodules.
-  logger.channel.purge:
-    parent: logger.channel_base
-    arguments: ['purge']
     public: false

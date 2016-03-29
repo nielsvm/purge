@@ -7,12 +7,11 @@
 
 namespace Drupal\purge\Logger;
 
-use Psr\Log\LoggerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\DestructableInterface;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
 use Drupal\Core\Logger\RfcLogLevel;
-use Drupal\Core\Logger\LoggerChannelInterface;
+use Drupal\purge\Logger\LoggerChannelPartFactoryInterface;
 use Drupal\purge\Logger\LoggerServiceInterface;
 use Drupal\purge\Logger\LoggerChannelPart;
 
@@ -73,11 +72,11 @@ class LoggerService extends ServiceProviderBase implements LoggerServiceInterfac
   ];
 
   /**
-   * The single and central logger channel used by purge module(s).
+   * The channel part factory.
    *
-   * @var \Drupal\Core\Logger\LoggerChannelInterface
+   * @var \Drupal\purge\Logger\LoggerChannelPartFactoryInterface
    */
-  protected $loggerChannelPurge;
+  protected $purgeLoggerPartsFactory;
 
   /**
    * Whether configuration needs to get written to CMI at object destruction.
@@ -91,12 +90,12 @@ class LoggerService extends ServiceProviderBase implements LoggerServiceInterfac
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\Core\Logger\LoggerChannelInterface $logger_channel_purge
-   *   The single and central logger channel used by purge module(s).
+   * @param \Drupal\purge\Logger\LoggerChannelPartFactoryInterface $purge_logger_parts_factory
+   *   The channel part factory.
    */
-  function __construct(ConfigFactoryInterface $config_factory, LoggerChannelInterface $logger_channel_purge) {
+  function __construct(ConfigFactoryInterface $config_factory, LoggerChannelPartFactoryInterface $purge_logger_parts_factory) {
     $this->configFactory = $config_factory;
-    $this->loggerChannelPurge = $logger_channel_purge;
+    $this->purgeLoggerPartsFactory = $purge_logger_parts_factory;
 
     // Set configuration when CMI has it.
     if (is_array($c = $config_factory->get(SELF::CONFIG)->get(SELF::CKEY))) {
@@ -165,7 +164,7 @@ class LoggerService extends ServiceProviderBase implements LoggerServiceInterfac
           $grants = $channel['grants'];
         }
       }
-      $this->channels[$id] = new LoggerChannelPart($id, $grants);
+      $this->channels[$id] = $this->purgeLoggerPartsFactory->create($id, $grants);
     }
     return $this->channels[$id];
   }

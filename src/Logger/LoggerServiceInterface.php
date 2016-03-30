@@ -32,13 +32,18 @@ interface LoggerServiceInterface extends ServiceProviderInterface, ServiceModifi
   public function deleteChannels($id_starts_with);
 
   /**
-   * Retrieve a channel part.
+   * Retrieve a channel part instance.
+   *
+   * This creates a 'channel part' logger object compliant to the widely used
+   * \Psr\Log\LoggerInterface difference, with the difference that messages are
+   * funneled through a single channel and severities can be configured. Newly
+   * requested IDs will be automatically registered through ::setChannel().
    *
    * @param string $id
    *   The identifier of the channel part.
    *
    * @throws \LogicException
-   *   Thrown when the given identifier isn't registered.
+   *   Thrown when the given id is empty or otherwise invalid.
    *
    * @return \Drupal\purge\Logger\LoggerChannelPartInterface.
    */

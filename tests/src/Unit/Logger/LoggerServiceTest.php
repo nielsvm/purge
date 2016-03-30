@@ -81,6 +81,8 @@ class LoggerServiceTest extends UnitTestCase {
   public function providerTestDestruct() {
     return [
       [FALSE],
+      [TRUE, 'get', ['newid']],
+      [FALSE, 'get', ['exists']],
       [FALSE, 'deleteChannels', ['doesnotexist']],
       [TRUE, 'deleteChannel', ['exists']],
       [TRUE, 'deleteChannels', ['ex']],
@@ -165,26 +167,14 @@ class LoggerServiceTest extends UnitTestCase {
    *
    * @dataProvider providerTestGet()
    */
-  public function testGet($id, $shouldexist) {
+  public function testGet($id) {
     $config_factory = $this->getConfigFactoryStub($this->defaultConfig);
     $service = new LoggerService($config_factory, $this->loggerChannelPartFactory);
-    if ($shouldexist) {
-      $uncached = $service->get($id);
-      $this->assertInstanceOf('\Drupal\purge\Logger\LoggerChannelPartInterface', $uncached);
-      $cached = $service->get($id);
-      $this->assertInstanceOf('\Drupal\purge\Logger\LoggerChannelPartInterface', $cached);
-      $this->assertEquals(spl_object_hash($uncached), spl_object_hash($cached));
-    }
-    else {
-      $thrown = FALSE;
-      try {
-        $service->get($id);
-      }
-      catch (\LogicException $e) {
-        $thrown = TRUE;
-      }
-      $this->assertEquals(TRUE, $thrown);
-    }
+    $uncached = $service->get($id);
+    $this->assertInstanceOf('\Drupal\purge\Logger\LoggerChannelPartInterface', $uncached);
+    $cached = $service->get($id);
+    $this->assertInstanceOf('\Drupal\purge\Logger\LoggerChannelPartInterface', $cached);
+    $this->assertEquals(spl_object_hash($uncached), spl_object_hash($cached));
   }
 
   /**
@@ -192,8 +182,8 @@ class LoggerServiceTest extends UnitTestCase {
    */
   public function providerTestGet() {
     return [
-      ['exists', TRUE],
-      ['doesnotexists', FALSE],
+      ['exists'],
+      ['doesnotexists'],
     ];
   }
 
@@ -244,6 +234,50 @@ class LoggerServiceTest extends UnitTestCase {
       ['foobarbaz', TRUE],
       ['doesnotexists', FALSE],
       ['alsofake', FALSE],
+    ];
+  }
+
+  /**
+   * @covers ::setChannel
+   * @expectedException \LogicException
+   * @expectedExceptionMessage The given ID is empty or not a string!
+   * @dataProvider providerTestSetChannelIdException()
+   */
+  public function testSetChannelIdException($id) {
+    $config_factory = $this->getConfigFactoryStub($this->defaultConfig);
+    $service = new LoggerService($config_factory, $this->loggerChannelPartFactory);
+    $service->setChannel($id);
+  }
+
+  /**
+   * Provides test data for testSetChannelIdException().
+   */
+  public function providerTestSetChannelIdException() {
+    return [
+      [''],
+      [1],
+    ];
+  }
+
+  /**
+   * @covers ::setChannel
+   * @expectedException \LogicException
+   * @expectedExceptionMessage Passed grant is invalid!
+   * @dataProvider providerTestSetChannelGrantsException()
+   */
+  public function testSetChannelGrantsException($id, $grants) {
+    $config_factory = $this->getConfigFactoryStub($this->defaultConfig);
+    $service = new LoggerService($config_factory, $this->loggerChannelPartFactory);
+    $service->setChannel($id, $grants);
+  }
+
+  /**
+   * Provides test data for testSetChannelGrantsException().
+   */
+  public function providerTestSetChannelGrantsException() {
+    return [
+      ['id1', [-1]],
+      ['id2', [10]],
     ];
   }
 

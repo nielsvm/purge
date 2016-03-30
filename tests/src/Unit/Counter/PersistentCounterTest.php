@@ -5,7 +5,7 @@
  * Contains \Drupal\Tests\purge\Unit\Counter\PersistentCounterTest.
  */
 
-namespace Drupal\Tests\purge\Unit\PersistentCounter;
+namespace Drupal\Tests\purge\Unit\Counter;
 
 use Drupal\purge\Counter\PersistentCounter;
 use Drupal\Tests\UnitTestCase;

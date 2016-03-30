@@ -51,6 +51,15 @@ class LoggerChannelPartTest extends UnitTestCase {
   }
 
   /**
+   * @covers ::__construct
+   */
+  public function testInstance() {
+    $part = new LoggerChannelPart($this->loggerChannelPurge, 'id', []);
+    $this->assertInstanceOf('\Drupal\purge\Logger\LoggerChannelPartInterface', $part);
+    $this->assertInstanceOf('\Psr\Log\LoggerInterface', $part);
+  }
+
+  /**
    * @covers ::emergency
    *
    * @dataProvider providerTestEmergency()

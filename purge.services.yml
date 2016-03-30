@@ -49,7 +49,7 @@ services:
   # objects returning from 'purge.purgers'.
   purge.queue:
     class: Drupal\purge\Plugin\Purge\Queue\QueueService
-    arguments: ['@plugin.manager.purge.queue', '@config.factory', '@purge.queue.txbuffer',  '@purge.queue.stats', '@purge.invalidation.factory', '@purge.purgers']
+    arguments: ['@plugin.manager.purge.queue', '@purge.logger', '@config.factory', '@purge.queue.txbuffer',  '@purge.queue.stats', '@purge.invalidation.factory', '@purge.purgers']
     tags:
       - { name: needs_destruction }
   purge.queue.txbuffer:
@@ -95,7 +95,7 @@ services:
   # The executive service which lets enabled purgers invalidate external caches.
   purge.purgers:
     class: Drupal\purge\Plugin\Purge\Purger\PurgersService
-    arguments: ['@plugin.manager.purge.purgers', '@purge.purgers.tracker.capacity', '@purge.purgers.tracker.runtime_measurement', '@config.factory', '@lock', '@purge.diagnostics']
+    arguments: ['@plugin.manager.purge.purgers', '@purge.logger', '@purge.purgers.tracker.capacity', '@purge.purgers.tracker.runtime_measurement', '@config.factory', '@lock', '@purge.diagnostics']
   purge.purgers.tracker.capacity:
     class: Drupal\purge\Plugin\Purge\Purger\CapacityTracker
   purge.purgers.tracker.runtime_measurement:

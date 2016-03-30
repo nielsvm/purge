@@ -12,6 +12,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\ModifiableServiceBaseTrait;
+use Drupal\purge\Logger\LoggerServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
@@ -46,6 +47,11 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   protected $purgeInvalidationFactory;
 
   /**
+   * @var \Drupal\purge\Logger\LoggerServiceInterface
+   */
+  protected $purgeLogger;
+
+  /**
    * @var \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
    */
   protected $purgePurgers;
@@ -72,6 +78,8 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $plugin_manager
    *   The plugin manager for this service.
+   * @param \Drupal\purge\Logger\LoggerServiceInterface $purge_logger
+   *   Logging services for the purge module and its submodules.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
    * @param \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface $purge_queue_txbuffer
@@ -83,8 +91,9 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
    *   The purgers service.
    */
-  function __construct(PluginManagerInterface $plugin_manager, ConfigFactoryInterface $config_factory, TxBufferInterface $purge_queue_txbuffer, StatsTrackerInterface $purge_queue_stats,InvalidationsServiceInterface $purge_invalidation_factory, PurgersServiceInterface $purge_purgers) {
+  function __construct(PluginManagerInterface $plugin_manager, LoggerServiceInterface $purge_logger, ConfigFactoryInterface $config_factory, TxBufferInterface $purge_queue_txbuffer, StatsTrackerInterface $purge_queue_stats,InvalidationsServiceInterface $purge_invalidation_factory, PurgersServiceInterface $purge_purgers) {
     $this->pluginManager = $plugin_manager;
+    $this->purgeLogger = $purge_logger;
     $this->configFactory = $config_factory;
     $this->purgeInvalidationFactory = $purge_invalidation_factory;
     $this->purgePurgers = $purge_purgers;

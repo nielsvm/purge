@@ -11,6 +11,7 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\ServiceBase;
+use Drupal\purge\Logger\LoggerServiceInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
@@ -71,6 +72,11 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   protected $purgeDiagnostics;
 
   /**
+   * @var \Drupal\purge\Logger\LoggerServiceInterface
+   */
+  protected $purgeLogger;
+
+  /**
    * @var \Drupal\purge\Plugin\Purge\Purger\RuntimeMeasurementTrackerInterface
    */
   protected $runtimeMeasurementTracker;
@@ -94,6 +100,8 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
    *   The plugin manager for this service.
+   * @param \Drupal\purge\Logger\LoggerServiceInterface $purge_logger
+   *   Logging services for the purge module and its submodules.
    * @param \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface $capacityTracker
    *   The capacity tracker.
    * @param \Drupal\purge\Plugin\Purge\Purger\RuntimeMeasurementTrackerInterface $runtimeMeasurementTracker
@@ -105,8 +113,9 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
    *   The diagnostics service.
    */
-  function __construct(PluginManagerInterface $pluginManager, CapacityTrackerInterface $capacityTracker, RuntimeMeasurementTrackerInterface $runtimeMeasurementTracker, ConfigFactoryInterface $config_factory, LockBackendInterface $lock, DiagnosticsServiceInterface $purge_diagnostics) {
+  function __construct(PluginManagerInterface $pluginManager, LoggerServiceInterface $purge_logger, CapacityTrackerInterface $capacityTracker, RuntimeMeasurementTrackerInterface $runtimeMeasurementTracker, ConfigFactoryInterface $config_factory, LockBackendInterface $lock, DiagnosticsServiceInterface $purge_diagnostics) {
     $this->pluginManager = $pluginManager;
+    $this->purgeLogger = $purge_logger;
     $this->capacityTracker = $capacityTracker;
     $this->runtimeMeasurementTracker = $runtimeMeasurementTracker;
     $this->configFactory = $config_factory;

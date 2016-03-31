@@ -9,6 +9,7 @@ purge_log_channel:
     grants:
       label: 'Granted type permissions'
       translatable: false
+      type: sequence
       sequence:
         type: integer
 purge_plugin_purger:

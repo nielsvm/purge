@@ -18,6 +18,18 @@ use Drupal\purge_ui\Tests\DashboardTestBase;
 class DashboardEmptyTest extends DashboardTestBase {
 
   /**
+   * Test the logging section.
+   *
+   * @see \Drupal\purge_ui\Controller\DashboardController::buildLoggingSection
+   */
+  public function testFormLoggingSection() {
+    $this->drupalLogin($this->admin_user);
+    $this->drupalGet($this->route);
+    $this->assertRaw('Logging');
+    $this->assertRaw('Configure logging behavior');
+  }
+
+  /**
    * Test the visual status report.
    *
    * @see \Drupal\purge_ui\Controller\DashboardController::buildDiagnosticReport

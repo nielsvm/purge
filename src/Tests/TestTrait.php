@@ -21,6 +21,11 @@ trait TestTrait {
   protected $configFactory;
 
   /**
+   * @var \Drupal\purge\Logger\LoggerServiceInterface
+   */
+  protected $purgeLogger;
+
+  /**
    * @var \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface
    */
   protected $purgeProcessors;
@@ -111,6 +116,15 @@ trait TestTrait {
         \$thrown = TRUE;
       }");
     $this->assertFalse($thrown, "Exception $exception isn't thrown.");
+  }
+
+  /**
+   * Make $this->purgeLogger available.
+   */
+  protected function initializeLoggerService() {
+    if (is_null($this->purgeLogger)) {
+      $this->purgeLogger = $this->container->get('purge.logger');
+    }
   }
 
   /**

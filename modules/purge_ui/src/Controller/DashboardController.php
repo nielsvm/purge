@@ -55,11 +55,11 @@ class DashboardController extends ControllerBase {
   protected $purgeQueuers;
 
   /**
-   * The request stack.
+   * The current request from the request stack.
    *
-   * @var \Symfony\Component\HttpFoundation\RequestStack
+   * @var \Symfony\Component\HttpFoundation\Request
    */
-  protected $requestStack;
+  protected $request;
 
   /**
    * Central listing of code-used aliases and the routes we open modals for.
@@ -67,6 +67,7 @@ class DashboardController extends ControllerBase {
    * @var string[]
    */
   protected $routes = [
+    'logging'           => 'purge_ui.logging_config_form',
     'purger_add'        => 'purge_ui.purger_add_form',
     'purger_detail'     => 'purge_ui.purger_detail_form',
     'purger_config'     => 'purge_ui.purger_config_form',
@@ -147,6 +148,7 @@ class DashboardController extends ControllerBase {
       '#type' => 'item',
       '#markup' => $this->t('When content on your website changes, your purge setup will take care of refreshing external caching systems and CDNs.'),
     ];
+    $build['logging']     = $this->buildLoggingSection();
     $build['diagnostics'] = $this->buildDiagnosticReport();
     $build['purgers']     = $this->buildPurgers();
     $build['queue']       = $this->buildQueuersQueueProcessors();
@@ -154,10 +156,23 @@ class DashboardController extends ControllerBase {
   }
 
   /**
+   * Add a section devoted to log configuration.
+   *
+   * @return array
+   */
+  protected function buildLoggingSection() {
+    extract($this->getRenderLocals());
+    $build = $details($this->t('Logging'));
+    $build['#open'] = $this->request->get('edit-logging', FALSE);
+    $build['configure'] = $buttonlink(
+      $this->t("Configure logging behavior"), 'logging', '90%');
+    return $build;
+  }
+
+  /**
    * Add a visual report on the current state of the purge module.
    *
    * @return array
-   *   The elements inside the queue fieldset.
    */
   protected function buildDiagnosticReport() {
     extract($this->getRenderLocals());

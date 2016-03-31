@@ -24,8 +24,8 @@ class LoggerServiceTest extends UnitTestCase {
    * @var array[]
    */
   protected $defaultConfig = [
-    'purge.logger_channels' => [
-      'channels' => [
+    LoggerService::CONFIG => [
+      LoggerService::CKEY => [
         ['id' => 'exists', 'grants' => [1,2,3]],
         ['id' => 'foo', 'grants' => [1,2,3]],
         ['id' => 'foobar', 'grants' => [1,2,3]],
@@ -185,6 +185,19 @@ class LoggerServiceTest extends UnitTestCase {
       ['exists'],
       ['doesnotexists'],
     ];
+  }
+
+  /**
+   * @covers ::getChannels
+   */
+  public function testGetChannels() {
+    $config_factory = $this->getConfigFactoryStub($this->defaultConfig);
+    $service = new LoggerService($config_factory, $this->loggerChannelPartFactory);
+    $channels_conf = $this->defaultConfig[LoggerService::CONFIG][LoggerService::CKEY];
+    $channels = $service->getChannels();
+    $this->assertTrue(is_array($channels));
+    $this->assertEquals(count($channels), count($channels_conf));
+    $this->assertEquals($channels, $channels_conf);
   }
 
   /**

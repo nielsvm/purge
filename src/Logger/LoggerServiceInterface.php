@@ -50,6 +50,16 @@ interface LoggerServiceInterface extends ServiceProviderInterface, ServiceModifi
   public function get($id);
 
   /**
+   * Retrieve information on all registered channels and their grants.
+   *
+   * @return array[]
+   *   Unassociative array, with associative arrays in them. Each array
+   *   represents a single chanenl and has a key 'id' and 'grants', the latter
+   *   is another unassociative array with the enabled grants for that channel.
+   */
+  public function getChannels();
+
+  /**
    * Check whether the given channel is registered.
    *
    * @param string $id

@@ -178,6 +178,13 @@ class LoggerService extends ServiceProviderBase implements LoggerServiceInterfac
   /**
    * {@inheritdoc}
    */
+  public function getChannels() {
+    return $this->config;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function hasChannel($id) {
     foreach ($this->config as $channel) {
       if ($channel['id'] === $id) {

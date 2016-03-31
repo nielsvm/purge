@@ -157,10 +157,8 @@ class LoggerService extends ServiceProviderBase implements LoggerServiceInterfac
     if (!$this->hasChannel($id)) {
       $this->setChannel($id, [
         RfcLogLevel::EMERGENCY,
-        RfcLogLevel::ALERT,
         RfcLogLevel::CRITICAL,
         RfcLogLevel::ERROR,
-        RfcLogLevel::WARNING
       ]);
     }
     if (!isset($this->channels[$id])) {

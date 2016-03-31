@@ -12,7 +12,7 @@ use Drupal\purge_ui\Tests\QueuerConfigFormTestBase;
 /**
  * Tests \Drupal\purge_queuer_test\Form\QueuerConfigForm.
  *
- * @group purge_ui
+ * @group purge_queuer_test
  */
 class QueuerConfigFormTest extends QueuerConfigFormTestBase {
 

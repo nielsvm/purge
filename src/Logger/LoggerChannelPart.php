@@ -51,6 +51,13 @@ class LoggerChannelPart implements LoggerChannelPartInterface {
   /**
    * {@inheritdoc}
    */
+  public function getGrants() {
+    return $this->grants;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function emergency($message, array $context = []) {
     if (in_array(RfcLogLevel::EMERGENCY, $this->grants)) {
       $this->log(LogLevel::EMERGENCY, $message, $context);

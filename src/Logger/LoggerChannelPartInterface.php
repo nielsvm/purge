@@ -41,6 +41,22 @@ interface LoggerChannelPartInterface extends LoggerInterface {
   public function __construct(LoggerChannelInterface $logger_channel_purge, $id, array $grants = []);
 
   /**
+   * Retrieve given grants.
+   *
+   * @return int[]
+   *   Unassociative array of enabled RFC 5424 log types:
+   *    - \Drupal\Core\Logger\RfcLogLevel::EMERGENCY
+   *    - \Drupal\Core\Logger\RfcLogLevel::ALERT
+   *    - \Drupal\Core\Logger\RfcLogLevel::CRITICAL
+   *    - \Drupal\Core\Logger\RfcLogLevel::ERROR
+   *    - \Drupal\Core\Logger\RfcLogLevel::WARNING
+   *    - \Drupal\Core\Logger\RfcLogLevel::NOTICE
+   *    - \Drupal\Core\Logger\RfcLogLevel::INFO
+   *    - \Drupal\Core\Logger\RfcLogLevel::DEBUG
+   */
+  public function getGrants();
+
+  /**
    * {@inheritdoc}
    *
    * Logs only when granted \Drupal\Core\Logger\RfcLogLevel::EMERGENCY.

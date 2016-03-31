@@ -60,6 +60,39 @@ class LoggerChannelPartTest extends UnitTestCase {
   }
 
   /**
+   * @covers ::getGrants
+   *
+   * @dataProvider providerTestGetGrants()
+   */
+  public function testGetGrants(array $grants) {
+    $part = new LoggerChannelPart($this->loggerChannelPurge, 'id', $grants);
+    $this->assertEquals(count($grants), count($part->getGrants()));
+    $this->assertEquals($grants, $part->getGrants());
+    foreach ($part->getGrants() as $k => $v) {
+      $this->assertTrue(is_int($k));
+      $this->assertTrue(is_int($v));
+    }
+  }
+
+  /**
+   * Provides test data for testGetGrants().
+   */
+  public function providerTestGetGrants() {
+    return [
+      [[]],
+      [[RfcLogLevel::EMERGENCY]],
+      [[RfcLogLevel::ALERT]],
+      [[RfcLogLevel::CRITICAL]],
+      [[RfcLogLevel::ERROR]],
+      [[RfcLogLevel::WARNING]],
+      [[RfcLogLevel::NOTICE]],
+      [[RfcLogLevel::INFO]],
+      [[RfcLogLevel::INFO, RfcLogLevel::DEBUG]],
+      [[RfcLogLevel::DEBUG]],
+    ];
+  }
+
+  /**
    * @covers ::emergency
    *
    * @dataProvider providerTestEmergency()

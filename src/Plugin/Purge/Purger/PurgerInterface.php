@@ -8,12 +8,13 @@
 namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\purge\Logger\PurgeLoggerAwareInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgerCapacityDataInterface;
 
 /**
  * Describes a purger - the cache invalidation executor.
  */
-interface PurgerInterface extends ContainerFactoryPluginInterface, PurgerCapacityDataInterface {
+interface PurgerInterface extends ContainerFactoryPluginInterface, PurgerCapacityDataInterface, PurgeLoggerAwareInterface {
 
   /**
    * The current instance of this purger plugin is about to be deleted.

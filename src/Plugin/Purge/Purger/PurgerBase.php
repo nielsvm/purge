@@ -9,6 +9,7 @@ namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\PluginBase;
+use Drupal\purge\Logger\PurgeLoggerAwareTrait;
 use Drupal\purge\Plugin\Purge\Purger\PurgerInterface;
 use Drupal\purge\Plugin\Purge\Purger\RuntimeMeasurementInterface;
 
@@ -16,6 +17,7 @@ use Drupal\purge\Plugin\Purge\Purger\RuntimeMeasurementInterface;
  * Provides a base class for all purgers - the cache invalidation executors.
  */
 abstract class PurgerBase extends PluginBase implements PurgerInterface {
+  use PurgeLoggerAwareTrait;
 
   /**
    * Unique instance ID for this purger.

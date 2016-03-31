@@ -36,6 +36,13 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
   const LOCKNAME = 'purge_purgers_service';
 
   /**
+   * Purger logger format (sprintf), first %s is plugin_id, second instance ID.
+   *
+   * @var string
+   */
+  const LOGGER_PURGERS_FORMAT = 'purger_%s_%s';
+
+  /**
    * @var \Drupal\purge\Plugin\Purge\Purger\CapacityTrackerInterface
    */
   protected $capacityTracker;
@@ -58,6 +65,13 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    * @var \Drupal\Core\Lock\LockBackendInterface
    */
   protected $lock;
+
+  /**
+   * Logger channel specific to the purgers service.
+   *
+   * @var \Drupal\purge\Logger\LoggerChannelPartInterface
+   */
+  protected $logger;
 
   /**
    * Holds all loaded purgers plugins.
@@ -121,6 +135,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     $this->configFactory = $config_factory;
     $this->purgeDiagnostics = $purge_diagnostics;
     $this->lock = $lock;
+    $this->logger = $this->purgeLogger->get('purgers');
   }
 
   /**
@@ -150,6 +165,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     // Stop when no invalidations are given (DX improvement) and then verify if
     // all incoming objects are InvalidationInterface compliant.
     if (empty($invalidations)) {
+      $this->logger->debug("no invalidation objects given.");
       return FALSE;
     }
     foreach ($invalidations as $i => $invalidation) {
@@ -166,15 +182,18 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     // Verify that we have the runtime capacity to process anything at all.
     $inv_limit = $this->capacityTracker()->getRemainingInvalidationsLimit();
     if (!$inv_limit) {
+      $this->logger->debug("capacity limits exceeded.");
       throw new CapacityException('Capacity limits exceeded.');
     }
     if (($count = count($invalidations)) > $inv_limit) {
+      $this->logger->debug("capacity limit allows @limit invalidations during this request, @no given.", ['@limit' => $inv_limit, '@no' => $count]);
       throw new CapacityException("Capacity limit allows $inv_limit invalidations during this request, $count given.");
     }
 
     // Attempt to claim the lock to guard that we're the only one processing.
     $lease = $this->capacityTracker()->getLeaseTimeHint(count($invalidations));
     if (!$this->lock->acquire(SELF::LOCKNAME, (float)$lease)) {
+      $this->logger->debug("could not acquire processing lock.");
       throw new LockException("Could not acquire processing lock.");
     }
 
@@ -313,6 +332,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     foreach ($this->getPluginsEnabled() as $instance_id => $plugin_id) {
       if (!isset($plugin_ids[$instance_id])) {
         $this->purgers[$instance_id]->delete();
+        $this->purgeLogger->deleteChannel(sprintf(SELF::LOGGER_PURGERS_FORMAT, $plugin_id, $instance_id));
       }
     }
 
@@ -361,6 +381,9 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     $this->purgers = [];
     foreach ($this->getPluginsEnabled() as $id => $plugin_id) {
       $this->purgers[$id] = $this->pluginManager->createInstance($plugin_id, ['id' => $id]);
+      $this->purgers[$id]->setLogger($this->purgeLogger->get(sprintf(SELF::LOGGER_PURGERS_FORMAT, $plugin_id, $id)));
+      $this->logger->debug("loading purger @id (@plugin_id).",
+        ['@id' => $id, '@plugin_id' => $plugin_id]);
     }
 
     // Pass the purger instance onto depending objects.
@@ -422,6 +445,13 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
         if (!count($offers)) {
           continue;
         }
+
+        // Leave a trace in the logs, when errors occur, its likely after this.
+        $this->logger->debug("offering @no items to @plugin's @id::@method()", [
+          '@no' => count($offers),
+          '@id' => $id,
+          '@plugin' => $purger->getPluginId(),
+          '@method' => $method]);
 
         // Feed the offers either with runtime measurement running or without.
         $has_runtime_measurement = $purger->hasRuntimeMeasurement();

@@ -36,6 +36,7 @@ integrated:
  * [``purge_queuer_url``](https://www.drupal.org/project/purge_queuer_url)
  * [``acquia_purge``](https://www.drupal.org/project/acquia_purge)
  * [``cloudflare``](https://www.drupal.org/project/cloudflare)
+ * [``cloudfront_purger``](https://github.com/previousnext/cloudfront_purger)
  * [``akamai``](https://github.com/cam8001/akamai)
 
 Interested? Reach out any time of day and we'll get you going!

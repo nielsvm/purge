@@ -117,13 +117,6 @@ class LoggerService extends ServiceProviderBase implements LoggerServiceInterfac
   }
 
   /**
-   * Call ::destruct().
-   */
-  public function __destruct() {
-    $this->destruct();
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function deleteChannel($id) {

@@ -512,11 +512,4 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
     $this->emptyQueue();
   }
 
-  /**
-   * In case PHP's destructor gets called, call our own destruct.
-   */
-  function __destruct() {
-    $this->destruct();
-  }
-
 }

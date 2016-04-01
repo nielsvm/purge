@@ -145,11 +145,4 @@ class StatsTracker implements StatsTrackerInterface {
     $this->initializeCounters();
   }
 
-  /**
-   * In case PHP's destructor gets called, call our own destruct.
-   */
-  function __destruct() {
-    $this->destruct();
-  }
-
 }

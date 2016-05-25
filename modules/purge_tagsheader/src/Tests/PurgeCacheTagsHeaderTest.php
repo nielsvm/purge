@@ -2,26 +2,26 @@
 
 /**
  * @file
- * Contains \Drupal\purge\Tests\TagsHeader\PurgeCacheTagsHeaderTest.
+ * Contains \Drupal\purge_tagsheader\Tests\PurgeCacheTagsHeaderTest.
  */
 
-namespace Drupal\purge\Tests\TagsHeader;
+namespace Drupal\purge_tagsheader\Tests;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Drupal\purge\Tests\KernelTestBase;
 
 /**
- * Tests \Drupal\purge\Plugin\Purge\TagsHeader\PurgeCacheTagsHeader.
+ * Tests \Drupal\purge_tagsheader\Plugin\Purge\TagsHeader\PurgeCacheTagsHeader.
  *
- * @group purge
+ * @group purge_tagsheader
  */
 class PurgeCacheTagsHeaderTest extends KernelTestBase {
 
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['system'];
+  public static $modules = ['system', 'purge_tagsheader'];
 
   /**
    * {@inheritdoc}

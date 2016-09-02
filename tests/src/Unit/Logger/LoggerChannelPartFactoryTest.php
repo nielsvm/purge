@@ -26,7 +26,7 @@ class LoggerChannelPartFactoryTest extends UnitTestCase {
   /**
    * The mocked logger channel.
    *
-   * @var \PHPUnit_Framework_MockObject_MockObject|\Drupal\Core\Logger\LoggerChannelInterface
+   * @var \PHPUnit_Framework_MockObject_MockObject|\Psr\Log\LoggerInterface
    */
   protected $loggerChannelPurge;
 
@@ -34,7 +34,7 @@ class LoggerChannelPartFactoryTest extends UnitTestCase {
    * {@inheritdoc}
    */
   protected function setUp() {
-    $this->loggerChannelPurge = $this->getMock('\Drupal\Core\Logger\LoggerChannelInterface');
+    $this->loggerChannelPurge = $this->getMock('\Psr\Log\LoggerInterface');
     $this->loggerChannelPartFactory = new LoggerChannelPartFactory($this->loggerChannelPurge);
   }
 

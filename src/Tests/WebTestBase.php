@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Tests\WebTestBase.
- */
-
 namespace Drupal\purge\Tests;
 
 use Drupal\purge\Tests\TestTrait;

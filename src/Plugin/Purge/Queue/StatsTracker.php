@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Plugin\Purge\Queue\StatsTracker.
- */
-
 namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Drupal\Core\State\StateInterface;

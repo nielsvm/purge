@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge_ui\Tests\QueueEmptyFormTest.
- */
-
 namespace Drupal\purge_ui\Tests;
 
 use Drupal\Core\Url;

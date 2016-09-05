@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Tests\Invalidation\PluginTestBase.
- */
-
 namespace Drupal\purge\Tests\Invalidation;
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;

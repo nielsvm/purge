@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge_tagsheader\Tests\PurgeCacheTagsHeaderTest.
- */
-
 namespace Drupal\purge_tagsheader\Tests;
 
 use Symfony\Component\HttpFoundation\Request;

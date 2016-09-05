@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\purge_ui\Controller\DashboardController.
- */
 
 namespace Drupal\purge_ui\Controller;
 

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Tests\Queue\FileQueueTest.
- */
-
 namespace Drupal\purge\Tests\Queue;
 
 use Drupal\Core\DestructableInterface;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckBase.
- */
-
 namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;

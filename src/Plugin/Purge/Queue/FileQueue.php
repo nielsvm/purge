@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Plugin\Purge\Queue\FileQueue.
- */
-
 namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Drupal\Core\DestructableInterface;

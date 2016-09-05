@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge_queuer_coretags\CacheTagsQueuer.
- */
-
 namespace Drupal\purge_queuer_coretags;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge_ui\Controller\PurgerFormController.
- */
-
 namespace Drupal\purge_ui\Controller;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\Tests\purge\Unit\Counter\CounterTest.
- */
-
 namespace Drupal\Tests\purge\Unit\Counter;
 
 use Drupal\purge\Counter\Counter;

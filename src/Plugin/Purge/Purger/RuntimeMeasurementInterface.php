@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\RuntimeMeasurementInterface.
- */
-
 namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\purge\Counter\PersistentCounterInterface;

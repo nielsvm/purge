@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\Tests\purge\Unit\Logger\LoggerServiceTest.
- */
-
 namespace Drupal\Tests\purge\Unit\Logger;
 
 use Drupal\purge\Logger\LoggerService;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsService.
- */
-
 namespace Drupal\purge\Plugin\Purge\Invalidation;
 
 use Drupal\Component\Plugin\PluginManagerInterface;

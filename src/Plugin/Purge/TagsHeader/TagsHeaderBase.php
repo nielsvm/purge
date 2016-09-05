@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeaderBase.
- */
-
 namespace Drupal\purge\Plugin\Purge\TagsHeader;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;

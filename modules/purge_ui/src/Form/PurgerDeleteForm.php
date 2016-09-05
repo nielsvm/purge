@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge_ui\Form\PurgerDeleteForm.
- */
-
 namespace Drupal\purge_ui\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;

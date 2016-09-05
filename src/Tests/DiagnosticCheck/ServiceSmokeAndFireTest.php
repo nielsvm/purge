@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Tests\DiagnosticCheck\ServiceSmokeAndFireTest.
- */
-
 namespace Drupal\purge\Tests\DiagnosticCheck;
 
 use Drupal\purge\Tests\KernelServiceTestBase;

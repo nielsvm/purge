@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge_processor_test\Tests\ProcessorConfigFormTest.
- */
-
 namespace Drupal\purge_processor_test\Tests;
 
 use Drupal\purge_ui\Tests\ProcessorConfigFormTestBase;

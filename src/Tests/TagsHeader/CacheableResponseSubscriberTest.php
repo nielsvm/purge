@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Tests\TagsHeader\CacheableResponseSubscriberTest.
- */
-
 namespace Drupal\purge\Tests\TagsHeader;
 
 use Symfony\Component\HttpFoundation\Request;

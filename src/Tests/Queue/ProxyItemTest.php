@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Tests\Queue\ProxyItemTest.
- */
-
 namespace Drupal\purge\Tests\Queue;
 
 use Drupal\purge\Tests\KernelTestBase;

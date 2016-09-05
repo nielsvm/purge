@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\Tests\purge\Unit\Counter\PersistentCounterTest.
- */
-
 namespace Drupal\Tests\purge\Unit\Counter;
 
 use Drupal\purge\Counter\PersistentCounter;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge_ui\Tests\ProcessorDeleteFormTest.
- */
-
 namespace Drupal\purge_ui\Tests;
 
 use Drupal\Core\Url;

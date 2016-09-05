@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Plugin\Purge\Queue\QueueBase.
- */
-
 namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;

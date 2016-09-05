@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeaderInterface.
- */
-
 namespace Drupal\purge\Plugin\Purge\TagsHeader;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;

@@ -1,10 +1,5 @@
 <?php
 
- /**
-  * @file
-  * Contains \Drupal\purge_drush\Plugin\Purge\Queuer\DrushQueueAddQueuer.
-  */
-
 namespace Drupal\purge_drush\Plugin\Purge\Queuer;
 
 use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;

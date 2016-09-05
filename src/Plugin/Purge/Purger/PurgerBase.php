@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Plugin\Purge\Purger\PurgerBase.
- */
-
 namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;

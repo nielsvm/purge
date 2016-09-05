@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Tests\Queue\TxBufferTest.
- */
-
 namespace Drupal\purge\Tests\Queue;
 
 use Drupal\purge\Tests\KernelTestBase;

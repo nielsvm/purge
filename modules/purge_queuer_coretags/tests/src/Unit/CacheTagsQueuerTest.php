@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\Tests\purge_queuer_coretags\Unit\CacheTagsQueuerTest.
- */
-
 namespace Drupal\Tests\purge_queuer_coretags\Unit;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;

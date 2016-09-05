@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Tests\DiagnosticCheck\ServiceTest.
- */
-
 namespace Drupal\purge\Tests\DiagnosticCheck;
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;

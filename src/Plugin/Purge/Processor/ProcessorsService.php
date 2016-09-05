@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Plugin\Purge\Processor\ProcessorsService.
- */
-
 namespace Drupal\purge\Plugin\Purge\Processor;
 
 use Drupal\Core\Config\ConfigFactoryInterface;

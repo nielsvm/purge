@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Tests\TagsHeader\PluginManagerTest.
- */
-
 namespace Drupal\purge\Tests\TagsHeader;
 
 use Drupal\purge\Tests\KernelServiceTestBase;

@@ -1,10 +1,5 @@
 <?php
 
- /**
-  * @file
-  * Contains \Drupal\purge_queuer_coretags\Plugin\Purge\Queuer\CoreTagsQueuer.
-  */
-
 namespace Drupal\purge_queuer_coretags\Plugin\Purge\Queuer;
 
 use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;

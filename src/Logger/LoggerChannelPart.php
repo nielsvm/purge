@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Logger\LoggerChannelPart.
- */
-
 namespace Drupal\purge\Logger;
 
 use Psr\Log\LogLevel;

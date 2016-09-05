@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge\Logger\LoggerService.
- */
-
 namespace Drupal\purge\Logger;
 
 use Drupal\Core\Config\ConfigFactoryInterface;

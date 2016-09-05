@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\Tests\purge_ui\Unit\Form\LoggingConfigFormTest.
- */
-
 namespace Drupal\Tests\purge_ui\Unit\Form;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;

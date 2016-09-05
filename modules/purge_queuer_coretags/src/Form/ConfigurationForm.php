@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\purge_queuer_coretags\Form\ConfigurationForm.
- */
-
 namespace Drupal\purge_queuer_coretags\Form;
 
 use Drupal\Core\Form\FormStateInterface;

@@ -35,7 +35,6 @@ class PluginManagerTest extends KernelServiceTestBase {
    * @var string[]
    */
   protected $plugins = [
-    'purge',
     'a',
     'b',
     'c',

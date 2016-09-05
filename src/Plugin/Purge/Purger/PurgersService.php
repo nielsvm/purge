@@ -157,6 +157,11 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    */
   protected function checksBeforeTakeoff(array $invalidations) {
 
+    // Block cache invalidation if there's a serious diagnostic severity.
+    if ($fire = $this->purgeDiagnostics->isSystemOnFire()) {
+      throw new DiagnosticsException($fire->getRecommendation());
+    }
+  
     // Stop when no invalidations are given (DX improvement) and then verify if
     // all incoming objects are InvalidationInterface compliant.
     if (empty($invalidations)) {
@@ -167,11 +172,6 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
       if (!$invalidation instanceof InvalidationInterface) {
         throw new BadBehaviorException("Item $i is not a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface derivative.");
       }
-    }
-
-    // Block cache invalidation if there's a serious diagnostic severity.
-    if ($fire = $this->purgeDiagnostics->isSystemOnFire()) {
-      throw new DiagnosticsException($fire->getRecommendation());
     }
 
     // Verify that we have the runtime capacity to process anything at all.

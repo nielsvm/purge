@@ -4,6 +4,7 @@ namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Drupal\Component\Plugin\PluginManagerInterface;
+use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\purge\ServiceBase;
 use Drupal\purge\IteratingServiceBaseTrait;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
@@ -89,11 +90,10 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
       $purge_logger = $this->container->get('purge.logger');
       $channel_name = 'diagnostics';
 
-      // By default ::get() would autocreate the channel with grants for higher
-      // log severities such as warning/error/emergency. Since we don't want to
-      // spam the logs by default, the channel is precreated without any grants.
+      // By default ::get() would autocreate the channel with grants that are
+      // too broad. Therefore precreate it with only the ERROR grant.
       if (!$purge_logger->hasChannel($channel_name)) {
-        $purge_logger->setChannel($channel_name, []);
+        $purge_logger->setChannel($channel_name, [RfcLogLevel::ERROR]);
       }
 
       $this->logger = $purge_logger->get($channel_name);

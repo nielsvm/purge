@@ -14,3 +14,12 @@ function purge_requirements($phase) {
   }
   return \Drupal::service('purge.diagnostics')->getHookRequirementsArray();
 }
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function purge_uninstall() {
+  if (\Drupal::database()->schema()->tableExists('purge_queue')) {
+    \Drupal::database()->schema()->dropTable('purge_queue');
+  }
+}

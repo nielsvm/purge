@@ -78,9 +78,12 @@ class ProcessorsService extends ServiceBase implements ProcessorsServiceInterfac
 
       // Override the mapping with information stored in CMI, then filter out
       // everything that isn't enabled and finally flip the array with just ids.
-      foreach ($this->configFactory->get('purge.plugins')->get('processors') as $setting) {
-        if (isset($this->plugins_enabled[$setting['plugin_id']])) {
-          $this->plugins_enabled[$setting['plugin_id']] = $setting['status'];
+      $processors = $this->configFactory->get('purge.plugins')->get('processors');
+      if ($processors) {
+        foreach ($processors as $setting) {
+          if (isset($this->plugins_enabled[$setting['plugin_id']])) {
+            $this->plugins_enabled[$setting['plugin_id']] = $setting['status'];
+          }
         }
       }
       foreach ($this->plugins_enabled as $plugin_id => $status) {

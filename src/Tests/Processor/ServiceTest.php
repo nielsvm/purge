@@ -60,20 +60,9 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testIteration() {
     $this->initializeService();
-    $this->assertTrue($this->service instanceof \Iterator);
-    $items = 0;
-    foreach ($this->service as $instance) {
-      $this->assertTrue($instance instanceof ProcessorInterface);
-      $items++;
-    }
-    $this->assertEqual(2, $items);
-    $this->assertFalse($this->service->current());
-    $this->assertFalse($this->service->valid());
-    $this->assertNull($this->service->rewind());
-    $this->assertEqual('b', $this->service->current()->getPluginId());
-    $this->assertNull($this->service->next());
-    $this->assertEqual('a', $this->service->current()->getPluginId());
-    $this->assertTrue($this->service->valid());
+    $this->assertIterator('\Drupal\purge\Plugin\Purge\Processor\ProcessorInterface',
+      ['a', 'b']
+    );
   }
 
 }

@@ -114,20 +114,17 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testIteration() {
     $this->initializeService();
-    $this->assertTrue($this->service instanceof \Iterator);
-    $items = 0;
-    foreach ($this->service as $instance) {
-      $this->assertTrue($instance instanceof DiagnosticCheckInterface);
-      $items++;
-    }
-    $this->assertEqual(9, $items);
-    $this->assertFalse($this->service->current());
-    $this->assertFalse($this->service->valid());
-    $this->assertNull($this->service->rewind());
-    $this->assertEqual('capacity', $this->service->current()->getPluginId());
-    $this->assertNull($this->service->next());
-    $this->assertEqual('processorsavailable', $this->service->current()->getPluginId());
-    $this->assertTrue($this->service->valid());
+    $this->assertIterator('\Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface',
+      ['queuersavailable',
+      'purgersavailable',
+      'capacity',
+      'processorsavailable',
+      'memoryqueuewarning',
+      'alwaysok',
+      'alwaysinfo',
+      'alwayserror',
+      'alwayswarning',]
+    );
   }
 
   /**

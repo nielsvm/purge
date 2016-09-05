@@ -121,7 +121,7 @@ abstract class PurgerBase extends PluginBase implements PurgerInterface {
   */
   public function getTimeHint() {
     if (!$this->hasRuntimeMeasurement()) {
-      throw new \LogicException('Since ::hasRuntimeMeasurement() returns FALSE, ::getTimeHint() needs to be implemented!');
+      throw new \LogicException('Since ::hasRuntimeMeasurement() returns FALSE, ::getTimeHint() needs to be implemented! Please read the PurgerCapacityDataInterface::hasRuntimeMeasurement() documentation.');
     }
 
     // Return the measured number of seconds, if stored of course.

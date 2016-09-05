@@ -50,7 +50,6 @@ class CacheableResponseSubscriberTest extends KernelTestBase {
    * Test header presence.
    */
   public function testHeaderPresence() {
-    $this->assertCacheTagsHeader('/system/401', 'Purge-Cache-Tags');
     $this->assertCacheTagsHeader('/system/401', 'Header-A');
     $this->assertCacheTagsHeader('/system/401', 'Header-B');
     $this->assertCacheTagsHeader('/system/401', 'Header-C');

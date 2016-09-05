@@ -226,24 +226,23 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
 
     // Add multiple at once to the queue using createItemMultiple() on the queue.
     else {
-      $data_items = [];
-      foreach ($items as $invalidation) {
-        $data_items[] = $getProxiedData($invalidation);
-      }
-      if (!($ids = $this->queue->createItemMultiple($data_items))) {
-        throw new UnexpectedServiceConditionException(
-          "The queue returned FALSE on createItemMultiple().");
-      }
-      foreach ($items as $invalidation) {
-        if (!isset($i)) {
-          $i = 0;
+      $item_chunks = array_chunk($items, 1000);
+      if ($item_chunks) {
+        foreach ($item_chunks as $chunk) {
+          $data_items = [];
+          foreach ($chunk as $invalidation) {
+            $data_items[] = $getProxiedData($invalidation);
+          }
+          if (!($ids = $this->queue->createItemMultiple($data_items))) {
+            throw new UnexpectedServiceConditionException(
+              "The queue returned FALSE on createItemMultiple().");
+          }
+          foreach ($chunk as $key => $invalidation) {
+            $this->buffer->set($invalidation, TxBuffer::ADDED);
+            $this->buffer->setProperty($invalidation, 'item_id', $ids[$key]);
+            $this->buffer->setProperty($invalidation, 'created', time());
+          }
         }
-        else {
-          $i++;
-        }
-        $this->buffer->set($invalidation, TxBuffer::ADDED);
-        $this->buffer->setProperty($invalidation, 'item_id', $ids[$i]);
-        $this->buffer->setProperty($invalidation, 'created', time());
       }
     }
   }

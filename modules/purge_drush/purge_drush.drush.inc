@@ -20,7 +20,7 @@ function purge_drush_drush_help($command) {
 }
 
 /**
- * Implementation of hook_drush_command().
+ * Implements hook_drush_command().
  */
 function purge_drush_drush_command() {
   $items = [];
@@ -283,7 +283,7 @@ function purge_drush_drush_command() {
 }
 
 /**
- * Implementation of hook_drush_command_alter().
+ * Implements hook_drush_command_alter().
  */
 function purge_drush_drush_command_alter(&$command) {
 

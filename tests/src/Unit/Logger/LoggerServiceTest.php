@@ -229,7 +229,7 @@ class LoggerServiceTest extends UnitTestCase {
     $config_factory = $this->getConfigFactoryStub($this->defaultConfig);
     $service = new LoggerService($config_factory, $this->loggerChannelPartFactory);
     $this->assertEquals($preexists, $service->hasChannel($id));
-    $this->assertEquals(NULL, $service->setChannel($id, [1,2,3]));
+    $this->assertEquals(NULL, $service->setChannel($id, [1, 2, 3]));
     $this->assertEquals(TRUE, $service->hasChannel($id));
   }
 

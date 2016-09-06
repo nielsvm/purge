@@ -90,7 +90,7 @@ abstract class PluginTestBase extends KernelTestBase {
     $this->assertNull($this->queue->deleteQueue());
     $this->assertTrue(is_int($this->queue->numberOfItems()));
     $this->assertEqual(0, $this->queue->numberOfItems());
-    for ($i=1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $id = $this->queue->createItem($i);
       $this->assertTrue(is_scalar($id));
       $this->assertTrue($id !== FALSE);
@@ -101,10 +101,10 @@ abstract class PluginTestBase extends KernelTestBase {
     $this->assertEqual(5, $this->queue->numberOfItems());
     $this->assertNull($this->queue->deleteQueue());
     $this->assertEqual(0, $this->queue->numberOfItems());
-    for ($i=1; $i <= 10; $i++) {
+    for ($i = 1; $i <= 10; $i++) {
       $this->queue->createItem($i);
     }
-    for ($i=10; $i > 5; $i--) {
+    for ($i = 10; $i > 5; $i--) {
       $claim = $this->queue->claimItem();
       $this->assertNull($this->queue->deleteItem($claim));
       $this->assertEqual($i-1, $this->queue->numberOfItems());
@@ -120,7 +120,7 @@ abstract class PluginTestBase extends KernelTestBase {
    * Test that createQueue() doesn't empty the queue if already created.
    */
   public function testCreateQueue() {
-    $this->queue->createItem([1,2,3]);
+    $this->queue->createItem([1, 2, 3]);
     $this->queue->createQueue();
     $this->assertEqual(1, $this->queue->numberOfItems());
 
@@ -131,16 +131,16 @@ abstract class PluginTestBase extends KernelTestBase {
    * Test creating, claiming and releasing of items.
    */
   public function testCreatingClaimingAndReleasing() {
-    $this->queue->createItem([1,2,3]);
+    $this->queue->createItem([1, 2, 3]);
     $claim = $this->queue->claimItem(3600);
     // Change the claim data to verify that releasing changed data, persists.
-    $claim->data = [4,5,6];
+    $claim->data = [4, 5, 6];
     $this->assertFalse($this->queue->claimItem(3600));
     $this->assertTrue($this->queue->releaseItem($claim));
     $this->assertTrue($claim = $this->queue->claimItem(3600));
-    $this->assertIdentical([4,5,6], $claim->data);
+    $this->assertIdentical([4, 5, 6], $claim->data);
     $this->queue->releaseItem($claim);
-    $this->assertIdentical(4, count($this->queue->createItemMultiple([1,2,3,4])));
+    $this->assertIdentical(4, count($this->queue->createItemMultiple([1, 2, 3, 4])));
     $claims = $this->queue->claimItemMultiple(5, 3600);
     foreach ($claims as $i => $claim) {
       $claim->data = 9;
@@ -175,7 +175,7 @@ abstract class PluginTestBase extends KernelTestBase {
 
     // Test claimItemMultiple which should work in the same way.
     $this->assertTrue(empty($this->queue->claimItemMultiple(2)));
-    for ($i=1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 5; $i++) {
       $this->queue->createItem($this->randomString());
     }
     $this->assertIdentical(5, count($this->queue->claimItemMultiple(5, 5)));
@@ -201,7 +201,7 @@ abstract class PluginTestBase extends KernelTestBase {
     $this->assertEqual($this->queue->selectPageMax(), 0);
     $this->assertEqual($this->queue->selectPage(), []);
     // Create 25 items, which should be 3,5 (so 4) pages of 7 items each.
-    $this->assertIdentical(25, count($this->queue->createItemMultiple([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25])));
+    $this->assertIdentical(25, count($this->queue->createItemMultiple([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25])));
     $this->assertEqual($this->queue->selectPageMax(), 4);
     $this->assertEqual($this->queue->selectPageLimit(5), 5);
     $this->assertEqual($this->queue->selectPageMax(), 5);

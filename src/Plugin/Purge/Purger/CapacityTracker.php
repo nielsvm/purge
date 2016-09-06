@@ -223,7 +223,7 @@ class CapacityTracker implements CapacityTrackerInterface {
 
     // Create a closure that calculates how much time it would take. It takes
     // cooldown time as well as potential code overhead into account.
-    $calculate = function($items) {
+    $calculate = function ($items) {
       $s = ($items * $this->getTimeHintTotal()) + $this->getCooldownTimeTotal();
       $s++;
       return (int) ceil($s);
@@ -259,7 +259,7 @@ class CapacityTracker implements CapacityTrackerInterface {
     }
 
     // Create a closure that calculates the current limit.
-    $calculate = function($spent_inv) {
+    $calculate = function ($spent_inv) {
       if (empty($this->purgers)) {
         return 0;
       }

@@ -290,7 +290,7 @@ class PersistentCounterTest extends UnitTestCase {
     // Pass a callback that modifies locals $passed_id and $passed_value.
     $passed_id = NULL;
     $passed_value = NULL;
-    $callback = function($_id, $_value) use (&$passed_id, &$passed_value) {
+    $callback = function ($_id, $_value) use (&$passed_id, &$passed_value) {
       $passed_id = $_id;
       $passed_value = $_value;
     };

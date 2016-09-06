@@ -70,7 +70,7 @@ class QueueBrowserForm extends FormBase {
     $page = $form_state->get('page');
 
     // Define a anonymous function with which we can easily add buttons.
-    $button = function($overrides = []) {
+    $button = function ($overrides = []) {
       return $overrides + [
         '#type' => 'submit',
         '#name' => 'page',

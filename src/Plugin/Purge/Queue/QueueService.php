@@ -206,7 +206,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
 
     // Small anonymous function that fetches the 'data' field for createItem()
     // and createItemMultiple() - keeps queue plugins out of Purge specifics.
-    $getProxiedData = function($invalidation) {
+    $getProxiedData = function ($invalidation) {
       $proxy = new ProxyItem($invalidation, $this->buffer);
       return $proxy->data;
     };

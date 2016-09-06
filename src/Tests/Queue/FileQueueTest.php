@@ -46,7 +46,7 @@ class FileQueueTest extends PluginTestBase {
     // disk by the file queue. However, because of its dependence on time(),
     // this test is exposed to the hosts performance. This anonymous function
     // creates a range of payloads to make this test more resilient.
-    $payloads = function($base, $time) {
+    $payloads = function ($base, $time) {
       return [
         $base . $time-2 . "\n",
         $base . $time-1 . "\n",

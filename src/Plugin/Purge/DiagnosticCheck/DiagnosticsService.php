@@ -113,7 +113,7 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
     // when plugins put dependencies on either a queue or purger plugin. When
     // plugins do depend, we load 'purge.purgers' and/or 'purge.queue' and
     // carefully check if we should load them or not.
-    $load = function($needles, $haystack) {
+    $load = function ($needles, $haystack) {
       if (empty($needles)) return TRUE;
       foreach ($needles as $needle) {
         if (in_array($needle, $haystack)) {

@@ -187,7 +187,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
 
     // Attempt to claim the lock to guard that we're the only one processing.
     $lease = $this->capacityTracker()->getLeaseTimeHint(count($invalidations));
-    if (!$this->lock->acquire(SELF::LOCKNAME, (float)$lease)) {
+    if (!$this->lock->acquire(SELF::LOCKNAME, (float) $lease)) {
       $this->logger->debug("could not acquire processing lock.");
       throw new LockException("Could not acquire processing lock.");
     }

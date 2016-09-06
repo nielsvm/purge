@@ -2,5 +2,4 @@ name: Purge
 type: module
 description: 'Provides a generic external cache invalidation API and queue service.'
 package: Purge
-version: VERSION
 core: 8.x

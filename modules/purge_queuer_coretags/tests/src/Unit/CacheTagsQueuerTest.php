@@ -28,9 +28,9 @@ class CacheTagsQueuerTest extends UnitTestCase {
     'purge_queuer_coretags.settings' => [
       'blacklist' => [
           'menu',
-          'node'
-      ]
-    ]
+          'node',
+      ],
+    ],
   ];
 
   /**
@@ -39,7 +39,7 @@ class CacheTagsQueuerTest extends UnitTestCase {
    * @var array[]
    */
   protected $blacklistEmpty = [
-    'purge_queuer_coretags.settings' => ['blacklist' => []]
+    'purge_queuer_coretags.settings' => ['blacklist' => []],
   ];
 
   /**

@@ -90,13 +90,13 @@ class PurgerAddForm extends ConfigFormBase {
       '#type' => 'submit',
       '#button_type' => 'primary',
       '#value' => $this->t("Add"),
-      '#ajax' => ['callback' => '::addPurger']
+      '#ajax' => ['callback' => '::addPurger'],
     ];
     $form['actions']['cancel'] = [
       '#type' => 'submit',
       '#value' => $this->t('Cancel'),
       '#weight' => -10,
-      '#ajax' => ['callback' => '::closeDialog']
+      '#ajax' => ['callback' => '::closeDialog'],
     ];
     return $form;
   }

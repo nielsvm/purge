@@ -24,9 +24,9 @@ class LoggerServiceTest extends UnitTestCase {
         ['id' => 'exists', 'grants' => [1,2,3]],
         ['id' => 'foo', 'grants' => [1,2,3]],
         ['id' => 'foobar', 'grants' => [1,2,3]],
-        ['id' => 'foobarbaz', 'grants' => [1,2,3]]
-      ]
-    ]
+        ['id' => 'foobarbaz', 'grants' => [1,2,3]],
+      ],
+    ],
   ];
 
   /**

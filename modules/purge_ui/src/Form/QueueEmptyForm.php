@@ -68,13 +68,13 @@ class QueueEmptyForm extends ConfirmFormBase {
       '#type' => 'submit',
       '#button_type' => 'primary',
       '#value' => $this->getConfirmText(),
-      '#ajax' => ['callback' => '::emptyQueue']
+      '#ajax' => ['callback' => '::emptyQueue'],
     ];
     $form['actions']['cancel'] = [
       '#type' => 'submit',
       '#value' => $this->t('No'),
       '#weight' => -10,
-      '#ajax' => ['callback' => '::closeDialog']
+      '#ajax' => ['callback' => '::closeDialog'],
     ];
     return $form;
   }

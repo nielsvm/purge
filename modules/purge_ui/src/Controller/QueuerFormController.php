@@ -64,7 +64,7 @@ class QueuerFormController extends ControllerBase {
           $definition['configform'],
           [
             'id' => $id,
-            'dialog' => $dialog
+            'dialog' => $dialog,
           ]
         );
       }

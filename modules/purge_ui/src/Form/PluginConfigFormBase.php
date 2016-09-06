@@ -72,7 +72,7 @@ abstract class PluginConfigFormBase extends ConfigFormBase {
         '#type' => 'submit',
         '#value' => $this->t('Cancel'),
         '#weight' => -10,
-        '#ajax' => ['callback' => '::closeDialog']
+        '#ajax' => ['callback' => '::closeDialog'],
       ];
     }
 

@@ -155,12 +155,12 @@ class PurgeBlockForm extends FormBase {
       $form['description'] = [
         '#type' => 'html_tag',
         '#tag' => 'p',
-        '#value' => $this->config['description']
+        '#value' => $this->config['description'],
       ];
     }
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->config['submit_label']
+      '#value' => $this->config['submit_label'],
     ];
     return $form;
   }

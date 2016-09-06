@@ -44,7 +44,7 @@ class PluginDetailsForm extends FormBase {
       '#button_type' => 'primary',
       '#value' => $this->t('Close'),
       '#weight' => -10,
-      '#ajax' => ['callback' => '::closeDialog']
+      '#ajax' => ['callback' => '::closeDialog'],
     ];
     return $form;
   }

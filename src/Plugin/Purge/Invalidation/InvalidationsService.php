@@ -45,7 +45,7 @@ class InvalidationsService extends ServiceBase implements InvalidationsServiceIn
     return $this->pluginManager->createInstance(
       $plugin_id, [
         'id' => $this->instance_counter++,
-        'expression' => $expression
+        'expression' => $expression,
       ]
     );
   }
@@ -58,7 +58,7 @@ class InvalidationsService extends ServiceBase implements InvalidationsServiceIn
       $this->pluginManager->createInstance(
         $plugin_id, [
           'id' => $this->instance_counter_immutables--,
-          'expression' => $expression
+          'expression' => $expression,
         ]
       )
     );
@@ -103,7 +103,7 @@ class InvalidationsService extends ServiceBase implements InvalidationsServiceIn
     $instance = $this->pluginManager->createInstance(
       $item_data[ProxyItemInterface::DATA_INDEX_TYPE], [
         'id' => $this->instance_counter_immutables--,
-        'expression' => $item_data[ProxyItemInterface::DATA_INDEX_EXPRESSION]
+        'expression' => $item_data[ProxyItemInterface::DATA_INDEX_EXPRESSION],
       ]
     );
 

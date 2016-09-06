@@ -81,13 +81,13 @@ class QueueChangeForm extends FormBase {
       '#value' => $this->t('Cancel'),
       '#weight' => -10,
       '#button_type' => 'primary',
-      '#ajax' => ['callback' => '::closeDialog']
+      '#ajax' => ['callback' => '::closeDialog'],
     ];
     $form['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t("Change"),
       '#button_type' => 'danger',
-      '#ajax' => ['callback' => '::changeQueue']
+      '#ajax' => ['callback' => '::changeQueue'],
     ];
     return $form;
   }

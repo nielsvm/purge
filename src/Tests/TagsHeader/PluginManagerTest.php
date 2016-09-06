@@ -26,7 +26,7 @@ class PluginManagerTest extends KernelServiceTestBase {
     'provider',
     'class',
     'id',
-    'header_name'
+    'header_name',
   ];
 
   /**

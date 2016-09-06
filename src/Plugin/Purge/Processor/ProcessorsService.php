@@ -137,7 +137,7 @@ class ProcessorsService extends ServiceBase implements ProcessorsServiceInterfac
     foreach ($setting_assoc as $plugin_id => $status) {
       $setting[] = [
         'plugin_id' => $plugin_id,
-        'status' => $status
+        'status' => $status,
       ];
     }
     $this->configFactory

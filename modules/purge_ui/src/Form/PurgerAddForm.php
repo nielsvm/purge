@@ -81,7 +81,7 @@ class PurgerAddForm extends ConfigFormBase {
     $form['plugin_id'] = [
       '#default_value' => count($plugins) ? key($plugins) : NULL,
       '#type' => 'radios',
-      '#options' => $plugins
+      '#options' => $plugins,
     ];
 
     // Update the buttons and bind callbacks.

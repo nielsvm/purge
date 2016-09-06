@@ -42,7 +42,7 @@ class PluginManagerTest extends KernelServiceTestBase {
     'null',
     'a',
     'b',
-    'c'
+    'c',
   ];
 
   /**

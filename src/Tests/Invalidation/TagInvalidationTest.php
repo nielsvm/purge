@@ -15,13 +15,13 @@ class TagInvalidationTest extends PluginTestBase {
   protected $expressions = [
     'tag',
     'user:1',
-    'menu:footer'
+    'menu:footer',
   ];
   protected $expressionsInvalid = [
     NULL,
     '',
     ['node', '1'],
-    'wildtag:*'
+    'wildtag:*',
   ];
 
 }

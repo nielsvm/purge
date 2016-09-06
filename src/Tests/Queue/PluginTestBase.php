@@ -65,7 +65,7 @@ abstract class PluginTestBase extends KernelTestBase {
       'f' => -99999,
       'g' => NULL,
       'h' => FALSE,
-      'i' => TRUE
+      'i' => TRUE,
     ];
 
     // Test if we get back the exact same thing if we store it as scalar value.

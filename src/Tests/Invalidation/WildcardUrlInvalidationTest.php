@@ -18,7 +18,7 @@ class WildcardUrlInvalidationTest extends PluginTestBase {
     '',
     'http:// /aa',
     'http://www.test.com',
-    'https://domain/path'
+    'https://domain/path',
   ];
 
 }

@@ -210,9 +210,11 @@ class PurgeBlockForm extends FormBase {
           $object = $invalidation->getType();
           if (!is_null($invalidation->getExpression())) {
             $object = $this->t('@object with expression "@expr"',
-              ['@object' => $invalidation->getType(),
-              '@expr' => (string) $invalidation->getExpression()
-            ]);
+              [
+                '@object' => $invalidation->getType(),
+                '@expr' => (string) $invalidation->getExpression(),
+              ]
+            );
           }
           if ($invalidation->getState() === InvStatesInterface::SUCCEEDED) {
             drupal_set_message($this->t('Succesfully cleared @object.', ['@object' => $object]));

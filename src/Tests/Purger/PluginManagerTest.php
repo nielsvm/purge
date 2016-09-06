@@ -44,7 +44,7 @@ class PluginManagerTest extends KernelServiceTestBase {
     'b',
     'c',
     'good',
-    'withform'
+    'withform',
   ];
 
   /**

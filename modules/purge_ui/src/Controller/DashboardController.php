@@ -175,7 +175,7 @@ class DashboardController extends ControllerBase {
     $build = $fieldset($this->t('Status'));
     $build['report'] = [
       '#theme' => 'status_report',
-      '#requirements' => $this->purgeDiagnostics->getRequirementsArray()
+      '#requirements' => $this->purgeDiagnostics->getRequirementsArray(),
     ];
     return $build;
   }

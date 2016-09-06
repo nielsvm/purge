@@ -64,7 +64,7 @@ abstract class ImmutableInvalidationBase extends PluginBase implements Immutable
     SELF::NOT_SUPPORTED,
     SELF::PROCESSING,
     SELF::SUCCEEDED,
-    SELF::FAILED
+    SELF::FAILED,
   ];
 
   /**

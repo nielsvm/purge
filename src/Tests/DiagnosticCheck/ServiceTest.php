@@ -21,7 +21,7 @@ class ServiceTest extends KernelServiceTestBase {
     'purge_processor_test',
     'purge_check_test',
     'purge_check_error_test',
-    'purge_check_warning_test'
+    'purge_check_warning_test',
   ];
 
   /**

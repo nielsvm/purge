@@ -16,7 +16,7 @@ class WildcardPathInvalidationTest extends PluginTestBase {
     '*',
     '*?page=0',
     'news/*',
-    'products/*'
+    'products/*',
   ];
   protected $expressionsInvalid = [
     NULL,
@@ -28,7 +28,7 @@ class WildcardPathInvalidationTest extends PluginTestBase {
     'news/',
     '012/442',
     'news/article-1',
-    'news/article-1?page=0&secondparam=1'
+    'news/article-1?page=0&secondparam=1',
   ];
 
 }

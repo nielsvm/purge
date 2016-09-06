@@ -63,7 +63,7 @@ class LoggerService extends ServiceProviderBase implements LoggerServiceInterfac
     RfcLogLevel::WARNING,
     RfcLogLevel::NOTICE,
     RfcLogLevel::INFO,
-    RfcLogLevel::DEBUG
+    RfcLogLevel::DEBUG,
   ];
 
   /**

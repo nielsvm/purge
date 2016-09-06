@@ -50,7 +50,8 @@ class QueuerConfigFormTest extends QueuerConfigFormTestBase {
     $form_state = $this->getFormStateInstance();
     $form_state->addBuildInfo('args', [$this->formArgs]);
     $form_state->setValues([
-      'textfield' => "The moose in the noose ate the goose who was loose."]);
+      'textfield' => "The moose in the noose ate the goose who was loose."
+    ]);
     $form = $this->getFormInstance();
     $this->formBuilder->submitForm($form, $form_state);
     $errors = $form_state->getErrors();
@@ -63,7 +64,8 @@ class QueuerConfigFormTest extends QueuerConfigFormTestBase {
   public function testFormSubmit() {
     $this->drupalLogin($this->admin_user);
     $edit = [
-      'textfield' => "The moose in the noose ate the goose who was loose."];
+      'textfield' => "The moose in the noose ate the goose who was loose."
+    ];
     $this->drupalPostForm($this->route, $edit, t('Save configuration'));
   }
 

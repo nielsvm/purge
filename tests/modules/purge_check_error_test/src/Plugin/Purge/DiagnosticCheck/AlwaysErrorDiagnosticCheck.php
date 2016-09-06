@@ -25,4 +25,5 @@ class AlwaysErrorDiagnosticCheck extends DiagnosticCheckBase implements Diagnost
     $this->recommendation = $this->t("This is an error for testing.");
     return SELF::SEVERITY_ERROR;
   }
+
 }

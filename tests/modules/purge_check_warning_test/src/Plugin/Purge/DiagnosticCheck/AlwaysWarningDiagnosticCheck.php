@@ -25,4 +25,5 @@ class AlwaysWarningDiagnosticCheck extends DiagnosticCheckBase implements Diagno
     $this->recommendation = $this->t("This is a warning for testing.");
     return SELF::SEVERITY_WARNING;
   }
+
 }

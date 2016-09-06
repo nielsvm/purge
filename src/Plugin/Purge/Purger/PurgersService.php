@@ -161,7 +161,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     if ($fire = $this->purgeDiagnostics->isSystemOnFire()) {
       throw new DiagnosticsException($fire->getRecommendation());
     }
-  
+
     // Stop when no invalidations are given (DX improvement) and then verify if
     // all incoming objects are InvalidationInterface compliant.
     if (empty($invalidations)) {
@@ -224,27 +224,30 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    */
   public function getPluginsEnabled() {
     if (is_null($this->plugins_enabled)) {
-      $plugins = $this->configFactory->get('purge.plugins');
+      $this->plugins_enabled = [];
+      $plugins = $this->configFactory->get('purge.plugins')->get('purgers');
       $plugin_ids = array_keys($this->getPlugins());
-      $this->plugins_enabled = $setting = [];
 
       // Put the plugin instances into $setting and use the order as key.
-      foreach ($plugins->get('purgers') as $inst) {
-        if (!in_array($inst['plugin_id'], $plugin_ids)) {
-          // When a third-party provided purger was configured and its module
-          // got uninstalled, the configuration renders invalid. Instead of
-          // rewriting config or breaking hard, we ignore this silently.
-          continue;
+      if (!is_null($plugins)) {
+        $setting = [];
+        foreach ($plugins as $inst) {
+          if (!in_array($inst['plugin_id'], $plugin_ids)) {
+            // When a third-party provided purger was configured and its module
+            // got uninstalled, the configuration renders invalid. Instead of
+            // rewriting config or breaking hard, we ignore this silently.
+            continue;
+          }
+          else {
+            $setting[$inst['order_index']] = $inst;
+          }
         }
-        else {
-          $setting[$inst['order_index']] = $inst;
-        }
-      }
 
-      // Recreate the plugin ordering and propagate the enabled plugins array.
-      ksort($setting);
-      foreach ($setting as $inst) {
-        $this->plugins_enabled[$inst['instance_id']] = $inst['plugin_id'];
+        // Recreate the plugin ordering and propagate the enabled plugins array.
+        ksort($setting);
+        foreach ($setting as $inst) {
+          $this->plugins_enabled[$inst['instance_id']] = $inst['plugin_id'];
+        }
       }
     }
     return $this->plugins_enabled;

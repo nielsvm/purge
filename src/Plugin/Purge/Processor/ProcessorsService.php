@@ -79,7 +79,7 @@ class ProcessorsService extends ServiceBase implements ProcessorsServiceInterfac
       // Override the mapping with information stored in CMI, then filter out
       // everything that isn't enabled and finally flip the array with just ids.
       $processors = $this->configFactory->get('purge.plugins')->get('processors');
-      if ($processors) {
+      if (!is_null($processors)) {
         foreach ($processors as $setting) {
           if (isset($this->plugins_enabled[$setting['plugin_id']])) {
             $this->plugins_enabled[$setting['plugin_id']] = $setting['status'];
@@ -116,8 +116,11 @@ class ProcessorsService extends ServiceBase implements ProcessorsServiceInterfac
     // Gather all plugins mentioned in CMI and those available right now, set
     // them disabled first. Then flip the switch for given plugin_ids.
     $setting_assoc = [];
-    foreach ($this->configFactory->get('purge.plugins')->get('processors') as $inst) {
-      $setting_assoc[$inst['plugin_id']] = FALSE;
+    $instances = $this->configFactory->get('purge.plugins')->get('processors');
+    if (!is_null($instances)) {
+      foreach ($instances as $inst) {
+        $setting_assoc[$inst['plugin_id']] = FALSE;
+      }
     }
     foreach ($definitions as $definition) {
       $setting_assoc[$definition['id']] = FALSE;

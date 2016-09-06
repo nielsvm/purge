@@ -79,7 +79,7 @@ class QueuersService extends ServiceBase implements QueuersServiceInterface {
       // Override the mapping with information stored in CMI, then filter out
       // everything that isn't enabled and finally flip the array with just ids.
       $queuers = $this->configFactory->get('purge.plugins')->get('queuers');
-      if ($queuers) {
+      if (!is_null($queuers)) {
         foreach ($queuers as $inst) {
           if (isset($this->plugins_enabled[$inst['plugin_id']])) {
             $this->plugins_enabled[$inst['plugin_id']] = $inst['status'];
@@ -116,8 +116,11 @@ class QueuersService extends ServiceBase implements QueuersServiceInterface {
     // Gather all plugins mentioned in CMI and those available right now, set
     // them disabled first. Then flip the switch for given plugin_ids.
     $setting_assoc = [];
-    foreach ($this->configFactory->get('purge.plugins')->get('queuers') as $inst) {
-      $setting_assoc[$inst['plugin_id']] = FALSE;
+    $instances = $this->configFactory->get('purge.plugins')->get('queuers');
+    if (!is_null($instances)) {
+      foreach ($instances as $inst) {
+        $setting_assoc[$inst['plugin_id']] = FALSE;
+      }
     }
     foreach ($definitions as $definition) {
       $setting_assoc[$definition['id']] = FALSE;

@@ -71,7 +71,12 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   protected $queue;
 
   /**
-   * The plugin ID of the fallback backend.
+   * The default backend that gets loaded on empty configuration.
+   */
+  const DEFAULT_PLUGIN = 'database';
+
+  /**
+   * The backend that gets loaded when the configured backend disappeared.
    */
   const FALLBACK_PLUGIN = 'null';
 
@@ -360,10 +365,13 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
       $this->plugins_enabled = [];
 
       // The queue service always interacts with just one underlying queue,
-      // which is stored in configuration. When configuration is invalid - which
-      // for instance occurs during module installation - we use the fallback.
+      // which is stored in configuration. By default, we use the DEFAULT_PLUGIN
+      // or the FALLBACK_PLUGIN in case nothing else loads.
       $plugin_id = $this->configFactory->get('purge.plugins')->get('queue');
-      if (is_null($plugin_id) || !in_array($plugin_id, $plugin_ids)) {
+      if (is_null($plugin_id)) {
+        $this->plugins_enabled[] = SELF::DEFAULT_PLUGIN;
+      }
+      elseif (!in_array($plugin_id, $plugin_ids)) {
         $this->plugins_enabled[] = SELF::FALLBACK_PLUGIN;
       }
       else {

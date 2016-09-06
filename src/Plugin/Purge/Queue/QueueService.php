@@ -91,7 +91,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    *   The factory for configuration objects.
    * @param \Drupal\purge\Plugin\Purge\Queue\TxBufferInterface $purge_queue_txbuffer
    *   The transaction buffer.
-   * @param \Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface
+   * @param \Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface $purge_queue_stats
    *   The queue statistics tracker.
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface $purge_invalidation_factory
    *   The service that instantiates invalidation objects for queue items.

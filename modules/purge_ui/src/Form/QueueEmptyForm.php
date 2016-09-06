@@ -24,7 +24,7 @@ class QueueEmptyForm extends ConfirmFormBase {
   /**
    * Constructs a QueueClearForm object.
    *
-   * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface
+   * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $purge_queue
    *   The purge queue service.
    *
    * @return void

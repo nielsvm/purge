@@ -119,7 +119,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
    *   The factory for configuration objects.
    * @param \Drupal\Core\Lock\LockBackendInterface $lock
    *   The lock backend.
-   * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
+   * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface $purge_diagnostics
    *   The diagnostics service.
    */
   function __construct(PluginManagerInterface $pluginManager, LoggerServiceInterface $purge_logger, CapacityTrackerInterface $capacityTracker, RuntimeMeasurementTrackerInterface $runtimeMeasurementTracker, ConfigFactoryInterface $config_factory, LockBackendInterface $lock, DiagnosticsServiceInterface $purge_diagnostics) {

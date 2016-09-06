@@ -25,7 +25,7 @@ class QueueChangeForm extends FormBase {
   /**
    * Constructs a QueueChangeForm object.
    *
-   * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface
+   * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $purge_queue
    *   The purge queue service.
    *
    * @return void

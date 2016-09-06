@@ -103,23 +103,23 @@ class CapacityTracker implements CapacityTrackerInterface {
       }
       $this->cooldownTimes = [];
       foreach ($this->purgers as $id => $purger) {
-       $cooldown_time = $purger->getCooldownTime();
-       if (!is_float($cooldown_time)) {
+        $cooldown_time = $purger->getCooldownTime();
+        if (!is_float($cooldown_time)) {
          $method = sprintf("%s::getCooldownTime()", get_class($purger));
          throw new BadPluginBehaviorException(
-           "$method did not return a floating point value.");
-       }
-       if ($cooldown_time < 0.0) {
+            "$method did not return a floating point value.");
+        }
+        if ($cooldown_time < 0.0) {
          $method = sprintf("%s::getCooldownTime()", get_class($purger));
          throw new BadPluginBehaviorException(
-           "$method returned $cooldown_time, a value lower than 0.0.");
-       }
-       if ($cooldown_time > 3.0) {
+            "$method returned $cooldown_time, a value lower than 0.0.");
+        }
+        if ($cooldown_time > 3.0) {
          $method = sprintf("%s::getCooldownTime()", get_class($purger));
          throw new BadPluginBehaviorException(
-           "$method returned $cooldown_time, a value higher than 3.0.");
-       }
-       $this->cooldownTimes[$id] = $cooldown_time;
+            "$method returned $cooldown_time, a value higher than 3.0.");
+        }
+        $this->cooldownTimes[$id] = $cooldown_time;
       }
     }
   }

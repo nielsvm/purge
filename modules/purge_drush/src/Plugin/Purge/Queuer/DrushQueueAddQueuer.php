@@ -16,6 +16,6 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuerBase;
  *   configform = "",
  * )
  */
- class DrushQueueAddQueuer extends QueuerBase implements QueuerInterface {
+class DrushQueueAddQueuer extends QueuerBase implements QueuerInterface {
 
- }
+}

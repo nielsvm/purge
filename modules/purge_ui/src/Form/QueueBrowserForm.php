@@ -119,10 +119,10 @@ class QueueBrowserForm extends FormBase {
     $start = (($page - $links) > 0) ? $page - $links : 1;
     $end = (($page + $links) < $pages) ? $page + $links : $pages;
     for ($i = $start; $i <= $end; $i++) {
-        $form['pager']['page'][$i] = $button([
-          '#value' => $i,
-          '#button_type' => $page == $i ? 'primary' : '',
-        ]);
+      $form['pager']['page'][$i] = $button([
+        '#value' => $i,
+        '#button_type' => $page == $i ? 'primary' : '',
+      ]);
     }
     $form['pager']['page']['last'] = $button([
       '#value' => ">> $pages",

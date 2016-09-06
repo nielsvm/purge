@@ -98,34 +98,34 @@ class MaxAgeCheck extends DiagnosticCheckBase implements DiagnosticCheckInterfac
    */
   protected function valueTranslatable($max_age) {
     if ($max_age === 0) {
-     return $this->t('no caching');
+      return $this->t('no caching');
     }
     elseif ($max_age === 60) {
-     return $this->t('1 minute');
+      return $this->t('1 minute');
     }
     elseif ($max_age < 3600) {
-     return $this->t('@num minutes', ['@num' => round($max_age/60)]);
+      return $this->t('@num minutes', ['@num' => round($max_age/60)]);
     }
     elseif ($max_age === 3600) {
-     return $this->t('1 hour');
+      return $this->t('1 hour');
     }
     elseif ($max_age < 86400) {
-     return $this->t('@num hours', ['@num' => round($max_age/3600, 1)]);
+      return $this->t('@num hours', ['@num' => round($max_age/3600, 1)]);
     }
     elseif ($max_age === 86400) {
-     return $this->t('1 day');
+      return $this->t('1 day');
     }
     elseif ($max_age < 604800) {
-     return $this->t('@num days', ['@num' => round($max_age/86400, 1)]);
+      return $this->t('@num days', ['@num' => round($max_age/86400, 1)]);
     }
     elseif ($max_age === 604800) {
-     return $this->t('1 week');
+      return $this->t('1 week');
     }
     elseif ($max_age < 2764800) {
       return $this->t('@num weeks', ['@num' => round($max_age/604800, 1)]);
     }
     elseif ($max_age === 2764800) {
-     return $this->t('1 month');
+      return $this->t('1 month');
     }
     elseif ($max_age < 31536000) {
       return $this->t('@num months', ['@num' => round($max_age/2764800, 1)]);

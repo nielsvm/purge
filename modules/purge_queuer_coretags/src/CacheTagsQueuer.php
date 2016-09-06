@@ -80,7 +80,7 @@ class CacheTagsQueuer implements CacheTagsInvalidatorInterface, ContainerAwareIn
    *
    * Queues invalidated cache tags as tag purgables.
    */
-   public function invalidateTags(array $tags) {
+  public function invalidateTags(array $tags) {
     if (!$this->initialize()) {
       return;
     }

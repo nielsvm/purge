@@ -159,7 +159,7 @@ abstract class PluginTestBase extends KernelTestBase {
     // Verify that setting state in general context throws exceptions.
     $this->assertException('\LogicException', [$i, 'setState'], [InvalidationInterface::FAILED]);
     // Test \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setState catches bad input.
-    foreach(['2', 'FRESH', -1, 5, 100] as $badstate) {
+    foreach (['2', 'FRESH', -1, 5, 100] as $badstate) {
       $this->assertException('\Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException', [$i, 'setState'], [$badstate]);
     }
     // Test setting normal states results in the same return state.

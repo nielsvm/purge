@@ -401,7 +401,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   public function handleResults(array $invalidations) {
     $counters = ['succeeded' => 0, 'failed' => 0, 'new' => 0,];
 
-    foreach($invalidations as $invalidation) {
+    foreach ($invalidations as $invalidation) {
 
       // Although PurgersServiceInterface::invalidate() always resets context
       // after purging, we cannot rely on what happened in between. By making

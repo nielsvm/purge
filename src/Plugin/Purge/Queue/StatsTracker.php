@@ -88,7 +88,7 @@ class StatsTracker implements StatsTrackerInterface {
       // write callback. The closure writes changed values to $this->buffer.
       $this->$counter = new PersistentCounter($values[$key]);
       $this->$counter->disableSet();
-      $this->$counter->setWriteCallback($key, function($id, $value) {
+      $this->$counter->setWriteCallback($key, function ($id, $value) {
         $this->buffer[$id] = $value;
       });
     }

@@ -50,9 +50,9 @@ class LoggerChannelPartFactoryTest extends UnitTestCase {
    */
   public function providerTestCreate() {
     return [
-      ['foo', [0,1,2]],
-      ['bar', [1,2,3]],
-      ['baz', [2,3,4]],
+      ['foo', [0, 1, 2]],
+      ['bar', [1, 2, 3]],
+      ['baz', [2, 3, 4]],
     ];
   }
 

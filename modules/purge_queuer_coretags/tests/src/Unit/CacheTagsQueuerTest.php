@@ -134,14 +134,14 @@ class CacheTagsQueuerTest extends UnitTestCase {
       ->willReturn($this->getMock(InvalidationInterface::class));
 
     // Configure the QueueServiceInterface::add() expectation very accurately.
-    $adds = array_filter($adds, function($v) {return $v !== 0;});
+    $adds = array_filter($adds, function ($v) {return $v !== 0;});
     $this->purgeQueue->expects($this->exactly($queue_calls))
       ->method('add')
       ->with(
-        $this->callback(function($queuer) {
+        $this->callback(function ($queuer) {
           return $queuer instanceof QueuerBase;
         }),
-        $this->callback(function(array $invs) use (&$adds, $sets) {
+        $this->callback(function (array $invs) use (&$adds, $sets) {
           if (is_null($expected = each($adds)['value'])) {
             return TRUE;
           }

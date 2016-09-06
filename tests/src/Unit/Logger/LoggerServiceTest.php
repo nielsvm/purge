@@ -21,10 +21,10 @@ class LoggerServiceTest extends UnitTestCase {
   protected $defaultConfig = [
     LoggerService::CONFIG => [
       LoggerService::CKEY => [
-        ['id' => 'exists', 'grants' => [1,2,3]],
-        ['id' => 'foo', 'grants' => [1,2,3]],
-        ['id' => 'foobar', 'grants' => [1,2,3]],
-        ['id' => 'foobarbaz', 'grants' => [1,2,3]],
+        ['id' => 'exists', 'grants' => [1, 2, 3]],
+        ['id' => 'foo', 'grants' => [1, 2, 3]],
+        ['id' => 'foobar', 'grants' => [1, 2, 3]],
+        ['id' => 'foobarbaz', 'grants' => [1, 2, 3]],
       ],
     ],
   ];
@@ -81,7 +81,7 @@ class LoggerServiceTest extends UnitTestCase {
       [FALSE, 'deleteChannels', ['doesnotexist']],
       [TRUE, 'deleteChannel', ['exists']],
       [TRUE, 'deleteChannels', ['ex']],
-      [TRUE, 'setChannel', ['new', [1,2,3]]],
+      [TRUE, 'setChannel', ['new', [1, 2, 3]]],
       [TRUE, 'setChannel', ['exists', []]],
     ];
   }
@@ -118,17 +118,17 @@ class LoggerServiceTest extends UnitTestCase {
   public function testDeleteChannels($id_starts_with, $has, $hasnot) {
     $config_factory = $this->getConfigFactoryStub($this->defaultConfig);
     $service = new LoggerService($config_factory, $this->loggerChannelPartFactory);
-    foreach($has as $id) {
+    foreach ($has as $id) {
       $this->assertEquals(TRUE, $service->hasChannel($id));
     }
-    foreach($hasnot as $id) {
+    foreach ($hasnot as $id) {
       $this->assertEquals(TRUE, $service->hasChannel($id));
     }
     $this->assertEquals(NULL, $service->deleteChannels($id_starts_with));
-    foreach($has as $id) {
+    foreach ($has as $id) {
       $this->assertEquals(TRUE, $service->hasChannel($id));
     }
-    foreach($hasnot as $id) {
+    foreach ($hasnot as $id) {
       $this->assertEquals(FALSE, $service->hasChannel($id));
     }
   }

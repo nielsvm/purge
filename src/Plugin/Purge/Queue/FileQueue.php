@@ -82,7 +82,7 @@ class FileQueue extends MemoryQueue implements QueueInterface, DestructableInter
     if (!$fh = fopen($this->file, 'w')) {
       throw new \Exception('Unable to open file resource to ' . $this->file);
     }
-    foreach($this->buffer as $item_id => $line) {
+    foreach ($this->buffer as $item_id => $line) {
       $ob .= $item_id . SELF::SEPARATOR . $line[SELF::DATA] . SELF::SEPARATOR
         . $line[SELF::EXPIRE] . SELF::SEPARATOR . $line[SELF::CREATED] . "\n";
     }

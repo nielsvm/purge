@@ -124,14 +124,14 @@ class ServiceTest extends KernelServiceTestBase {
     $this->purgeQueue->setPluginsEnabled(['database']);
     // Add four objects to the queue. reload it, and verify they're the same.
     $invalidations = $this->getInvalidations(4);
-    foreach($invalidations as $invalidation) {
+    foreach ($invalidations as $invalidation) {
       $invalidation->setStateContext('purger1');
     }
     $invalidations[0]->setState(InvalidationInterface::SUCCEEDED);
     $invalidations[1]->setState(InvalidationInterface::PROCESSING);
     $invalidations[2]->setState(InvalidationInterface::FAILED);
     $invalidations[3]->setState(InvalidationInterface::NOT_SUPPORTED);
-    foreach($invalidations as $invalidation) {
+    foreach ($invalidations as $invalidation) {
       $invalidation->setStateContext(NULL);
     }
     $this->purgeQueue->add($this->queuer, $invalidations);
@@ -195,7 +195,7 @@ class ServiceTest extends KernelServiceTestBase {
     // Claim for 2s, mark all as not-successfull and assert releases.
     $claims = $this->purgeQueue->claim(10, 2);
     $this->assertTrue(4 === count($claims));
-    foreach($claims as $claim) {
+    foreach ($claims as $claim) {
       $claim->setStateContext('purger1');
     }
     $claims[0]->setState(InvalidationInterface::SUCCEEDED);

@@ -21,7 +21,7 @@ class ServiceTest extends KernelServiceTestBase {
   /**
    * Set up the test.
    */
-  function setUp() {
+  public function setUp() {
 
     // Skip parent::setUp() as we don't want the service initialized here.
     KernelTestBase::setUp();

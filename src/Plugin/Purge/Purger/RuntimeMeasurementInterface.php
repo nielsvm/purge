@@ -20,7 +20,7 @@ interface RuntimeMeasurementInterface extends PersistentCounterInterface {
    * @return float
    *   The same value or 0.1 or 10.0 when it exceeded either boundary.
    */
-  function getSafeTimeHintValue($value);
+  public function getSafeTimeHintValue($value);
 
   /**
    * Start measuring execution time.
@@ -30,7 +30,7 @@ interface RuntimeMeasurementInterface extends PersistentCounterInterface {
    *
    * @return void
    */
-  function start();
+  public function start();
 
   /**
    * Stop measuring execution time and store if necessary.
@@ -60,6 +60,6 @@ interface RuntimeMeasurementInterface extends PersistentCounterInterface {
    *
    * @return void.
    */
-  function stop(array $invalidations);
+  public function stop(array $invalidations);
 
 }

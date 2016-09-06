@@ -114,7 +114,7 @@ class FileQueue extends MemoryQueue implements QueueInterface, DestructableInter
   /**
    * Trigger a disk commit when the object is destructed.
    */
-  function __destruct() {
+  public function __destruct() {
     if ($this->bufferInitialized) {
       $this->bufferCommit();
     }

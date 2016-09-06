@@ -36,7 +36,7 @@ class QueuersService extends ServiceBase implements QueuersServiceInterface {
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
    */
-  function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory) {
+  public function __construct(PluginManagerInterface $pluginManager, ConfigFactoryInterface $config_factory) {
     $this->pluginManager = $pluginManager;
     $this->configFactory = $config_factory;
   }

@@ -72,7 +72,7 @@ class QueuerConfigFormTest extends WebTestBase {
   /**
    * Setup the test.
    */
-  function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->initializeQueuersService(['c', $this->queuer]);
     $this->urlValid = Url::fromRoute($this->route, ['id' => $this->queuer]);

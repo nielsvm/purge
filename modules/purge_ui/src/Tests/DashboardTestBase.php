@@ -32,7 +32,7 @@ abstract class DashboardTestBase extends WebTestBase {
   /**
    * Setup the test.
    */
-  function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
     if (is_string($this->route)) {

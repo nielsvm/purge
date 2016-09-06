@@ -39,7 +39,7 @@ class DatabaseQueue extends CoreDatabaseQueue implements QueueInterface {
    * @param \Drupal\Core\Database\Connection $connection
    *   The Connection object containing the key-value tables.
    */
-  function __construct(Connection $connection) {
+  public function __construct(Connection $connection) {
     parent::__construct('purge', $connection);
     $this->ensureTableExists();
   }

@@ -55,7 +55,7 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
    *   The plugin manager for this service.
    */
-  function __construct(PluginManagerInterface $pluginManager) {
+  public function __construct(PluginManagerInterface $pluginManager) {
     $this->pluginManager = $pluginManager;
   }
 

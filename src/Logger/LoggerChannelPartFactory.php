@@ -25,7 +25,7 @@ class LoggerChannelPartFactory extends ServiceProviderBase implements LoggerChan
    * @param \Psr\Log\LoggerInterface $logger_channel_purge
    *   The single and central logger channel used by purge module(s).
    */
-  function __construct(LoggerInterface $logger_channel_purge) {
+  public function __construct(LoggerInterface $logger_channel_purge) {
     $this->loggerChannelPurge = $logger_channel_purge;
   }
 

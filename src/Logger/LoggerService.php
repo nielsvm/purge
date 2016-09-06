@@ -88,7 +88,7 @@ class LoggerService extends ServiceProviderBase implements LoggerServiceInterfac
    * @param \Drupal\purge\Logger\LoggerChannelPartFactoryInterface $purge_logger_parts_factory
    *   The channel part factory.
    */
-  function __construct(ConfigFactoryInterface $config_factory, LoggerChannelPartFactoryInterface $purge_logger_parts_factory) {
+  public function __construct(ConfigFactoryInterface $config_factory, LoggerChannelPartFactoryInterface $purge_logger_parts_factory) {
     $this->configFactory = $config_factory;
     $this->purgeLoggerPartsFactory = $purge_logger_parts_factory;
 

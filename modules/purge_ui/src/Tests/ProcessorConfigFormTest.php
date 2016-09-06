@@ -72,7 +72,7 @@ class ProcessorConfigFormTest extends WebTestBase {
   /**
    * Setup the test.
    */
-  function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->initializeProcessorsService(['c', $this->processor]);
     $this->urlValid = Url::fromRoute($this->route, ['id' => $this->processor]);

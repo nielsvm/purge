@@ -35,7 +35,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Set up the test.
    */
-  function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->pluginManagerPurgeQueue = $this->container->get('plugin.manager.purge.queue');
     $this->setUpQueuePlugin();
@@ -55,7 +55,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Test the data integrity of data stored in the queue.
    */
-  function testDataStorageIntegrity() {
+  public function testDataStorageIntegrity() {
     $samples = [
       'a' => 'string',
       'b' => 'StrinG with Capitalization',
@@ -119,7 +119,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Test that createQueue() doesn't empty the queue if already created.
    */
-  function testCreateQueue() {
+  public function testCreateQueue() {
     $this->queue->createItem([1,2,3]);
     $this->queue->createQueue();
     $this->assertEqual(1, $this->queue->numberOfItems());
@@ -130,7 +130,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Test creating, claiming and releasing of items.
    */
-  function testCreatingClaimingAndReleasing() {
+  public function testCreatingClaimingAndReleasing() {
     $this->queue->createItem([1,2,3]);
     $claim = $this->queue->claimItem(3600);
     // Change the claim data to verify that releasing changed data, persists.
@@ -160,7 +160,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Test the behavior of lease time when claiming queue items.
    */
-  function testLeaseTime() {
+  public function testLeaseTime() {
     $this->assertFalse($this->queue->claimItem());
     $this->queue->createItem($this->randomString());
     $this->assertEqual(1, $this->queue->numberOfItems());
@@ -189,7 +189,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Test the paging behavior.
    */
-  function testPaging() {
+  public function testPaging() {
     $this->assertEqual(0, $this->queue->numberOfItems());
     // Assert that setting the paging limit, gets reflected properly.
     $this->assertEqual($this->queue->selectPageLimit(), 15);

@@ -21,7 +21,7 @@ class RuntimeMeasurement extends PersistentCounter implements RuntimeMeasurement
   /**
    * {@inheritdoc}
    */
-  function getSafeTimeHintValue($value) {
+  public function getSafeTimeHintValue($value) {
     if ($value < 0.1) {
       return 0.1;
     }

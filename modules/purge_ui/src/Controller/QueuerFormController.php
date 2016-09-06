@@ -23,7 +23,7 @@ class QueuerFormController extends ControllerBase {
    * @param \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface $purge_queuers
    *   The purge queuers service.
    */
-  function __construct(QueuersServiceInterface $purge_queuers) {
+  public function __construct(QueuersServiceInterface $purge_queuers) {
     $this->purgeQueuers = $purge_queuers;
   }
 

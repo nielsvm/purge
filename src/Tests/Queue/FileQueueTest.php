@@ -25,7 +25,7 @@ class FileQueueTest extends PluginTestBase {
   /**
    * Set up the test.
    */
-  function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->file = DRUPAL_ROOT . '/' . PublicStream::basePath() . '/' . $this->file;
   }
@@ -38,7 +38,7 @@ class FileQueueTest extends PluginTestBase {
    * @see \Drupal\purge\Plugin\Purge\Queue\File::deleteQueue
    * @see \Drupal\purge\Plugin\Purge\Queue\File::destruct
    */
-  function testBufferReadingAndWriting() {
+  public function testBufferReadingAndWriting() {
     $this->assertTrue($this->queue instanceof DestructableInterface);
     $this->assertFalse(file_exists($this->file));
 

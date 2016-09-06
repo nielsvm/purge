@@ -37,7 +37,7 @@ class LoggerChannelPart implements LoggerChannelPartInterface {
   /**
    * {@inheritdoc}
    */
-  function __construct(LoggerInterface $logger_channel_purge, $id, array $grants = []) {
+  public function __construct(LoggerInterface $logger_channel_purge, $id, array $grants = []) {
     $this->id = $id;
     $this->grants = $grants;
     $this->loggerChannelPurge = $logger_channel_purge;

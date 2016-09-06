@@ -45,7 +45,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Set up the test.
    */
-  function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->initializeInvalidationFactoryService();
   }
@@ -53,7 +53,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Retrieve a invalidation object provided by the plugin.
    */
-  function getInstance() {
+  public function getInstance() {
     return $this->purgeInvalidationFactory->get(
       $this->plugin_id,
       $this->expressions[0]
@@ -63,7 +63,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Retrieve a immutable invalidation object, which wraps the plugin.
    */
-  function getImmutableInstance() {
+  public function getImmutableInstance() {
     return $this->purgeInvalidationFactory->getImmutable(
       $this->plugin_id,
       $this->expressions[0]
@@ -73,7 +73,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Tests the code contract strictly enforced on invalidation type plugins.
    */
-  function testCodeContract() {
+  public function testCodeContract() {
     $this->assertTrue($this->getInstance() instanceof ImmutableInvalidationInterface);
     $this->assertTrue($this->getInstance() instanceof InvalidationInterface);
     $this->assertTrue($this->getInstance() instanceof ImmutableInvalidationBase);
@@ -87,7 +87,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Tests \Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidation.
    */
-  function testImmutable() {
+  public function testImmutable() {
     $immutable = $this->getImmutableInstance();
     $mutable = $this->getInstance();
     $this->assertEqual($immutable->__toString(), $mutable->__toString());
@@ -105,7 +105,7 @@ abstract class PluginTestBase extends KernelTestBase {
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::deleteProperty
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::setProperty
    */
-  function testProperties() {
+  public function testProperties() {
     $i = $this->getInstance();
     // Verify that getProperties() has the right initial state (of emptyness).
     $this->assertEqual($i->getProperties(), []);
@@ -146,7 +146,7 @@ abstract class PluginTestBase extends KernelTestBase {
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getState
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getStateString
    */
-  function testState() {
+  public function testState() {
     $i = $this->getInstance();
     // Test the initial state of the invalidation object. Then verify that a
     // BadPluginBehaviorException is thrown when left as FRESH.
@@ -185,7 +185,7 @@ abstract class PluginTestBase extends KernelTestBase {
    *
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::__toString
    */
-  function testStringExpression() {
+  public function testStringExpression() {
     $this->assertEqual( (string) $this->getInstance(), $this->expressions[0],
       'The __toString method returns $expression.');
   }
@@ -195,7 +195,7 @@ abstract class PluginTestBase extends KernelTestBase {
    *
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::__construct
    */
-  function testValidExpressions() {
+  public function testValidExpressions() {
     if (is_null($this->expressions)) {
       $this->purgeInvalidationFactory->get($this->plugin_id);
     }
@@ -211,7 +211,7 @@ abstract class PluginTestBase extends KernelTestBase {
    *
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::__construct
    */
-  function testInvalidExpressions($expressions = NULL) {
+  public function testInvalidExpressions($expressions = NULL) {
     foreach ($this->expressionsInvalid as $exp) {
       $thrown = FALSE;
       try {
@@ -236,7 +236,7 @@ abstract class PluginTestBase extends KernelTestBase {
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getType
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::getPluginDefinition
    */
-  function testPluginIdAndDefinition() {
+  public function testPluginIdAndDefinition() {
     // Test mutable objects.
     $mutable = $this->getInstance();
     $this->assertEqual($this->plugin_id, $mutable->getPluginId());

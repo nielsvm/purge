@@ -30,7 +30,7 @@ class ServiceTest extends KernelServiceTestBase {
   /**
    * {@inheritdoc}
    */
-  function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->installSchema('system', ['queue']);
     $this->initializeQueueService();

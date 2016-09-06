@@ -23,7 +23,7 @@ class ProcessorFormController extends ControllerBase {
    * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface $purge_processors
    *   The purge processors registry.
    */
-  function __construct(ProcessorsServiceInterface $purge_processors) {
+  public function __construct(ProcessorsServiceInterface $purge_processors) {
     $this->purgeProcessors = $purge_processors;
   }
 

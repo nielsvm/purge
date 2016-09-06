@@ -28,7 +28,7 @@ trait ServiceTestTrait {
   /**
    * Set up the test.
    */
-  function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->initializeService();
   }

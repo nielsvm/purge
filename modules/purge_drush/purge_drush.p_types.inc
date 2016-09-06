@@ -38,7 +38,7 @@ function purge_drush_p_types($format, InvalidationsServiceInterface $purgeInvali
   elseif (in_array($format, ['table', 'yaml', 'json'])) {
     foreach ($purgeInvalidationFactory->getPlugins() as $type => $typedef) {
       $output[$type] = [
-        'label' => (string)$typedef['label'],
+        'label' => (string) $typedef['label'],
         'supported' => in_array($type, $types),
       ];
 

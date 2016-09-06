@@ -86,7 +86,7 @@ class PurgerAddForm extends ConfigFormBase {
 
     // Update the buttons and bind callbacks.
     $form['actions']['submit'] = [
-      '#access' => (bool)count($plugins),
+      '#access' => (bool) count($plugins),
       '#type' => 'submit',
       '#button_type' => 'primary',
       '#value' => $this->t("Add"),

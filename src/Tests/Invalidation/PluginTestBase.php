@@ -170,7 +170,7 @@ abstract class PluginTestBase extends KernelTestBase {
       InvalidationInterface::NOT_SUPPORTED => 'NOT_SUPPORTED',
     ];
     $context = 0;
-    $i->setStateContext((string)$context);
+    $i->setStateContext((string) $context);
     foreach ($test_states as $state => $string) {
       $this->assertNull($i->setStateContext((string) ($context++)));
       $this->assertNull($i->setState($state));
@@ -186,7 +186,7 @@ abstract class PluginTestBase extends KernelTestBase {
    * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface::__toString
    */
   function testStringExpression() {
-    $this->assertEqual( (string)$this->getInstance(), $this->expressions[0],
+    $this->assertEqual( (string) $this->getInstance(), $this->expressions[0],
       'The __toString method returns $expression.');
   }
 

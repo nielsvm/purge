@@ -211,7 +211,7 @@ class PurgeBlockForm extends FormBase {
           if (!is_null($invalidation->getExpression())) {
             $object = $this->t('@object with expression "@expr"',
               ['@object' => $invalidation->getType(),
-              '@expr' => (string)$invalidation->getExpression()
+              '@expr' => (string) $invalidation->getExpression()
             ]);
           }
           if ($invalidation->getState() === InvStatesInterface::SUCCEEDED) {

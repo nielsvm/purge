@@ -89,7 +89,7 @@ class DatabaseQueue extends CoreDatabaseQueue implements QueueInterface {
 
     // Execute the query and finish the call.
     if ($id = $query->execute()) {
-      $id = (int)$id;
+      $id = (int) $id;
 
       // A multiple row-insert doesn't give back all the individual IDs, so
       // calculate them back by applying subtraction.
@@ -131,8 +131,8 @@ class DatabaseQueue extends CoreDatabaseQueue implements QueueInterface {
       $conditions = [':now' => time()];
       $item = $this->connection->queryRange('SELECT * FROM {' . static::TABLE_NAME . '} q WHERE ((expire = 0) OR (:now > expire)) ORDER BY created, item_id ASC', 0, 1, $conditions)->fetchObject();
       if ($item) {
-        $item->item_id = (int)$item->item_id;
-        $item->expire = (int)$item->expire;
+        $item->item_id = (int) $item->item_id;
+        $item->expire = (int) $item->expire;
 
         // Try to update the item. Only one thread can succeed in UPDATEing the
         // same row. We cannot rely on REQUEST_TIME because items might be
@@ -173,8 +173,8 @@ class DatabaseQueue extends CoreDatabaseQueue implements QueueInterface {
     foreach ($items as $item) {
       if (!$item) continue;
       $item_ids[] = $item->item_id;
-      $item->item_id = (int)$item->item_id;
-      $item->expire = (int)$item->expire;
+      $item->item_id = (int) $item->item_id;
+      $item->expire = (int) $item->expire;
       $item->data = unserialize($item->data);
       $returned_items[] = $item;
     }
@@ -330,8 +330,8 @@ class DatabaseQueue extends CoreDatabaseQueue implements QueueInterface {
       ->execute();
     foreach ($resultset as $item) {
       if (!$item) continue;
-      $item->item_id = (int)$item->item_id;
-      $item->expire = (int)$item->expire;
+      $item->item_id = (int) $item->item_id;
+      $item->expire = (int) $item->expire;
       $item->data = unserialize($item->data);
       $items[] = $item;
     }

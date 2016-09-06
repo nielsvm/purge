@@ -57,9 +57,9 @@ class FileQueue extends MemoryQueue implements QueueInterface, DestructableInter
       if (file_exists($this->file)) {
         foreach (file($this->file) as $line) {
           $line = explode(self::SEPARATOR, str_replace("\n", '', $line));
-          $item_id = (int)array_shift($line);
-          $line[self::EXPIRE] = (int)$line[self::EXPIRE];
-          $line[self::CREATED] = (int)$line[self::CREATED];
+          $item_id = (int) array_shift($line);
+          $line[self::EXPIRE] = (int) $line[self::EXPIRE];
+          $line[self::CREATED] = (int) $line[self::CREATED];
           $this->buffer[$item_id] = $line;
         }
       }

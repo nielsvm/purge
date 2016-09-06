@@ -41,13 +41,13 @@ class HookRequirementsTest extends KernelTestBase {
     $this->assertTrue(isset($r['alwayserror']));
     $this->assertTrue(isset($r['alwayswarning']));
     // Assert a couple of titles.
-    $this->assertEqual('Purge - Always ok', (string)$r['alwaysok']['title']);
-    $this->assertEqual('Purge - Always a warning', (string)$r['alwayswarning']['title']);
-    $this->assertEqual('Purge - Always an error', (string)$r['alwayserror']['title']);
+    $this->assertEqual('Purge - Always ok', (string) $r['alwaysok']['title']);
+    $this->assertEqual('Purge - Always a warning', (string) $r['alwayswarning']['title']);
+    $this->assertEqual('Purge - Always an error', (string) $r['alwayserror']['title']);
     // Assert that the descriptions come through.
-    $this->assertEqual('This is an ok for testing.', (string)$r['alwaysok']['description']);
-    $this->assertEqual('This is a warning for testing.', (string)$r['alwayswarning']['description']);
-    $this->assertEqual('This is an error for testing.', (string)$r['alwayserror']['description']);
+    $this->assertEqual('This is an ok for testing.', (string) $r['alwaysok']['description']);
+    $this->assertEqual('This is a warning for testing.', (string) $r['alwayswarning']['description']);
+    $this->assertEqual('This is an error for testing.', (string) $r['alwayserror']['description']);
     // Assert that the severities come through properly.
     $this->assertEqual(0, $r['alwaysok']['severity']);
     $this->assertEqual(1, $r['alwayswarning']['severity']);

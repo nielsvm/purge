@@ -282,9 +282,9 @@ class CapacityTracker implements CapacityTrackerInterface {
       // In the rare case the limit exceeds ideal conditions, the limit is
       // lowered. Then return the limit or zero when it turned negative.
       if ($limit > $this->getIdealConditionsLimit()) {
-        return (int)$this->getIdealConditionsLimit();
+        return (int) $this->getIdealConditionsLimit();
       }
-      return (int)(($limit < 0) ? 0 : $limit);
+      return (int) (($limit < 0) ? 0 : $limit);
     };
 
     // Fetch calculations from cache or generate new. We use the number of spent

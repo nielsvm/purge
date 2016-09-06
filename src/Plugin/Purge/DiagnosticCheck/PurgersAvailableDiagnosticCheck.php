@@ -77,7 +77,7 @@ class PurgersAvailableDiagnosticCheck extends DiagnosticCheckBase implements Dia
     if (!empty($purgerlabels)) {
       $this->value = [];
       foreach ($purgerlabels as $label) {
-        $this->value[] = (string)$label;
+        $this->value[] = (string) $label;
       }
       $this->value = implode(', ', $this->value);
     }

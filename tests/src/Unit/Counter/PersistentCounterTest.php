@@ -75,7 +75,7 @@ class PersistentCounterTest extends UnitTestCase {
    */
   public function testGetInteger($value) {
     $counter = new PersistentCounter($value);
-    $this->assertEquals((int)$value, $counter->getInteger());
+    $this->assertEquals((int) $value, $counter->getInteger());
     $this->assertFalse(is_float($counter->getInteger()));
     $this->assertTrue(is_int($counter->getInteger()));
   }

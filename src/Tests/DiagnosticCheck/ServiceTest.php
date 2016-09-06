@@ -115,17 +115,19 @@ class ServiceTest extends KernelServiceTestBase {
   public function testIteration() {
     $this->initializeService();
     $this->assertIterator('\Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface',
-      ['queuersavailable',
-      'purgersavailable',
-      'maxage',
-      'capacity',
-      'processorsavailable',
-      'memoryqueuewarning',
-      'page_cache',
-      'alwaysok',
-      'alwaysinfo',
-      'alwayserror',
-      'alwayswarning',]
+      [
+        'queuersavailable',
+        'purgersavailable',
+        'maxage',
+        'capacity',
+        'processorsavailable',
+        'memoryqueuewarning',
+        'page_cache',
+        'alwaysok',
+        'alwaysinfo',
+        'alwayserror',
+        'alwayswarning',
+      ]
     );
   }
 

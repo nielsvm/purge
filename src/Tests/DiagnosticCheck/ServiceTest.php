@@ -100,7 +100,7 @@ class ServiceTest extends KernelServiceTestBase {
   public function testCount() {
     $this->initializeService();
     $this->assertTrue($this->service instanceof \Countable);
-    $this->assertEqual(9, count($this->service));
+    $this->assertEqual(11, count($this->service));
   }
 
   /**
@@ -117,9 +117,11 @@ class ServiceTest extends KernelServiceTestBase {
     $this->assertIterator('\Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface',
       ['queuersavailable',
       'purgersavailable',
+      'maxage',
       'capacity',
       'processorsavailable',
       'memoryqueuewarning',
+      'page_cache',
       'alwaysok',
       'alwaysinfo',
       'alwayserror',
@@ -134,7 +136,7 @@ class ServiceTest extends KernelServiceTestBase {
     $this->initializeRequirementSeverities();
     $this->initializeService();
     $requirements = $this->service->getHookRequirementsArray();
-    $this->assertEqual(9, count($requirements));
+    $this->assertEqual(11, count($requirements));
     foreach ($requirements as $id => $requirement) {
       $this->assertTrue(is_string($id));
       $this->assertFalse(empty($id));
@@ -153,7 +155,8 @@ class ServiceTest extends KernelServiceTestBase {
     $this->initializePurgersService(['ida' => 'a']);
     $this->service->reload();
     $this->assertTrue($this->service->isSystemOnFire() instanceof DiagnosticCheckInterface);
-    $this->assertEqual('alwayserror', $this->service->isSystemOnFire()->getPluginId());
+    $possibilities = ['alwayserror', 'maxage'];
+    $this->assertTrue(in_array($this->service->isSystemOnFire()->getPluginId(), $possibilities));
   }
 
   /**
@@ -161,7 +164,7 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testIsSystemShowingSmoke() {
     $this->assertTrue($this->service->isSystemShowingSmoke() instanceof DiagnosticCheckInterface);
-    $possibilities = ['alwayswarning', 'capacity', 'queuersavailable'];
+    $possibilities = ['alwayswarning', 'capacity', 'queuersavailable', 'page_cache'];
     $this->assertTrue(in_array($this->service->isSystemShowingSmoke()->getPluginId(), $possibilities));
   }
 

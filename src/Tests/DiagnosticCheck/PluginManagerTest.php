@@ -43,7 +43,9 @@ class PluginManagerTest extends KernelServiceTestBase {
    */
   protected $plugins = [
     'capacity',
+    'maxage',
     'memoryqueuewarning',
+    'page_cache',
     'processorsavailable',
     'purgersavailable',
     'queuersavailable',

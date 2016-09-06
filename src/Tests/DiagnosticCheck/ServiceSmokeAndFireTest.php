@@ -33,10 +33,7 @@ class ServiceSmokeAndFireTest extends KernelServiceTestBase {
   public function testIsSystemOnFireOrShowingSmoke() {
     $this->initializePurgersService(['ida' => 'a']);
     $this->initializeService();
-    $this->assertFalse(is_object($this->service->isSystemOnFire()));
-    if ($this->assertTrue(is_bool($this->service->isSystemOnFire()))) {
-      $this->assertFalse($this->service->isSystemOnFire());
-    }
+    $this->assertTrue(is_object($this->service->isSystemOnFire()));
     $this->assertTrue(is_object($this->service->isSystemShowingSmoke()));
   }
 

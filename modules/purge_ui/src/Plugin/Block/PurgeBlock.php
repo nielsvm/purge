@@ -2,8 +2,11 @@
 
 namespace Drupal\purge_ui\Plugin\Block;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\purge_ui\Form\PurgeBlockForm;
 
 /**
@@ -14,7 +17,37 @@ use Drupal\purge_ui\Form\PurgeBlockForm;
  *   admin_label = @Translation("Purge this page"),
  * )
  */
-class PurgeBlock extends BlockBase {
+class PurgeBlock extends BlockBase implements ContainerFactoryPluginInterface {
+  use ContainerAwareTrait;
+
+  /**
+   * Constructs a new PurgeBlock instance.
+   *
+   * @param ContainerInterface $container
+   *   The dependency injection container.
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   */
+  public function __construct(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->setContainer($container);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $container,
+      $configuration,
+      $plugin_id,
+      $plugin_definition
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -35,8 +68,8 @@ class PurgeBlock extends BlockBase {
     // parameters only to FormBase::buildForm(), which is sadly too late as we
     // need the unique form ID already in FormBase::getFormID().
     // See https://www.drupal.org/node/2188851 for more information.
-    $form = PurgeBlockForm::create(\Drupal::getContainer(), $config);
-    return \Drupal::formBuilder()->getForm($form);
+    $form = PurgeBlockForm::create($this->container, $config);
+    return $this->container->get('form_builder')->getForm($form);
   }
 
   /**

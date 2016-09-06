@@ -197,11 +197,11 @@ abstract class PluginTestBase extends KernelTestBase {
    */
   function testValidExpressions() {
     if (is_null($this->expressions)) {
-      $invalidation = $this->purgeInvalidationFactory->get($this->plugin_id);
+      $this->purgeInvalidationFactory->get($this->plugin_id);
     }
     else {
       foreach ($this->expressions as $e) {
-        $invalidation = $this->purgeInvalidationFactory->get($this->plugin_id, $e);
+        $this->purgeInvalidationFactory->get($this->plugin_id, $e);
       }
     }
   }
@@ -215,7 +215,7 @@ abstract class PluginTestBase extends KernelTestBase {
     foreach ($this->expressionsInvalid as $exp) {
       $thrown = FALSE;
       try {
-        $invalidation = $this->purgeInvalidationFactory->get($this->plugin_id, $exp);
+        $this->purgeInvalidationFactory->get($this->plugin_id, $exp);
       }
       catch (\Exception $e) {
         $thrown = $e;

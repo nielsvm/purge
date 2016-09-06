@@ -30,9 +30,9 @@ class LoggerChannelPartTest extends UnitTestCase {
    * Helper to all severity methods.
    */
   private function helperForSeverityMethods($id, array $grants, $output, $severity) {
-    $occurence = is_null($output) ? $this->never() : $this->once();
+    $occurrence = is_null($output) ? $this->never() : $this->once();
     $this->loggerChannelPurge
-      ->expects($occurence)
+      ->expects($occurrence)
       ->method('log')
       ->with(
         $this->stringContains($severity),

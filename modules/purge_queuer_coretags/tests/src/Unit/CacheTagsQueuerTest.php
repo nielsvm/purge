@@ -92,7 +92,7 @@ class CacheTagsQueuerTest extends UnitTestCase {
     $this->purgeQueuers = $this->getMockBuilder(QueuersServiceInterface::class)->setMethods(['get'])->getMock();
     $this->purgeInvalidationFactory = $this->getMockForAbstractClass(InvalidationsServiceInterface::class);
 
-    // Create a container with all dependant services in it.
+    // Create a container with all dependent services in it.
     $this->container = new ContainerBuilder();
     $this->container->set('purge.queue', $this->purgeQueue);
     $this->container->set('purge.queuers', $this->purgeQueuers);

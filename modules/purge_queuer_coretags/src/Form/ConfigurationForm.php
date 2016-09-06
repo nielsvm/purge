@@ -117,7 +117,7 @@ class ConfigurationForm extends QueuerConfigFormBase {
 
     // Remove empty values from the blacklist so this doesn't cause issues.
     $blacklist = [];
-    foreach ($form_state->getValue('blacklist') as $i => $prefix) {
+    foreach ($form_state->getValue('blacklist') as $prefix) {
       if (!empty(trim($prefix))) {
         $blacklist[] = $prefix;
       }

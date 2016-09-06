@@ -170,7 +170,7 @@ abstract class PluginTestBase extends KernelTestBase {
     $this->assertTrue($this->queue->claimItem(2));
     $this->assertFalse($this->queue->claimItem(1));
     sleep(3);
-    $this->assertTrue($claim = $this->queue->claimItem(2));
+    $this->assertTrue($this->queue->claimItem(2));
     $this->queue->deleteQueue();
 
     // Test claimItemMultiple which should work in the same way.

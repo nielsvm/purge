@@ -116,7 +116,6 @@ class LoggingConfigForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $has_resulted_in_changes = FALSE;
-    $channels = $this->purgeLogger->getChannels();
     if (is_array($values = $form_state->getValue('table'))) {
       foreach ($values as $id => $checkboxes) {
         if ($this->purgeLogger->hasChannel($id)) {

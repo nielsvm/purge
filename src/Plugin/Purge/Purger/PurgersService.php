@@ -335,9 +335,10 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     }
 
     // Write the new CMI setting and commit it.
+    $order_index = 1;
     $setting = [];
     foreach ($plugin_ids as $instance_id => $plugin_id) {
-      $order_index = isset($order_index) ? $order_index+1 : 1;
+      $order_index = $order_index+1;
       $setting[] = [
         'order_index' => $order_index,
         'instance_id' => $instance_id,
@@ -410,7 +411,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     // Iterate the purgers and start invalidating the items each one supports.
     $types_by_purger = $this->getTypesByPurger();
     foreach ($this->purgers as $id => $purger) {
-      $supported = $groups = [];
+      $groups = [];
 
       // Set context and presort the invalidations that this purger supports.
       foreach ($invalidations as $i => $invalidation) {
@@ -422,7 +423,6 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
           $invalidation->setState(InvalidationInterface::NOT_SUPPORTED);
           continue;
         }
-        $supported[$i] = $invalidation;
       }
 
       // Filter supported objects and group them by the right purger methods.
@@ -494,8 +494,9 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     // Build a numerically ordered copy of the enabled plugins array and put
     // only even numbers in. Then move $purger_instance_id in the odd spot down.
     $ordered = [];
+    $index = 0;
     foreach ($enabled as $instance_id => $plugin_id) {
-      $index = isset($index) ? $index+2 : 0;
+      $index = $index+2;
       if ($instance_id === $purger_instance_id) {
         $ordered[$index+3] = [$instance_id, $plugin_id];
       }
@@ -525,8 +526,9 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     // Build a numerically ordered copy of the enabled plugins array and put
     // only even numbers in. Then move $purger_instance_id in the odd spot up.
     $ordered = [];
+    $index = 0;
     foreach ($enabled as $instance_id => $plugin_id) {
-      $index = isset($index) ? $index+2 : 0;
+      $index = $index+2;
       if ($instance_id === $purger_instance_id) {
         $ordered[$index-3] = [$instance_id, $plugin_id];
       }

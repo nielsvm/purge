@@ -94,7 +94,7 @@ class ProxyItem implements ProxyItemInterface {
         SELF::DATA_INDEX_TYPE => $this->invalidation->getType(),
         SELF::DATA_INDEX_STATES => $this->invalidation->getStates(),
         SELF::DATA_INDEX_EXPRESSION => $this->invalidation->getExpression(),
-        SELF::DATA_INDEX_PROPERTIES => $this->invalidation->getProperties()
+        SELF::DATA_INDEX_PROPERTIES => $this->invalidation->getProperties(),
       ];
     }
 

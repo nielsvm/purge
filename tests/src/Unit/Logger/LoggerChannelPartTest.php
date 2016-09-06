@@ -101,7 +101,7 @@ class LoggerChannelPartTest extends UnitTestCase {
   public function providerTestEmergency() {
     return [
       ['good', [RfcLogLevel::EMERGENCY], 'bazinga!'],
-      ['bad', [-1], NULL]
+      ['bad', [-1], NULL],
     ];
   }
 
@@ -120,7 +120,7 @@ class LoggerChannelPartTest extends UnitTestCase {
   public function providerTestAlert() {
     return [
       ['good', [RfcLogLevel::ALERT], 'bazinga!'],
-      ['bad', [-1], NULL]
+      ['bad', [-1], NULL],
     ];
   }
 
@@ -139,7 +139,7 @@ class LoggerChannelPartTest extends UnitTestCase {
   public function providerTestCritical() {
     return [
       ['good', [RfcLogLevel::CRITICAL], 'bazinga!'],
-      ['bad', [-1], NULL]
+      ['bad', [-1], NULL],
     ];
   }
 
@@ -158,7 +158,7 @@ class LoggerChannelPartTest extends UnitTestCase {
   public function providerTestError() {
     return [
       ['good', [RfcLogLevel::ERROR], 'bazinga!'],
-      ['bad', [-1], NULL]
+      ['bad', [-1], NULL],
     ];
   }
 
@@ -177,7 +177,7 @@ class LoggerChannelPartTest extends UnitTestCase {
   public function providerTestWarning() {
     return [
       ['good', [RfcLogLevel::WARNING], 'bazinga!'],
-      ['bad', [-1], NULL]
+      ['bad', [-1], NULL],
     ];
   }
 
@@ -196,7 +196,7 @@ class LoggerChannelPartTest extends UnitTestCase {
   public function providerTestNotice() {
     return [
       ['good', [RfcLogLevel::NOTICE], 'bazinga!'],
-      ['bad', [-1], NULL]
+      ['bad', [-1], NULL],
     ];
   }
 
@@ -215,7 +215,7 @@ class LoggerChannelPartTest extends UnitTestCase {
   public function providerTestInfo() {
     return [
       ['good', [RfcLogLevel::INFO], 'bazinga!'],
-      ['bad', [-1], NULL]
+      ['bad', [-1], NULL],
     ];
   }
 
@@ -234,7 +234,7 @@ class LoggerChannelPartTest extends UnitTestCase {
   public function providerTestDebug() {
     return [
       ['good', [RfcLogLevel::DEBUG], 'bazinga!'],
-      ['bad', [-1], NULL]
+      ['bad', [-1], NULL],
     ];
   }
 

@@ -52,7 +52,7 @@ class FileQueueTest extends PluginTestBase {
         $base . $time-1 . "\n",
         $base . $time   . "\n",
         $base . $time+1 . "\n",
-        $base . $time+2 . "\n"
+        $base . $time+2 . "\n",
       ];
     };
 

@@ -59,7 +59,7 @@ class PurgeBlock extends BlockBase implements ContainerFactoryPluginInterface {
     if ((!isset($config['purge_block_id'])) || empty($config['purge_block_id'])) {
       return [
         '#cache' => ['max-age' => 0],
-        '#markup' => $this->t('Config not found, please reconfigure block!')
+        '#markup' => $this->t('Config not found, please reconfigure block!'),
       ];
     }
 
@@ -80,13 +80,13 @@ class PurgeBlock extends BlockBase implements ContainerFactoryPluginInterface {
     $config = $this->getConfiguration();
     $form['purge_block_id'] = [
       '#type' => 'hidden',
-      '#value' => $config['purge_block_id']
+      '#value' => $config['purge_block_id'],
     ];
     $form['description'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Description'),
       '#description' => $this->t('Provide an optional description text which will be shown above the submit button.'),
-      '#default_value' => $config['description']
+      '#default_value' => $config['description'],
     ];
     $form['submission'] = [
       '#type' => 'details',
@@ -97,7 +97,7 @@ class PurgeBlock extends BlockBase implements ContainerFactoryPluginInterface {
       '#type' => 'textfield',
       '#title' => $this->t('Label'),
       '#description' => $this->t('Provide the label of the submit button, this is what the user clicks on.'),
-      '#default_value' => $config['submit_label']
+      '#default_value' => $config['submit_label'],
     ];
     $form['submission']['type'] = [
       '#type' => 'radios',
@@ -107,8 +107,8 @@ class PurgeBlock extends BlockBase implements ContainerFactoryPluginInterface {
       '#options' => [
         'url' => $this->t("The current page's <b>url</b>."),
         'path' => $this->t("The <b>path</b> of the current page."),
-        'everything' => $this->t('<b>everything</b> on the entire site.')
-      ]
+        'everything' => $this->t('<b>everything</b> on the entire site.'),
+      ],
     ];
     $form['submission']['execution'] = [
       '#type' => 'radios',
@@ -118,7 +118,7 @@ class PurgeBlock extends BlockBase implements ContainerFactoryPluginInterface {
       '#options' => [
         'direct' => $this->t("Direct execution"),
         'queue' => $this->t("Through queue"),
-      ]
+      ],
     ];
 
     return $form;

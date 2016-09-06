@@ -155,7 +155,7 @@ abstract class DiagnosticCheckBase extends PluginBase implements DiagnosticCheck
       'title' => $this->t('Purge - @title', ['@title' => $this->getTitle()]),
       'value' => (string) $this->getValue(),
       'description' => (string) $this->getRecommendation(),
-      'severity' => $this->getRequirementsSeverity()
+      'severity' => $this->getRequirementsSeverity(),
     ];
   }
 
@@ -168,7 +168,7 @@ abstract class DiagnosticCheckBase extends PluginBase implements DiagnosticCheck
       'title' => (string) $this->getTitle(),
       'value' => (string) $this->getValue(),
       'description' => (string) $this->getRecommendation(),
-      'severity' => $this->getRequirementsSeverity()
+      'severity' => $this->getRequirementsSeverity(),
     ];
   }
 

@@ -52,7 +52,7 @@ class LoggerChannelPartFactoryTest extends UnitTestCase {
     return [
       ['foo', [0,1,2]],
       ['bar', [1,2,3]],
-      ['baz', [2,3,4]]
+      ['baz', [2,3,4]],
     ];
   }
 

@@ -2,5 +2,6 @@ name: 'Purge tests support (passive checks)'
 type: module
 description: "Provides diagnostic checks that don't get in the way."
 package: Testing
+core: 8.x
 dependencies:
   - purge

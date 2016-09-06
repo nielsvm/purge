@@ -38,7 +38,9 @@ integrated:
  * [``cloudfront_purger``](https://www.drupal.org/project/cloudfront_purger)
  * [``acquia_purge``](https://www.drupal.org/project/acquia_purge)
  * [``varnish``](https://www.drupal.org/project/varnish_purge)
- * [``akamai``](https://github.com/cam8001/akamai)
+ * [``akamai``](https://www.drupal.org/project/akamai) ([help needed!](https://www.drupal.org/node/2678496))
+ * [``keycdn``](https://www.drupal.org/node/2744413) (help needed!)
+
 
 Interested? Reach out any time of day and we'll get you going!
 

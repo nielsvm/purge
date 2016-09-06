@@ -16,6 +16,6 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuerBase;
  *   configform = "\Drupal\purge_queuer_coretags\Form\ConfigurationForm",
  * )
  */
- class CoreTagsQueuer extends QueuerBase implements QueuerInterface {
+class CoreTagsQueuer extends QueuerBase implements QueuerInterface {
 
- }
+}

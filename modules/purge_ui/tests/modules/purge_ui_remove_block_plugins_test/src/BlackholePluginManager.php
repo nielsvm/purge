@@ -1,18 +1,18 @@
 <?php
 
-namespace Drupal\purge\Plugin\Purge\Processor;
+namespace Drupal\purge_ui_remove_block_plugins_test;
 
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * The processors plugin manager.
+ * PluginManager that will never deliver any plugins (for testing purposes).
  */
-class PluginManager extends DefaultPluginManager {
+class BlackholePluginManager extends DefaultPluginManager {
 
   /**
-   * Constructs the PluginManager object.
+   * Constructs the BlackholePluginManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -24,12 +24,12 @@ class PluginManager extends DefaultPluginManager {
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct(
-      'Plugin/Purge/Processor',
+      'Plugin/Purge/Blackhole',
       $namespaces,
       $module_handler,
-      'Drupal\purge\Plugin\Purge\Processor\ProcessorInterface',
-      'Drupal\purge\Annotation\PurgeProcessor');
-    $this->setCacheBackend($cache_backend, 'purge_processor_plugins');
+      'Drupal\purge\Plugin\Purge\Queue\QueueInterface',
+      'Drupal\purge\Annotation\PurgeQueue');
+    $this->setCacheBackend($cache_backend, 'purge_here_are_no_plugins');
   }
 
 }

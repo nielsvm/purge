@@ -13,6 +13,13 @@ use Drupal\purge_ui\Tests\DashboardTestBase;
 class DashboardEmptyTest extends DashboardTestBase {
 
   /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = ['purge_ui_remove_block_plugins_test'];
+
+  /**
    * Test the logging section.
    *
    * @see \Drupal\purge_ui\Controller\DashboardController::buildLoggingSection

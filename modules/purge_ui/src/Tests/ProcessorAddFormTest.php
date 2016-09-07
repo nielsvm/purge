@@ -52,7 +52,7 @@ class ProcessorAddFormTest extends WebTestBase {
     $this->initializeProcessorsService(['a', 'b', 'c']);
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(200);
-    $this->initializeProcessorsService(['a', 'b', 'c', 'withform']);
+    $this->initializeProcessorsService(['a', 'b', 'c', 'withform', 'purge_ui_block_processor']);
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(404);
     $this->initializeProcessorsService(['a', 'b']);

@@ -52,7 +52,7 @@ class QueuerAddFormTest extends WebTestBase {
     $this->initializeQueuersService(['a', 'b', 'c']);
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(200);
-    $this->initializeQueuersService(['a', 'b', 'c', 'withform']);
+    $this->initializeQueuersService(['a', 'b', 'c', 'withform', 'purge_ui_block_queuer']);
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(404);
     $this->initializeQueuersService(['a', 'b']);

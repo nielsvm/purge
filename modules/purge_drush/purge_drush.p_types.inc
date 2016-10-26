@@ -34,7 +34,7 @@ function purge_drush_p_types($format, InvalidationsServiceInterface $purgeInvali
     $output[] = '';
   }
 
-  // Return a crossed
+  // Return a complexer data structure that can be rendered as table/yaml/json.
   elseif (in_array($format, ['table', 'yaml', 'json'])) {
     foreach ($purgeInvalidationFactory->getPlugins() as $type => $typedef) {
       $output[$type] = [
@@ -50,7 +50,6 @@ function purge_drush_p_types($format, InvalidationsServiceInterface $purgeInvali
       }
     }
   }
-
 
   return $output;
 }

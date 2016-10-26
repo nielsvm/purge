@@ -64,11 +64,11 @@ class MaxAgeCheck extends DiagnosticCheckBase implements DiagnosticCheckInterfac
     $this->value = $this->valueTranslatable($max_age);
     if ($max_age === 0) {
       $this->recommendation = $this->t("Your site instructs external caching systems not to cache anything. Not only does this make cache invalidation futile, it is also a great danger to your website as any form of traffic can bring it down quickly!");
-      return SELF::SEVERITY_ERROR;
+      return SELF::SEVERITY_WARNING;
     }
     elseif ($max_age < 300) {
-      $this->recommendation = $this->t("TTL settings below 5 minutes are very dangerous, as sudden traffic increases will quickly reach your webserver(s) and bring Drupal down. External cache invalidation is disabled to prevent further load on your database.");
-      return SELF::SEVERITY_ERROR;
+      $this->recommendation = $this->t("TTL settings below 5 minutes are very dangerous, as sudden traffic increases will quickly reach your webserver(s) and bring Drupal down.");
+      return SELF::SEVERITY_WARNING;
     }
     elseif ($max_age < 86400) {
       $this->recommendation = $this->t("TTL settings under 24 hours are dangerous, as sudden traffic increases will quickly reach your webserver(s) and can make Drupal slow.");

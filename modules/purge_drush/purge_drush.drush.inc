@@ -324,9 +324,15 @@ function purge_drush_drush_command() {
     'callback services' => ['purge.queue', 'purge.processors', 'purge.purgers'],
     'arguments' => [],
     'required-arguments' => FALSE,
-    'options' => [],
+    'options' => [
+      'finish' => [
+        'description' => 'Continue processing till the queue is empty.',
+        'value' => FALSE,
+        '_default' => FALSE,
+      ],
+    ],
     'examples' => [
-      'drush p-queuer-workchunk' => 'Claim a chunk of items from the queue and process them.',
+      'drush p-queue-work' => 'Claim a chunk of items from the queue and process them.',
     ],
     '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [

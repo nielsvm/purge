@@ -95,6 +95,14 @@ function purge_drush_p_queue_work($format, QueueServiceInterface $purgeQueue, Pr
     finally {
       $purgeQueue->handleResults($claims);
     }
-    return $return(TRUE, ['Processed @number objects...', ['@number' => count($claims)]]);
+
+    // Evaluate all claim states to booleans and collect the results. Then
+    // return the overall outcome, which is FALSE if one failed.
+    $results = [];
+    foreach ($claims as $claim) {
+      $results[] = in_array($claim->getStateString(), ['PROCESSING', 'SUCCEEDED']);
+    }
+    $result = !in_array(FALSE, $results);
+    return $return($result, ['Processed @number objects...', ['@number' => count($claims)]]);
   }
 }

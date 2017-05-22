@@ -70,11 +70,11 @@ class CapacityDiagnosticCheck extends DiagnosticCheckBase implements DiagnosticC
       return SELF::SEVERITY_WARNING;
     }
     elseif ($this->value < 5) {
-      $this->recommendation = $this->t("Your system invalidates just @limit items through webserver-initated processing. If you notice that purge cannot keep up with its queue, reconsider your configuration.", $placeholders);
+      $this->recommendation = $this->t("Your system invalidates just @limit items through webserver-initiated processing. If you notice that purge cannot keep up with its queue, reconsider your configuration.", $placeholders);
       return SELF::SEVERITY_WARNING;
     }
     else {
-      $this->recommendation = $this->t("Your system can invalidate @limit items when you're processing through webserver-initated requests. Under ideal conditions - for example via Drush - the capacity would be @ideallimit.", $placeholders);
+      $this->recommendation = $this->t("Your system can invalidate @limit items when you're processing through webserver-initiated requests. Under ideal conditions - for example via Drush - the capacity would be @ideallimit.", $placeholders);
       return SELF::SEVERITY_OK;
     }
   }

@@ -58,6 +58,7 @@ class RuntimeMeasurement extends PersistentCounter implements RuntimeMeasurement
         throw new \LogicException('One of the $invalidations is not a InvalidationInterface derivative!');
       }
       if ($invalidation->getState() !== InvalidationInterface::SUCCEEDED) {
+        $this->start = NULL;
         return;
       }
     }
@@ -67,6 +68,7 @@ class RuntimeMeasurement extends PersistentCounter implements RuntimeMeasurement
     // time for theoretic overhead and ensure that the final value remains
     // within the boundaries of ::getTimeHint().
     if (($spent = microtime(TRUE) - $this->start) === 0.0) {
+      $this->start = NULL;
       return;
     }
     $spent = $this->getSafeTimeHintValue(

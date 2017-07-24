@@ -219,8 +219,11 @@ function purge_drush_drush_command() {
     'required-arguments' => 1,
     'options' => [],
     'examples' => [
-      'drush p-queue-add tag node:1' => 'Clears URLs tagged with "node:1" from external caching platforms.',
-      'drush p-queue-add url http://www.drupal.org/' => 'Clears "http://www.drupal.org/" from external caching platforms.',
+      'drush p-queue-add tag node:1' => 'Clears all cached pages matching TAG "node:1".',
+      'drush pqa url http://www.s.com/rss.xml' => 'Clears only the URL provided.',
+      'drush pqa wildcardurl http://s.com/f/*' => 'Clears URLs by wildcard, all under http://s.com/f/ will be cleared.',
+      'drush pqa everything' => 'Instructs to clear the entire site, be careful!',
+      'drush pqa tag node:1,tag node:2,url http://../rss.xml,tag node:321' => 'Comma separated input of multiple items.',
     ],
     '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [

@@ -81,6 +81,17 @@ function purge_drush_p_queue_add($format, QueueServiceInterface $purgeQueue, Que
     catch (MissingExpressionException $e) {
       return $return_exception($e);
     }
+
+    // Prevent users from accidentally harming their website.
+    if (($format === 'string') && ($type === 'everything')) {
+      drush_print("Invalidating everything will mass-clear potentially"
+        . " thousands of pages, which could temporarily make your site really"
+        . " slow as external caches will have to warm up again.\n");
+      if (!drush_confirm("Are you really sure?")) {
+        drush_user_abort();
+        return;
+      }
+    }
   }
 
   // Add the objects to the queue and give user feedback.

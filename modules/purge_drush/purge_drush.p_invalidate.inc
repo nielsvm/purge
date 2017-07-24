@@ -67,6 +67,16 @@ function purge_drush_p_invalidate($format, InvalidationsServiceInterface $purgeI
     return $return_exception($e);
   }
 
+  // Prevent users from accidentally harming their website.
+  if (($format === 'string') && ($type === 'everything')) {
+    drush_print("Invalidating everything will mass-clear potentially thousands"
+      . " of pages, which could temporarily make your site really slow as"
+      . " external caches will have to warm up again.\n");
+    if (!drush_confirm("Are you really sure?")) {
+      drush_user_abort();
+    }
+  }
+
   // Attempt the cache invalidation and deal with errors.
   try {
     $purgePurgers->invalidate($processor, $invalidations);

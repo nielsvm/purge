@@ -122,23 +122,16 @@ function purge_drush_drush_command() {
     'core' => ['8+'],
   ];
   $items['p-procsr-add'] = [
-    'description' => 'Create a new processor instance.',
+    'description' => 'Add a new processor.',
     'callback' => 'purge_drush_callback_router',
     'callback services' => ['purge.processors'],
     'arguments' => [
       'id' => 'The plugin ID of the processor to add.',
     ],
     'required-arguments' => 1,
-    'options' => [
-      'if-not-exists' => [
-        'description' => "Don't create a new processor if one of this type exists.",
-        'value' => FALSE,
-        '_default' => FALSE,
-      ],
-    ],
+    'options' => [],
     'examples' => [
       'drush p-procsr-add ID' => 'Add a processor of type ID.',
-      'drush p-procsr-add --if-not-exists ID' => 'Create processor ID if it does not exist.',
     ],
     '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [
@@ -174,7 +167,7 @@ function purge_drush_drush_command() {
     'core' => ['8+'],
   ];
   $items['p-procsr-lsa'] = [
-    'description' => 'List available plugin IDs for which processors can be added.',
+    'description' => 'List available processor plugin IDs that can be added.',
     'callback' => 'purge_drush_callback_router',
     'callback services' => ['purge.processors'],
     'arguments' => [],
@@ -199,11 +192,11 @@ function purge_drush_drush_command() {
     'core' => ['8+'],
   ];
   $items['p-procsr-rm'] = [
-    'description' => 'Remove a processor instance.',
+    'description' => 'Remove a processor.',
     'callback' => 'purge_drush_callback_router',
     'callback services' => ['purge.processors'],
     'arguments' => [
-      'id' => 'The instance ID of the processor to remove.',
+      'id' => 'The plugin ID of the processor to remove.',
     ],
     'required-arguments' => 1,
     'options' => [],
@@ -474,23 +467,16 @@ function purge_drush_drush_command() {
     'core' => ['8+'],
   ];
   $items['p-queuer-add'] = [
-    'description' => 'Create a new queuer instance.',
+    'description' => 'Add a new queuer.',
     'callback' => 'purge_drush_callback_router',
     'callback services' => ['purge.queuers'],
     'arguments' => [
       'id' => 'The plugin ID of the queuer to add.',
     ],
     'required-arguments' => 1,
-    'options' => [
-      'if-not-exists' => [
-        'description' => "Don't create a new queuer if one of this type exists.",
-        'value' => FALSE,
-        '_default' => FALSE,
-      ],
-    ],
+    'options' => [],
     'examples' => [
       'drush p-queuer-add ID' => 'Add a queuer of type ID.',
-      'drush p-queuer-add --if-not-exists ID' => 'Create queuer ID if it does not exist.',
     ],
     '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [
@@ -526,7 +512,7 @@ function purge_drush_drush_command() {
     'core' => ['8+'],
   ];
   $items['p-queuer-lsa'] = [
-    'description' => 'List available plugin IDs for which queuers can be added.',
+    'description' => 'List available queuer plugin IDs that can be added.',
     'callback' => 'purge_drush_callback_router',
     'callback services' => ['purge.queuers'],
     'arguments' => [],
@@ -551,11 +537,11 @@ function purge_drush_drush_command() {
     'core' => ['8+'],
   ];
   $items['p-queuer-rm'] = [
-    'description' => 'Remove a queuer instance.',
+    'description' => 'Remove a queuer.',
     'callback' => 'purge_drush_callback_router',
     'callback services' => ['purge.queuers'],
     'arguments' => [
-      'id' => 'The instance ID of the queuer to remove.',
+      'id' => 'The plugin ID of the queuer to remove.',
     ],
     'required-arguments' => 1,
     'options' => [],

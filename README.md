@@ -19,7 +19,10 @@ The ``purge_drush`` module adds the following commands for Drush administration:
 | **``p-debug-en``**          | ``pden`` | Enable debugging for all of Purge's log channels.            |
 | **``p-diagnostics``**       | ``pdia`` | Generate a diagnostic self-service report.                   |
 | **``p-invalidate``**        | ``pinv`` | Directly invalidate an item without going through the queue. |
-| **``p-procsr-ls``**         | ``prols``| List all enabled processors.                                 |
+| **``p-procsr-add``**        | ``pradd``| Create a new processor instance.                             |
+| **``p-procsr-ls``**         | ``prls`` | List all enabled processors.                                 |
+| **``p-procsr-lsa``**        | ``prlsa``| List available plugin IDs for which processors can be added. |
+| **``p-procsr-rm``**         | ``prrm`` | Remove a processor instance.                                 |
 | **``p-purger-add``**        | ``ppadd``| Create a new purger instance.                                |
 | **``p-purger-ls``**         | ``ppls`` | List all configured purgers in order of execution.           |
 | **``p-purger-lsa``**        | ``pplsa``| List available plugin IDs for which purgers can be added.    |
@@ -30,7 +33,10 @@ The ``purge_drush`` module adds the following commands for Drush administration:
 | **``p-queue-stats``**       | ``pqs``  | Retrieve the queue statistics.                               |
 | **``p-queue-volume``**      | ``pqv``  | Count how many items currently sit in the queue.             |
 | **``p-queue-work``**        | ``pqw``  | Claim a chunk of items from the queue and process them.      |
-| **``p-queuer-ls``**         | ``pquls``| List all enabled queuers.                                    |
+| **``p-queuer-add``**        | ``puadd``| Create a new queuer instance.                                |
+| **``p-queuer-ls``**         | ``puls`` | List all enabled queuers.                                    |
+| **``p-queuer-lsa``**        | ``pulsa``| List available plugin IDs for which queuers can be added.    |
+| **``p-queuer-rm``**         | ``purm`` | Remove a queuer instance.                                    |
 | **``p-types``**             | ``ptyp`` | List all supported cache invalidation types.                 |
 
 Several commands understand the ``--format`` parameter allowing you to integrate

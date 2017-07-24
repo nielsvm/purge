@@ -51,6 +51,13 @@ interface LoggerChannelPartInterface extends LoggerInterface {
   public function getGrants();
 
   /**
+   * Determine whether this channel has a RfcLogLevel::DEBUG grant.
+   *
+   * @return bool
+   */
+  public function isDebuggingEnabled();
+
+  /**
    * {@inheritdoc}
    *
    * Logs only when granted \Drupal\Core\Logger\RfcLogLevel::EMERGENCY.

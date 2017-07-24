@@ -75,6 +75,13 @@ class LoggerChannelPart implements LoggerChannelPartInterface {
   /**
    * {@inheritdoc}
    */
+  public function isDebuggingEnabled() {
+    return $this->access[RfcLogLevel::DEBUG];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function emergency($message, array $context = []) {
     if ($this->access[RfcLogLevel::EMERGENCY]) {
       $this->log(LogLevel::EMERGENCY, $message, $context);

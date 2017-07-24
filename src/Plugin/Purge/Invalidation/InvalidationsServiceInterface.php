@@ -25,6 +25,8 @@ interface InvalidationsServiceInterface extends ServiceInterface {
    * @throws \Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException
    *   Exception thrown when plugin got instantiated with an expression that is
    *   not deemed valid for the type of invalidation.
+   * @throws \Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException
+   *   Thrown when no purgers support the requested type.
    *
    * @return \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
    */

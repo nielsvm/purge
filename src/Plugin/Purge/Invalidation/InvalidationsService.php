@@ -4,8 +4,10 @@ namespace Drupal\purge\Plugin\Purge\Invalidation;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceBase;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidation;
+use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Plugin\Purge\Queue\ProxyItemInterface;
 
 /**
@@ -29,19 +31,30 @@ class InvalidationsService extends ServiceBase implements InvalidationsServiceIn
   protected $instance_counter_immutables = -1;
 
   /**
+   * @var \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
+   */
+  protected $purgePurgers;
+
+  /**
    * Instantiates a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsService.
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
    *   The plugin manager for this service.
+   * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
+   *   The purgers service.
    */
-  public function __construct(PluginManagerInterface $pluginManager) {
+  public function __construct(PluginManagerInterface $pluginManager, PurgersServiceInterface $purge_purgers) {
     $this->pluginManager = $pluginManager;
+    $this->purgePurgers = $purge_purgers;
   }
 
   /**
    * {@inheritdoc}
    */
   public function get($plugin_id, $expression = NULL) {
+    if (!in_array($plugin_id, $this->purgePurgers->getTypes())) {
+      throw new TypeUnsupportedException($plugin_id);
+    }
     return $this->pluginManager->createInstance(
       $plugin_id, [
         'id' => $this->instance_counter++,

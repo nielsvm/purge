@@ -18,7 +18,7 @@ use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
  * @return array
  *   Drush render/format array.
  */
-function purge_drush_p_processors($format, ProcessorsServiceInterface $purgeProcessors) {
+function purge_drush_p_procsr_ls($format, ProcessorsServiceInterface $purgeProcessors) {
   $output = [];
   if (in_array($format, ['table', 'yaml', 'json'])) {
     foreach ($purgeProcessors as $processor) {

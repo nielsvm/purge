@@ -13,7 +13,7 @@ use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
 
 /**
- * Schedule an item for later processing.
+ * Add one or more items to the queue for later processing.
  *
  * @param string $format
  *   The default or selected output format of the command.

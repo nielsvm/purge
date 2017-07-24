@@ -18,7 +18,7 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
  * @return array
  *   Drush render/format array.
  */
-function purge_drush_p_queuers($format, QueuersServiceInterface $purgeQueuers) {
+function purge_drush_p_queuer_ls($format, QueuersServiceInterface $purgeQueuers) {
   $output = [];
   if (in_array($format, ['table', 'yaml', 'json'])) {
     foreach ($purgeQueuers as $queuer) {

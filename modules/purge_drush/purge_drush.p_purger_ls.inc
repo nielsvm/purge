@@ -18,7 +18,7 @@ use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
  * @return array
  *   Drush render/format array.
  */
-function purge_drush_p_purgers($format, PurgersServiceInterface $purgePurgers) {
+function purge_drush_p_purger_ls($format, PurgersServiceInterface $purgePurgers) {
   $definitions = $purgePurgers->getPlugins();
   $enabled = $purgePurgers->getPluginsEnabled();
   $labels = $purgePurgers->getLabels();

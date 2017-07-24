@@ -8,7 +8,7 @@
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 
 /**
- * List all plugin IDs for which purgers can be created.
+ * List available plugin IDs for which purgers can be added.
  *
  * @param string $format
  *   The default or selected output format of the command.
@@ -18,7 +18,7 @@ use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
  * @return array
  *   Drush render/format array.
  */
-function purge_drush_p_purgers_available($format, PurgersServiceInterface $purgePurgers) {
+function purge_drush_p_purger_lsa($format, PurgersServiceInterface $purgePurgers) {
   $definitions = $purgePurgers->getPlugins();
   $available = $purgePurgers->getPluginsAvailable();
   $output = [];

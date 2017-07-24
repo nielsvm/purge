@@ -15,6 +15,8 @@ The ``purge_drush`` module adds the following commands for Drush administration:
 
 | Command                     | Alias    | Description                                                  |
 |-----------------------------|----------|--------------------------------------------------------------|
+| **``p-debug-dis``**         | ``pddis``| Disable debugging for all of Purge's log channels.           |
+| **``p-debug-en``**          | ``pden`` | Enable debugging for all of Purge's log channels.            |
 | **``p-diagnostics``**       | ``pdia`` | Generate a diagnostic self-service report.                   |
 | **``p-invalidate``**        | ``pinv`` | Directly invalidate an item without going through the queue. |
 | **``p-procsr-ls``**         | ``prols``| List all enabled processors.                                 |

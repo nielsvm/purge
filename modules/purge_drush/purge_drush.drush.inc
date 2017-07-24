@@ -24,6 +24,42 @@ function purge_drush_drush_help($command) {
  */
 function purge_drush_drush_command() {
   $items = [];
+  $items['p-debug-dis'] = [
+    'description' => "Disable debugging for all of Purge's log channels.",
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.logger',],
+    'arguments' => [],
+    'required-arguments' => 0,
+    'options' => [],
+    'examples' => [
+      'drush p-debug-disable' => 'Disables the log channels.',
+    ],
+    '_outputformats' => ['string', 'yaml', 'json'],
+    'outputformat' => [
+      'default' => 'string',
+      'pipe-format' => 'yaml',
+    ],
+    'aliases' => ['pddis'],
+    'core' => ['8+'],
+  ];
+  $items['p-debug-en'] = [
+    'description' => "Enable debugging for all of Purge's log channels.",
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.logger',],
+    'arguments' => [],
+    'required-arguments' => 0,
+    'options' => [],
+    'examples' => [
+      'drush p-debug-enable' => 'Enables the log channels.',
+    ],
+    '_outputformats' => ['string', 'yaml', 'json'],
+    'outputformat' => [
+      'default' => 'string',
+      'pipe-format' => 'yaml',
+    ],
+    'aliases' => ['pden'],
+    'core' => ['8+'],
+  ];
   $items['p-diagnostics'] = [
     'description' => 'Generate a diagnostic self-service report.',
     'callback' => 'purge_drush_callback_router',

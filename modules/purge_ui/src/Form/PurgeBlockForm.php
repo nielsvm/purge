@@ -10,6 +10,7 @@ use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\LockException;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface;
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
@@ -188,10 +189,22 @@ class PurgeBlockForm extends FormBase {
     // Instantiate the invalidation objects with the prepared expressions.
     $invalidations = [];
     foreach ($form_state->getBuildInfo()['expressions'] as $expression) {
-      $invalidations[] = $this->purgeInvalidationFactory->get(
-        $this->config['type'],
-        $expression
-      );
+      try {
+        $invalidations[] = $this->purgeInvalidationFactory->get(
+          $this->config['type'],
+          $expression
+        );
+      }
+      catch (TypeUnsupportedException $e) {
+        drupal_set_message(
+          $this->t(
+            "No purger supports the type '@type', please install one!",
+            ['@type' => $this->config['type']]
+          ),
+          'error'
+        );
+        return;
+      }
     }
 
     // Queue execution is the easiest, as it always succeeds.

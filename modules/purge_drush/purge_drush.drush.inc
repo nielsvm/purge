@@ -357,6 +357,26 @@ function purge_drush_drush_command() {
     'aliases' => ['pqs'],
     'core' => ['8+'],
   ];
+  $items['p-queue-volume'] = [
+    'description' => 'Count how many items currently sit in the queue.',
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.queue',],
+    'arguments' => [],
+    'required-arguments' => FALSE,
+    'options' => [],
+    'examples' => [
+      'drush p-queue-volume' => 'The number of items in the queue.',
+      'drush p-queue-volume --format=yaml' => 'YAML parseable output.',
+      'drush p-queue-volume --format=json' => 'JSON parseable output.',
+    ],
+    '_outputformats' => ['string', 'yaml', 'json'],
+    'outputformat' => [
+      'default' => 'string',
+      'pipe-format' => 'yaml',
+    ],
+    'aliases' => ['pqv'],
+    'core' => ['8+'],
+  ];
   $items['p-queue-work'] = [
     'description' => 'Claim a chunk of items from the queue and process them.',
     'callback' => 'purge_drush_callback_router',

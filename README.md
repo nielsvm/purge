@@ -28,6 +28,7 @@ The ``purge_drush`` module adds the following commands for Drush administration:
 | **``p-queue-browse``**      | ``pqb``  | Inspect what is in the queue by paging through it.           |
 | **``p-queue-empty``**       | ``pqe``  | Clear the queue and reset all statistics.                    |
 | **``p-queue-stats``**       | ``pqs``  | Retrieve the queue statistics.                               |
+| **``p-queue-volume``**      | ``pqv``  | Count how many items currently sit in the queue.             |
 | **``p-queue-work``**        | ``pqw``  | Claim a chunk of items from the queue and process them.      |
 | **``p-queuer-ls``**         | ``pquls``| List all enabled queuers.                                    |
 | **``p-types``**             | ``ptyp`` | List all supported cache invalidation types.                 |

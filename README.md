@@ -26,6 +26,8 @@ The ``purge_drush`` module adds the following commands for Drush administration:
 | **``p-purger-add``**        | ``ppadd``| Create a new purger instance.                                |
 | **``p-purger-ls``**         | ``ppls`` | List all configured purgers in order of execution.           |
 | **``p-purger-lsa``**        | ``pplsa``| List available plugin IDs for which purgers can be added.    |
+| **``p-purger-mvd``**        | ``ppmvd``| Move the given purger DOWN in the execution order.           |
+| **``p-purger-mvu``**        | ``ppmvu``| Move the given purger UP in the execution order.             |
 | **``p-purger-rm``**         | ``pprm`` | Remove a purger instance.                                    |
 | **``p-queue-add``**         | ``pqa``  | Add one or more items to the queue for later processing.     |
 | **``p-queue-browse``**      | ``pqb``  | Inspect what is in the queue by paging through it.           |

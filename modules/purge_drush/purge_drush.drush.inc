@@ -289,6 +289,46 @@ function purge_drush_drush_command() {
     'aliases' => ['pplsa'],
     'core' => ['8+'],
   ];
+  $items['p-purger-mvd'] = [
+    'description' => 'Move the given purger DOWN in the execution order.',
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.purgers'],
+    'arguments' => [
+      'id' => 'The instance ID of the purger to move down.',
+    ],
+    'required-arguments' => 1,
+    'options' => [],
+    'examples' => [
+      'drush p-purger-mv-down ID' => 'Move this purger down.',
+    ],
+    '_outputformats' => ['string', 'yaml', 'json'],
+    'outputformat' => [
+      'default' => 'string',
+      'pipe-format' => 'yaml',
+    ],
+    'aliases' => ['ppmvd'],
+    'core' => ['8+'],
+  ];
+  $items['p-purger-mvu'] = [
+    'description' => 'Move the given purger UP in the execution order.',
+    'callback' => 'purge_drush_callback_router',
+    'callback services' => ['purge.purgers'],
+    'arguments' => [
+      'id' => 'The instance ID of the purger to move up.',
+    ],
+    'required-arguments' => 1,
+    'options' => [],
+    'examples' => [
+      'drush p-purger-mv-down ID' => 'Move this purger up.',
+    ],
+    '_outputformats' => ['string', 'yaml', 'json'],
+    'outputformat' => [
+      'default' => 'string',
+      'pipe-format' => 'yaml',
+    ],
+    'aliases' => ['ppmvu'],
+    'core' => ['8+'],
+  ];
   $items['p-purger-rm'] = [
     'description' => 'Remove a purger instance.',
     'callback' => 'purge_drush_callback_router',

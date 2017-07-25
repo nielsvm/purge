@@ -18,29 +18,21 @@ class PersistentCounter extends Counter implements PersistentCounterInterface {
   protected $callback;
 
   /**
-   * The unique identifier that describes this counter.
-   *
-   * @var string
-   */
-  protected $id;
-
-  /**
    * {@inheritdoc}
    */
   protected function setDirectly($value) {
     parent::setDirectly($value);
     if (!is_null($this->callback)) {
       $callback = $this->callback;
-      $callback($this->id, $value);
+      $callback($value);
     }
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setWriteCallback($id, callable $callback) {
+  public function setWriteCallback(callable $callback) {
     $this->callback = $callback;
-    $this->id = $id;
   }
 
 }

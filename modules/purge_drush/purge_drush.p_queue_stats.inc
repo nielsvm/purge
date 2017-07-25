@@ -8,41 +8,61 @@
 use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
 
 /**
- * Retrieve the queue statistics.
+ * View the queue statistics.
  *
  * @param string $format
  *   The default or selected output format of the command.
  * @param \Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface $purgeQueueStats
  *   The purge queue statistics service.
+ * @param bool $reset_totals
+ *   Wipe the TOTAL statistical counters.
  *
  * @return array
  *   Drush render/format array.
  */
-function purge_drush_p_queue_stats($format, StatsTrackerInterface $purgeQueueStats) {
+function purge_drush_p_queue_stats($format, StatsTrackerInterface $purgeQueueStats, $reset_totals) {
+
+  // Reset the total counters if requested to.
+  if ($reset_totals && ($format === 'table')) {
+    drush_print("You are about to reset all total counters...\n");
+    if (drush_confirm("Are you really sure?")) {
+      $purgeQueueStats->resetTotals();
+      drush_print("Done!");
+    }
+    else {
+      drush_user_abort();
+    }
+    return;
+  }
+  elseif ($reset_totals) {
+    $purgeQueueStats->resetTotals();
+  }
+
+  // Normal output generation.
   if ($format === 'table') {
-    return [
-      [
-        'title' => dt('Claimed'),
-        'value' => $purgeQueueStats->claimed()->getInteger(),
-        'description' => dt('The number of currently claimed invalidation objects from the queue, which is likely to be (close to) zero.'),
-      ],
-      [
-        'title' => dt('Deleted'),
-        'description' => dt('The number of items deleted from the queue and thus successfully invalidated.'),
-        'value' => $purgeQueueStats->deleted()->getInteger(),
-      ],
-      [
-        'title' => dt('Total'),
-        'description' => dt('The total number of items currently in the queue.'),
-        'value' => $purgeQueueStats->total()->getInteger(),
-      ],
-    ];
+    $table = [];
+    $align_right = function($input, $size = 20) {
+      return str_repeat(' ', $size - strlen($input)) . $input;
+    };
+    foreach ($purgeQueueStats as $statistic) {
+      $table[] = [
+        'left' => $align_right(strtoupper($statistic->getId())),
+        'right' => $statistic->getTitle()
+      ];
+      $table[] = [
+        'left' => $align_right($statistic->getInteger()),
+        'right' => '',
+      ];
+      $table[] = ['left' => '', 'right' => $statistic->getDescription()];
+      $table[] = ['left' => '', 'right' => ''];
+    }
+    return $table;
   }
   else {
-    return [
-      'claimed' => $purgeQueueStats->claimed()->getInteger(),
-      'deleted' => $purgeQueueStats->deleted()->getInteger(),
-      'total' => $purgeQueueStats->total()->getInteger(),
-    ];
+    $statistics = [];
+    foreach ($purgeQueueStats as $statistic) {
+      $statistics[$statistic->getId()] = $statistic->getInteger();
+    }
+    return $statistics;
   }
 }

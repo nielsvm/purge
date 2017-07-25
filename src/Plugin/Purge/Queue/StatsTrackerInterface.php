@@ -5,38 +5,99 @@ namespace Drupal\purge\Plugin\Purge\Queue;
 use Drupal\Core\DestructableInterface;
 
 /**
- * Describes the statistics tracker.
+ * Describes the queue statistics tracker.
  *
- * The statistics tracker keeps track of queue activity by actively counting how
- * many items the queue currently holds and how many have been deleted or
- * released back to it. This data can be used to report progress on the queue
- * and is easily retrieved, the data resets when the queue is emptied.
+ * Classes implementing this interface provide several numeric counters which
+ * represent operational and statistical information related to the queue.
  */
-interface StatsTrackerInterface extends DestructableInterface {
+interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Countable {
 
   /**
-   * Get the counter tracking how many invalidations are claimed right now.
+   * Array index for ::numberOfItems().
    *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
+   * @var int
    */
-  public function claimed();
+  const NUMBER_OF_ITEMS = 0;
 
   /**
-   * Get the counter tracking how many invalidations have been deleted.
+   * Array index for ::totalProcessing().
    *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
+   * @var int
    */
-  public function deleted();
+  const TOTAL_PROCESSING = 1;
 
   /**
-   * Get the counter tracking the total amount of invalidations in the queue.
+   * Array index for ::totalSucceeded().
    *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
+   * @var int
    */
-  public function total();
+  const TOTAL_SUCCEEDED = 2;
 
   /**
-   * Wipe all statistics data.
+   * Array index for ::totalFailed().
+   *
+   * @var int
    */
-  public function wipe();
+  const TOTAL_FAILED = 3;
+
+  /**
+   * Array index for ::totalNotSupported().
+   *
+   * @var int
+   */
+  const TOTAL_NOT_SUPPORTED = 4;
+
+  /**
+   * The number of items currently in the queue.
+   *
+   * @return \Drupal\purge\Plugin\Purge\Queue\numberOfItemsStatistic
+   */
+  public function numberOfItems();
+
+  /**
+   * Total number of failed queue items.
+   *
+   * @return \Drupal\purge\Plugin\Purge\Queue\totalFailedStatistic
+   */
+  public function totalFailed();
+
+  /**
+   * Total number of multi-step cache invalidations.
+   *
+   * @return \Drupal\purge\Plugin\Purge\Queue\totalProcessingStatistic
+   */
+  public function totalProcessing();
+
+  /**
+   * Total number of succeeded queue items.
+   *
+   * @return \Drupal\purge\Plugin\Purge\Queue\totalSucceededStatistic
+   */
+  public function totalSucceeded();
+
+  /**
+   * Total number of not supported invalidations.
+   *
+   * @return \Drupal\purge\Plugin\Purge\Queue\totalNotSupportedStatistic
+   */
+  public function totalNotSupported();
+
+  /**
+   * Reset the total counters, short-hand for:
+   *  - ::totalFailed()->set(0)
+   *  - ::totalProcessing()->set(0)
+   *  - ::totalSucceeded()->set(0)
+   *  - ::totalNotSupported()->set(0)
+   */
+  public function resetTotals();
+
+  /**
+   * Automatically update the total counters for the given invalidations.
+   *
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations
+   *   A non-associative array with invalidation objects regardless of the state
+   *   they're in. Their state will determine which counter will be updated.
+   */
+  public function updateTotals(array $invalidations);
+
 }

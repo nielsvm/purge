@@ -279,4 +279,36 @@ class CounterTest extends UnitTestCase {
     ];
   }
 
+  /**
+   * @covers ::setWriteCallback
+   *
+   * @dataProvider providerTestSetWriteCallback()
+   */
+  public function testSetWriteCallback($value_start, $call, $value_end) {
+    $counter = new Counter($value_start);
+
+    // Pass a callback that modifies the local $passed_value.
+    $passed_value = NULL;
+    $callback = function ($_value) use (&$passed_value) {
+      $passed_value = $_value;
+    };
+    $counter->setWriteCallback($callback);
+
+    // Call the requested callback and verify that the results match.
+    $method = array_shift($call);
+    call_user_func_array([$counter, $method], $call);
+    $this->assertEquals($passed_value, $value_end);
+  }
+
+  /**
+   * Provides test data for testSetWriteCallback().
+   */
+  public function providerTestSetWriteCallback() {
+    return [
+      [0, ['set', 5], 5],
+      [1.8, ['increment', 2.3], 4.1],
+      [1.6, ['decrement', 0.3], 1.3],
+    ];
+  }
+
 }

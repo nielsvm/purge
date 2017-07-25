@@ -11,6 +11,13 @@ use Drupal\purge\Counter\CounterInterface;
 class Counter implements CounterInterface {
 
   /**
+   * The callback that is called on writes when not NULL.
+   *
+   * @var null|callable
+   */
+  protected $callback;
+
+  /**
    * Whether it is possible to call ::decrement() or not.
    *
    * @var bool
@@ -91,6 +98,13 @@ class Counter implements CounterInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function setWriteCallback(callable $callback) {
+    $this->callback = $callback;
+  }
+
+  /**
    * Overwrite the counter value (permission bypass).
    *
    * @param int|float $value
@@ -112,6 +126,10 @@ class Counter implements CounterInterface {
       throw new BadBehaviorException('Given $value can only be zero or positive.');
     }
     $this->value = $value;
+    if (!is_null($this->callback)) {
+      $callback = $this->callback;
+      $callback($value);
+    }
   }
 
   /**

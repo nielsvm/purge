@@ -92,9 +92,11 @@ class RuntimeMeasurementTracker implements RuntimeMeasurementTrackerInterface {
         $measurement = new RuntimeMeasurement($values[$key]);
         $measurement->disableDecrement();
         $measurement->disableIncrement();
-        $measurement->setWriteCallback($key, function ($id, $value) {
-          $this->buffer[$id] = $value;
-        });
+        $measurement->setWriteCallback(
+          function ($value) use ($key) {
+            $this->buffer[$key] = $value;
+          }
+        );
 
         // To start and stop measurement, PurgersServiceInterface::invalidate()
         // needs to access ::start() and ::stop(), so we need to add the counter

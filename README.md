@@ -19,18 +19,26 @@ The ``purge_drush`` module adds the following commands for Drush administration:
 | **``p-debug-en``**          | ``pden`` | Enable debugging for all of Purge's log channels.            |
 | **``p-diagnostics``**       | ``pdia`` | Generate a diagnostic self-service report.                   |
 | **``p-invalidate``**        | ``pinv`` | Directly invalidate an item without going through the queue. |
-| **``p-procsr-ls``**         | ``prols``| List all enabled processors.                                 |
+| **``p-procsr-add``**        | ``pradd``| Add a new processor.                                         |
+| **``p-procsr-ls``**         | ``prls`` | List all enabled processors.                                 |
+| **``p-procsr-lsa``**        | ``prlsa``| List available processor plugin IDs that can be added.       |
+| **``p-procsr-rm``**         | ``prrm`` | Remove a processor.                                          |
 | **``p-purger-add``**        | ``ppadd``| Create a new purger instance.                                |
 | **``p-purger-ls``**         | ``ppls`` | List all configured purgers in order of execution.           |
 | **``p-purger-lsa``**        | ``pplsa``| List available plugin IDs for which purgers can be added.    |
+| **``p-purger-mvd``**        | ``ppmvd``| Move the given purger DOWN in the execution order.           |
+| **``p-purger-mvu``**        | ``ppmvu``| Move the given purger UP in the execution order.             |
 | **``p-purger-rm``**         | ``pprm`` | Remove a purger instance.                                    |
 | **``p-queue-add``**         | ``pqa``  | Add one or more items to the queue for later processing.     |
 | **``p-queue-browse``**      | ``pqb``  | Inspect what is in the queue by paging through it.           |
-| **``p-queue-empty``**       | ``pqe``  | Clear the queue and reset all statistics.                    |
-| **``p-queue-stats``**       | ``pqs``  | Retrieve the queue statistics.                               |
+| **``p-queue-empty``**       | ``pqe``  | Empty the entire queue.                                      |
+| **``p-queue-stats``**       | ``pqs``  | View the queue statistics.                                   |
 | **``p-queue-volume``**      | ``pqv``  | Count how many items currently sit in the queue.             |
 | **``p-queue-work``**        | ``pqw``  | Claim a chunk of items from the queue and process them.      |
-| **``p-queuer-ls``**         | ``pquls``| List all enabled queuers.                                    |
+| **``p-queuer-add``**        | ``puadd``| Add a new queuer.                                            |
+| **``p-queuer-ls``**         | ``puls`` | List all enabled queuers.                                    |
+| **``p-queuer-lsa``**        | ``pulsa``| List available queuer plugin IDs that can be added.          |
+| **``p-queuer-rm``**         | ``purm`` | Remove a queuer.                                             |
 | **``p-types``**             | ``ptyp`` | List all supported cache invalidation types.                 |
 
 Several commands understand the ``--format`` parameter allowing you to integrate

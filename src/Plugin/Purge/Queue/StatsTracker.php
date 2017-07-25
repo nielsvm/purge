@@ -46,11 +46,11 @@ class StatsTracker implements StatsTrackerInterface {
    * @var string[]
    */
   protected $statClasses = [
-    self::NUMBER_OF_ITEMS   => '\Drupal\purge\Plugin\Purge\Queue\numberOfItemsStatistic',
-    self::TOTAL_PROCESSING  => '\Drupal\purge\Plugin\Purge\Queue\totalProcessingStatistic',
-    self::TOTAL_SUCCESSES   => '\Drupal\purge\Plugin\Purge\Queue\totalSuccessesStatistic',
-    self::TOTAL_FAILURES    => '\Drupal\purge\Plugin\Purge\Queue\totalFailuresStatistic',
-    self::TOTAL_UNSUPPORTED => '\Drupal\purge\Plugin\Purge\Queue\totalUnsupportedStatistic',
+    self::NUMBER_OF_ITEMS     => '\Drupal\purge\Plugin\Purge\Queue\numberOfItemsStatistic',
+    self::TOTAL_PROCESSING    => '\Drupal\purge\Plugin\Purge\Queue\totalProcessingStatistic',
+    self::TOTAL_SUCCEEDED     => '\Drupal\purge\Plugin\Purge\Queue\totalSucceededStatistic',
+    self::TOTAL_FAILED        => '\Drupal\purge\Plugin\Purge\Queue\totalFailedStatistic',
+    self::TOTAL_NOT_SUPPORTED => '\Drupal\purge\Plugin\Purge\Queue\totalNotSupportedStatistic',
   ];
 
   /**
@@ -59,11 +59,11 @@ class StatsTracker implements StatsTrackerInterface {
    * @var string[]
    */
   protected $stats = [
-    self::NUMBER_OF_ITEMS   => 'purge_queue_number_of_items',
-    self::TOTAL_PROCESSING  => 'purge_queue_total_processing',
-    self::TOTAL_SUCCESSES   => 'purge_queue_total_successes',
-    self::TOTAL_FAILURES    => 'purge_queue_total_failures',
-    self::TOTAL_UNSUPPORTED => 'purge_queue_total_unsupported',
+    self::NUMBER_OF_ITEMS     => 'purge_queue_number_of_items',
+    self::TOTAL_PROCESSING    => 'purge_queue_total_processing',
+    self::TOTAL_SUCCEEDED     => 'purge_queue_total_succeeded',
+    self::TOTAL_FAILED        => 'purge_queue_total_failed',
+    self::TOTAL_NOT_SUPPORTED => 'purge_queue_total_not_supported',
   ];
 
   /**
@@ -127,9 +127,9 @@ class StatsTracker implements StatsTrackerInterface {
   /**
    * {@inheritdoc}
    */
-  public function totalFailures() {
+  public function totalFailed() {
     $this->initializeStatistics();
-    return $this->instances[self::TOTAL_FAILURES];
+    return $this->instances[self::TOTAL_FAILED];
   }
 
   /**
@@ -143,17 +143,17 @@ class StatsTracker implements StatsTrackerInterface {
   /**
    * {@inheritdoc}
    */
-  public function totalSuccesses() {
+  public function totalSucceeded() {
     $this->initializeStatistics();
-    return $this->instances[self::TOTAL_SUCCESSES];
+    return $this->instances[self::TOTAL_SUCCEEDED];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function totalUnsupported() {
+  public function totalNotSupported() {
     $this->initializeStatistics();
-    return $this->instances[self::TOTAL_UNSUPPORTED];
+    return $this->instances[self::TOTAL_NOT_SUPPORTED];
   }
 
   /**
@@ -172,10 +172,10 @@ class StatsTracker implements StatsTrackerInterface {
    * {@inheritdoc}
    */
   public function resetTotals() {
-    $this->totalFailures()->set(0);
+    $this->totalFailed()->set(0);
     $this->totalProcessing()->set(0);
-    $this->totalSuccesses()->set(0);
-    $this->totalUnsupported()->set(0);
+    $this->totalSucceeded()->set(0);
+    $this->totalNotSupported()->set(0);
   }
 
   /**
@@ -183,11 +183,11 @@ class StatsTracker implements StatsTrackerInterface {
    */
   public function updateTotals(array $invalidations) {
     $changes = [
-      'numberOfItems'    => 0,
-      'totalProcessing'  => 0,
-      'totalSuccesses'   => 0,
-      'totalFailures'    => 0,
-      'totalUnsupported' => 0,
+      'numberOfItems'     => 0,
+      'totalProcessing'   => 0,
+      'totalSucceeded'    => 0,
+      'totalFailed'       => 0,
+      'totalNotSupported' => 0,
     ];
     foreach ($invalidations as $invalidation) {
       if ($invalidation->getState() === InvStatesInterface::FRESH) {
@@ -197,14 +197,14 @@ class StatsTracker implements StatsTrackerInterface {
         $changes['totalProcessing']++;
       }
       elseif ($invalidation->getState() === InvStatesInterface::SUCCEEDED) {
-        $changes['totalSuccesses']++;
+        $changes['totalSucceeded']++;
         $changes['numberOfItems']--;
       }
       elseif ($invalidation->getState() === InvStatesInterface::FAILED) {
-        $changes['totalFailures']++;
+        $changes['totalFailed']++;
       }
       elseif ($invalidation->getState() === InvStatesInterface::NOT_SUPPORTED) {
-        $changes['totalUnsupported']++;
+        $changes['totalNotSupported']++;
       }
     }
     foreach ($changes as $stat => $value) {

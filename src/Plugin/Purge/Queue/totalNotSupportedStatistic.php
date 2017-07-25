@@ -7,9 +7,9 @@ use Drupal\purge\Counter\Counter;
 use Drupal\purge\Counter\ExplainedCounterInterface;
 
 /**
- * Total number of unsupported invalidations since the last statistics reset.
+ * Total number of not supported invalidations.
  */
-class totalUnsupportedStatistic extends Counter implements ExplainedCounterInterface {
+class totalNotSupportedStatistic extends Counter implements ExplainedCounterInterface {
   use StringTranslationTrait;
 
   /**
@@ -24,7 +24,7 @@ class totalUnsupportedStatistic extends Counter implements ExplainedCounterInter
    * {@inheritdoc}
    */
   public function getId() {
-    return 'total_unsupported';
+    return 'total_not_supported';
   }
 
   /**

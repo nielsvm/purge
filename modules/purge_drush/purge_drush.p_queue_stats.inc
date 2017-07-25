@@ -41,7 +41,7 @@ function purge_drush_p_queue_stats($format, StatsTrackerInterface $purgeQueueSta
   // Normal output generation.
   if ($format === 'table') {
     $table = [];
-    $align_right = function($input, $size = 18) {
+    $align_right = function($input, $size = 20) {
       return str_repeat(' ', $size - strlen($input)) . $input;
     };
     foreach ($purgeQueueStats as $statistic) {

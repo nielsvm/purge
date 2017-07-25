@@ -7,9 +7,9 @@ use Drupal\purge\Counter\Counter;
 use Drupal\purge\Counter\ExplainedCounterInterface;
 
 /**
- * Total number of failed queue items since the last statistics reset.
+ * Total number of failed queue items.
  */
-class totalFailuresStatistic extends Counter implements ExplainedCounterInterface {
+class totalFailedStatistic extends Counter implements ExplainedCounterInterface {
   use StringTranslationTrait;
 
   /**
@@ -24,7 +24,7 @@ class totalFailuresStatistic extends Counter implements ExplainedCounterInterfac
    * {@inheritdoc}
    */
   public function getId() {
-    return 'total_failures';
+    return 'total_failed';
   }
 
 

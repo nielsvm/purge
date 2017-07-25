@@ -27,25 +27,25 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
   const TOTAL_PROCESSING = 1;
 
   /**
-   * Array index for ::totalSuccesses().
+   * Array index for ::totalSucceeded().
    *
    * @var int
    */
-  const TOTAL_SUCCESSES = 2;
+  const TOTAL_SUCCEEDED = 2;
 
   /**
-   * Array index for ::totalFailures().
+   * Array index for ::totalFailed().
    *
    * @var int
    */
-  const TOTAL_FAILURES = 3;
+  const TOTAL_FAILED = 3;
 
   /**
-   * Array index for ::totalUnsupported().
+   * Array index for ::totalNotSupported().
    *
    * @var int
    */
-  const TOTAL_UNSUPPORTED = 4;
+  const TOTAL_NOT_SUPPORTED = 4;
 
   /**
    * The number of items currently in the queue.
@@ -57,9 +57,9 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
   /**
    * Total number of failed queue items.
    *
-   * @return \Drupal\purge\Plugin\Purge\Queue\totalFailuresStatistic
+   * @return \Drupal\purge\Plugin\Purge\Queue\totalFailedStatistic
    */
-  public function totalFailures();
+  public function totalFailed();
 
   /**
    * Total number of multi-step cache invalidations.
@@ -71,23 +71,23 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
   /**
    * Total number of succeeded queue items.
    *
-   * @return \Drupal\purge\Plugin\Purge\Queue\totalSuccessesStatistic
+   * @return \Drupal\purge\Plugin\Purge\Queue\totalSucceededStatistic
    */
-  public function totalSuccesses();
+  public function totalSucceeded();
 
   /**
-   * Total number of unsupported invalidations.
+   * Total number of not supported invalidations.
    *
-   * @return \Drupal\purge\Plugin\Purge\Queue\totalUnsupportedStatistic
+   * @return \Drupal\purge\Plugin\Purge\Queue\totalNotSupportedStatistic
    */
-  public function totalUnsupported();
+  public function totalNotSupported();
 
   /**
    * Reset the total counters, short-hand for:
-   *  - ::totalFailures()->set(0)
+   *  - ::totalFailed()->set(0)
    *  - ::totalProcessing()->set(0)
-   *  - ::totalSuccesses()->set(0)
-   *  - ::totalUnsupported()->set(0)
+   *  - ::totalSucceeded()->set(0)
+   *  - ::totalNotSupported()->set(0)
    */
   public function resetTotals();
 

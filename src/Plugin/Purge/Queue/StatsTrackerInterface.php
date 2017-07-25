@@ -13,6 +13,41 @@ use Drupal\Core\DestructableInterface;
 interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Countable {
 
   /**
+   * Array index for ::numberOfItems().
+   *
+   * @var int
+   */
+  const NUMBER_OF_ITEMS = 0;
+
+  /**
+   * Array index for ::processing().
+   *
+   * @var int
+   */
+  const PROCESSING = 1;
+
+  /**
+   * Array index for ::totalFailures().
+   *
+   * @var int
+   */
+  const TOTAL_FAILURES = 2;
+
+  /**
+   * Array index for ::totalSuccesses().
+   *
+   * @var int
+   */
+  const TOTAL_SUCCESSES = 3;
+
+  /**
+   * Array index for ::totalUnsupported().
+   *
+   * @var int
+   */
+  const TOTAL_UNSUPPORTED = 4;
+
+  /**
    * The number of items currently in the queue.
    *
    * This counter is not a true statistic, but instead a maintained copy of the
@@ -86,8 +121,6 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
    *  - ::totalFailures()->set(0)
    *  - ::totalSuccesses()->set(0)
    *  - ::totalUnsupported()->set(0)
-   *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
    */
   public function resetTotals();
 

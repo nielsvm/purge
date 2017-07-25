@@ -7,24 +7,24 @@ use Drupal\purge\Counter\PersistentCounter;
 use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
 
 /**
- * Provides the statistics tracker.
+ * Provides the queue statistics tracker.
  */
 class StatsTracker implements StatsTrackerInterface {
 
   /**
-   * Buffer of values that need to be written back to state storage. Items
-   * present in the buffer take priority over state data.
-   *
-   * @var float[]
-   */
-  protected $buffer = [];
-
-  /**
-   * Loaded counter instances.
+   * Loaded statistical counters.
    *
    * @var \Drupal\purge\Counter\PersistentCounterInterface[]
    */
-  protected $counters = [];
+  protected $instances = [];
+
+  /**
+   * Current iterator position.
+   *
+   * @var int
+   * @ingroup iterator
+   */
+  protected $position = 0;
 
   /**
    * The state key value store.
@@ -34,14 +34,23 @@ class StatsTracker implements StatsTrackerInterface {
   protected $state;
 
   /**
-   * Mapping of counter objects and state key names.
+   * Buffer of counter values that need to be written back to state storage.
+   *
+   * @var float[]
+   */
+  protected $state_buffer = [];
+
+  /**
+   * Non-associative but keyed layout of the statistical counters loaded.
    *
    * @var string[]
    */
-  protected $stateKeys = [
-    'claimed' => 'purge_queue_claimed',
-    'deleted' => 'purge_queue_deleted',
-    'total' => 'purge_queue_total',
+  protected $stats = [
+    self::NUMBER_OF_ITEMS   => 'purge_queue_number_of_items',
+    self::PROCESSING        => 'purge_queue_processing',
+    self::TOTAL_FAILURES    => 'purge_queue_failures',
+    self::TOTAL_SUCCESSES   => 'purge_queue_successes',
+    self::TOTAL_UNSUPPORTED => 'purge_queue_unsupported',
   ];
 
   /**
@@ -57,57 +66,86 @@ class StatsTracker implements StatsTrackerInterface {
   /**
    * Initialize the counter instances.
    */
-  protected function initializeCounters() {
-    if (!empty($this->counters)) {
+  protected function initializeStatistics() {
+    if (!empty($this->instances)) {
       return;
     }
 
-    // Prefetch counter values from either the local buffer or the state API.
-    $values = $this->state->getMultiple($this->stateKeys);
-    foreach ($this->stateKeys as $counter => $key) {
-      if (isset($this->buffer[$key])) {
-        $values[$key] = $this->buffer[$key];
-      }
-      if (!isset($values[$key])) {
-        $values[$key] = 0;
+    // Fetch all statistic values from the state API at once.
+    $values = $this->state->getMultiple($this->stats);
+
+    // Instantiate the persistent counters with the given values.
+    foreach ($this->stats as $i => $statekey) {
+
+      // Set a default as PersistentCounterInterface only understands integers.
+      if ((!isset($values[$statekey])) || is_null($values[$statekey])) {
+        $values[$statekey] = 0;
       }
 
-      // Instantiate (or overwrite) the counter objects and pass a closure as
-      // write callback. The closure writes changed values to $this->buffer.
-      $this->counters[$counter] = new PersistentCounter($values[$key]);
-      $this->counters[$counter]->disableSet();
-      $this->counters[$counter]->setWriteCallback($key, function ($id, $value) {
-        $this->buffer[$id] = $value;
-      });
+      // Instantiate the counter and pass a write callback that puts written
+      // values directly back into $this->state_buffer. At the end of this
+      // request, ::destruct() will pick them up and save the values.
+      $this->instances[$i] = new PersistentCounter($values[$statekey]);
+      $this->instances[$i]->setWriteCallback(
+        function ($value) use ($statekey) {
+          $this->state_buffer[$statekey] = $value;
+        }
+      );
     }
 
-    // As deleted and total can only increase, disable decrementing on them.
-    $this->counters['deleted']->disableDecrement();
-    $this->counters['total']->disableDecrement();
+    // Disable decrementing the totals, which only ever increase until reset.
+    $this->instances[self::TOTAL_FAILURES]->disableDecrement();
+    $this->instances[self::TOTAL_SUCCESSES]->disableDecrement();
+    $this->instances[self::TOTAL_UNSUPPORTED]->disableDecrement();
+  }
+
+  /**
+   * {@inheritdoc}
+   * @ingroup countable
+   */
+  public function count() {
+    $this->initializeStatistics();
+    return count($this->instances);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function claimed() {
-    $this->initializeCounters();
-    return $this->counters['claimed'];
+  public function numberOfItems() {
+    $this->initializeStatistics();
+    return $this->instances[self::NUMBER_OF_ITEMS];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function deleted() {
-    $this->initializeCounters();
-    return $this->counters['deleted'];
+  public function processing() {
+    $this->initializeStatistics();
+    return $this->instances[self::PROCESSING];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function total() {
-    $this->initializeCounters();
-    return $this->counters['total'];
+  public function totalFailures() {
+    $this->initializeStatistics();
+    return $this->instances[self::TOTAL_FAILURES];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function totalSuccesses() {
+    $this->initializeStatistics();
+    return $this->instances[self::TOTAL_SUCCESSES];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function totalUnsupported() {
+    $this->initializeStatistics();
+    return $this->instances[self::TOTAL_UNSUPPORTED];
   }
 
   /**
@@ -116,20 +154,61 @@ class StatsTracker implements StatsTrackerInterface {
   public function destruct() {
 
     // When the buffer contains changes, write them to the state API in one go.
-    if (count($this->buffer)) {
-      $this->state->setMultiple($this->buffer);
-      $this->buffer = [];
+    if (count($this->state_buffer)) {
+      print_r($this->state_buffer);
+      $this->state->setMultiple($this->state_buffer);
+      $this->state_buffer = [];
     }
   }
 
   /**
-   * Wipe all statistics data.
+   * {@inheritdoc}
    */
-  public function wipe() {
-    $this->buffer = [];
-    $this->state->deleteMultiple($this->stateKeys);
-    $this->counters = [];
-    $this->initializeCounters();
+  public function resetTotals() {
+    $this->totalFailures()->set(0);
+    $this->totalSuccesses()->set(0);
+    $this->totalUnsupported()->set(0);
   }
 
+  /**
+   * @ingroup iterator
+   */
+  public function current() {
+    $this->initializeStatistics();
+    if ($this->valid()) {
+      return $this->instances[$this->position];
+    }
+    return FALSE;
+  }
+
+  /**
+   * @ingroup iterator
+   */
+  public function key() {
+    $this->initializeStatistics();
+    return $this->position;
+  }
+
+  /**
+   * @ingroup iterator
+   */
+  public function next() {
+    $this->initializeStatistics();
+    ++$this->position;
+  }
+
+  /**
+   * @ingroup iterator
+   */
+  public function rewind() {
+    $this->position = 0;
+  }
+
+  /**
+   * @ingroup iterator
+   */
+  public function valid() {
+    $this->initializeStatistics();
+    return isset($this->instances[$this->position]);
+  }
 }

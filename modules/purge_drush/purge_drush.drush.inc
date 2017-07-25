@@ -438,9 +438,16 @@ function purge_drush_drush_command() {
     'callback services' => ['purge.queue.stats',],
     'arguments' => [],
     'required-arguments' => FALSE,
-    'options' => [],
+    'options' => [
+      'reset-totals' => [
+        'description' => "Wipe the TOTAL statistical counters.",
+        'value' => FALSE,
+        '_default' => FALSE,
+      ],
+    ],
     'examples' => [
       'drush p-queue-stats' => 'Retrieve the queue statistics.',
+      'drush p-queue-stats --reset-totals' => 'Wipe the TOTAL statistical counters.',
       'drush p-queue-stats --format=json' => 'Fetch the data as JSON.',
       'drush p-queue-stats --format=yaml' => 'Fetch the data as YAML.',
     ],
@@ -449,14 +456,12 @@ function purge_drush_drush_command() {
       'default' => 'table',
       'pipe-format' => 'yaml',
       'field-labels' => [
-        'title' => '',
-        'description' => 'Description',
-        'value' => 'Value',
+        'left' => '',
+        'right' => '',
       ],
       'column-widths' => [
-        'title' => 15,
-        'value' => 10,
-        'description' => 40,
+        'left' => 20,
+        'right' => 60,
       ],
     ],
     'aliases' => ['pqs'],

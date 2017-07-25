@@ -98,7 +98,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
    *   The purgers service.
    */
-  public function __construct(PluginManagerInterface $plugin_manager, LoggerServiceInterface $purge_logger, ConfigFactoryInterface $config_factory, TxBufferInterface $purge_queue_txbuffer, StatsTrackerInterface $purge_queue_stats,InvalidationsServiceInterface $purge_invalidation_factory, PurgersServiceInterface $purge_purgers) {
+  public function __construct(PluginManagerInterface $plugin_manager, LoggerServiceInterface $purge_logger, ConfigFactoryInterface $config_factory, TxBufferInterface $purge_queue_txbuffer, StatsTrackerInterface $purge_queue_stats, InvalidationsServiceInterface $purge_invalidation_factory, PurgersServiceInterface $purge_purgers) {
     $this->pluginManager = $plugin_manager;
     $this->purgeLogger = $purge_logger;
     $this->configFactory = $config_factory;
@@ -118,7 +118,10 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
         $this->buffer->set($invalidation, TxBuffer::ADDING);
       }
     }
-    $this->purgeQueueStats->total()->increment($count = count($invalidations));
+    $this->purgeQueueStats
+      ->numberOfItems()
+      ->increment($count = count($invalidations)
+    );
     $this->logger->debug("@queuer: added @no items.", [
       '@queuer' => $queuer->getPluginId(), '@no' => $count]);
   }
@@ -175,7 +178,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
       $this->buffer->setProperty($inv, 'created', $item->created);
       $items[$i] = $inv;
     }
-    $this->purgeQueueStats->claimed()->increment($count = count($items));
+    $this->purgeQueueStats->processing()->increment($count = count($items));
     $this->logger->debug("claimed @no items.", ['@no' => $count]);
     return $items;
   }
@@ -301,8 +304,8 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   public function delete(array $invalidations) {
     $this->buffer->set($invalidations, TxBuffer::DELETING);
     $count = count($invalidations);
-    $this->purgeQueueStats->claimed()->decrement($count);
-    $this->purgeQueueStats->deleted()->increment($count);
+    $this->purgeQueueStats->processing()->decrement($count);
+    $this->purgeQueueStats->totalSuccesses()->increment($count);
     $this->logger->debug("deleting @no items.", ['@no' => $count]);
   }
 
@@ -412,20 +415,20 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
       // Mark succeeded objects as deleting in the buffer.
       if ($invalidation->getState() === InvalidationInterface::SUCCEEDED) {
         $this->buffer->set($invalidation, TxBuffer::DELETING);
-        $this->purgeQueueStats->deleted()->increment();
-        $this->purgeQueueStats->claimed()->decrement();
+        $this->purgeQueueStats->totalSuccesses()->increment();
+        $this->purgeQueueStats->processing()->decrement();
         $counters['succeeded']++;
       }
       // FRESH, PROCESSING, FAILED and NOT_SUPPORTED all go back to the queue.
       else {
         if (!$this->buffer->has($invalidation)) {
           $this->buffer->set($invalidation, TxBuffer::ADDING);
-          $this->purgeQueueStats->total()->increment();
+          $this->purgeQueueStats->numberOfItems()->increment();
           $counters['new']++;
         }
         else {
           $this->buffer->set($invalidation, TxBuffer::RELEASING);
-          $this->purgeQueueStats->claimed()->decrement();
+          $this->purgeQueueStats->processing()->decrement();
           $counters['failed']++;
         }
       }
@@ -451,7 +454,10 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    */
   public function release(array $invalidations) {
     $this->buffer->set($invalidations, TxBuffer::RELEASING);
-    $this->purgeQueueStats->claimed()->decrement($no = count($invalidations));
+    $this->purgeQueueStats
+      ->processing()
+      ->decrement($no = count($invalidations)
+    );
     $this->logger->debug("deleting @no items.", ['@no' => $no]);
   }
 

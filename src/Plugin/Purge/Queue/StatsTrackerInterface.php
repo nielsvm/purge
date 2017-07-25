@@ -76,4 +76,13 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
    */
   public function resetTotals();
 
+  /**
+   * Automatically update the total counters for the given invalidations.
+   *
+   * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface[] $invalidations
+   *   A non-associative array with invalidation objects regardless of the state
+   *   they're in. Their state will determine which counter will be updated.
+   */
+  public function updateTotals(array $invalidations);
+
 }

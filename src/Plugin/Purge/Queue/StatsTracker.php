@@ -4,6 +4,7 @@ namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Drupal\Core\State\StateInterface;
 use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface;
 
 /**
  * Provides the queue statistics tracker.
@@ -162,8 +163,51 @@ class StatsTracker implements StatsTrackerInterface {
    */
   public function resetTotals() {
     $this->totalFailures()->set(0);
+    $this->totalProcessing()->set(0);
     $this->totalSuccesses()->set(0);
     $this->totalUnsupported()->set(0);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function updateTotals(array $invalidations) {
+    $changes = [
+      'numberOfItems'    => 0,
+      'totalProcessing'  => 0,
+      'totalSuccesses'   => 0,
+      'totalFailures'    => 0,
+      'totalUnsupported' => 0,
+    ];
+    foreach ($invalidations as $invalidation) {
+      if ($invalidation->getState() === InvStatesInterface::FRESH) {
+        $changes['numberOfItems']++;
+      }
+      elseif ($invalidation->getState() === InvStatesInterface::PROCESSING) {
+        $changes['totalProcessing']++;
+      }
+      elseif ($invalidation->getState() === InvStatesInterface::SUCCEEDED) {
+        $changes['totalSuccesses']++;
+        $changes['numberOfItems']--;
+      }
+      elseif ($invalidation->getState() === InvStatesInterface::FAILED) {
+        $changes['totalFailures']++;
+      }
+      elseif ($invalidation->getState() === InvStatesInterface::NOT_SUPPORTED) {
+        $changes['totalUnsupported']++;
+      }
+    }
+    foreach ($changes as $stat => $value) {
+      if ($value === 0) {
+        continue;
+      }
+      elseif ($value > 0) {
+        $this->$stat()->increment($value);
+      }
+      elseif ($value < 0) {
+        $this->$stat()->decrement(abs($value));
+      }
+    }
   }
 
   /**

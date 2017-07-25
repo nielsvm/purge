@@ -3,7 +3,7 @@
 namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Drupal\Core\State\StateInterface;
-use Drupal\purge\Counter\PersistentCounter;
+use Drupal\purge\Counter\Counter;
 use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
 
 /**
@@ -14,7 +14,7 @@ class StatsTracker implements StatsTrackerInterface {
   /**
    * Loaded statistical counters.
    *
-   * @var \Drupal\purge\Counter\PersistentCounterInterface[]
+   * @var \Drupal\purge\Counter\CounterInterface[]
    */
   protected $instances = [];
 
@@ -77,7 +77,7 @@ class StatsTracker implements StatsTrackerInterface {
     // Instantiate the persistent counters with the given values.
     foreach ($this->stats as $i => $statekey) {
 
-      // Set a default as PersistentCounterInterface only understands integers.
+      // Set a default as CounterInterface only understands integers.
       if ((!isset($values[$statekey])) || is_null($values[$statekey])) {
         $values[$statekey] = 0;
       }
@@ -85,7 +85,7 @@ class StatsTracker implements StatsTrackerInterface {
       // Instantiate the counter and pass a write callback that puts written
       // values directly back into $this->state_buffer. At the end of this
       // request, ::destruct() will pick them up and save the values.
-      $this->instances[$i] = new PersistentCounter($values[$statekey]);
+      $this->instances[$i] = new Counter($values[$statekey]);
       $this->instances[$i]->setWriteCallback(
         function ($value) use ($statekey) {
           $this->state_buffer[$statekey] = $value;

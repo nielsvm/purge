@@ -2,12 +2,12 @@
 
 namespace Drupal\purge\Plugin\Purge\Purger;
 
-use Drupal\purge\Counter\PersistentCounterInterface;
+use Drupal\purge\Counter\CounterInterface;
 
 /**
  * Describes a execution time measurer for invalidation processing.
  */
-interface RuntimeMeasurementInterface extends PersistentCounterInterface {
+interface RuntimeMeasurementInterface extends CounterInterface {
 
   /**
    * Return a value safe for time hints, between 0.1 and 10.00.

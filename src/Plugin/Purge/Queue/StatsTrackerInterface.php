@@ -57,7 +57,7 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
    *
    * @see \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface::numberOfItems()
    *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
+   * @return \Drupal\purge\Counter\CounterInterface
    */
   public function numberOfItems();
 
@@ -73,7 +73,7 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
    *
    * @see \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface::claim()
    *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
+   * @return \Drupal\purge\Counter\CounterInterface
    */
   public function processing();
 
@@ -87,7 +87,7 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
    * as indicator whether a few incidents took place versus sky-rocketing
    * failure rates because of some structural problem.
    *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
+   * @return \Drupal\purge\Counter\CounterInterface
    */
   public function totalFailures();
 
@@ -98,7 +98,7 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
    * queue to make space for new items. This statistic represents all of the
    * successful cache invalidations that happened over time.
    *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
+   * @return \Drupal\purge\Counter\CounterInterface
    */
   public function totalSuccesses();
 
@@ -112,7 +112,7 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
    * it is totally possible that this same queue item later succeeds because
    * you updated the module providing the purger which now supports that type.
    *
-   * @return \Drupal\purge\Counter\PersistentCounterInterface
+   * @return \Drupal\purge\Counter\CounterInterface
    */
   public function totalUnsupported();
 

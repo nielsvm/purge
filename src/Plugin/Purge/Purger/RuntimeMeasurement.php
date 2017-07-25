@@ -4,12 +4,12 @@ namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Purger\RuntimeMeasurementInterface;
-use Drupal\purge\Counter\PersistentCounter;
+use Drupal\purge\Counter\Counter;
 
 /**
  * Provides a execution time measurer for invalidation processing.
  */
-class RuntimeMeasurement extends PersistentCounter implements RuntimeMeasurementInterface {
+class RuntimeMeasurement extends Counter implements RuntimeMeasurementInterface {
 
   /**
    * The initial time measurement.

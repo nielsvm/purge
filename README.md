@@ -31,7 +31,7 @@ The ``purge_drush`` module adds the following commands for Drush administration:
 | **``p-purger-rm``**         | ``pprm`` | Remove a purger instance.                                    |
 | **``p-queue-add``**         | ``pqa``  | Add one or more items to the queue for later processing.     |
 | **``p-queue-browse``**      | ``pqb``  | Inspect what is in the queue by paging through it.           |
-| **``p-queue-empty``**       | ``pqe``  | Clear the queue and reset all statistics.                    |
+| **``p-queue-empty``**       | ``pqe``  | Empty the entire queue.                                      |
 | **``p-queue-stats``**       | ``pqs``  | Retrieve the queue statistics.                               |
 | **``p-queue-volume``**      | ``pqv``  | Count how many items currently sit in the queue.             |
 | **``p-queue-work``**        | ``pqw``  | Claim a chunk of items from the queue and process them.      |

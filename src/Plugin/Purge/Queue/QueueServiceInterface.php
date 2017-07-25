@@ -66,7 +66,7 @@ interface QueueServiceInterface extends ServiceInterface, ModifiableServiceInter
   public function delete(array $invalidations);
 
   /**
-   * Empty the entire queue and reset all statistics.
+   * Empty the entire queue.
    *
    * @return void
    */

@@ -327,7 +327,8 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
     $this->initializeQueue();
     $this->buffer->deleteEverything();
     $this->queue->deleteQueue();
-    $this->purgeQueueStats->wipe();
+    $this->purgeQueueStats->numberOfItems()->set(0);
+    $this->purgeQueueStats->processing()->set(0);
     $this->logger->debug("emptied the queue.");
   }
 

@@ -9,7 +9,7 @@ use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
 
 /**
- * Clear the queue and reset all statistics.
+ * Empty the entire queue.
  *
  * @param string $format
  *   The default or selected output format of the command.

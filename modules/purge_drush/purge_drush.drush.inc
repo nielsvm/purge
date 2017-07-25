@@ -415,14 +415,14 @@ function purge_drush_drush_command() {
     'core' => ['8+'],
   ];
   $items['p-queue-empty'] = [
-    'description' => 'Clear the queue and reset all statistics.',
+    'description' => 'Empty the entire queue.',
     'callback' => 'purge_drush_callback_router',
     'callback services' => ['purge.queue.stats', 'purge.queue',],
     'arguments' => [],
     'required-arguments' => FALSE,
     'options' => [],
     'examples' => [
-      'drush p-queue-empty' => 'Clear the queue and reset all statistics.',
+      'drush p-queue-empty' => 'Empty the entire queue.',
     ],
     '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [

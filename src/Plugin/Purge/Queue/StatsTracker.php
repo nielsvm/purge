@@ -3,7 +3,6 @@
 namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Drupal\Core\State\StateInterface;
-use Drupal\purge\Counter\Counter;
 use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
 
 /**
@@ -39,6 +38,19 @@ class StatsTracker implements StatsTrackerInterface {
    * @var float[]
    */
   protected $state_buffer = [];
+
+  /**
+   * Mapping of classes used for each counter.
+   *
+   * @var string[]
+   */
+  protected $statClasses = [
+    self::NUMBER_OF_ITEMS   => '\Drupal\purge\Plugin\Purge\Queue\numberOfItemsStatistic',
+    self::PROCESSING        => '\Drupal\purge\Plugin\Purge\Queue\processingStatistic',
+    self::TOTAL_FAILURES    => '\Drupal\purge\Plugin\Purge\Queue\totalFailuresStatistic',
+    self::TOTAL_SUCCESSES   => '\Drupal\purge\Plugin\Purge\Queue\totalSuccessesStatistic',
+    self::TOTAL_UNSUPPORTED => '\Drupal\purge\Plugin\Purge\Queue\totalUnsupportedStatistic',
+  ];
 
   /**
    * Non-associative but keyed layout of the statistical counters loaded.
@@ -85,18 +97,13 @@ class StatsTracker implements StatsTrackerInterface {
       // Instantiate the counter and pass a write callback that puts written
       // values directly back into $this->state_buffer. At the end of this
       // request, ::destruct() will pick them up and save the values.
-      $this->instances[$i] = new Counter($values[$statekey]);
+      $this->instances[$i] = new $this->statClasses[$i]($values[$statekey]);
       $this->instances[$i]->setWriteCallback(
         function ($value) use ($statekey) {
           $this->state_buffer[$statekey] = $value;
         }
       );
     }
-
-    // Disable decrementing the totals, which only ever increase until reset.
-    $this->instances[self::TOTAL_FAILURES]->disableDecrement();
-    $this->instances[self::TOTAL_SUCCESSES]->disableDecrement();
-    $this->instances[self::TOTAL_UNSUPPORTED]->disableDecrement();
   }
 
   /**
@@ -155,7 +162,6 @@ class StatsTracker implements StatsTrackerInterface {
 
     // When the buffer contains changes, write them to the state API in one go.
     if (count($this->state_buffer)) {
-      print_r($this->state_buffer);
       $this->state->setMultiple($this->state_buffer);
       $this->state_buffer = [];
     }

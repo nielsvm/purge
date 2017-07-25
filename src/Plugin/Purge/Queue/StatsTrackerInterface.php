@@ -20,32 +20,25 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
   const NUMBER_OF_ITEMS = 0;
 
   /**
-   * Array index for ::processing().
-   *
-   * @var int
-   */
-  const PROCESSING = 1;
-
-  /**
    * Array index for ::totalFailures().
    *
    * @var int
    */
-  const TOTAL_FAILURES = 2;
+  const TOTAL_FAILURES = 1;
 
   /**
    * Array index for ::totalSuccesses().
    *
    * @var int
    */
-  const TOTAL_SUCCESSES = 3;
+  const TOTAL_SUCCESSES = 2;
 
   /**
    * Array index for ::totalUnsupported().
    *
    * @var int
    */
-  const TOTAL_UNSUPPORTED = 4;
+  const TOTAL_UNSUPPORTED = 3;
 
   /**
    * The number of items currently in the queue.
@@ -53,13 +46,6 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
    * @return \Drupal\purge\Plugin\Purge\Queue\numberOfItemsStatistic
    */
   public function numberOfItems();
-
-  /**
-   * The number of queue items actively being processed at the moment.
-   *
-   * @return \Drupal\purge\Plugin\Purge\Queue\processingStatistic
-   */
-  public function processing();
 
   /**
    * Total number of failed queue items since the last statistics reset.

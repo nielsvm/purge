@@ -20,25 +20,11 @@ class StatsTracker implements StatsTrackerInterface {
   protected $buffer = [];
 
   /**
-   * The counter tracking how many invalidations are claimed right now.
+   * Loaded counter instances.
    *
-   * @var \Drupal\purge\Counter\PersistentCounterInterface
+   * @var \Drupal\purge\Counter\PersistentCounterInterface[]
    */
-  protected $claimed;
-
-  /**
-   * The counter tracking how many invalidations have been deleted.
-   *
-   * @var \Drupal\purge\Counter\PersistentCounterInterface
-   */
-  protected $deleted;
-
-  /**
-   * The counter tracking the total amount of invalidations in the queue.
-   *
-   * @var \Drupal\purge\Counter\PersistentCounterInterface
-   */
-  protected $total;
+  protected $counters = [];
 
   /**
    * The state key value store.
@@ -66,13 +52,15 @@ class StatsTracker implements StatsTrackerInterface {
    */
   public function __construct(StateInterface $state) {
     $this->state = $state;
-    $this->initializeCounters();
   }
 
   /**
-   * Intialize or reinitialize the counter objects.
+   * Initialize the counter instances.
    */
   protected function initializeCounters() {
+    if (!empty($this->counters)) {
+      return;
+    }
 
     // Prefetch counter values from either the local buffer or the state API.
     $values = $this->state->getMultiple($this->stateKeys);
@@ -86,37 +74,40 @@ class StatsTracker implements StatsTrackerInterface {
 
       // Instantiate (or overwrite) the counter objects and pass a closure as
       // write callback. The closure writes changed values to $this->buffer.
-      $this->$counter = new PersistentCounter($values[$key]);
-      $this->$counter->disableSet();
-      $this->$counter->setWriteCallback($key, function ($id, $value) {
+      $this->counters[$counter] = new PersistentCounter($values[$key]);
+      $this->counters[$counter]->disableSet();
+      $this->counters[$counter]->setWriteCallback($key, function ($id, $value) {
         $this->buffer[$id] = $value;
       });
     }
 
     // As deleted and total can only increase, disable decrementing on them.
-    $this->deleted->disableDecrement();
-    $this->total->disableDecrement();
+    $this->counters['deleted']->disableDecrement();
+    $this->counters['total']->disableDecrement();
   }
 
   /**
    * {@inheritdoc}
    */
   public function claimed() {
-    return $this->claimed;
+    $this->initializeCounters();
+    return $this->counters['claimed'];
   }
 
   /**
    * {@inheritdoc}
    */
   public function deleted() {
-    return $this->deleted;
+    $this->initializeCounters();
+    return $this->counters['deleted'];
   }
 
   /**
    * {@inheritdoc}
    */
   public function total() {
-    return $this->total;
+    $this->initializeCounters();
+    return $this->counters['total'];
   }
 
   /**
@@ -137,6 +128,7 @@ class StatsTracker implements StatsTrackerInterface {
   public function wipe() {
     $this->buffer = [];
     $this->state->deleteMultiple($this->stateKeys);
+    $this->counters = [];
     $this->initializeCounters();
   }
 

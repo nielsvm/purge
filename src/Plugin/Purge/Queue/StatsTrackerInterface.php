@@ -20,11 +20,11 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
   const NUMBER_OF_ITEMS = 0;
 
   /**
-   * Array index for ::totalFailures().
+   * Array index for ::totalProcessing().
    *
    * @var int
    */
-  const TOTAL_FAILURES = 1;
+  const TOTAL_PROCESSING = 1;
 
   /**
    * Array index for ::totalSuccesses().
@@ -34,11 +34,18 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
   const TOTAL_SUCCESSES = 2;
 
   /**
+   * Array index for ::totalFailures().
+   *
+   * @var int
+   */
+  const TOTAL_FAILURES = 3;
+
+  /**
    * Array index for ::totalUnsupported().
    *
    * @var int
    */
-  const TOTAL_UNSUPPORTED = 3;
+  const TOTAL_UNSUPPORTED = 4;
 
   /**
    * The number of items currently in the queue.
@@ -48,21 +55,28 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
   public function numberOfItems();
 
   /**
-   * Total number of failed queue items since the last statistics reset.
+   * Total number of failed queue items.
    *
    * @return \Drupal\purge\Plugin\Purge\Queue\totalFailuresStatistic
    */
   public function totalFailures();
 
   /**
-   * Total number of succeeded queue items since the last statistics reset.
+   * Total number of multi-step cache invalidations.
+   *
+   * @return \Drupal\purge\Plugin\Purge\Queue\totalProcessingStatistic
+   */
+  public function totalProcessing();
+
+  /**
+   * Total number of succeeded queue items.
    *
    * @return \Drupal\purge\Plugin\Purge\Queue\totalSuccessesStatistic
    */
   public function totalSuccesses();
 
   /**
-   * Total number of unsupported invalidations since the last statistics reset.
+   * Total number of unsupported invalidations.
    *
    * @return \Drupal\purge\Plugin\Purge\Queue\totalUnsupportedStatistic
    */
@@ -71,6 +85,7 @@ interface StatsTrackerInterface extends DestructableInterface, \Iterator, \Count
   /**
    * Reset the total counters, short-hand for:
    *  - ::totalFailures()->set(0)
+   *  - ::totalProcessing()->set(0)
    *  - ::totalSuccesses()->set(0)
    *  - ::totalUnsupported()->set(0)
    */

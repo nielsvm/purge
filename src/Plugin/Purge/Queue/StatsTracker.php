@@ -47,8 +47,9 @@ class StatsTracker implements StatsTrackerInterface {
    */
   protected $statClasses = [
     self::NUMBER_OF_ITEMS   => '\Drupal\purge\Plugin\Purge\Queue\numberOfItemsStatistic',
-    self::TOTAL_FAILURES    => '\Drupal\purge\Plugin\Purge\Queue\totalFailuresStatistic',
+    self::TOTAL_PROCESSING  => '\Drupal\purge\Plugin\Purge\Queue\totalProcessingStatistic',
     self::TOTAL_SUCCESSES   => '\Drupal\purge\Plugin\Purge\Queue\totalSuccessesStatistic',
+    self::TOTAL_FAILURES    => '\Drupal\purge\Plugin\Purge\Queue\totalFailuresStatistic',
     self::TOTAL_UNSUPPORTED => '\Drupal\purge\Plugin\Purge\Queue\totalUnsupportedStatistic',
   ];
 
@@ -59,9 +60,10 @@ class StatsTracker implements StatsTrackerInterface {
    */
   protected $stats = [
     self::NUMBER_OF_ITEMS   => 'purge_queue_number_of_items',
-    self::TOTAL_FAILURES    => 'purge_queue_failures',
-    self::TOTAL_SUCCESSES   => 'purge_queue_successes',
-    self::TOTAL_UNSUPPORTED => 'purge_queue_unsupported',
+    self::TOTAL_PROCESSING  => 'purge_queue_total_processing',
+    self::TOTAL_SUCCESSES   => 'purge_queue_total_successes',
+    self::TOTAL_FAILURES    => 'purge_queue_total_failures',
+    self::TOTAL_UNSUPPORTED => 'purge_queue_total_unsupported',
   ];
 
   /**
@@ -128,6 +130,14 @@ class StatsTracker implements StatsTrackerInterface {
   public function totalFailures() {
     $this->initializeStatistics();
     return $this->instances[self::TOTAL_FAILURES];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function totalProcessing() {
+    $this->initializeStatistics();
+    return $this->instances[self::TOTAL_PROCESSING];
   }
 
   /**

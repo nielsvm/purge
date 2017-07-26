@@ -119,7 +119,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
       }
     }
     $this->logger->debug("@queuer: added @no items.", [
-      '@queuer' => $queuer->getPluginId(), '@no' => $count]);
+      '@queuer' => $queuer->getPluginId(), '@no' => count($invalidations)]);
   }
 
   /**

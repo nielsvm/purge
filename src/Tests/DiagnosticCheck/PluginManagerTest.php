@@ -55,6 +55,7 @@ class PluginManagerTest extends KernelServiceTestBase {
     'alwaysok',
     'purgerwarning',
     'queuewarning',
+    'queue_size',
   ];
 
   /**

@@ -46,15 +46,17 @@ class DashboardPurgersTest extends DashboardTestBase {
     $this->drupalGet($this->route);
     $this->assertRaw('Purger A</a>');
     $this->assertRaw('Configurable purger</a>');
-    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id0"');
-    $this->assertNoRaw('href="/admin/config/development/performance/purge/purger/id0/config/dialog"');
-    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id0/delete"');
-    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id1"');
-    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id1/config/dialog"');
-    $this->assertRaw('href="/admin/config/development/performance/purge/purger/id1/delete"');
+    $purger_0_route_params = ['id' => 'id0'];
+    $this->assertLinkByHref(Url::fromRoute('purge_ui.purger_detail_form', $purger_0_route_params)->toString());
+    $this->assertNoLinkByHref(Url::fromRoute('purge_ui.purger_config_dialog_form', $purger_0_route_params)->toString());
+    $this->assertLinkByHref(Url::fromRoute('purge_ui.purger_delete_form', $purger_0_route_params)->toString());
+    $purger_1_route_params = ['id' => 'id1'];
+    $this->assertLinkByHref(Url::fromRoute('purge_ui.purger_detail_form', $purger_1_route_params)->toString());
+    $this->assertLinkByHref(Url::fromRoute('purge_ui.purger_config_dialog_form', $purger_1_route_params)->toString());
+    $this->assertLinkByHref(Url::fromRoute('purge_ui.purger_delete_form', $purger_1_route_params)->toString());
     // Assert that the purger-type supportability matrix shows the checkmarks.
-    $this->assertRaw('core/misc/icons/73b355/check.svg');
-    $this->assertRaw('width="18" height="18" alt="Supported" title="Supported" />');
+    $expected_checkmark_image_url = file_url_transform_relative(file_create_url('core/misc/icons/73b355/check.svg'));
+    $this->assertFalse(empty($this->cssSelect('img[width=18][height=18][alt=Supported][title=Supported][src="' . $expected_checkmark_image_url . '"]')));
     $this->assertNoRaw('<img supports="drupal-domain"');
     $this->assertNoRaw('<img supports="drupal-path"');
     $this->assertRaw('<img supports="drupal-tag"');

@@ -22,7 +22,7 @@ class DashboardLoggingTest extends DashboardTestBase {
     $this->drupalGet($this->route);
     $this->assertRaw('Logging');
     $this->assertRaw('Configure logging behavior');
-    $this->assertRaw('href="/admin/config/development/performance/purge/logging"');
+    $this->assertLinkByHref(Url::fromRoute('purge_ui.logging_config_form')->toString());
   }
 
 }

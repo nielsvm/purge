@@ -18,7 +18,7 @@ use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
  * @return array
  *   Drush render/format array.
  */
-function purge_drush_p_procsr_lsa($format, ProcessorsServiceInterface $purgeProcessors) {
+function purge_drush_p_processor_lsa($format, ProcessorsServiceInterface $purgeProcessors) {
   $definitions = $purgeProcessors->getPlugins();
   $available = $purgeProcessors->getPluginsAvailable();
   $output = [];

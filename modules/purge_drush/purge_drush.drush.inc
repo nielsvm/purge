@@ -121,7 +121,7 @@ function purge_drush_drush_command() {
     'aliases' => ['pinv'],
     'core' => ['8+'],
   ];
-  $items['p-procsr-add'] = [
+  $items['p-processor-add'] = [
     'description' => 'Add a new processor.',
     'callback' => 'purge_drush_callback_router',
     'callback services' => ['purge.processors'],
@@ -131,7 +131,7 @@ function purge_drush_drush_command() {
     'required-arguments' => 1,
     'options' => [],
     'examples' => [
-      'drush p-procsr-add ID' => 'Add a processor of type ID.',
+      'drush p-processor-add ID' => 'Add a processor of type ID.',
     ],
     '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [
@@ -141,7 +141,7 @@ function purge_drush_drush_command() {
     'aliases' => ['pradd'],
     'core' => ['8+'],
   ];
-  $items['p-procsr-ls'] = [
+  $items['p-processor-ls'] = [
     'description' => 'List all enabled processors.',
     'callback' => 'purge_drush_callback_router',
     'callback services' => ['purge.processors',],
@@ -149,9 +149,9 @@ function purge_drush_drush_command() {
     'required-arguments' => FALSE,
     'options' => [],
     'examples' => [
-      'drush p-procsr-ls' => 'List all processors in a table.',
-      'drush p-procsr-ls --table=json' => 'Export all processors in JSON.',
-      'drush p-procsr-ls --table=yaml' => 'Export all processors in YAML.',
+      'drush p-processor-ls' => 'List all processors in a table.',
+      'drush p-processor-ls --table=json' => 'Export all processors in JSON.',
+      'drush p-processor-ls --table=yaml' => 'Export all processors in YAML.',
     ],
     '_outputformats' => ['table', 'yaml', 'json', 'list'],
     'outputformat' => [
@@ -166,7 +166,7 @@ function purge_drush_drush_command() {
     'aliases' => ['prls'],
     'core' => ['8+'],
   ];
-  $items['p-procsr-lsa'] = [
+  $items['p-processor-lsa'] = [
     'description' => 'List available processor plugin IDs that can be added.',
     'callback' => 'purge_drush_callback_router',
     'callback services' => ['purge.processors'],
@@ -174,9 +174,9 @@ function purge_drush_drush_command() {
     'required-arguments' => 0,
     'options' => [],
     'examples' => [
-      'drush p-procsr-lsa' => 'List available plugin IDs for which processors can be created.',
-      'drush p-procsr-lsa --format=json' => 'Export as JSON.',
-      'drush p-procsr-lsa --format=yaml' => 'Export as YAML.',
+      'drush p-processor-lsa' => 'List available plugin IDs for which processors can be created.',
+      'drush p-processor-lsa --format=json' => 'Export as JSON.',
+      'drush p-processor-lsa --format=yaml' => 'Export as YAML.',
     ],
     '_outputformats' => ['table', 'yaml', 'json', 'list'],
     'outputformat' => [
@@ -191,7 +191,7 @@ function purge_drush_drush_command() {
     'aliases' => ['prlsa'],
     'core' => ['8+'],
   ];
-  $items['p-procsr-rm'] = [
+  $items['p-processor-rm'] = [
     'description' => 'Remove a processor.',
     'callback' => 'purge_drush_callback_router',
     'callback services' => ['purge.processors'],
@@ -201,7 +201,7 @@ function purge_drush_drush_command() {
     'required-arguments' => 1,
     'options' => [],
     'examples' => [
-      'drush p-procsr-rm ID' => 'Remove the given processor.',
+      'drush p-processor-rm ID' => 'Remove the given processor.',
     ],
     '_outputformats' => ['string', 'yaml', 'json'],
     'outputformat' => [

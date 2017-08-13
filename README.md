@@ -19,10 +19,10 @@ The ``purge_drush`` module adds the following commands for Drush administration:
 | **``p-debug-en``**          | ``pden`` | Enable debugging for all of Purge's log channels.            |
 | **``p-diagnostics``**       | ``pdia`` | Generate a diagnostic self-service report.                   |
 | **``p-invalidate``**        | ``pinv`` | Directly invalidate an item without going through the queue. |
-| **``p-procsr-add``**        | ``pradd``| Add a new processor.                                         |
-| **``p-procsr-ls``**         | ``prls`` | List all enabled processors.                                 |
-| **``p-procsr-lsa``**        | ``prlsa``| List available processor plugin IDs that can be added.       |
-| **``p-procsr-rm``**         | ``prrm`` | Remove a processor.                                          |
+| **``p-processor-add``**     | ``pradd``| Add a new processor.                                         |
+| **``p-processor-ls``**      | ``prls`` | List all enabled processors.                                 |
+| **``p-processor-lsa``**     | ``prlsa``| List available processor plugin IDs that can be added.       |
+| **``p-processor-rm``**      | ``prrm`` | Remove a processor.                                          |
 | **``p-purger-add``**        | ``ppadd``| Create a new purger instance.                                |
 | **``p-purger-ls``**         | ``ppls`` | List all configured purgers in order of execution.           |
 | **``p-purger-lsa``**        | ``pplsa``| List available plugin IDs for which purgers can be added.    |

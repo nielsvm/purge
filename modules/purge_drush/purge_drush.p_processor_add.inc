@@ -20,7 +20,7 @@ use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
  * @return array
  *   Drush render/format array.
  */
-function purge_drush_p_procsr_add($format, ProcessorsServiceInterface $purgeProcessors, $plugin_id) {
+function purge_drush_p_processor_add($format, ProcessorsServiceInterface $purgeProcessors, $plugin_id) {
   $enabled = $purgeProcessors->getPluginsEnabled();
   $available = $purgeProcessors->getPluginsAvailable();
 

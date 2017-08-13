@@ -27,7 +27,15 @@
         {{ diagnostic.title }}
       </td>
       <td>
-        <div class="purge-ui-diagnostic-report__entry__value">{{ diagnostic.value }}</div>
+        <div class="purge-ui-diagnostic-report__entry__value">
+          {% if ', ' in diagnostic.value %}
+          {% for value in diagnostic.value|split(', ') %}
+            {{value}}<br />
+          {% endfor %}
+          {% else %}
+            {{ diagnostic.value }}
+          {% endif %}
+        </div>
         {% if diagnostic.description %}
           <div class="purge-ui-diagnostic-report__entry__description">{{ diagnostic.description }}</div>
         {% endif %}

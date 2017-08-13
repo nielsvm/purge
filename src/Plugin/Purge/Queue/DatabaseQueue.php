@@ -82,7 +82,7 @@ class DatabaseQueue extends CoreDatabaseQueue implements QueueInterface {
     }
 
     // Insert all of them using just one multi-row query.
-    $query = db_insert(static::TABLE_NAME)->fields(['data', 'created']);
+    $query = $this->connection->insert(static::TABLE_NAME, [])->fields(['data', 'created']);
     foreach ($records as $record) {
       $query->values($record);
     }

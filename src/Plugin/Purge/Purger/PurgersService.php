@@ -401,6 +401,16 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
       return;
     }
 
+    // Remove states from old purgers that got uninstalled.
+    $purger_ids = array_keys($this->getPluginsEnabled());
+    foreach ($invalidations as $invalidation) {
+      foreach ($invalidation->getStateContexts() as $purger_id) {
+        if (!in_array($purger_id, $purger_ids)) {
+          $invalidation->removeStateContext($purger_id);
+        }
+      }
+    }
+
     // Discover types in need of processing and - just to be sure - reset state.
     $types = [];
     foreach ($invalidations as $i => $invalidation) {

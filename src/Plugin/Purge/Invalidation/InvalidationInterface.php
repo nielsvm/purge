@@ -42,6 +42,19 @@ interface InvalidationInterface extends ImmutableInvalidationInterface, Containe
   public function getId();
 
   /**
+   * Remove a state context from the object because the purger no longer exists.
+   *
+   * @param string $purger_instance_id
+   *   The instance ID of the purger to wipe from the invalidation.
+   *
+   * @throws \LogicException
+   *   Thrown when the value isn't correct or when NOT operating in NULL context.
+   *
+   * @return void
+   */
+  public function removeStateContext($purger_instance_id);
+
+  /**
    * Set a purger specific property.
    *
    * Once ::setStateContext() has been called, purgers can call ::setProperty()

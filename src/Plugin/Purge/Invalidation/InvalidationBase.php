@@ -81,6 +81,20 @@ abstract class InvalidationBase extends ImmutableInvalidationBase implements Inv
   /**
    * {@inheritdoc}
    */
+  public function removeStateContext($purger_instance_id) {
+    if (!is_null($this->context)) {
+      throw new \LogicException('Cannot remove a state context in purger context.');
+    }
+    if (!isset($this->states[$purger_instance_id])) {
+      throw new \LogicException('Parameter $purger_instance_id is invalid!');
+    }
+    unset($this->states[$purger_instance_id]);
+    unset($this->properties[$purger_instance_id]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function setProperty($key, $value) {
     if (is_null($this->context)) {
       throw new \LogicException('Call ::setStateContext() before deleting properties!');

@@ -203,6 +203,16 @@ abstract class ImmutableInvalidationBase extends PluginBase implements Immutable
   /**
    * {@inheritdoc}
    */
+  public function getStateContexts() {
+    if (!is_null($this->context)) {
+      throw new \LogicException('Cannot retrieve state contexts in purger context.');
+    }
+    return array_keys($this->states);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getType() {
     return $this->getPluginId();
   }

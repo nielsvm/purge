@@ -88,6 +88,17 @@ interface ImmutableInvalidationInterface extends InvStatesInterface, PluginInspe
   public function getState();
 
   /**
+   * Get all stored state contexts.
+   *
+   * @throws \LogicException
+   *   Thrown when NOT operating in general context.
+   *
+   * @return string[]
+   *   Non-associative list of stored state contexts.
+   */
+  public function getStateContexts();
+
+  /**
    * Get all invalidation states.
    *
    * @return int[]

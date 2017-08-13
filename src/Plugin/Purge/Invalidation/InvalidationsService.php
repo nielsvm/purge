@@ -4,8 +4,10 @@ namespace Drupal\purge\Plugin\Purge\Invalidation;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceBase;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidation;
+use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Plugin\Purge\Queue\ProxyItemInterface;
 
 /**
@@ -29,23 +31,42 @@ class InvalidationsService extends ServiceBase implements InvalidationsServiceIn
   protected $instance_counter_immutables = -1;
 
   /**
+   * @var \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
+   */
+  protected $purgePurgers;
+
+  /**
    * Instantiates a \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsService.
    *
    * @param \Drupal\Component\Plugin\PluginManagerInterface $pluginManager
    *   The plugin manager for this service.
+   * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
+   *   The purgers service.
    */
-  public function __construct(PluginManagerInterface $pluginManager) {
+  public function __construct(PluginManagerInterface $pluginManager, PurgersServiceInterface $purge_purgers) {
     $this->pluginManager = $pluginManager;
+    $this->purgePurgers = $purge_purgers;
   }
 
   /**
-   * {@inheritdoc}
+   * Retrieve a new instance from the plugin manager.
+   *
+   * @param string $plugin_id
+   *   The id of the invalidation type being instantiated.
+   * @param mixed|null $expression
+   *   Value - usually string - that describes the kind of invalidation, NULL
+   *   when the type of invalidation doesn't require $expression. Types usually
+   *   validate the given expression and throw exceptions for bad input.
+   * @param int $id
+   *   The numeric identifier of this instance.
+   *
+   * @return \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
    */
-  public function get($plugin_id, $expression = NULL) {
+  protected function createInstance($plugin_id, $expression, $id) {
     return $this->pluginManager->createInstance(
       $plugin_id, [
-        'id' => $this->instance_counter++,
         'expression' => $expression,
+        'id' => $id
       ]
     );
   }
@@ -53,24 +74,30 @@ class InvalidationsService extends ServiceBase implements InvalidationsServiceIn
   /**
    * {@inheritdoc}
    */
+  public function get($plugin_id, $expression = NULL) {
+    if (!in_array($plugin_id, $this->purgePurgers->getTypes())) {
+      throw new TypeUnsupportedException($plugin_id);
+    }
+    $id = $this->instance_counter++;
+    return $this->createInstance($plugin_id, $expression, $id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getImmutable($plugin_id, $expression = NULL) {
-    return new ImmutableInvalidation(
-      $this->pluginManager->createInstance(
-        $plugin_id, [
-          'id' => $this->instance_counter_immutables--,
-          'expression' => $expression,
-        ]
-      )
-    );
+    $id = $this->instance_counter_immutables--;
+    return new ImmutableInvalidation($this->createInstance($plugin_id, $expression, $id));
   }
 
   /**
    * {@inheritdoc}
    */
   public function getFromQueueData($item_data) {
-    $instance = $this->get(
+    $instance = $this->createInstance(
       $item_data[ProxyItemInterface::DATA_INDEX_TYPE],
-      $item_data[ProxyItemInterface::DATA_INDEX_EXPRESSION]
+      $item_data[ProxyItemInterface::DATA_INDEX_EXPRESSION],
+      $this->instance_counter++
     );
 
     // Replay stored purger states.
@@ -100,11 +127,10 @@ class InvalidationsService extends ServiceBase implements InvalidationsServiceIn
    * {@inheritdoc}
    */
   public function getImmutableFromQueueData($item_data) {
-    $instance = $this->pluginManager->createInstance(
-      $item_data[ProxyItemInterface::DATA_INDEX_TYPE], [
-        'id' => $this->instance_counter_immutables--,
-        'expression' => $item_data[ProxyItemInterface::DATA_INDEX_EXPRESSION],
-      ]
+    $instance = $this->createInstance(
+      $item_data[ProxyItemInterface::DATA_INDEX_TYPE],
+      $item_data[ProxyItemInterface::DATA_INDEX_EXPRESSION],
+      $this->instance_counter_immutables--
     );
 
     // Replay stored purger states.

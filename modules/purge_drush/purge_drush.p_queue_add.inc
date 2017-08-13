@@ -8,6 +8,7 @@
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
@@ -77,6 +78,12 @@ function purge_drush_p_queue_add($format, QueueServiceInterface $purgeQueue, Que
     }
     catch (InvalidExpressionException $e) {
       return $return_exception($e);
+    }
+    catch (TypeUnsupportedException $e) {
+      return $return_exception(
+        $e,
+        dt("There is no purger supporting '@type', please install one!", ['@type' => $type])
+      );
     }
     catch (MissingExpressionException $e) {
       return $return_exception($e);

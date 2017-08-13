@@ -29,7 +29,7 @@ class QueueBrowserFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_ui', 'purge_queuer_test'];
+  public static $modules = ['purge_ui', 'purge_queuer_test', 'purge_purger_test'];
 
   /**
    * @var \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface
@@ -83,6 +83,7 @@ class QueueBrowserFormTest extends WebTestBase {
    */
   public function testData() {
     $this->initializeInvalidationFactoryService();
+    $this->initializePurgersService(['id' => 'good']);
     $this->initializeQueueService('file');
     // Add 30 tags to the queue and collect the strings we're adding.
     $tags = $needles = [];

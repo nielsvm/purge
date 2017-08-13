@@ -15,7 +15,7 @@ use Drupal\purge_purger_test\Plugin\Purge\Purger\NullPurgerBase;
  *   cooldown_time = 1.0,
  *   description = @Translation("A purger that always succeeds."),
  *   multi_instance = FALSE,
- *   types = {"tag", "path", "domain"},
+ *   types = {"tag", "regex", "url", "path", "domain", "everything", "wildcardpath", "wildcardurl"},
  * )
  */
 class GoodPurger extends NullPurgerBase {

@@ -37,7 +37,7 @@ services:
   # purger straight away.
   purge.invalidation.factory:
     class: Drupal\purge\Plugin\Purge\Invalidation\InvalidationsService
-    arguments: ['@plugin.manager.purge.invalidation']
+    arguments: ['@plugin.manager.purge.invalidation', '@purge.purgers']
   plugin.manager.purge.invalidation:
     class: Drupal\purge\Plugin\Purge\Invalidation\PluginManager
     parent: default_plugin_manager

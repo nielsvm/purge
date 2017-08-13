@@ -19,6 +19,13 @@ use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
 class TxBufferTest extends KernelTestBase {
 
   /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = ['purge_purger_test'];
+
+  /**
    * {@inheritdoc}
    */
   public function setUp() {

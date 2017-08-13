@@ -31,7 +31,7 @@ class QueueEmptyFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_ui', 'purge_queuer_test'];
+  public static $modules = ['purge_ui', 'purge_queuer_test', 'purge_purger_test'];
 
   /**
    * @var \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface
@@ -85,12 +85,8 @@ class QueueEmptyFormTest extends WebTestBase {
    */
   public function testConfirm() {
     // Add seven objects to the queue and assert that these get deleted.
-    $this->initializeInvalidationFactoryService();
     $this->initializeQueueService('file');
-    for ($i = 1; $i <= 7; $i++) {
-      $tags[] = $this->purgeInvalidationFactory->get('tag', "$i");
-    }
-    $this->purgeQueue->add($this->queuer, $tags);
+    $this->purgeQueue->add($this->queuer, $this->getInvalidations(7, 'tag', 'test'));
     // Assert that - after reloading/committing the queue - we still have these.
     $this->purgeQueue->reload();
     $this->assertEqual(7, $this->purgeQueue->numberOfItems());

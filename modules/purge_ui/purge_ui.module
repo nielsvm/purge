@@ -13,6 +13,11 @@ function purge_ui_theme() {
     'purge_ui_dashboard' => [
       'render element' => 'build',
     ],
+    'purge_ui_diagnostics' => [
+      'variables' => [
+        'diagnostics' => [],
+      ],
+    ],
   ];
 }
 

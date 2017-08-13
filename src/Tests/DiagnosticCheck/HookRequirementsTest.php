@@ -52,6 +52,10 @@ class HookRequirementsTest extends KernelTestBase {
     $this->assertEqual(0, $r['alwaysok']['severity']);
     $this->assertEqual(1, $r['alwayswarning']['severity']);
     $this->assertEqual(2, $r['alwayserror']['severity']);
+    // Assert that the severity statuses come through properly.
+    $this->assertEqual('ok', $r['alwaysok']['severity_status']);
+    $this->assertEqual('warning', $r['alwayswarning']['severity_status']);
+    $this->assertEqual('error', $r['alwayserror']['severity_status']);
     // Assert that the values come through properly.
     $this->assertTrue(is_string($r['capacity']['value']));
     $this->assertEqual("0", $r['capacity']['value']);

@@ -40,6 +40,16 @@ class ServiceTest extends KernelServiceTestBase {
   ];
 
   /**
+   * The supported test severitiy statuses.
+   */
+  protected $severityStatuses = [
+    'info',
+    'ok',
+    'warning',
+    'error'
+  ];
+
+  /**
    * The hook_requirements() severities from install.inc.
    *
    * @see REQUIREMENT_INFO
@@ -147,6 +157,7 @@ class ServiceTest extends KernelServiceTestBase {
       $this->assertFalse(empty($requirement['title']));
       $this->assertTrue((is_string($requirement['description']) || $requirement['description'] instanceof TranslatableMarkup));
       $this->assertFalse(empty($requirement['description']));
+      $this->assertTrue(in_array($requirement['severity_status'], $this->severityStatuses));
       $this->assertTrue(in_array($requirement['severity'], $this->requirementSeverities));
     }
   }

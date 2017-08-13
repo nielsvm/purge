@@ -124,6 +124,7 @@ interface DiagnosticCheckInterface extends PluginInspectionInterface, ContainerF
    *   - value: The current value (e.g., version, time, level, etc), will not
    *     be set if not applicable.
    *   - description: The description of the check.
+   *   - severity_status: severity string: 'info', 'ok', 'warning' or 'error'.
    *   - severity: The check's result/severity level, one of:
    *     - REQUIREMENT_INFO: For info only.
    *     - REQUIREMENT_OK: The requirement is satisfied.
@@ -141,6 +142,7 @@ interface DiagnosticCheckInterface extends PluginInspectionInterface, ContainerF
    *   - value: The current value (e.g., version, time, level, etc), will not
    *     be set if not applicable.
    *   - description: The description of the check.
+   *   - severity_status: severity string: 'info', 'ok', 'warning' or 'error'.
    *   - severity: The check's result/severity level, one of:
    *     - REQUIREMENT_INFO: For info only.
    *     - REQUIREMENT_OK: The requirement is satisfied.

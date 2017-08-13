@@ -40,6 +40,16 @@ class ServiceTest extends KernelServiceTestBase {
   ];
 
   /**
+   * The supported test severitiy statuses.
+   */
+  protected $severityStatuses = [
+    'info',
+    'ok',
+    'warning',
+    'error'
+  ];
+
+  /**
    * The hook_requirements() severities from install.inc.
    *
    * @see REQUIREMENT_INFO
@@ -100,7 +110,7 @@ class ServiceTest extends KernelServiceTestBase {
   public function testCount() {
     $this->initializeService();
     $this->assertTrue($this->service instanceof \Countable);
-    $this->assertEqual(11, count($this->service));
+    $this->assertEqual(12, count($this->service));
   }
 
   /**
@@ -127,6 +137,7 @@ class ServiceTest extends KernelServiceTestBase {
         'alwaysinfo',
         'alwayserror',
         'alwayswarning',
+        'queue_size',
       ]
     );
   }
@@ -138,7 +149,7 @@ class ServiceTest extends KernelServiceTestBase {
     $this->initializeRequirementSeverities();
     $this->initializeService();
     $requirements = $this->service->getHookRequirementsArray();
-    $this->assertEqual(11, count($requirements));
+    $this->assertEqual(12, count($requirements));
     foreach ($requirements as $id => $requirement) {
       $this->assertTrue(is_string($id));
       $this->assertFalse(empty($id));
@@ -146,6 +157,7 @@ class ServiceTest extends KernelServiceTestBase {
       $this->assertFalse(empty($requirement['title']));
       $this->assertTrue((is_string($requirement['description']) || $requirement['description'] instanceof TranslatableMarkup));
       $this->assertFalse(empty($requirement['description']));
+      $this->assertTrue(in_array($requirement['severity_status'], $this->severityStatuses));
       $this->assertTrue(in_array($requirement['severity'], $this->requirementSeverities));
     }
   }

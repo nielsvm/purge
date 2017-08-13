@@ -3,6 +3,7 @@
 namespace Drupal\purge\Tests\DiagnosticCheck;
 
 use Drupal\purge\Tests\KernelServiceTestBase;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 
 /**
  * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService.
@@ -26,15 +27,40 @@ class ServiceSmokeAndFireTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests:
-   *   - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::isSystemOnFire()
-   *   - \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::isSystemShowingSmoke()
+   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::isSystemOnFire()
    */
-  public function testIsSystemOnFireOrShowingSmoke() {
+  public function testIsSystemOnFireReturnsFalse() {
     $this->initializePurgersService(['ida' => 'a']);
     $this->initializeService();
-    $this->assertTrue(is_object($this->service->isSystemOnFire()));
-    $this->assertTrue(is_object($this->service->isSystemShowingSmoke()));
+    $this->assertFalse(is_object($this->service->isSystemOnFire()));
+    $this->assertEqual($this->service->isSystemOnFire(), FALSE);
+  }
+
+  /**
+   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::isSystemOnFire()
+   */
+  public function testIsSystemOnFireReturnsCheck() {
+    $this->initializePurgersService([]);
+    $this->initializeService();
+    // ERROR level check is expected now because we didn't load any purgers.
+    $fire = $this->service->isSystemOnFire();
+    $this->assertTrue(is_object($fire));
+    if (is_object($fire)) {
+      $this->assertTrue($fire instanceof DiagnosticCheckInterface);
+    }
+  }
+
+  /**
+   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::isSystemShowingSmoke()
+   */
+  public function testIsSystemShowingSmokeReturnsFalse() {
+    $this->initializePurgersService(['idb' => 'b']);
+    $this->initializeService();
+    $smoke = $this->service->isSystemShowingSmoke();
+    $this->assertTrue(is_object($smoke));
+    if (is_object($smoke)) {
+      $this->assertTrue($smoke instanceof DiagnosticCheckInterface);
+    }
   }
 
 }

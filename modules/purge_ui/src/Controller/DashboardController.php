@@ -138,7 +138,7 @@ class DashboardController extends ControllerBase {
   public function build() {
     $build = [
       '#theme' => ['purge_ui_dashboard'],
-      '#attached' => ['library' => ['purge_ui/purge_ui.dashboard']],
+      '#attached' => ['library' => ['purge_ui/dashboard']],
     ];
     $build['info'] = [
       '#type' => 'item',
@@ -174,8 +174,8 @@ class DashboardController extends ControllerBase {
     extract($this->getRenderLocals());
     $build = $fieldset($this->t('Status'));
     $build['report'] = [
-      '#theme' => 'status_report',
-      '#requirements' => $this->purgeDiagnostics->getRequirementsArray(),
+      '#theme' => 'purge_ui_diagnostics',
+      '#diagnostics' => $this->purgeDiagnostics->getRequirementsArray(),
     ];
     return $build;
   }

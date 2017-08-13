@@ -31,7 +31,12 @@ class DashboardDiagnosticsTest extends DashboardTestBase {
   public function testDiagnosticReport() {
     $this->drupalLogin($this->admin_user);
     $this->drupalGet($this->route);
-    $this->assertRaw('system-status-report');
+    $this->assertRaw('purge-ui-diagnostic-report');
+    $this->assertRaw('purge-ui-diagnostic-report__entry--warning');
+    $this->assertRaw('purge-ui-diagnostic-report__entry--error');
+    $this->assertRaw('purge-ui-diagnostic-report__status-title');
+    $this->assertRaw('purge-ui-diagnostic-report__entry__value');
+    $this->assertRaw('purge-ui-diagnostic-report__entry__description');
     $this->assertRaw('open="open"');
     $this->assertText('Status');
     $this->assertText('Capacity');

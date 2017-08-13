@@ -74,6 +74,7 @@ function purge_drush_p_invalidate($format, InvalidationsServiceInterface $purgeI
       . " external caches will have to warm up again.\n");
     if (!drush_confirm("Are you really sure?")) {
       drush_user_abort();
+      return;
     }
   }
 

@@ -24,6 +24,17 @@ function purge_drush_drush_help($command) {
  */
 function purge_drush_drush_command() {
   $items = [];
+  $items['cache-rebuild-external'] = [
+    '_purge_drush_inherit_context' => 'p-invalidate',
+    'description' => "Invalidate 'everything' using the Purge framework.",
+    'callback' => 'purge_drush_callback_router',
+    'aliases' => ['cre'],
+    'options' => [
+      'type' => [
+        '_default' => 'everything',
+      ],
+    ],
+  ];
   $items['p-debug-dis'] = [
     'description' => "Disable debugging for all of Purge's log channels.",
     'callback' => 'purge_drush_callback_router',
@@ -656,7 +667,18 @@ function purge_drush_drush_command_alter(&$command) {
  */
 
 function purge_drush_callback_router() {
+
+  // Load the command context and allow a basic form of inheritance.
   $context = drush_get_command();
+  if (isset($context['_purge_drush_inherit_context'])) {
+    $contexts = purge_drush_drush_command();
+    $context_parent = $contexts[$context['_purge_drush_inherit_context']];
+    $context_child = $contexts[$context['command']];
+    $context_child['command'] = $context['_purge_drush_inherit_context'];
+    $context = array_merge($context, $context_parent, $context_child);
+  }
+
+  // Come up with the actual command name.
   $command = str_replace('-', '_', $context['command']);
 
   // Load requested container services in our own 'callback services' field.

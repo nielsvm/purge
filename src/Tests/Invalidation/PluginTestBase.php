@@ -8,6 +8,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationBase;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidPropertyException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException;
@@ -43,6 +44,13 @@ abstract class PluginTestBase extends KernelTestBase {
   protected $expressionsInvalid;
 
   /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = ['purge_purger_test'];
+
+  /**
    * Set up the test.
    */
   public function setUp() {
@@ -54,10 +62,7 @@ abstract class PluginTestBase extends KernelTestBase {
    * Retrieve a invalidation object provided by the plugin.
    */
   public function getInstance() {
-    return $this->purgeInvalidationFactory->get(
-      $this->plugin_id,
-      $this->expressions[0]
-    );
+    return $this->getInvalidations(1, $this->plugin_id, $this->expressions[0]);
   }
 
   /**
@@ -82,6 +87,21 @@ abstract class PluginTestBase extends KernelTestBase {
     $this->assertFalse($this->getImmutableInstance() instanceof InvalidationInterface);
     $this->assertTrue($this->getImmutableInstance() instanceof ImmutableInvalidationBase);
     $this->assertFalse($this->getImmutableInstance() instanceof InvalidationBase);
+  }
+
+  /**
+   * Tests \Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException
+   */
+  public function testTypeUnsupportedException() {
+    $this->initializePurgersService([], TRUE);
+    $thrown = FALSE;
+    try {
+      $this->getInvalidations(1, $this->plugin_id, $this->expressions[0], FALSE);
+      $this->getInstance(FALSE);
+    } catch (TypeUnsupportedException $e) {
+      $thrown = TRUE;
+    }
+    $this->assertTrue($thrown);
   }
 
   /**

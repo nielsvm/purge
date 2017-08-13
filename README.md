@@ -165,12 +165,15 @@ content has been updated.
 * **``lateruntime``** purges items from the queue on every request (**SLOW**).
 
 #### Tags Headers
-By default, Purge sends a response header ``Purge-Cache-Tags`` on all pages to
-allow reverse proxies and CDNs to save these _tags_. These headers are not
-standardized across the web and different systems can require differently named
-headers or with specialized formatting. Therefore Purge allows the creation of
-tiny plugins that can set their own header name and override the tag formatting
-if required.
+By default, no HTTP response headers with cache tags are added when you install
+just ``purge``. Since there is no RFC coverage for this relatively new way of
+cache invalidation, every module providing a **purger** is expected to define
+its own header and _most importantly_: unset that header too. This means that
+if your CDN supports it, its expected that the CDN doesn't render the tags
+header to end-users since you likely don't want to leak it. These plugins are
+very simple and relies basically only on annotation. If you need to support a
+reverse caching layer that isn't supported yet, the ``purge_purger_http``
+project provides you with a ``Purge-Cache-Tags`` header.
 
 API examples
 ------------------------------------------------------------------------------

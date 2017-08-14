@@ -1,5 +1,4 @@
 [//]: # ( clear&&curl -s -F input_files[]=@PROJECTPAGE.md -F from=markdown -F to=html http://c.docverter.com/convert|tail -n+11|head -n-2 )
-[//]: # ( curl -s -F input_files[]=@PROJECTPAGE.md -F from=markdown -F to=pdf http://c.docverter.com/convert>PROJECTPAGE.pdf )
 
 _The modular external cache invalidation framework._
 
@@ -31,18 +30,18 @@ This project aims to get all modules dealing with proxies and CDNs on board and
 to integrate with Purge. As known to date, these modules are or are being
 integrated:
 
- * [``purge_purger_http``](https://www.drupal.org/project/purge_purger_http) for
-   generic HTTP-based invalidation, e.g. ``nginx``, ``squid``, etc.
- * [``purge_queuer_url``](https://www.drupal.org/project/purge_queuer_url) for
-   legacy platforms not supporting cache tags. This is a **poor solution**
-   when you regularly import content, as it can lead to unsustainable big queues!
- * [``acquia_purge``](https://www.drupal.org/project/acquia_purge)
- * [``akamai``](https://www.drupal.org/project/akamai)
- * [``cloudflare``](https://www.drupal.org/project/cloudflare)
- * [``cloudfront_purger``](https://www.drupal.org/project/cloudfront_purger)
- * [``fastlypurger``](https://www.drupal.org/project/fastly)
- * [``keycdn``](https://www.drupal.org/project/keycdn)
- * [``varnish_purge``](https://www.drupal.org/project/varnish_purge)
+ * **[``purge_purger_http``](https://www.drupal.org/project/purge_purger_http)**
+   for generic HTTP-based invalidation, e.g. ``nginx``, ``squid``, etc.
+ * **[``purge_queuer_url``](https://www.drupal.org/project/purge_queuer_url)**
+   for legacy platforms not supporting cache tags. This is a **poor** solution
+   when you regularly import content, it can lead to unsustainable big queues!
+ * **[``acquia_purge``](https://www.drupal.org/project/acquia_purge)**
+ * **[``akamai``](https://www.drupal.org/project/akamai)**
+ * **[``cloudflare``](https://www.drupal.org/project/cloudflare)**
+ * **[``cloudfront_purger``](https://www.drupal.org/project/cloudfront_purger)**
+ * **[``fastlypurger``](https://www.drupal.org/project/fastly)**
+ * **[``keycdn``](https://www.drupal.org/project/keycdn)**
+ * **[``varnish_purge``](https://www.drupal.org/project/varnish_purge)**
 
 Anyone looking for a junior coding project, have a look at these issues:
 

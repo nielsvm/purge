@@ -32,9 +32,11 @@ to integrate with Purge. As known to date, these modules are or are being
 integrated:
 
  * [``purge_purger_http``](https://www.drupal.org/project/purge_purger_http) for
-   generic HTTP-based invalidation, e.g. Varnish, Squid and Nginx.
+   generic HTTP-based invalidation, e.g. ``nginx``, ``squid``, ``$exoticCDN``.
  * [``purge_queuer_url``](https://www.drupal.org/project/purge_queuer_url) for
-   legacy platforms not supporting cache tags, consider this a poormans solution!
+   legacy platforms not supporting cache tags. This is a **poor solution**
+   when you regularly import much content, as it can lead to unsustainable big
+   queue volumes!
  * [``acquia_purge``](https://www.drupal.org/project/acquia_purge)
  * [``akamai``](https://www.drupal.org/project/akamai)
  * [``cloudflare``](https://www.drupal.org/project/cloudflare)

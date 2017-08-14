@@ -45,8 +45,8 @@ integrated:
 
 Anyone looking for a junior coding project, have a look at these issues:
 
- * [``max_cdn_cache``](https://www.drupal.org/node/2902048)
- * [``nginx_cache_clear``](https://www.drupal.org/node/2902052)
+ * **[``max_cdn_cache``](https://www.drupal.org/node/2902048)**
+ * **[``nginx_cache_clear``](https://www.drupal.org/node/2902052)**
 
 
 Interested? Reach out any time of day and we'll get you going!

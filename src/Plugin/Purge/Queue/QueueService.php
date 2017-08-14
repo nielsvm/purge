@@ -149,11 +149,9 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
     // Define a closure that syncs the ::numberOfItems() statistic if needed.
     $syncNumberOfItems = function() {
       $stat = $this->purgeQueueStats->numberOfItems();
-      if ($stat->getInteger() !== 0) {
-        if ($stat->getInteger() !== ($queue_count = $this->numberOfItems())) {
-          $this->logger->debug("synced ::numberOfItems() statistic to @n.", ['@n' => $queue_count]);
-          $stat->set($queue_count);
-        }
+      if ($stat->getInteger() !== ($queue_count = $this->numberOfItems())) {
+        $this->logger->warning("synced ::numberOfItems() to @n.", ['@n' => $queue_count]);
+        $stat->set($queue_count);
       }
     };
 

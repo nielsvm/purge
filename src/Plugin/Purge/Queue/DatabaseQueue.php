@@ -108,7 +108,7 @@ class DatabaseQueue extends CoreDatabaseQueue implements QueueInterface {
    * {@inheritdoc}
    */
   public function numberOfItems() {
-    return (int) $this->connection->query('SELECT COUNT(item_id) FROM {' . static::TABLE_NAME . '}')
+    return (int) $this->connection->query('SELECT COUNT(*) FROM {' . static::TABLE_NAME . '}')
       ->fetchField();
   }
 

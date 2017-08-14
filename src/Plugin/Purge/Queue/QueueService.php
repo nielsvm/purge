@@ -146,17 +146,30 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
       $lease_time = $claims * $lease_time;
     }
 
+    // Define a closure that syncs the ::numberOfItems() statistic if needed.
+    $syncNumberOfItems = function() {
+      $stat = $this->purgeQueueStats->numberOfItems();
+      if ($stat->getInteger() !== 0) {
+        if ($stat->getInteger() !== ($queue_count = $this->numberOfItems())) {
+          $this->logger->debug("synced ::numberOfItems() statistic to @n.", ['@n' => $queue_count]);
+          $stat->set($queue_count);
+        }
+      }
+    };
+
     // Claim one or several items out of the queue or finish the call.
     $this->initializeQueue();
     if ($claims === 1) {
       if (!($item = $this->queue->claimItem($lease_time))) {
         $this->logger->debug("attempt to claim 1 item failed.");
+        $syncNumberOfItems();
         return [];
       }
       $items = [$item];
     }
     elseif (!($items = $this->queue->claimItemMultiple($claims, $lease_time))) {
       $this->logger->debug("attempt to claim @no items failed.", ['@no' => $claims]);
+      $syncNumberOfItems();
       return [];
     }
 

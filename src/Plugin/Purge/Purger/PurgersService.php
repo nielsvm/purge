@@ -362,6 +362,10 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     // Without this, the tests will throw "failed to instantiate user-supplied
     // statement class: CREATE TABLE {cache_config}".
     $this->configFactory = \Drupal::configFactory();
+    // Drush commands appreciate it when the config cache gets cleared.
+    if (php_sapi_name() === 'cli') {
+      \Drupal::cache('config')->deleteAll();
+    }
     $this->purgers = NULL;
     $this->labels = NULL;
     $this->types = NULL;

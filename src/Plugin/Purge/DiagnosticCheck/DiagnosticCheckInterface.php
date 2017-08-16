@@ -116,25 +116,7 @@ interface DiagnosticCheckInterface extends PluginInspectionInterface, ContainerF
   public function getValue();
 
   /**
-   * Generates a hook_requirements() compatible item array.
-   *
-   * @return array
-   *   An associative array with the following elements:
-   *   - title: The name of this check.
-   *   - value: The current value (e.g., version, time, level, etc), will not
-   *     be set if not applicable.
-   *   - description: The description of the check.
-   *   - severity_status: severity string: 'info', 'ok', 'warning' or 'error'.
-   *   - severity: The check's result/severity level, one of:
-   *     - REQUIREMENT_INFO: For info only.
-   *     - REQUIREMENT_OK: The requirement is satisfied.
-   *     - REQUIREMENT_WARNING: The requirement failed with a warning.
-   *     - REQUIREMENT_ERROR: The requirement failed with an error.
-   */
-  public function getHookRequirementsArray();
-
-  /**
-   * Generates a status-report.html.twig compatible array.
+   * Generates a individual Drupal-like requirements array.
    *
    * @return array
    *   An associative array with the following elements:

@@ -149,20 +149,6 @@ abstract class DiagnosticCheckBase extends PluginBase implements DiagnosticCheck
   /**
    * {@inheritdoc}
    */
-  public function getHookRequirementsArray() {
-    $this->runCheck();
-    return [
-      'title' => $this->t('Purge - @title', ['@title' => $this->getTitle()]),
-      'value' => (string) $this->getValue(),
-      'description' => (string) $this->getRecommendation(),
-      'severity_status' => strtolower($this->getSeverityString()),
-      'severity' => $this->getRequirementsSeverity(),
-    ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getRequirementsArray() {
     $this->runCheck();
     return [

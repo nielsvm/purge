@@ -143,22 +143,34 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::getHookRequirementsArray
+   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::getRequirementsArray
    */
-  public function testGetHookRequirementsArray() {
+  public function testGetRequirementsArray() {
     $this->initializeRequirementSeverities();
     $this->initializeService();
-    $requirements = $this->service->getHookRequirementsArray();
+    // Test the standard output as Drupal expects it.
+    $requirements = $this->service->getRequirementsArray();
     $this->assertEqual(12, count($requirements));
     foreach ($requirements as $id => $requirement) {
       $this->assertTrue(is_string($id));
       $this->assertFalse(empty($id));
       $this->assertTrue(is_string($requirement['title']) || ($requirement['title'] instanceof TranslatableMarkup));
+      $this->assertFalse(strpos($requirement['title'], 'Purge: ') === 0);
       $this->assertFalse(empty($requirement['title']));
       $this->assertTrue((is_string($requirement['description']) || $requirement['description'] instanceof TranslatableMarkup));
       $this->assertFalse(empty($requirement['description']));
       $this->assertTrue(in_array($requirement['severity_status'], $this->severityStatuses));
       $this->assertTrue(in_array($requirement['severity'], $this->requirementSeverities));
+    }
+    // Test that the $floor parameter works as expected.
+    $this->assertEqual(12, count($this->service->getRequirementsArray(DiagnosticCheckInterface::SEVERITY_INFO)));
+    $this->assertEqual(11, count($this->service->getRequirementsArray(DiagnosticCheckInterface::SEVERITY_OK)));
+    $this->assertEqual(8,  count($this->service->getRequirementsArray(DiagnosticCheckInterface::SEVERITY_WARNING)));
+    $this->assertEqual(2,  count($this->service->getRequirementsArray(DiagnosticCheckInterface::SEVERITY_ERROR)));
+    $this->assertEqual(0,  count($this->service->getRequirementsArray(3))); // Fake severity that doesn't exist.
+    // Test that the $prefix_title parameter works as expected.
+    foreach ($this->service->getRequirementsArray(DiagnosticCheckInterface::SEVERITY_INFO, TRUE) as $requirement) {
+      $this->assertTrue(strpos($requirement['title'], 'Purge: ') === 0);
     }
   }
 

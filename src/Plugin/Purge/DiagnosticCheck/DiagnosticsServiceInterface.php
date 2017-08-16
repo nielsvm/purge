@@ -5,6 +5,7 @@ namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 
 /**
  * Describes a service that interacts with diagnostic checks.
@@ -12,52 +13,20 @@ use Drupal\purge\ServiceInterface;
 interface DiagnosticsServiceInterface extends ServiceInterface, ContainerAwareInterface, \Iterator, \Countable {
 
   /**
-   * Generates a hook_requirements() compatible array.
+   * Renders severities as a Drupal-like requirements array.
    *
-   * @warning
-   *   Although it shares the same name, this method doesn't return a individual
-   *   item array as \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::
-   *     getHookRequirementsArray() does. It returns a full array (as
-   *   hook_requirements() expects) for all checks.
+   * @param int $floor
+   *   The type of severities to return and everything above it. When you pass
+   *   SEVERITY_INFO as value here, all four severities will be returned. But if
+   *   you pass SEVERITY_WARNING, only SEVERITY_WARNING and SEVERITY_ERROR level
+   *   checks are returned for instance.
+   * @param bool $prefix_title
+   *   When TRUE, this prefixes titles with "Purge" to mark their origin.
    *
-   * @return array
-   *   An associative array where the keys are arbitrary but unique (check id)
-   *   and the values themselves are associative arrays with these elements:
-   *   - title: The name of this check.
-   *   - value: The current value (e.g., version, time, level, etc), will not
-   *     be set if not applicable.
-   *   - description: The description of the check.
-   *   - severity_status: severity string: 'info', 'ok', 'warning' or 'error'.
-   *   - severity: The checks result/severity level, one of:
-   *     - REQUIREMENT_INFO: For info only.
-   *     - REQUIREMENT_OK: The requirement is satisfied.
-   *     - REQUIREMENT_WARNING: The requirement failed with a warning.
-   *     - REQUIREMENT_ERROR: The requirement failed with an error.
+   * @return array[]
+   *   Array with Drupal-like requirement arrays as values.
    */
-  public function getHookRequirementsArray();
-
-  /**
-   * Generates a status-report.html.twig compatible array.
-   *
-   * The main difference with ::getHookRequirementsArray is that this helper is
-   * not intended to be used in a hook_requirements() implementation but rather
-   * when rendering status reports directly using #theme = 'status_report',
-   *
-   * @return array
-   *   An associative array where the keys are arbitrary but unique (check id)
-   *   and the values themselves are associative arrays with these elements:
-   *   - title: The name of this check.
-   *   - value: The current value (e.g., version, time, level, etc), will not
-   *     be set if not applicable.
-   *   - description: The description of the check.
-   *   - severity_status: severity string: 'info', 'ok', 'warning' or 'error'.
-   *   - severity: The checks result/severity level, one of:
-   *     - REQUIREMENT_INFO: For info only.
-   *     - REQUIREMENT_OK: The requirement is satisfied.
-   *     - REQUIREMENT_WARNING: The requirement failed with a warning.
-   *     - REQUIREMENT_ERROR: The requirement failed with an error.
-   */
-  public function getRequirementsArray();
+  public function getRequirementsArray($filter = DiagnosticCheckInterface::SEVERITY_INFO, $prefix_title = FALSE);
 
   /**
    * Reports if any of the diagnostic checks report a SEVERITY_ERROR severity.

@@ -69,18 +69,6 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getHookRequirementsArray() {
-    $this->initializePluginInstances();
-    $requirements = [];
-    foreach ($this as $check) {
-      $requirements[$check->getPluginId()] = $check->getHookRequirementsArray();
-    }
-    return $requirements;
-  }
-
-  /**
    * Initialize and retrieve the logger via lazy loading.
    *
    * @return \Drupal\purge\Logger\LoggerChannelPartInterface
@@ -156,13 +144,20 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
   /**
    * {@inheritdoc}
    */
-  public function getRequirementsArray() {
+  public function getRequirementsArray($floor = DiagnosticCheckInterface::SEVERITY_INFO, $prefix_title = FALSE) {
     $this->initializePluginInstances();
     $requirements = [];
     foreach ($this as $check) {
-      $requirements[$check->getPluginId()] = $check->getRequirementsArray();
+      if ($check->getSeverity() >= $floor) {
+        $id = $check->getPluginId();
+        $requirements[$id] = $check->getRequirementsArray();
+        if ($prefix_title) {
+          $requirements[$id]['title'] = "Purge: " . ((string) $requirements[$id]['title']);
+        }
+      }
     }
     return $requirements;
+    $this->initializePluginInstances();
   }
 
   /**

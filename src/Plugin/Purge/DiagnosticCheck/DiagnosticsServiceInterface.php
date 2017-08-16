@@ -13,20 +13,44 @@ use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 interface DiagnosticsServiceInterface extends ServiceInterface, ContainerAwareInterface, \Iterator, \Countable {
 
   /**
-   * Renders severities as a Drupal-like requirements array.
+   * Get only SEVERITY_INFO level checks.
    *
-   * @param int $floor
-   *   The type of severities to return and everything above it. When you pass
-   *   SEVERITY_INFO as value here, all four severities will be returned. But if
-   *   you pass SEVERITY_WARNING, only SEVERITY_WARNING and SEVERITY_ERROR level
-   *   checks are returned for instance.
-   * @param bool $prefix_title
-   *   When TRUE, this prefixes titles with "Purge" to mark their origin.
-   *
-   * @return array[]
-   *   Array with Drupal-like requirement arrays as values.
+   * @return \Iterator[]
+   *   \Iterator object that yields DiagnosticCheckInterface instances.
    */
-  public function getRequirementsArray($filter = DiagnosticCheckInterface::SEVERITY_INFO, $prefix_title = FALSE);
+  public function filterInfo();
+
+  /**
+   * Get only SEVERITY_OK level checks.
+   *
+   * @return \Iterator[]
+   *   \Iterator object that yields DiagnosticCheckInterface instances.
+   */
+  public function filterOk();
+
+  /**
+   * Get only SEVERITY_WARNING level checks.
+   *
+   * @return \Iterator[]
+   *   \Iterator object that yields DiagnosticCheckInterface instances.
+   */
+  public function filterWarnings();
+
+  /**
+   * Get only SEVERITY_WARNING and SEVERITY_ERROR level checks.
+   *
+   * @return \Iterator[]
+   *   \Iterator object that yields DiagnosticCheckInterface instances.
+   */
+  public function filterWarningAndErrors();
+
+  /**
+   * Get only SEVERITY_ERROR level checks.
+   *
+   * @return \Iterator[]
+   *   \Iterator object that yields DiagnosticCheckInterface instances.
+   */
+  public function filterErrors();
 
   /**
    * Reports if any of the diagnostic checks report a SEVERITY_ERROR severity.
@@ -53,5 +77,29 @@ interface DiagnosticsServiceInterface extends ServiceInterface, ContainerAwareIn
    *   The SEVERITY_WARNING reporting check, or FALSE when everything was fine.
    */
   public function isSystemShowingSmoke();
+
+  /**
+   * Generate a status_messages #message_list argument array.
+   *
+   * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface[] $checks
+   *   Non-associative array of diagnostic check objects.
+   *
+   * @return array[]
+   *   Array with typed arrays, in each typed array are messages.
+   */
+  public function toMessageList(\Iterator $checks);
+
+  /**
+   * Generate a Drupal-like requirements array.
+   *
+   * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface[] $checks
+   *   Non-associative array of diagnostic check objects.
+   * @param bool $prefix_title
+   *   When TRUE, this prefixes titles with "Purge" to mark their origin.
+   *
+   * @return array[]
+   *   Array with Drupal-like requirement arrays as values.
+   */
+  public function toRequirementsArray(\Iterator $checks, $prefix_title = FALSE);
 
 }

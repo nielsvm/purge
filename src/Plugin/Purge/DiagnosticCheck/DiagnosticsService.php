@@ -69,6 +69,64 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
   }
 
   /**
+   * Get checks filtered by severity.
+   *
+   * @param int[] $severities
+   *   Non-associative list of severity integers to retrieve.
+   *
+   * @return \ArrayIterator
+   *   \Iterator object that yields DiagnosticCheckInterface instances.
+   */
+  protected function filter($severities) {
+    $this->initializePluginInstances();
+    $checks = new \ArrayIterator();
+    foreach ($this as $check) {
+      if (in_array($check->getSeverity(), $severities)) {
+        $checks->append($check);
+      }
+    }
+    return $checks;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function filterInfo() {
+    return $this->filter([DiagnosticCheckInterface::SEVERITY_INFO]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function filterOk() {
+    return $this->filter([DiagnosticCheckInterface::SEVERITY_OK]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function filterWarnings() {
+    return $this->filter([DiagnosticCheckInterface::SEVERITY_WARNING]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function filterWarningAndErrors() {
+    return $this->filter([
+      DiagnosticCheckInterface::SEVERITY_WARNING,
+      DiagnosticCheckInterface::SEVERITY_ERROR
+    ]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function filterErrors() {
+    return $this->filter([DiagnosticCheckInterface::SEVERITY_ERROR]);
+  }
+
+  /**
    * Initialize and retrieve the logger via lazy loading.
    *
    * @return \Drupal\purge\Logger\LoggerChannelPartInterface
@@ -139,25 +197,6 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
       $this->purgePurgers = $this->container->get('purge.purgers');
     }
     return $this->purgePurgers;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getRequirementsArray($floor = DiagnosticCheckInterface::SEVERITY_INFO, $prefix_title = FALSE) {
-    $this->initializePluginInstances();
-    $requirements = [];
-    foreach ($this as $check) {
-      if ($check->getSeverity() >= $floor) {
-        $id = $check->getPluginId();
-        $requirements[$id] = $check->getRequirementsArray();
-        if ($prefix_title) {
-          $requirements[$id]['title'] = "Purge: " . ((string) $requirements[$id]['title']);
-        }
-      }
-    }
-    return $requirements;
-    $this->initializePluginInstances();
   }
 
   /**
@@ -236,6 +275,40 @@ class DiagnosticsService extends ServiceBase implements DiagnosticsServiceInterf
     $this->reloadIterator();
     $this->purgePurgers = NULL;
     $this->purgeQueue = NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function toMessageList(\Iterator $checks) {
+    $messages = [];
+    foreach ($checks as $check) {
+      $type = strtolower($check->getSeverityString());
+      if (!isset($messages[$type])) {
+        $messages[$type] = [];
+      }
+      $msg = strtoupper($check->getTitle()) . ': ';
+      if ($recommendation = $check->getRecommendation()) {
+        $msg .= ' ' . $recommendation;
+      }
+      $messages[$type][] = $msg;
+    }
+    return $messages;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function toRequirementsArray(\Iterator $checks, $prefix_title = FALSE) {
+    $requirements = [];
+    foreach ($checks as $check) {
+      $id = $check->getPluginId();
+      $requirements[$id] = $check->getRequirementsArray();
+      if ($prefix_title) {
+        $requirements[$id]['title'] = "Purge: " . ((string) $requirements[$id]['title']);
+      }
+    }
+    return $requirements;
   }
 
 }

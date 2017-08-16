@@ -12,8 +12,8 @@ function purge_requirements($phase) {
   if ($phase !== 'runtime') {
     return [];
   }
-  $warnings_and_errors = \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_WARNING;
-  return \Drupal::service('purge.diagnostics')->getRequirementsArray($warnings_and_errors, TRUE);
+  $checks = \Drupal::service('purge.diagnostics');
+  return $checks->toRequirementsArray($checks->filterWarningAndErrors(), TRUE);
 }
 
 /**

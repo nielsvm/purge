@@ -146,28 +146,17 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
       $lease_time = $claims * $lease_time;
     }
 
-    // Define a closure that syncs the ::numberOfItems() statistic if needed.
-    $syncNumberOfItems = function() {
-      $stat = $this->purgeQueueStats->numberOfItems();
-      if ($stat->getInteger() !== ($queue_count = $this->numberOfItems())) {
-        $this->logger->warning("synced ::numberOfItems() to @n.", ['@n' => $queue_count]);
-        $stat->set($queue_count);
-      }
-    };
-
     // Claim one or several items out of the queue or finish the call.
     $this->initializeQueue();
     if ($claims === 1) {
       if (!($item = $this->queue->claimItem($lease_time))) {
         $this->logger->debug("attempt to claim 1 item failed.");
-        $syncNumberOfItems();
         return [];
       }
       $items = [$item];
     }
     elseif (!($items = $this->queue->claimItemMultiple($claims, $lease_time))) {
       $this->logger->debug("attempt to claim @no items failed.", ['@no' => $claims]);
-      $syncNumberOfItems();
       return [];
     }
 
@@ -192,14 +181,24 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
 
   /**
    * Commit all actions in the internal buffer to the queue.
+   *
+   * @param bool $sync_stat
+   *   Sync the numberOfItems statistic after the queue content has changed.
    */
-  public function commit() {
+  public function commit($sync_stat = TRUE) {
     if (!count($this->buffer)) {
       return;
     }
     $this->commitAdding();
     $this->commitReleasing();
     $this->commitDeleting();
+
+    // If tasked to do so, sync the numberOfItems stat since the queue changed.
+    if ($sync_stat) {
+      $this->purgeQueueStats
+        ->numberOfItems()
+        ->set($this->numberOfItems());
+    }
   }
 
   /**
@@ -453,13 +452,9 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
    * {@inheritdoc}
    */
   public function numberOfItems() {
-    $this->commit();
+    $this->commit(FALSE);
     $this->initializeQueue();
-    $this->purgeQueueStats
-      ->numberOfItems()
-      ->set($number = $this->queue->numberOfItems()
-    );
-    return $number;
+    return $this->queue->numberOfItems();
   }
 
   /**
@@ -476,7 +471,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
   public function reload() {
     parent::reload();
     if (!is_null($this->queue)) {
-      $this->commit();
+      $this->commit(FALSE);
     }
     $this->buffer->deleteEverything();
     $this->configFactory = \Drupal::configFactory();

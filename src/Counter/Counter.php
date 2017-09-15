@@ -125,10 +125,12 @@ class Counter implements CounterInterface {
     if ($value < 0.0) {
       throw new BadBehaviorException('Given $value can only be zero or positive.');
     }
-    $this->value = $value;
-    if (!is_null($this->callback)) {
-      $callback = $this->callback;
-      $callback($value);
+    if ($value !== $this->value) {
+      $this->value = $value;
+      if (!is_null($this->callback)) {
+        $callback = $this->callback;
+        $callback($value);
+      }
     }
   }
 

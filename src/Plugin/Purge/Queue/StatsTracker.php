@@ -183,22 +183,17 @@ class StatsTracker implements StatsTrackerInterface {
    */
   public function updateTotals(array $invalidations) {
     $changes = [
-      'numberOfItems'     => 0,
       'totalProcessing'   => 0,
       'totalSucceeded'    => 0,
       'totalFailed'       => 0,
       'totalNotSupported' => 0,
     ];
     foreach ($invalidations as $invalidation) {
-      if ($invalidation->getState() === InvStatesInterface::FRESH) {
-        $changes['numberOfItems']++;
-      }
-      elseif ($invalidation->getState() === InvStatesInterface::PROCESSING) {
+      if ($invalidation->getState() === InvStatesInterface::PROCESSING) {
         $changes['totalProcessing']++;
       }
       elseif ($invalidation->getState() === InvStatesInterface::SUCCEEDED) {
         $changes['totalSucceeded']++;
-        $changes['numberOfItems']--;
       }
       elseif ($invalidation->getState() === InvStatesInterface::FAILED) {
         $changes['totalFailed']++;

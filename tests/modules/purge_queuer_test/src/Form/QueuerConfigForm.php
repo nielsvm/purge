@@ -22,7 +22,7 @@ class QueuerConfigForm extends QueuerConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormID() {
+  public function getFormId() {
     return 'purge_queuer_test.configform';
   }
 

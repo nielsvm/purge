@@ -6,6 +6,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\purge_ui\Form\ProcessorConfigFormBase;
 
 /**
+ * Configuration form for a test processor.
+ *
  * @see \Drupal\purge_processor_test\Plugin\Purge\Processor\WithFormProcessor.
  */
 class ProcessorConfigForm extends ProcessorConfigFormBase {
@@ -20,7 +22,7 @@ class ProcessorConfigForm extends ProcessorConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormID() {
+  public function getFormId() {
     return 'purge_processor_test.configform';
   }
 

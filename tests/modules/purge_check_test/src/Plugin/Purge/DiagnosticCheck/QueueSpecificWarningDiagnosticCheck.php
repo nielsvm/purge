@@ -23,7 +23,7 @@ class QueueSpecificWarningDiagnosticCheck extends DiagnosticCheckBase implements
    */
   public function run() {
     $this->recommendation = $this->t("This is a queue warning for testing.");
-    return SELF::SEVERITY_WARNING;
+    return self::SEVERITY_WARNING;
   }
 
 }

@@ -249,7 +249,7 @@ class LoggerChannelPartTest extends UnitTestCase {
       ->method('log')
       ->with(
         $this->stringContains($level),
-        $this->stringContains('@purge_channel_part: '. $message),
+        $this->stringContains('@purge_channel_part: ' . $message),
         $this->callback(function ($subject) use ($id, $output) {
           return ($subject['@purge_channel_part'] === $id) && ($subject['@replaceme'] === $output);
         })

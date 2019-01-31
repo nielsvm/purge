@@ -104,7 +104,7 @@ type is the most important one to support in your architecture.
 * **``domain``** Invalidates an entire domain name.
 * **``everything``** Invalidates everything.
 * **``path``** Invalidates by path, e.g. ``news/article-1``.
-* **``regex``** Invalidates by regular expression, e.g.: ``\.(jpg|jpeg|css|js)$``.
+* **``regex``** Invalidates by reg. expression, e.g.: ``\.(jpg|jpeg|css|js)$``.
 * **``tag``** Invalidates by Drupal cache tag, e.g.: ``menu:footer``.
 * **``url``** Invalidates by URL, e.g. ``http://site.com/node/1``.
 * **``wildcardpath``** Invalidates by path, e.g. ``news/*``.
@@ -260,7 +260,8 @@ string(10) "PROCESSING"
 ```
 
 The results reveal why you should **normally not invalidate without going
-through the queue**, because items can fail or need to run again later to finish entirely. The most common use case for direct invalidation is manual UI purging.
+through the queue**, because items can fail or need to run again later to finish
+entirely. The most common use case for direct invalidation is manual UI purging.
 
 #### Queue processing
 Processing items from the queue is handled by processors, which users can add

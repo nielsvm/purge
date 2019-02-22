@@ -41,7 +41,7 @@ class LateRuntimeProcessor implements EventSubscriberInterface, ContainerAwareIn
   /**
    * {@inheritdoc}
    */
-  static function getSubscribedEvents() {
+  public static function getSubscribedEvents() {
     $events[KernelEvents::FINISH_REQUEST][] = 'onKernelFinishRequest';
     return $events;
   }
@@ -70,8 +70,6 @@ class LateRuntimeProcessor implements EventSubscriberInterface, ContainerAwareIn
    *
    * @param \Symfony\Component\HttpKernel\Event\FinishRequestEvent $event
    *   The event object.
-   *
-   * @return void
    */
   public function onKernelFinishRequest(FinishRequestEvent $event) {
 

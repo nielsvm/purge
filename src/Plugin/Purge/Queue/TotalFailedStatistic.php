@@ -9,7 +9,7 @@ use Drupal\purge\Counter\ExplainedCounterInterface;
 /**
  * Total number of failed queue items.
  */
-class totalFailedStatistic extends Counter implements ExplainedCounterInterface {
+class TotalFailedStatistic extends Counter implements ExplainedCounterInterface {
   use StringTranslationTrait;
 
   /**
@@ -27,7 +27,6 @@ class totalFailedStatistic extends Counter implements ExplainedCounterInterface 
     return 'total_failed';
   }
 
-
   /**
    * {@inheritdoc}
    */
@@ -42,12 +41,7 @@ class totalFailedStatistic extends Counter implements ExplainedCounterInterface 
    */
   public function getDescription() {
     return $this->t(
-        'Whenever a purger returns a queue item as failed, we\'re keeping track'
-      . ' of these failures via this statistic. However, failing items fail for'
-      . ' various reasons and are usually expected to still succeed in the'
-      . ' future. The total number of failures happening over time, should'
-      . ' be seen as indicator whether a few incidents took place versus'
-      . ' sky-rocketing failure rates because of some structural problem.'
+      'Whenever a purger returns a queue item as failed, we track these failures in this statistic. However, failing items fail for various reasons and are usually expected to still succeed in the future. The total number of failures happening over time, should be seen as indicator whether a few incidents took place versus sky-rocketing failure rates because of some structural problem.'
     );
   }
 

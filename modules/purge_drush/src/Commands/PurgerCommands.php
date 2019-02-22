@@ -19,7 +19,7 @@ class PurgerCommands extends DrushCommands {
   protected $purgePurgers;
 
   /**
-   * Constructs a \Drupal\purge_drush\Commands\PurgerCommands object.
+   * Construct a PurgerCommands object.
    *
    * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
    *   The purge purgers service.

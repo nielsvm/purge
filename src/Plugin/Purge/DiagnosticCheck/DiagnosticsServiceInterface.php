@@ -3,9 +3,7 @@
 namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\purge\ServiceInterface;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 
 /**
  * Describes a service that interacts with diagnostic checks.
@@ -56,9 +54,9 @@ interface DiagnosticsServiceInterface extends ServiceInterface, ContainerAwareIn
    * Reports if any of the diagnostic checks report a SEVERITY_ERROR severity.
    *
    * This method provides a simple - boolean evaluable - way to determine if
-   * a \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_ERROR severity
-   * was reported by one of the checks. If SEVERITY_ERROR was reported, purging
-   * cannot continue and should happen once all problems are resolved.
+   * a DiagnosticCheckInterface::SEVERITY_ERROR severity was reported by one of
+   * the checks. If SEVERITY_ERROR was reported, purging cannot continue and
+   * should happen once all problems are resolved.
    *
    * @return false|\Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface
    *   The SEVERITY_ERROR reporting check, or FALSE when everything was fine.
@@ -69,9 +67,9 @@ interface DiagnosticsServiceInterface extends ServiceInterface, ContainerAwareIn
    * Reports if any of the diagnostic checks report a SEVERITY_WARNING severity.
    *
    * This method provides a - boolean evaluable - way to determine if a check
-   * reported a \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_WARNING.
-   * If SEVERITY_WARNING was reported, cache invalidation can continue but it is
-   * important that the site administrator gets notified.
+   * reported a DiagnosticCheckInterface::SEVERITY_WARNING. If SEVERITY_WARNING
+   * was reported, cache invalidation can continue but it is important that the
+   * site administrator gets notified.
    *
    * @return false|\Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface
    *   The SEVERITY_WARNING reporting check, or FALSE when everything was fine.
@@ -81,8 +79,8 @@ interface DiagnosticsServiceInterface extends ServiceInterface, ContainerAwareIn
   /**
    * Generate a status_messages #message_list argument array.
    *
-   * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface[] $checks
-   *   Non-associative array of diagnostic check objects.
+   * @param \Iterator $checks
+   *   Iterator yielding DiagnosticCheckInterface objects.
    *
    * @return array[]
    *   Array with typed arrays, in each typed array are messages.
@@ -92,8 +90,8 @@ interface DiagnosticsServiceInterface extends ServiceInterface, ContainerAwareIn
   /**
    * Generate a Drupal-like requirements array.
    *
-   * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface[] $checks
-   *   Non-associative array of diagnostic check objects.
+   * @param \Iterator $checks
+   *   Iterator yielding DiagnosticCheckInterface objects.
    * @param bool $prefix_title
    *   When TRUE, this prefixes titles with "Purge" to mark their origin.
    *

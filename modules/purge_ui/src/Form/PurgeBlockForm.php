@@ -43,22 +43,28 @@ class PurgeBlockForm extends FormBase {
   protected $queuer;
 
   /**
+   * The 'purge.purgers' service.
+   *
    * @var \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
    */
   protected $purgePurgers;
 
   /**
+   * The 'purge.invalidation.factory' service.
+   *
    * @var \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface
    */
   protected $purgeInvalidationFactory;
 
   /**
+   * The 'purge.queue' service.
+   *
    * @var \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface
    */
   protected $purgeQueue;
 
   /**
-   * Constructs a PurgeBlockForm object.
+   * Construct a PurgeBlockForm object.
    *
    * @param string[] $config
    *   The form's configuration array, which determines how and what we purge.
@@ -72,8 +78,6 @@ class PurgeBlockForm extends FormBase {
    *   The purge queue service.
    * @param \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface $purge_queuers
    *   The purge queuers service.
-   *
-   * @return void
    */
   public function __construct(array $config, ProcessorsServiceInterface $purge_processors, PurgersServiceInterface $purge_purgers, InvalidationsServiceInterface $purge_invalidation_factory, QueueServiceInterface $purge_queue, QueuersServiceInterface $purge_queuers) {
     if (is_null($config)) {
@@ -90,6 +94,8 @@ class PurgeBlockForm extends FormBase {
   /**
    * {@inheritdoc}
    *
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   *   The dependency injection container.
    * @param string[] $config
    *   The form's configuration array, which determines how and what we purge.
    */
@@ -119,13 +125,16 @@ class PurgeBlockForm extends FormBase {
         $expressions[] = $request->getUri();
         $expressions[] = str_replace('?' . $request->getQueryString(), '', $expressions[1]);
         break;
+
       case 'path':
         $expressions[] = ltrim($request->getRequestUri(), '/');
         $expressions[] = explode('?', $expressions[0])[0];
         break;
+
       case 'everything':
         $expressions[] = NULL;
         break;
+
     }
     return array_unique($expressions);
   }
@@ -133,7 +142,7 @@ class PurgeBlockForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormID() {
+  public function getFormId() {
     return 'purge_ui.purge_' . $this->config['purge_block_id'];
   }
 

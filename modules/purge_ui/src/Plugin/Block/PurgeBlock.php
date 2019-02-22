@@ -21,9 +21,9 @@ class PurgeBlock extends BlockBase implements ContainerFactoryPluginInterface {
   use ContainerAwareTrait;
 
   /**
-   * Constructs a new PurgeBlock instance.
+   * Construct a new PurgeBlock instance.
    *
-   * @param ContainerInterface $container
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
    *   The dependency injection container.
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.

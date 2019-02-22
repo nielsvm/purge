@@ -2,8 +2,6 @@
 
 namespace Drupal\purge\Tests\Invalidation;
 
-use Drupal\purge\Tests\Invalidation\PluginTestBase;
-
 /**
  * Tests \Drupal\purge\Plugin\Purge\Invalidation\WildcardPathInvalidation.
  *
@@ -11,7 +9,7 @@ use Drupal\purge\Tests\Invalidation\PluginTestBase;
  * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
  */
 class WildcardPathInvalidationTest extends PluginTestBase {
-  protected $plugin_id = 'wildcardpath';
+  protected $pluginId = 'wildcardpath';
   protected $expressions = [
     '*',
     '*?page=0',

@@ -21,13 +21,13 @@ class PurgeTagsHeader extends Plugin {
   /**
    * The HTTP response header that the plugin sets.
    *
+   * @var string
+   *
    * @warning
    *   In RFC #6648 the use of 'X-' as header prefixes has been deprecated
    *   for "application protocols", this naturally includes Drupal. Therefore
    *   if this is possible, consider header names without this prefix.
-   *
-   * @var string
    */
-  public $header_name;
+  public $header_name; // phpcs:ignore -- annotation property!
 
 }

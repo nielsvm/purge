@@ -4,8 +4,6 @@ namespace Drupal\purge\Tests\TagsHeader;
 
 use Drupal\purge\Tests\KernelTestBase;
 use Drupal\purge\Tests\KernelServiceTestBase;
-use Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersServiceInterface;
-use Drupal\purge\Plugin\Purge\TagsHeader\TagsHeaderInterface;
 
 /**
  * Tests \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersService.
@@ -39,7 +37,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersService::count
+   * Tests TagsHeadersService::count.
    */
   public function testCount() {
     $this->initializeService();
@@ -48,7 +46,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersService::getPluginsEnabled
+   * Tests TagsHeadersService::getPluginsEnabled.
    */
   public function testGetPluginsEnabled() {
     $this->initializeService();
@@ -69,8 +67,9 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testIteration() {
     $this->initializeService();
-    $this->assertIterator('\Drupal\purge\Plugin\Purge\TagsHeader\TagsHeaderInterface',
-      $this->plugins
+    $this->assertIterator(
+      $this->plugins,
+      '\Drupal\purge\Plugin\Purge\TagsHeader\TagsHeaderInterface'
     );
   }
 

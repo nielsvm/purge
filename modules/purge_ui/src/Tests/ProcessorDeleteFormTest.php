@@ -13,9 +13,11 @@ use Drupal\purge\Tests\WebTestBase;
 class ProcessorDeleteFormTest extends WebTestBase {
 
   /**
+   * The Drupal user entity.
+   *
    * @var \Drupal\user\Entity\User
    */
-  protected $admin_user;
+  protected $adminUser;
 
   /**
    * The route that renders the form.
@@ -36,7 +38,7 @@ class ProcessorDeleteFormTest extends WebTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
+    $this->adminUser = $this->drupalCreateUser(['administer site configuration']);
   }
 
   /**
@@ -45,7 +47,7 @@ class ProcessorDeleteFormTest extends WebTestBase {
   public function testAccess() {
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'a']));
     $this->assertResponse(403);
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'a']));
     $this->assertResponse(200);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'c']));
@@ -61,7 +63,7 @@ class ProcessorDeleteFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testNo() {
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'a']));
     $this->assertRaw(t('No'));
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'a'])->toString(), [], ['op' => t('No')]);
@@ -76,7 +78,7 @@ class ProcessorDeleteFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::disableProcessor
    */
   public function testDeleteProcessor() {
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'a']));
     $this->assertRaw(t('Yes, delete this processor!'));
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'a'])->toString(), [], ['op' => t('Yes, delete this processor!')]);

@@ -15,9 +15,11 @@ use Drupal\Core\Form\FormState;
 class QueueEmptyFormTest extends WebTestBase {
 
   /**
+   * The Drupal user entity.
+   *
    * @var \Drupal\user\Entity\User
    */
-  protected $admin_user;
+  protected $adminUser;
 
   /**
    * The route that renders the form.
@@ -31,9 +33,15 @@ class QueueEmptyFormTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_ui', 'purge_queuer_test', 'purge_purger_test'];
+  public static $modules = [
+    'purge_ui',
+    'purge_queuer_test',
+    'purge_purger_test',
+  ];
 
   /**
+   * The queuer plugin.
+   *
    * @var \Drupal\purge\Plugin\Purge\Queuer\QueuerInterface
    */
   protected $queuer;
@@ -45,7 +53,7 @@ class QueueEmptyFormTest extends WebTestBase {
     parent::setUp();
     $this->initializeQueuersService();
     $this->queuer = $this->purgeQueuers->get('a');
-    $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
+    $this->adminUser = $this->drupalCreateUser(['administer site configuration']);
   }
 
   /**
@@ -54,7 +62,7 @@ class QueueEmptyFormTest extends WebTestBase {
   public function testAccess() {
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(403);
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(200);
     $this->assertTitle(t("Are you sure you want to empty the queue? | Drupal"));
@@ -69,7 +77,7 @@ class QueueEmptyFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testNo() {
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertRaw(t('No'));
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('No')]);
@@ -91,7 +99,7 @@ class QueueEmptyFormTest extends WebTestBase {
     $this->purgeQueue->reload();
     $this->assertEqual(7, $this->purgeQueue->numberOfItems());
     // Call the confirm form and assert the AJAX responses.
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('Yes, throw everything away!')]);
     $this->assertEqual('closeDialog', $json[1]['command']);

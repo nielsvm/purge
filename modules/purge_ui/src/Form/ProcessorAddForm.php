@@ -8,8 +8,6 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
-use Drupal\purge_ui\Form\CloseDialogTrait;
-use Drupal\purge_ui\Form\ReloadConfigFormCommand;
 
 /**
  * Add a processor.
@@ -18,17 +16,17 @@ class ProcessorAddForm extends ConfigFormBase {
   use CloseDialogTrait;
 
   /**
+   * The 'purge.processors' service.
+   *
    * @var \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface
    */
   protected $purgeProcessors;
 
   /**
-   * Constructs a ProcessorAddForm object.
+   * Construct a ProcessorAddForm object.
    *
    * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface $purge_processors
    *   The purge processors service.
-   *
-   * @return void
    */
   public function __construct(ProcessorsServiceInterface $purge_processors) {
     $this->purgeProcessors = $purge_processors;
@@ -41,7 +39,6 @@ class ProcessorAddForm extends ConfigFormBase {
     return new static($container->get('purge.processors'));
   }
 
-
   /**
    * {@inheritdoc}
    */
@@ -52,7 +49,7 @@ class ProcessorAddForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormID() {
+  public function getFormId() {
     return 'purge_ui.processor_add_form';
   }
 
@@ -104,6 +101,7 @@ class ProcessorAddForm extends ConfigFormBase {
    *   The current state of the form.
    *
    * @return \Drupal\Core\Ajax\AjaxResponse
+   *   The AJAX response object.
    */
   public function addProcessor(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();

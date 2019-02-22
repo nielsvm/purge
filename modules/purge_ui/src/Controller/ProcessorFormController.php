@@ -13,6 +13,8 @@ use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
 class ProcessorFormController extends ControllerBase {
 
   /**
+   * The 'purge.processors' service.
+   *
    * @var \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface
    */
   protected $purgeProcessors;
@@ -38,6 +40,7 @@ class ProcessorFormController extends ControllerBase {
    * Render the processor add form.
    *
    * @return array
+   *   The render array.
    */
   public function addForm() {
     if (count($this->purgeProcessors->getPluginsAvailable())) {
@@ -55,6 +58,7 @@ class ProcessorFormController extends ControllerBase {
    *   Determines if the modal dialog variant of the form should be rendered.
    *
    * @return array
+   *   The render array.
    */
   public function configForm($id, $dialog) {
     if ($this->purgeProcessors->isPluginEnabled($id)) {
@@ -98,6 +102,7 @@ class ProcessorFormController extends ControllerBase {
    *   The plugin id of the processor to retrieve.
    *
    * @return array
+   *   The render array.
    */
   public function deleteForm($id) {
     if ($this->purgeProcessors->isPluginEnabled($id)) {
@@ -130,6 +135,7 @@ class ProcessorFormController extends ControllerBase {
    *   The plugin id of the processor to retrieve.
    *
    * @return array
+   *   The render array.
    */
   public function detailForm($id) {
     if ($this->purgeProcessors->isPluginEnabled($id)) {

@@ -75,7 +75,7 @@ class QueueCommands extends DrushCommands {
   protected $purgeQueuers;
 
   /**
-   * Constructs a \Drupal\purge_drush\Commands\QueueCommands object.
+   * Construct a QueueCommands object.
    *
    * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface $purge_processors
    *   The purge processors service.

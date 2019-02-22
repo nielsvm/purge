@@ -13,9 +13,11 @@ use Drupal\purge\Tests\WebTestBase;
 class PurgerAddFormTest extends WebTestBase {
 
   /**
+   * The Drupal user entity.
+   *
    * @var \Drupal\user\Entity\User
    */
-  protected $admin_user;
+  protected $adminUser;
 
   /**
    * The route that renders the form.
@@ -36,7 +38,7 @@ class PurgerAddFormTest extends WebTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
+    $this->adminUser = $this->drupalCreateUser(['administer site configuration']);
   }
 
   /**
@@ -45,7 +47,7 @@ class PurgerAddFormTest extends WebTestBase {
   public function testAccess() {
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(403);
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->initializePurgersService([]);
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(200);
@@ -66,7 +68,7 @@ class PurgerAddFormTest extends WebTestBase {
    */
   public function testAdd() {
     $this->initializePurgersService(['a', 'withform', 'good']);
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertRaw(t('Add'));
     $this->assertTrue(count($this->purgePurgers->getPluginsEnabled()) === 3);
@@ -85,7 +87,7 @@ class PurgerAddFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testCancel() {
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertRaw(t('Cancel'));
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('Cancel')]);
@@ -100,7 +102,7 @@ class PurgerAddFormTest extends WebTestBase {
    */
   public function testTwoAvailablePurgers() {
     $this->initializePurgersService(['c', 'withform']);
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertFieldByName('plugin_id');
     $this->assertText('Purger A');

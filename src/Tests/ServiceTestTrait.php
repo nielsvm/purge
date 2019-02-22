@@ -15,6 +15,8 @@ trait ServiceTestTrait {
 
   /**
    * The name of the service as defined in services.yml.
+   *
+   * @var string
    */
   protected $serviceId;
 
@@ -71,10 +73,10 @@ trait ServiceTestTrait {
    *
    * @param string[] $expected_plugins
    *   Plugins that can be expected to be returned by the iterator.
-   * @param string $typecheck
-   *   The type to check the iterated objects against.
+   * @param null|string $type
+   *   Check if the service is also of the given type (class name).
    */
-  public function assertIterator($type = NULL, $expected_plugins) {
+  public function assertIterator(array $expected_plugins, $type = NULL) {
     // Assert that the service implements PHP's \Iterator interface.
     $this->assertTrue($this->service instanceof \Iterator);
     // Iterate the service, count all items and typecheck the instances.

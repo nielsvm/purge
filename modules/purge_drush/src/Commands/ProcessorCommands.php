@@ -19,7 +19,7 @@ class ProcessorCommands extends DrushCommands {
   protected $purgeProcessors;
 
   /**
-   * Constructs a \Drupal\purge_drush\Commands\ProcessorCommands object.
+   * Construct a ProcessorCommands object.
    *
    * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface $purge_processors
    *   The purge processors service.

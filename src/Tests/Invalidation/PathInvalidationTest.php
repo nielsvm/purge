@@ -2,8 +2,6 @@
 
 namespace Drupal\purge\Tests\Invalidation;
 
-use Drupal\purge\Tests\Invalidation\PluginTestBase;
-
 /**
  * Tests \Drupal\purge\Plugin\Purge\Invalidation\PathInvalidation.
  *
@@ -11,7 +9,7 @@ use Drupal\purge\Tests\Invalidation\PluginTestBase;
  * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
  */
 class PathInvalidationTest extends PluginTestBase {
-  protected $plugin_id = 'path';
+  protected $pluginId = 'path';
   protected $expressions = [
     '',
     '?page=0',

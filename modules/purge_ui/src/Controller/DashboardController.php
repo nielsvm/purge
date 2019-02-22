@@ -21,31 +21,43 @@ use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
 class DashboardController extends ControllerBase {
 
   /**
+   * The 'purge.diagnostics' service.
+   *
    * @var \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
    */
   protected $purgeDiagnostics;
 
   /**
+   * The 'purge.invalidation.factory' service.
+   *
    * @var \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface
    */
   protected $purgeInvalidationFactory;
 
   /**
+   * The 'purge.processors' service.
+   *
    * @var \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface
    */
   protected $purgeProcessors;
 
   /**
+   * The 'purge.purgers' service.
+   *
    * @var \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface
    */
   protected $purgePurgers;
 
   /**
+   * The 'purge.queue' service.
+   *
    * @var \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface
    */
   protected $purgeQueue;
 
   /**
+   * The 'purge.queuers' service.
+   *
    * @var \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface
    */
   protected $purgeQueuers;
@@ -88,7 +100,7 @@ class DashboardController extends ControllerBase {
   ];
 
   /**
-   * Constructs a DashboardController object.
+   * Construct a DashboardController object.
    *
    * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface $purge_diagnostics
    *   Diagnostics service that reports any preliminary issues regarding purge.
@@ -134,6 +146,7 @@ class DashboardController extends ControllerBase {
    * Build all dashboard sections.
    *
    * @return array
+   *   The render array.
    */
   public function build() {
     $build = [
@@ -144,10 +157,10 @@ class DashboardController extends ControllerBase {
       '#type' => 'item',
       '#markup' => $this->t('When content on your website changes, your purge setup will take care of refreshing external caching systems and CDNs.'),
     ];
-    $build['logging']     = $this->buildLoggingSection();
+    $build['logging'] = $this->buildLoggingSection();
     $build['diagnostics'] = $this->buildDiagnosticReport();
-    $build['purgers']     = $this->buildPurgers();
-    $build['queue']       = $this->buildQueuersQueueProcessors();
+    $build['purgers'] = $this->buildPurgers();
+    $build['queue'] = $this->buildQueuersQueueProcessors();
     return $build;
   }
 
@@ -155,6 +168,7 @@ class DashboardController extends ControllerBase {
    * Add a section devoted to log configuration.
    *
    * @return array
+   *   The render array.
    */
   protected function buildLoggingSection() {
     extract($this->getRenderLocals());
@@ -169,6 +183,7 @@ class DashboardController extends ControllerBase {
    * Add a visual report on the current state of the purge module.
    *
    * @return array
+   *   The render array.
    */
   protected function buildDiagnosticReport() {
     extract($this->getRenderLocals());
@@ -186,12 +201,13 @@ class DashboardController extends ControllerBase {
    * Manage purgers and visualize the types they support.
    *
    * @return array
+   *   The render array.
    */
   protected function buildPurgers() {
     extract($this->getRenderLocals());
     $build = $details($this->t('Cache Invalidation'));
     $build['#description'] = $p($this->t("Each layer of caching on top of your site is cleared by a purger. Purgers are provided by third-party modules and support one or more types of cache invalidation."));
-    $build['t'] = $table(['layer' => $this->t('Caching layer'),]);
+    $build['t'] = $table(['layer' => $this->t('Caching layer')]);
     foreach ($this->purgeInvalidationFactory->getPlugins() as $type) {
       $label = $type['label'];
       if (strlen($type['label']) > 4) {
@@ -200,7 +216,9 @@ class DashboardController extends ControllerBase {
       $build['t']['#header'][$type['id']] = [
         'data' => $label,
         'title' => $this->t('@type - @description', ['@type' => $type['label'], '@description' => $type['description']]),
-        'class' => [in_array($type['id'], ['tag', 'path', 'url']) ? RESPONSIVE_PRIORITY_MEDIUM : RESPONSIVE_PRIORITY_LOW],
+        'class' => [
+          in_array($type['id'], ['tag', 'path', 'url']) ? RESPONSIVE_PRIORITY_MEDIUM : RESPONSIVE_PRIORITY_LOW,
+        ],
       ];
     }
 
@@ -278,6 +296,7 @@ class DashboardController extends ControllerBase {
    * Manage queuers, the queue itself and processors.
    *
    * @return array
+   *   The render array.
    */
   protected function buildQueuersQueueProcessors() {
     extract($this->getRenderLocals());
@@ -377,6 +396,7 @@ class DashboardController extends ControllerBase {
    * @endcode
    *
    * @return array
+   *   The render array.
    */
   protected function getRenderLocals() {
     $details = function ($title) {
@@ -486,9 +506,15 @@ class DashboardController extends ControllerBase {
     $tag = function ($tag, $content) {
       return '<' . $tag . '>' . $content . '</' . $tag . '>';
     };
-    $b = function ($content) use ($tag) {return $tag('b', $content);};
-    $i = function ($content) use ($tag) {return $tag('i', $content);};
-    $p = function ($content) use ($tag) {return $tag('p', $content);};
+    $b = function ($content) use ($tag) {
+      return $tag('b', $content);
+    };
+    $i = function ($content) use ($tag) {
+      return $tag('i', $content);
+    };
+    $p = function ($content) use ($tag) {
+      return $tag('p', $content);
+    };
     // Return locally defined variables so extract() can easily unpack.
     return get_defined_vars();
   }

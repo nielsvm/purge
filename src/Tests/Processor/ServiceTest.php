@@ -4,7 +4,6 @@ namespace Drupal\purge\Tests\Processor;
 
 use Drupal\purge\Tests\KernelTestBase;
 use Drupal\purge\Tests\KernelServiceTestBase;
-use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
 
 /**
@@ -29,7 +28,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsService::count
+   * Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsService::count.
    */
   public function testCount() {
     $this->initializeService();
@@ -38,7 +37,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsService::get
+   * Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsService::get.
    */
   public function testGet() {
     $this->initializeService();
@@ -60,8 +59,9 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testIteration() {
     $this->initializeService();
-    $this->assertIterator('\Drupal\purge\Plugin\Purge\Processor\ProcessorInterface',
-      ['a', 'b']
+    $this->assertIterator(
+      ['a', 'b'],
+      '\Drupal\purge\Plugin\Purge\Processor\ProcessorInterface'
     );
   }
 

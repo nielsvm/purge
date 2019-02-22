@@ -38,7 +38,7 @@ class ProxyItemTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Plugin\Purge\Queue\ProxyItem::__get
+   * Tests \Drupal\purge\Plugin\Purge\Queue\ProxyItem::__get.
    */
   public function testGet() {
     $i = $this->getInvalidations(1);
@@ -89,7 +89,7 @@ class ProxyItemTest extends KernelTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Plugin\Purge\Queue\ProxyItem::__set
+   * Tests \Drupal\purge\Plugin\Purge\Queue\ProxyItem::__set.
    */
   public function testSet() {
     $i = $this->getInvalidations(1);

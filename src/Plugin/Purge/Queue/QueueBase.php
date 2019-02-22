@@ -4,8 +4,6 @@ namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\PluginBase;
-use Drupal\purge\Plugin\Purge\Queue\QueueInterface;
-use Drupal\purge\Plugin\Purge\Queue\QueueBasePageTrait;
 
 /**
  * Provides a ReliableQueueInterface compliant queue that holds queue items.

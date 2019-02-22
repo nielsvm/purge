@@ -6,7 +6,9 @@ use Drupal\Core\Url;
 use Drupal\purge\Tests\WebTestBase;
 
 /**
- * Tests:
+ * Tests the queuer details form.
+ *
+ * The following classes are covered:
  *   - \Drupal\purge_ui\Form\PluginDetailsForm.
  *   - \Drupal\purge_ui\Controller\QueuerFormController::detailForm().
  *   - \Drupal\purge_ui\Controller\QueuerFormController::detailFormTitle().
@@ -16,9 +18,11 @@ use Drupal\purge\Tests\WebTestBase;
 class QueuerDetailsFormTest extends WebTestBase {
 
   /**
+   * The Drupal user entity.
+   *
    * @var \Drupal\user\Entity\User
    */
-  protected $admin_user;
+  protected $adminUser;
 
   /**
    * The route that renders the form.
@@ -39,7 +43,7 @@ class QueuerDetailsFormTest extends WebTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
+    $this->adminUser = $this->drupalCreateUser(['administer site configuration']);
   }
 
   /**
@@ -50,7 +54,7 @@ class QueuerDetailsFormTest extends WebTestBase {
     $this->initializeQueuersService(['a']);
     $this->drupalGet(Url::fromRoute($this->route, $args));
     $this->assertResponse(403);
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route, $args));
     $this->assertResponse(200);
     $args = ['id' => 'doesnotexist'];
@@ -67,7 +71,7 @@ class QueuerDetailsFormTest extends WebTestBase {
   public function testDetailForm() {
     $args = ['id' => 'a'];
     $this->initializeQueuersService(['a']);
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route, $args));
     $this->assertRaw('Queuer A');
     $this->assertRaw('Test queuer A.');

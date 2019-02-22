@@ -2,10 +2,11 @@
 
 _The modular external cache invalidation framework._
 
-The ``purge`` module facilitates cleaning **external caching systems**, **reverse
-proxies** and **CDNs** as content actually changes. This allows external caching
-layers to keep unchanged content cached infinitely, making content delivery more
-efficient, resilient and better guarded against traffic spikes.
+The ``purge`` module facilitates cleaning **external caching systems**,
+**reverse proxies** and **CDNs** as content actually changes. This allows
+external caching layers to keep unchanged content cached infinitely, making
+content delivery more efficient, resilient and better guarded against traffic
+spikes.
 
 ## Drupal 8
 The ``8.x-3.x`` versions enable invalidation of content from external systems
@@ -19,7 +20,8 @@ not least, it enforces a separation of concerns and should be seen as a
 ###### Getting started
 For most simple configurations, start with:
 
-* ``drush en purge purge_ui purge_drush purge_queuer_coretags purge_processor_cron``
+* ``drush en purge purge_ui``
+* ``drush en purge_drush purge_queuer_coretags purge_processor_cron``
 * Head over to [``admin/config/development/performance/purge``](http://mysite/admin/config/development/performance/purge).
 * Now you need to install - and probably configure -  a third-party module that
   provides a **purger**. If no module supports invalidation of your cache layer
@@ -55,8 +57,8 @@ Interested? Reach out any time of day and we'll get you going!
 The current stable ``1.x`` versions depend on the [cache expiration](http://drupal.org/project/expire)
 module and act upon events that are likely to expire URLs from external caching
 systems. Technically these versions work by sending HTTP out ``PURGE`` requests
-per changed item, the request can be defined exactly. You can [find the installation
-instructions and frequently asked questions](http://cgit.drupalcode.org/purge/plain/README.md?h=7.x-1.x)
+per changed item, the request can be defined exactly. You can [find the
+installation instructions and frequently asked questions](http://cgit.drupalcode.org/purge/plain/README.md?h=7.x-1.x)
 bundled in the code repository.
 
 ###### Mind the coverage gap

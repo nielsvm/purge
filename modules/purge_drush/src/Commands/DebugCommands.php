@@ -20,7 +20,7 @@ class DebugCommands extends DrushCommands {
   protected $purgeLogger;
 
   /**
-   * Constructs a \Drupal\purge_drush\Commands\DebugCommands object.
+   * Construct a DebugCommands object.
    *
    * @param \Drupal\purge\Logger\LoggerServiceInterface $purge_logger
    *   The purge logger service.

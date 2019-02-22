@@ -13,9 +13,11 @@ use Drupal\purge\Tests\WebTestBase;
 class PurgerDeleteFormTest extends WebTestBase {
 
   /**
+   * The Drupal user entity.
+   *
    * @var \Drupal\user\Entity\User
    */
-  protected $admin_user;
+  protected $adminUser;
 
   /**
    * The route that renders the form.
@@ -36,7 +38,7 @@ class PurgerDeleteFormTest extends WebTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
+    $this->adminUser = $this->drupalCreateUser(['administer site configuration']);
   }
 
   /**
@@ -46,7 +48,7 @@ class PurgerDeleteFormTest extends WebTestBase {
     $this->initializePurgersService(['c']);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id0']));
     $this->assertResponse(403);
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id0']));
     $this->assertResponse(200);
     // Non-existing ID's also need to get passed through to the form because
@@ -63,7 +65,7 @@ class PurgerDeleteFormTest extends WebTestBase {
    */
   public function testNo() {
     $this->initializePurgersService(['c']);
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id0']));
     $this->assertRaw(t('No'));
     $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, ['id' => 'id0'])->toString(), [], ['op' => t('No')]);
@@ -79,7 +81,7 @@ class PurgerDeleteFormTest extends WebTestBase {
    */
   public function testDelete() {
     $this->initializePurgersService(['c']);
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route, ['id' => 'id0']));
     $this->assertRaw(t('Yes, delete this purger!'));
     $this->assertTrue(array_key_exists('id0', $this->purgePurgers->getPluginsEnabled()));

@@ -4,11 +4,10 @@ namespace Drupal\purge\Tests\DiagnosticCheck;
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\purge\Tests\KernelServiceTestBase;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 
 /**
- * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService.
+ * Tests DiagnosticsService.
  *
  * @group purge
  * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService
@@ -27,6 +26,8 @@ class ServiceTest extends KernelServiceTestBase {
   /**
    * The supported test severities.
    *
+   * @var int[]
+   *
    * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_INFO
    * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_OK
    * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface::SEVERITY_WARNING
@@ -40,17 +41,21 @@ class ServiceTest extends KernelServiceTestBase {
   ];
 
   /**
-   * The supported test severitiy statuses.
+   * The supported test severity statuses.
+   *
+   * @var string[]
    */
   protected $severityStatuses = [
     'info',
     'ok',
     'warning',
-    'error'
+    'error',
   ];
 
   /**
    * The hook_requirements() severities from install.inc.
+   *
+   * @var int[]
    *
    * @see REQUIREMENT_INFO
    * @see REQUIREMENT_OK
@@ -105,7 +110,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::count
+   * Tests DiagnosticsService::count.
    */
   public function testCount() {
     $this->initializeService();
@@ -124,7 +129,7 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testIteration() {
     $this->initializeService();
-    $this->assertIterator('\Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface',
+    $this->assertIterator(
       [
         'queuersavailable',
         'purgersavailable',
@@ -138,17 +143,20 @@ class ServiceTest extends KernelServiceTestBase {
         'alwayserror',
         'alwayswarning',
         'queue_size',
-      ]
+      ],
+      '\Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface'
     );
   }
 
   /**
-   * Tests:
+   * Tests the various ::filter* methods.
+   *
+   * Covers:
    *   \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::filterInfo
    *   \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::filterOk
    *   \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::filterWarnings
    *   \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::filterWarningAndErrors
-   *   \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::filterErrors
+   *   \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::filterErrors.
    */
   public function testFilters() {
     $this->initializeService();
@@ -185,7 +193,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::isSystemOnFire.
+   * Tests DiagnosticsService::isSystemOnFire.
    */
   public function testIsSystemOnFire() {
     $this->initializePurgersService(['ida' => 'a']);
@@ -196,16 +204,21 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::isSystemShowingSmoke.
+   * Tests DiagnosticsService::isSystemShowingSmoke.
    */
   public function testIsSystemShowingSmoke() {
     $this->assertTrue($this->service->isSystemShowingSmoke() instanceof DiagnosticCheckInterface);
-    $possibilities = ['alwayswarning', 'capacity', 'queuersavailable', 'page_cache'];
+    $possibilities = [
+      'alwayswarning',
+      'capacity',
+      'queuersavailable',
+      'page_cache',
+    ];
     $this->assertTrue(in_array($this->service->isSystemShowingSmoke()->getPluginId(), $possibilities));
   }
 
   /**
-   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::toMessageList
+   * Tests DiagnosticsService::toMessageList.
    */
   public function testToMessageList() {
     $this->initializeRequirementSeverities();
@@ -231,7 +244,7 @@ class ServiceTest extends KernelServiceTestBase {
   }
 
   /**
-   * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService::toRequirementsArray
+   * Tests DiagnosticsService::toRequirementsArray.
    */
   public function testToRequirementsArray() {
     $this->initializeRequirementSeverities();

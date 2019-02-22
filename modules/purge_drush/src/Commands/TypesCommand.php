@@ -30,7 +30,7 @@ class TypesCommand extends DrushCommands {
   protected $purgeInvalidationFactory;
 
   /**
-   * Constructs a \Drupal\purge_drush\Commands\TypesCommand object.
+   * Construct a TypesCommand object.
    *
    * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface $purge_invalidation_factory
    *   The purge invalidation factory service.

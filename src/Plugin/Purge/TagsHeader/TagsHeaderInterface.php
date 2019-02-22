@@ -38,7 +38,7 @@ interface TagsHeaderInterface extends PluginInspectionInterface, ContainerFactor
    * @throws \LogicException
    *   Thrown when the returned value isn't a string.
    *
-   * @see \Drupal\Core\Cache\CacheableDependencyInterface::getCacheTags().
+   * @see \Drupal\Core\Cache\CacheableDependencyInterface::getCacheTags()
    *
    * @return string
    *   String representing the given headers.

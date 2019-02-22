@@ -3,7 +3,6 @@
 namespace Drupal\purge\Tests\TagsHeader;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Drupal\purge\Tests\KernelTestBase;
 
 /**

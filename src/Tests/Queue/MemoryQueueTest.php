@@ -2,8 +2,6 @@
 
 namespace Drupal\purge\Tests\Queue;
 
-use Drupal\purge\Tests\Queue\PluginTestBase;
-
 /**
  * Tests \Drupal\purge\Plugin\Purge\Queue\MemoryQueue.
  *
@@ -11,6 +9,6 @@ use Drupal\purge\Tests\Queue\PluginTestBase;
  * @see \Drupal\purge\Plugin\Purge\Queue\QueueInterface
  */
 class MemoryQueueTest extends PluginTestBase {
-  protected $plugin_id = 'memory';
+  protected $pluginId = 'memory';
 
 }

@@ -11,7 +11,7 @@ use Drupal\purge\Counter\ExplainedCounterInterface;
  *
  * @see \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface::numberOfItems()
  */
-class numberOfItemsStatistic extends Counter implements ExplainedCounterInterface {
+class NumberOfItemsStatistic extends Counter implements ExplainedCounterInterface {
   use StringTranslationTrait;
 
   /**
@@ -35,10 +35,7 @@ class numberOfItemsStatistic extends Counter implements ExplainedCounterInterfac
    */
   public function getDescription() {
     return $this->t(
-        'This counter is not a true statistic, but instead a maintained copy of'
-      . ' the number of items in the queue. This exists to prevent expensive'
-      . ' queue lookups in the underlying queue backend and should at all times'
-      . ' be the exact number of items currently in the queue.'
+      'This counter is not a true statistic, but instead a maintained copy of the number of items in the queue. This exists to prevent expensive queue lookups in the underlying queue backend and should at all times be the exact number of items currently in the queue.'
     );
   }
 

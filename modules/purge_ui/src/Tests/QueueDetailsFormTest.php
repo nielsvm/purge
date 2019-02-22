@@ -6,7 +6,9 @@ use Drupal\Core\Url;
 use Drupal\purge\Tests\WebTestBase;
 
 /**
- * Tests:
+ * Tests the queue details form.
+ *
+ * The following classes are covered:
  *   - \Drupal\purge_ui\Form\PluginDetailsForm.
  *   - \Drupal\purge_ui\Controller\QueueFormController::detailForm().
  *   - \Drupal\purge_ui\Controller\QueueFormController::detailFormTitle().
@@ -16,9 +18,11 @@ use Drupal\purge\Tests\WebTestBase;
 class QueueDetailsFormTest extends WebTestBase {
 
   /**
+   * The Drupal user entity.
+   *
    * @var \Drupal\user\Entity\User
    */
-  protected $admin_user;
+  protected $adminUser;
 
   /**
    * The route that renders the form.
@@ -39,7 +43,7 @@ class QueueDetailsFormTest extends WebTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $this->admin_user = $this->drupalCreateUser(['administer site configuration']);
+    $this->adminUser = $this->drupalCreateUser(['administer site configuration']);
   }
 
   /**
@@ -48,7 +52,7 @@ class QueueDetailsFormTest extends WebTestBase {
   public function testAccess() {
     $this->drupalGet(Url::fromRoute($this->route, []));
     $this->assertResponse(403);
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route, []));
     $this->assertResponse(200);
   }
@@ -60,7 +64,7 @@ class QueueDetailsFormTest extends WebTestBase {
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testDetailForm() {
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route, []));
     $this->assertRaw('Memory');
     $this->assertRaw('A non-persistent, per-request memory queue (not useful on production systems).');

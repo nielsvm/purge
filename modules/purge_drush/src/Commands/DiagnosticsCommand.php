@@ -22,7 +22,7 @@ class DiagnosticsCommand extends DrushCommands {
   protected $purgeDiagnostics;
 
   /**
-   * Constructs a \Drupal\purge_drush\Commands\DiagnosticsCommand object.
+   * Construct a DiagnosticsCommand object.
    *
    * @param \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface $purge_diagnostics
    *   The purge diagnostics service.

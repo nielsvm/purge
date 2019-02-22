@@ -4,7 +4,6 @@ namespace Drupal\purge\Plugin\Purge\Queue;
 
 use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
-use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
 
 /**
  * Provides the transaction buffer.

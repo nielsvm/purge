@@ -46,11 +46,11 @@ class StatsTracker implements StatsTrackerInterface {
    * @var string[]
    */
   protected $statClasses = [
-    self::NUMBER_OF_ITEMS     => '\Drupal\purge\Plugin\Purge\Queue\NumberOfItemsStatistic',
-    self::TOTAL_PROCESSING    => '\Drupal\purge\Plugin\Purge\Queue\TotalProcessingStatistic',
-    self::TOTAL_SUCCEEDED     => '\Drupal\purge\Plugin\Purge\Queue\TotalSucceededStatistic',
-    self::TOTAL_FAILED        => '\Drupal\purge\Plugin\Purge\Queue\TotalFailedStatistic',
-    self::TOTAL_NOT_SUPPORTED => '\Drupal\purge\Plugin\Purge\Queue\TotalNotSupportedStatistic',
+    self::NUMBER_OF_ITEMS     => NumberOfItemsStatistic::class,
+    self::TOTAL_PROCESSING    => TotalProcessingStatistic::class,
+    self::TOTAL_SUCCEEDED     => TotalSucceededStatistic::class,
+    self::TOTAL_FAILED        => TotalFailedStatistic::class,
+    self::TOTAL_NOT_SUPPORTED => TotalNotSupportedStatistic::class,
   ];
 
   /**

@@ -116,7 +116,7 @@ class DebugCommands extends DrushCommands {
       $this->io()->listing($disabled_channels());
       $this->io()->caution(dt(
           "Once enabled, this allows you to run Drush commands like"
-        . " p:queue-work with the -v parameter, giving you a detailed"
+        . " p:queue-work with the -d parameter, giving you a detailed"
         . " amount of live-debugging information getting logged by Purge"
         . " and modules integrating with it."
         . " HOWEVER, debug logging is VERY verbose and can add"

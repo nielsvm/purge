@@ -45,4 +45,11 @@ interface TagsHeaderInterface extends PluginInspectionInterface, ContainerFactor
    */
   public function getValue(array $tags);
 
+  /**
+   * Determine if this header should be added to the response.
+   *
+   * @return bool
+   *   TRUE when the header should be added to responses, FALSE when not.
+   */
+  public function isEnabled();
 }

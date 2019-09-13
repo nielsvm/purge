@@ -56,15 +56,17 @@ class CacheableResponseSubscriber implements EventSubscriberInterface {
       // Iterate all tagsheader plugins and add a header for each plugin.
       $tags = $response->getCacheableMetadata()->getCacheTags();
       foreach ($this->purgeTagsHeaders as $header) {
+        if ($header->isEnabled()) {
 
-        // Retrieve the header name perform a few simple sanity checks.
-        $name = $header->getHeaderName();
-        if ((!is_string($name)) || empty(trim($name))) {
-          $plugin_id = $header->getPluginId();
-          throw new \LogicException("Header plugin '$plugin_id' should return a non-empty string on ::getHeaderName()!");
+          // Retrieve the header name and perform a few simple sanity checks.
+          $name = $header->getHeaderName();
+          if ((!is_string($name)) || empty(trim($name))) {
+            $plugin_id = $header->getPluginId();
+            throw new \LogicException("Header plugin '$plugin_id' should return a non-empty string on ::getHeaderName()!");
+          }
+
+          $response->headers->set($name, $header->getValue($tags));
         }
-
-        $response->headers->set($name, $header->getValue($tags));
       }
     }
   }

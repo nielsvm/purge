@@ -35,4 +35,11 @@ abstract class TagsHeaderBase extends PluginBase implements TagsHeaderInterface 
     return implode(' ', $tags);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function isEnabled() {
+    return TRUE;
+  }
+
 }

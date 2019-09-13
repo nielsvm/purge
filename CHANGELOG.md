@@ -3,6 +3,8 @@
 # Changelog
 _Note: newest records always go on top_
 
+* **NEW:** `Annotation\PurgeTagsHeader::$dependent_purger_plugins` to allow binding headers to purgers.
+* **NEW:** `TagsHeaderInterface::isEnabled()` which returns `TRUE` by default.
 * **FIXED #2795131:** `purge_tokens` should not set Max-Age to 0.
 * **IMPROVED:** propelled codestyle into 2019 after thousands of fixes (phpcs --standard=Drupal)
 * **FIXED #2795131:** codestyle in the tests got overhauled.

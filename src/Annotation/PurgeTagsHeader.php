@@ -30,4 +30,19 @@ class PurgeTagsHeader extends Plugin {
    */
   public $header_name; // phpcs:ignore -- annotation property!
 
+  /**
+   * Required purger plugins.
+   *
+   * When your tags header is specific for a certain purger plugin(s) you
+   * can bind it to these plugins. This tags header will then only get loaded
+   * when any of these specified purgers are in active use.
+   *
+   * @var array
+   *
+   * @code
+   * dependent_purger_plugins = {"mypurger"}
+   * @endcode
+   */
+  public $dependent_purger_plugins = []; // phpcs:ignore -- annotation property!
+
 }

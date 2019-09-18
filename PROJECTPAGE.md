@@ -13,9 +13,8 @@ The ``8.x-3.x`` versions enable invalidation of content from external systems
 leveraging Drupal's brand new cache architecture. The technology-agnostic plugin
 architecture allows for different server configurations and use cases. Last but
 not least, it enforces a separation of concerns and should be seen as a
-**middleware** solution (see ``README``
-[``.pdf``](http://cgit.drupalcode.org/purge/blob/README.pdf?h=8.x-3.x)
-[``.md``](http://cgit.drupalcode.org/purge/plain/README.md?h=8.x-3.x)).
+**middleware** solution (see
+[``README.md``](http://cgit.drupalcode.org/purge/plain/README.md?h=8.x-3.x)).
 
 ###### Getting started
 For most simple configurations, start with:
@@ -44,12 +43,8 @@ integrated:
  * **[``fastlypurger``](https://www.drupal.org/project/fastly)**
  * **[``keycdn``](https://www.drupal.org/project/keycdn)**
  * **[``varnish_purge``](https://www.drupal.org/project/varnish_purge)**
-
-Anyone looking for a junior coding project, have a look at these issues:
-
  * **[``max_cdn_cache``](https://www.drupal.org/node/2902048)**
  * **[``nginx_cache_clear``](https://www.drupal.org/node/2902052)**
-
 
 Interested? Reach out any time of day and we'll get you going!
 

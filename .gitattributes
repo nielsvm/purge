@@ -1,1 +1,3 @@
 /.gitattributes export-ignore
+/documentation export-ignore
+/documentation/* export-ignore

@@ -10,6 +10,7 @@ and this project adheres to
 ## [Unreleased]
 
 ### Added
+- Added `.gitattributes` for future use.
 - Added `composer.json` for integration with Composer-based workflows.
 - **API:** `Annotation\PurgeTagsHeader::$dependent_purger_plugins` to allow
   binding headers to purgers.

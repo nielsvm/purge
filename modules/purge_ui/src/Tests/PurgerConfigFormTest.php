@@ -74,8 +74,8 @@ class PurgerConfigFormTest extends WebTestBase {
   /**
    * Setup the test.
    */
-  public function setUp() {
-    parent::setUp();
+  public function setUp($switch_to_memory_queue = TRUE) {
+    parent::setUp($switch_to_memory_queue);
     $this->initializePurgersService(['c', $this->purger]);
     $this->urlValid = Url::fromRoute($this->route, ['id' => 'id1']);
     $this->urlValidDialog = Url::fromRoute($this->routeDialog, ['id' => 'id1']);

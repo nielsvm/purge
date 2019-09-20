@@ -42,7 +42,7 @@ class ServiceTest extends KernelServiceTestBase {
   /**
    * Set up the test.
    */
-  public function setUp() {
+  public function setUp($switch_to_memory_queue = TRUE) {
 
     // Skip parent::setUp() as we don't want the service initialized here.
     KernelTestBase::setUp();

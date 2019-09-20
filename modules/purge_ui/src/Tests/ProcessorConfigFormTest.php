@@ -74,8 +74,8 @@ class ProcessorConfigFormTest extends WebTestBase {
   /**
    * Setup the test.
    */
-  public function setUp() {
-    parent::setUp();
+  public function setUp($switch_to_memory_queue = TRUE) {
+    parent::setUp($switch_to_memory_queue);
     $this->initializeProcessorsService(['c', $this->processor]);
     $this->urlValid = Url::fromRoute($this->route, ['id' => $this->processor]);
     $this->urlValidDialog = Url::fromRoute($this->routeDialog, ['id' => $this->processor]);

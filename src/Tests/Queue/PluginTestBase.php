@@ -35,7 +35,7 @@ abstract class PluginTestBase extends KernelTestBase {
   /**
    * Set up the test.
    */
-  public function setUp() {
+  public function setUp($switch_to_memory_queue = TRUE) {
     parent::setUp();
     $this->pluginManagerPurgeQueue = $this->container->get('plugin.manager.purge.queue');
     $this->setUpQueuePlugin();

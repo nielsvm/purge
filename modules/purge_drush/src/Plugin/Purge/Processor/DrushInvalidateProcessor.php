@@ -2,8 +2,8 @@
 
 namespace Drupal\purge_drush\Plugin\Purge\Processor;
 
-use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorBase;
+use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
 
 /**
  * Processor for the 'drush p:invalidate' command.

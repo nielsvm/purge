@@ -2,8 +2,8 @@
 
 namespace Drupal\purge\Tests\TagsHeader;
 
-use Symfony\Component\HttpFoundation\Request;
 use Drupal\purge\Tests\KernelTestBase;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Tests \Drupal\purge\EventSubscriber\CacheableResponseSubscriber.

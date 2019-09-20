@@ -98,6 +98,8 @@ trait TestTrait {
    *   Arguments to be passed to the callable.
    */
   protected function assertException($exception, callable $call, array $args = []) {
+    // phpcs:disable Drupal.Functions.DiscouragedFunctions.Discouraged
+    // phpcs:disable PHPCS_SecurityAudit.BadFunctions.NoEvals.NoEvals
     $thrown = FALSE;
     eval("
       try {
@@ -107,6 +109,8 @@ trait TestTrait {
         \$thrown = TRUE;
       }");
     $this->assertTrue($thrown, "Exception $exception thrown.");
+    // phpcs:enable PHPCS_SecurityAudit.BadFunctions.NoEvals.NoEvals
+    // phpcs:enable Drupal.Functions.DiscouragedFunctions.Discouraged
   }
 
   /**
@@ -120,6 +124,8 @@ trait TestTrait {
    *   Arguments to be passed to the callable.
    */
   protected function assertNoException($exception, callable $call, array $args = []) {
+    // phpcs:disable Drupal.Functions.DiscouragedFunctions.Discouraged
+    // phpcs:disable PHPCS_SecurityAudit.BadFunctions.NoEvals.NoEvals
     $thrown = FALSE;
     eval("
       try {
@@ -129,6 +135,8 @@ trait TestTrait {
         \$thrown = TRUE;
       }");
     $this->assertFalse($thrown, "Exception $exception isn't thrown.");
+    // phpcs:enable PHPCS_SecurityAudit.BadFunctions.NoEvals.NoEvals
+    // phpcs:enable Drupal.Functions.DiscouragedFunctions.Discouraged
   }
 
   /**

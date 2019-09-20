@@ -4,4 +4,4 @@ description: "Provides queuers for testing."
 package: Testing
 core: 8.x
 dependencies:
-  - purge
+  - purge:purge

@@ -2,8 +2,8 @@
 
 namespace Drupal\purge\Tests\TagsHeader;
 
-use Drupal\purge\Tests\KernelTestBase;
 use Drupal\purge\Tests\KernelServiceTestBase;
+use Drupal\purge\Tests\KernelTestBase;
 
 /**
  * Tests \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersService.
@@ -13,7 +13,19 @@ use Drupal\purge\Tests\KernelServiceTestBase;
  * @see \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersServiceInterface
  */
 class ServiceTest extends KernelServiceTestBase {
+
+  /**
+   * The name of the service as defined in services.yml.
+   *
+   * @var string
+   */
   protected $serviceId = 'purge.tagsheaders';
+
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
   public static $modules = ['purge_tagsheader_test'];
 
   /**

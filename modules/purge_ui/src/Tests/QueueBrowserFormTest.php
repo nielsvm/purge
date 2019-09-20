@@ -63,8 +63,8 @@ class QueueBrowserFormTest extends WebTestBase {
     $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(200);
-    $this->assertTitle(t("Purge queue browser | Drupal"));
-    $this->assertText(t("Your queue is empty."));
+    $this->assertTitle("Purge queue browser | Drupal");
+    $this->assertText("Your queue is empty.");
     $this->assertNoField('edit-1');
   }
 
@@ -77,8 +77,8 @@ class QueueBrowserFormTest extends WebTestBase {
   public function testClose() {
     $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
-    $this->assertText(t("Close"));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('Close')]);
+    $this->assertText("Close");
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => 'Close']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }
@@ -108,10 +108,10 @@ class QueueBrowserFormTest extends WebTestBase {
     // Render the interface and find the first 15 tags, the is on page 2.
     $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
-    $this->assertText(t("Type"));
-    $this->assertText(t("State"));
-    $this->assertText(t("Expression"));
-    $this->assertText(t("New"));
+    $this->assertText("Type");
+    $this->assertText("State");
+    $this->assertText("Expression");
+    $this->assertText("New");
     $this->assertField('edit-1');
     $this->assertField('edit-2');
     $this->assertNoField('edit-3');

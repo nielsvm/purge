@@ -2,10 +2,10 @@
 
 namespace Drupal\purge_ui\Tests;
 
+use Drupal\Core\Form\FormState;
 use Drupal\Core\Url;
 use Drupal\purge\Tests\WebTestBase;
 use Drupal\purge_ui\Form\QueueEmptyForm;
-use Drupal\Core\Form\FormState;
 
 /**
  * Tests \Drupal\purge_ui\Form\QueueEmptyForm.
@@ -65,9 +65,9 @@ class QueueEmptyFormTest extends WebTestBase {
     $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
     $this->assertResponse(200);
-    $this->assertTitle(t("Are you sure you want to empty the queue? | Drupal"));
-    $this->assertText(t("This action cannot be undone."));
-    $this->assertText(t('Yes, throw everything away!'));
+    $this->assertTitle("Are you sure you want to empty the queue? | Drupal");
+    $this->assertText("This action cannot be undone.");
+    $this->assertText('Yes, throw everything away!');
   }
 
   /**
@@ -79,8 +79,8 @@ class QueueEmptyFormTest extends WebTestBase {
   public function testNo() {
     $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
-    $this->assertRaw(t('No'));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('No')]);
+    $this->assertRaw('No');
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => 'No']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }
@@ -101,7 +101,7 @@ class QueueEmptyFormTest extends WebTestBase {
     // Call the confirm form and assert the AJAX responses.
     $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('Yes, throw everything away!')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => 'Yes, throw everything away!']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
     // Directly call ::emptyQueue() on a form object and assert the empty queue.

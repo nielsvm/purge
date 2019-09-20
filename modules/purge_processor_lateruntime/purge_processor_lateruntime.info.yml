@@ -4,4 +4,4 @@ description: 'Process the queue on every request, this is only recommended on hi
 package: "Purge - processors"
 core: 8.x
 dependencies:
-  - purge
+  - purge:purge

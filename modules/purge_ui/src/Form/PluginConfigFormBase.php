@@ -2,11 +2,11 @@
 
 namespace Drupal\purge_ui\Form;
 
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
+use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a base class for (dialog-driven) plugin configuration forms.

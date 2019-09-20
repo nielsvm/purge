@@ -95,17 +95,17 @@ class PurgerConfigFormTest extends WebTestBase {
     // Test the plain version of the form.
     $this->drupalGet($this->urlValid);
     $this->assertResponse(200);
-    $this->assertRaw(t('Save configuration'));
-    $this->assertNoRaw(t('Cancel'));
+    $this->assertRaw('Save configuration');
+    $this->assertNoRaw('Cancel');
     $this->assertFieldByName('textfield');
     // Test the modal dialog version of the form.
     $this->drupalGet($this->urlValidDialog);
     $this->assertResponse(200);
-    $this->assertRaw(t('Save configuration'));
-    $this->assertRaw(t('Cancel'));
+    $this->assertRaw('Save configuration');
+    $this->assertRaw('Cancel');
     $this->assertFieldByName('textfield');
     // Test the AJAX response of the modal dialog version.
-    $json = $this->drupalPostAjaxForm($this->urlValidDialog->toString(), [], ['op' => t('Cancel')]);
+    $json = $this->drupalPostAjaxForm($this->urlValidDialog->toString(), [], ['op' => 'Cancel']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }

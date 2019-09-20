@@ -2,9 +2,9 @@
 
 namespace Drupal\purge_ui\Controller;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller for queue configuration forms.

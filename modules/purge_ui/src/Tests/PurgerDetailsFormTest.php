@@ -75,8 +75,8 @@ class PurgerDetailsFormTest extends WebTestBase {
     $this->drupalGet(Url::fromRoute($this->route, $args));
     $this->assertRaw('Purger A');
     $this->assertRaw('Test purger A.');
-    $this->assertRaw(t('Close'));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, $args)->toString(), [], ['op' => t('Close')]);
+    $this->assertRaw('Close');
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, $args)->toString(), [], ['op' => 'Close']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }

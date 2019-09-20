@@ -4,4 +4,4 @@ description: 'Queues every tag that Drupal invalidates internally.'
 package: "Purge - queuers"
 core: 8.x
 dependencies:
-  - purge
+  - purge:purge

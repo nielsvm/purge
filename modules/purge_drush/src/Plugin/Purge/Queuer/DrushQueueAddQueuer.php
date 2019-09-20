@@ -2,8 +2,8 @@
 
 namespace Drupal\purge_drush\Plugin\Purge\Queuer;
 
-use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
 use Drupal\purge\Plugin\Purge\Queuer\QueuerBase;
+use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
 
 /**
  * Queuer for the 'drush p:queue-add' command.

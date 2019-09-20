@@ -52,4 +52,5 @@ interface TagsHeaderInterface extends PluginInspectionInterface, ContainerFactor
    *   TRUE when the header should be added to responses, FALSE when not.
    */
   public function isEnabled();
+
 }

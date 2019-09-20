@@ -2,12 +2,12 @@
 
 namespace Drupal\purge_drush\Commands;
 
+use Consolidation\AnnotatedCommand\AnnotationData;
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
+use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\Console\Input\InputInterface;
-use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Consolidation\AnnotatedCommand\AnnotationData;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
-use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 
 /**
  * Generate a diagnostic self-service report.

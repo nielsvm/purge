@@ -2,9 +2,9 @@
 
 namespace Drupal\purge\Plugin\Purge\Purger;
 
-use Drupal\purge\ServiceInterface;
 use Drupal\purge\ModifiableServiceInterface;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
+use Drupal\purge\ServiceInterface;
 
 /**
  * Describes a service that distributes access to one or more purgers.

@@ -12,6 +12,12 @@ use Drupal\Core\StreamWrapper\PublicStream;
  * @see \Drupal\purge\Plugin\Purge\Queue\QueueInterface
  */
 class FileQueueTest extends PluginTestBase {
+
+  /**
+   * The plugin ID of the queue plugin being tested.
+   *
+   * @var string
+   */
   protected $pluginId = 'file';
 
   /**
@@ -49,11 +55,11 @@ class FileQueueTest extends PluginTestBase {
     // creates a range of payloads to make this test more resilient.
     $payloads = function ($base, $time) {
       return [
-        $base . $time - 2 . "\n",
-        $base . $time - 1 . "\n",
+        $base . ($time - 2) . "\n",
+        $base . ($time - 1) . "\n",
         $base . $time . "\n",
-        $base . $time + 1 . "\n",
-        $base . $time + 2 . "\n",
+        $base . ($time + 1) . "\n",
+        $base . ($time + 2) . "\n",
       ];
     };
 

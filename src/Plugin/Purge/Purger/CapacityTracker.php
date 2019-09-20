@@ -2,9 +2,9 @@
 
 namespace Drupal\purge\Plugin\Purge\Purger;
 
-use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
-use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
 use Drupal\purge\Counter\Counter;
+use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
 
 /**
  * Provides the capacity tracker.

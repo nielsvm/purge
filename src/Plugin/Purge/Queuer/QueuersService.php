@@ -2,8 +2,8 @@
 
 namespace Drupal\purge\Plugin\Purge\Queuer;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\purge\IteratingServiceBaseTrait;
 use Drupal\purge\ModifiableServiceBaseTrait;
 use Drupal\purge\ServiceBase;
@@ -98,9 +98,11 @@ class QueuersService extends ServiceBase implements QueuersServiceInterface {
     parent::reload();
     // Without this, the tests will throw "failed to instantiate user-supplied
     // statement class: CREATE TABLE {cache_config}".
+    // phpcs:ignore DrupalPractice.Objects.GlobalDrupal.GlobalDrupal
     $this->configFactory = \Drupal::configFactory();
     // Drush commands appreciate it when the config cache gets cleared.
     if (php_sapi_name() === 'cli') {
+      // phpcs:ignore DrupalPractice.Objects.GlobalDrupal.GlobalDrupal
       \Drupal::cache('config')->deleteAll();
     }
     $this->reloadIterator();

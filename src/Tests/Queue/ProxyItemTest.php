@@ -2,11 +2,11 @@
 
 namespace Drupal\purge\Tests\Queue;
 
-use Drupal\purge\Tests\KernelTestBase;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Queue\Exception\InvalidPropertyException;
 use Drupal\purge\Plugin\Purge\Queue\ProxyItem;
 use Drupal\purge\Plugin\Purge\Queue\TxBuffer;
+use Drupal\purge\Tests\KernelTestBase;
 
 /**
  * Tests \Drupal\purge\Tests\Queue\ProxyItem.

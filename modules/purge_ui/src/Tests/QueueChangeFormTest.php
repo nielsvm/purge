@@ -71,15 +71,15 @@ class QueueChangeFormTest extends WebTestBase {
     // Assert that 'memory' is selected queue.
     $this->assertFieldChecked('edit-plugin-id-memory');
     // Assert that submitting a different queue changes it.
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, [])->toString(), [], ['op' => t('Change'), 'plugin_id' => 'b']);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, [])->toString(), [], ['op' => 'Change', 'plugin_id' => 'b']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual('redirect', $json[2]['command']);
     $this->assertEqual(3, count($json));
-    $this->drupalPostForm(Url::fromRoute($this->route, []), ['plugin_id' => 'b'], t('Change'));
+    $this->drupalPostForm(Url::fromRoute($this->route, []), ['plugin_id' => 'b'], 'Change');
     $this->drupalGet(Url::fromRoute($this->route, []));
     $this->assertFieldChecked('edit-plugin-id-b');
     // // Assert that closing the dialog functions as expected.
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, [])->toString(), [], ['op' => t('Cancel')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, [])->toString(), [], ['op' => 'Cancel']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }

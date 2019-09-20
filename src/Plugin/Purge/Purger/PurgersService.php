@@ -3,9 +3,8 @@
 namespace Drupal\purge\Plugin\Purge\Purger;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
-use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\purge\ServiceBase;
+use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\purge\Logger\LoggerServiceInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
@@ -14,6 +13,7 @@ use Drupal\purge\Plugin\Purge\Purger\Exception\BadBehaviorException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\LockException;
+use Drupal\purge\ServiceBase;
 
 /**
  * Provides the service that distributes access to one or more purgers.
@@ -368,9 +368,11 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
     parent::reload();
     // Without this, the tests will throw "failed to instantiate user-supplied
     // statement class: CREATE TABLE {cache_config}".
+    // phpcs:ignore DrupalPractice.Objects.GlobalDrupal.GlobalDrupal
     $this->configFactory = \Drupal::configFactory();
     // Drush commands appreciate it when the config cache gets cleared.
     if (php_sapi_name() === 'cli') {
+      // phpcs:ignore DrupalPractice.Objects.GlobalDrupal.GlobalDrupal
       \Drupal::cache('config')->deleteAll();
     }
     $this->purgers = NULL;

@@ -2,12 +2,12 @@
 
 namespace Drupal\purge_ui\Form;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
+use Drupal\Core\Form\ConfirmFormBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Delete queuer {id}.

@@ -2,30 +2,30 @@
 
 namespace Drupal\purge_drush\Commands;
 
-use Drush\Drush;
-use Drush\Commands\DrushCommands;
-use Drush\Exceptions\UserAbortException;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Helper\TableSeparator;
-use Symfony\Component\Console\Helper\TableCell;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\BufferedOutput;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
-use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
-use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
-use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
 use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\LockException;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
+use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
+use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
+use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
+use Drush\Commands\DrushCommands;
+use Drush\Drush;
+use Drush\Exceptions\UserAbortException;
+use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\TableCell;
+use Symfony\Component\Console\Helper\TableSeparator;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
  * Interact with the Purge queue from the command line.
@@ -117,7 +117,7 @@ class QueueCommands extends DrushCommands {
    * @hook init p:queue-add
    */
   public function queueAddParseExpressions(InputInterface $input, AnnotationData $annotationData) {
-    $raw = trim(implode($input->getArguments()['expressions'], " "));
+    $raw = trim(implode(" ", $input->getArguments()['expressions']));
     $expressions = [];
     if ($raw) {
       $expressions = explode(' ', $raw);
@@ -283,7 +283,6 @@ class QueueCommands extends DrushCommands {
     for ($page = $options['page']; $page <= ($max = $this->purgeQueue->selectPageMax()); $page++) {
 
       // Build the pager string and $prev/$next variables.
-      $pgrquit = dt("[q]uit");
       $pgrprev = ($prev = ($page !== 1)) ? '[←]' : '   ';
       $pgrnext = ($next = ($page !== $max)) ? '[→]' : '   ';
       $pgrpage = dt("page") . ' ' . sprintf("%d/%d", $page, $max);

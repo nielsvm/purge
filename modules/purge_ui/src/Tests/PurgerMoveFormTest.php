@@ -84,13 +84,13 @@ class PurgerMoveFormTest extends WebTestBase {
     $this->initializePurgersService(['a']);
     $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->routeDown, $args_down));
-    $this->assertRaw(t('No'));
+    $this->assertRaw('No');
     $this->drupalGet(Url::fromRoute($this->routeUp, $args_up));
-    $this->assertRaw(t('No'));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->routeDown, $args_down)->toString(), [], ['op' => t('No')]);
+    $this->assertRaw('No');
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->routeDown, $args_down)->toString(), [], ['op' => 'No']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->routeUp, $args_up)->toString(), [], ['op' => t('No')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->routeUp, $args_up)->toString(), [], ['op' => 'No']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }
@@ -111,7 +111,7 @@ class PurgerMoveFormTest extends WebTestBase {
     // Test the 'down' variant of the move form.
     $this->drupalGet(Url::fromRoute($this->routeDown, $down));
     $this->assertRaw('Do you want to move Purger A down in the execution order?');
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->routeDown, $down)->toString(), [], ['op' => t('Yes!')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->routeDown, $down)->toString(), [], ['op' => 'Yes!']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual('redirect', $json[2]['command']);
     $this->purgePurgers->reload();
@@ -119,7 +119,7 @@ class PurgerMoveFormTest extends WebTestBase {
     // Test the 'up' variant of the move form.
     $this->drupalGet(Url::fromRoute($this->routeUp, $up));
     $this->assertRaw('Do you want to move Purger C up in the execution order?');
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->routeUp, $up)->toString(), [], ['op' => t('Yes!')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->routeUp, $up)->toString(), [], ['op' => 'Yes!']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual('redirect', $json[2]['command']);
     $this->purgePurgers->reload();

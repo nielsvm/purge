@@ -77,8 +77,8 @@ class QueuerAddFormTest extends WebTestBase {
   public function testCancel() {
     $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
-    $this->assertRaw(t('Cancel'));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('Cancel')]);
+    $this->assertRaw('Cancel');
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => 'Cancel']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }
@@ -92,11 +92,11 @@ class QueuerAddFormTest extends WebTestBase {
   public function testAdd() {
     $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
-    $this->assertRaw(t('Add'));
-    $this->assertNoRaw(t('Queuer A'));
-    $this->assertNoRaw(t('Queuer B'));
-    $this->assertRaw(t('Queuer C'));
-    $this->assertRaw(t('Queuer with form'));
+    $this->assertRaw('Add');
+    $this->assertNoRaw('Queuer A');
+    $this->assertNoRaw('Queuer B');
+    $this->assertRaw('Queuer C');
+    $this->assertRaw('Queuer with form');
     $this->assertTrue(count($this->purgeQueuers->getPluginsEnabled()) === 2);
     $this->assertTrue(in_array('a', $this->purgeQueuers->getPluginsEnabled()));
     $this->assertTrue(in_array('b', $this->purgeQueuers->getPluginsEnabled()));
@@ -104,7 +104,7 @@ class QueuerAddFormTest extends WebTestBase {
     $this->assertFalse(in_array('withform', $this->purgeQueuers->getPluginsEnabled()));
     // Test that adding the plugin succeeds and results in a redirect command,
     // which only happens when it was able to save the data.
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['id' => 'c'], ['op' => t('Add')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['id' => 'c'], ['op' => 'Add']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual('redirect', $json[2]['command']);
     $this->assertEqual(3, count($json));

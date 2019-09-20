@@ -2,8 +2,6 @@
 
 namespace Drupal\purge_drush\Commands;
 
-use Drush\Commands\DrushCommands;
-use Drush\Exceptions\UserAbortException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException;
@@ -15,11 +13,13 @@ use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
 use Drupal\purge\Plugin\Purge\Purger\Exception\LockException;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
+use Drush\Commands\DrushCommands;
+use Drush\Exceptions\UserAbortException;
 
 /**
  * Directly invalidate an item without going through the queue.
  */
-class Invalidatecommand extends DrushCommands {
+class InvalidateCommand extends DrushCommands {
 
   /**
    * The 'purge.processors' service.

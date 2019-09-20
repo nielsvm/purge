@@ -2,11 +2,11 @@
 
 namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Logger\RfcLogLevel;
-use Drupal\purge\ServiceBase;
 use Drupal\purge\IteratingServiceBaseTrait;
+use Drupal\purge\ServiceBase;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Provides a service that interacts with diagnostic checks.

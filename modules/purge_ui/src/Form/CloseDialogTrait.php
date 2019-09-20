@@ -2,9 +2,9 @@
 
 namespace Drupal\purge_ui\Form;
 
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Shares the closeDialog AJAX form callback.

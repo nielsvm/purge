@@ -2,8 +2,8 @@
 
 namespace Drupal\purge;
 
-use Drupal\Core\DependencyInjection\ServiceProviderInterface;
 use Drupal\Core\DependencyInjection\ServiceModifierInterface;
+use Drupal\Core\DependencyInjection\ServiceProviderInterface;
 
 /**
  * Describes a generic service for all DIC-registered service classes by Purge.

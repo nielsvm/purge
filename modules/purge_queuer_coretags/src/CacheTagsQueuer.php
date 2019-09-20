@@ -2,11 +2,11 @@
 
 namespace Drupal\purge_queuer_coretags;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Queues invalidated cache tags.

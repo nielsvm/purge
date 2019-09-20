@@ -2,10 +2,10 @@
 
 namespace Drupal\Tests\purge_ui\Unit\Form;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Drupal\Tests\UnitTestCase;
 use Drupal\Core\Form\FormState;
 use Drupal\purge_ui\Form\LoggingConfigForm;
+use Drupal\Tests\UnitTestCase;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * @coversDefaultClass \Drupal\purge_ui\Form\LoggingConfigForm

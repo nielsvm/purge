@@ -69,7 +69,7 @@ class ConfigurationForm extends QueuerConfigFormBase {
     $form['blacklist']['add'] = [
       '#type' => 'submit',
       '#name' => 'add',
-      '#value' => t('Add prefix'),
+      '#value' => $this->t('Add prefix'),
       '#submit' => [[$this, 'addMoreSubmit']],
       '#ajax' => [
         'callback' => [$this, 'addMoreCallback'],

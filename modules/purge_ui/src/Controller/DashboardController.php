@@ -2,18 +2,18 @@
 
 namespace Drupal\purge_ui\Controller;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Drupal\Core\Controller\ControllerBase;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
-use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
 use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
+use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Configuration dashboard for configuring the cache invalidation pipeline.
@@ -172,10 +172,12 @@ class DashboardController extends ControllerBase {
    */
   protected function buildLoggingSection() {
     extract($this->getRenderLocals());
+    // phpcs:disable DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable -- PHP's extract() isn't understood by this sniffer..
     $build = $details($this->t('Logging'));
     $build['#open'] = $this->request->get('edit-logging', FALSE);
     $build['configure'] = $buttonlink(
       $this->t("Configure logging behavior"), 'logging', '90%');
+    // phpcs:enable DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable -- PHP's extract() isn't understood by this sniffer..
     return $build;
   }
 
@@ -187,6 +189,7 @@ class DashboardController extends ControllerBase {
    */
   protected function buildDiagnosticReport() {
     extract($this->getRenderLocals());
+    // phpcs:disable DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable -- PHP's extract() isn't understood by this sniffer..
     $build = $fieldset($this->t('Status'));
     $build['report'] = [
       '#theme' => 'purge_ui_diagnostics',
@@ -194,6 +197,7 @@ class DashboardController extends ControllerBase {
         $this->purgeDiagnostics
       ),
     ];
+    // phpcs:enable DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
     return $build;
   }
 
@@ -205,6 +209,7 @@ class DashboardController extends ControllerBase {
    */
   protected function buildPurgers() {
     extract($this->getRenderLocals());
+    // phpcs:disable DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable -- PHP's extract() isn't understood by this sniffer..
     $build = $details($this->t('Cache Invalidation'));
     $build['#description'] = $p($this->t("Each layer of caching on top of your site is cleared by a purger. Purgers are provided by third-party modules and support one or more types of cache invalidation."));
     $build['t'] = $table(['layer' => $this->t('Caching layer')]);
@@ -289,6 +294,7 @@ class DashboardController extends ControllerBase {
     $row_new($build['t'], '_www');
     $row_set($build['t'], '_www', 'layer', $cell_markup($b($this->t("Public Endpoint"))));
 
+    // phpcs:enable DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
     return $build;
   }
 
@@ -300,6 +306,7 @@ class DashboardController extends ControllerBase {
    */
   protected function buildQueuersQueueProcessors() {
     extract($this->getRenderLocals());
+    // phpcs:disable DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable -- PHP's extract() isn't understood by this sniffer..
     $build = $details($this->t('Queue'));
     $build['#description'] = $p($this->t("The queue holds items that need refreshing, hold your mouse over the column titles for more details."));
     $build['#open'] = $this->request->get('edit-queue', FALSE) || (!count($this->purgeQueuers)) || (!count($this->purgeProcessors));
@@ -380,6 +387,7 @@ class DashboardController extends ControllerBase {
       }
     }
 
+    // phpcs:enable DrupalPractice.CodeAnalysis.VariableAnalysis.UndefinedVariable
     return $build;
   }
 
@@ -399,6 +407,7 @@ class DashboardController extends ControllerBase {
    *   The render array.
    */
   protected function getRenderLocals() {
+    // phpcs:disable DrupalPractice.CodeAnalysis.VariableAnalysis.UnusedVariable -- PHP's extract() isn't understood by this sniffer..
     $details = function ($title) {
       return [
         '#type' => 'details',
@@ -516,6 +525,7 @@ class DashboardController extends ControllerBase {
       return $tag('p', $content);
     };
     // Return locally defined variables so extract() can easily unpack.
+    // phpcs:enable DrupalPractice.CodeAnalysis.VariableAnalysis.UnusedVariable
     return get_defined_vars();
   }
 

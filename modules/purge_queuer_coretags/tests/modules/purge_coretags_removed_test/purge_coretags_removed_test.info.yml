@@ -4,5 +4,5 @@ description: 'Remove "purge_queuer_coretags.queuer" from the container for testi
 package: Testing
 core: 8.x
 dependencies:
-  - purge
-  - purge_queuer_coretags
+  - purge:purge
+  - purge:purge_queuer_coretags

@@ -4,5 +4,5 @@ description: 'Replace ProcessorsService and QueuersService to load Drupal withou
 package: Testing
 core: 8.x
 dependencies:
-  - purge
-  - purge_ui
+  - purge:purge
+  - purge:purge_ui

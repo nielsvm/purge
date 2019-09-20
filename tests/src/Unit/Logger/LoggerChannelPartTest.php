@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\purge\Unit\Logger;
 
-use Drupal\purge\Logger\LoggerChannelPart;
 use Drupal\Core\Logger\RfcLogLevel;
+use Drupal\purge\Logger\LoggerChannelPart;
 use Drupal\Tests\UnitTestCase;
 
 /**

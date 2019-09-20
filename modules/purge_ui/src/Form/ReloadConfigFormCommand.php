@@ -2,9 +2,9 @@
 
 namespace Drupal\purge_ui\Form;
 
-use Drupal\Core\Url;
 use Drupal\Core\Ajax\CommandInterface;
 use Drupal\Core\Ajax\RedirectCommand;
+use Drupal\Core\Url;
 
 /**
  * Ajax command to reload the purge configuration form from modal dialogs.

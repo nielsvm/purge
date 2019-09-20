@@ -2,8 +2,8 @@
 
 namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Processors.

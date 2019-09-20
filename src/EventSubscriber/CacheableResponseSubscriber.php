@@ -2,11 +2,11 @@
 
 namespace Drupal\purge\EventSubscriber;
 
-use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Drupal\Core\Cache\CacheableResponseInterface;
 use Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersServiceInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * Add cache tags headers on cacheable responses, for external caching systems.

@@ -2,8 +2,8 @@
 
 namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Plugin\Purge\Queue\StatsTrackerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Reports how many items are in the queue and prevents unsustainable volumes.

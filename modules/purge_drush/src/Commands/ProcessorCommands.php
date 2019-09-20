@@ -2,9 +2,9 @@
 
 namespace Drupal\purge_drush\Commands;
 
-use Drush\Commands\DrushCommands;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
+use Drush\Commands\DrushCommands;
 
 /**
  * Configure Purge processors from the command line.
@@ -45,7 +45,6 @@ class ProcessorCommands extends DrushCommands {
    */
   public function processorAdd($id, array $options = ['format' => 'string']) {
     $enabled = $this->purgeProcessors->getPluginsEnabled();
-    $available = $this->purgeProcessors->getPluginsAvailable();
 
     // Verify that the plugin exists.
     if (!isset($this->purgeProcessors->getPlugins()[$id])) {

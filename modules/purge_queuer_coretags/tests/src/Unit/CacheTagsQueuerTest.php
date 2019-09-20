@@ -2,16 +2,16 @@
 
 namespace Drupal\Tests\purge_queuer_coretags\Unit;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
-use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
-use Drupal\purge\Plugin\Purge\Queuers\QueuersServiceInterface;
-use Drupal\purge\Plugin\Purge\Queuer\QueuerBase;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
+use Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface;
+use Drupal\purge\Plugin\Purge\Queuer\QueuerBase;
+use Drupal\purge\Plugin\Purge\Queuers\QueuersServiceInterface;
 use Drupal\purge_queuer_coretags\CacheTagsQueuer;
 use Drupal\Tests\UnitTestCase;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * @coversDefaultClass \Drupal\purge_queuer_coretags\CacheTagsQueuer
@@ -125,8 +125,7 @@ class CacheTagsQueuerTest extends UnitTestCase {
     );
     // Assert the precise calls to QueueServiceInterface::add().
     $number_queue_add_calls = count(array_filter($sets, function ($set) {
-      list($tags, $invs_added) = $set;
-      return $invs_added !== 0;
+      return $set[1] !== 0;
     }));
     reset($sets);
     $this->purgeQueue
@@ -140,11 +139,11 @@ class CacheTagsQueuerTest extends UnitTestCase {
         ),
         $this->callback(
           function (array $invs) use (&$sets) {
-            list($tags, $invs_added) = current($sets);
+            $invs_added = current($sets)[1];
             // Sets with 0 shouldn't call ::add() at all, so skip over them.
             if ($invs_added === 0) {
               next($sets);
-              list($tags, $invs_added) = current($sets);
+              $invs_added = current($sets)[1];
             }
             next($sets);
             return is_array($invs) && (count($invs) === $invs_added);
@@ -153,8 +152,7 @@ class CacheTagsQueuerTest extends UnitTestCase {
       );
     // Trigger the entire chain by feeding the sets of tags.
     foreach ($sets as $set) {
-      list($tags, $invs_added) = $set;
-      $this->cacheTagsQueuer->invalidateTags($tags);
+      $this->cacheTagsQueuer->invalidateTags($set[0]);
     }
   }
 

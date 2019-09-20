@@ -2,9 +2,9 @@
 
 namespace Drupal\purge_drush\Commands;
 
-use Drush\Commands\DrushCommands;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
+use Drush\Commands\DrushCommands;
 
 /**
  * Configure Purge queuers from the command line.
@@ -45,7 +45,6 @@ class QueuerCommands extends DrushCommands {
    */
   public function queuerAdd($id, array $options = ['format' => 'string']) {
     $enabled = $this->purgeQueuers->getPluginsEnabled();
-    $available = $this->purgeQueuers->getPluginsAvailable();
 
     // Verify that the plugin exists.
     if (!isset($this->purgeQueuers->getPlugins()[$id])) {

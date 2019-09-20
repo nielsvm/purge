@@ -3,13 +3,13 @@
 namespace Drupal\purge\Tests\Invalidation;
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationInterface;
-use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationBase;
-use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
-use Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase;
-use Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException;
+use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationBase;
+use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Tests\KernelTestBase;
 
 /**
@@ -34,7 +34,7 @@ abstract class PluginTestBase extends KernelTestBase {
   protected $expressions = NULL;
 
   /**
-   * String expressions INvalid to the invalidation type being tested.
+   * String expressions invalid to the invalidation type being tested.
    *
    * @var string[]|null
    */

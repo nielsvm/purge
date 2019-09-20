@@ -77,8 +77,8 @@ class ProcessorAddFormTest extends WebTestBase {
   public function testCancel() {
     $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
-    $this->assertRaw(t('Cancel'));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('Cancel')]);
+    $this->assertRaw('Cancel');
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => 'Cancel']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }
@@ -92,11 +92,11 @@ class ProcessorAddFormTest extends WebTestBase {
   public function testAdd() {
     $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
-    $this->assertRaw(t('Add'));
-    $this->assertNoRaw(t('Processor A'));
-    $this->assertNoRaw(t('Processor B'));
-    $this->assertRaw(t('Processor C'));
-    $this->assertRaw(t('Processor with form'));
+    $this->assertRaw('Add');
+    $this->assertNoRaw('Processor A');
+    $this->assertNoRaw('Processor B');
+    $this->assertRaw('Processor C');
+    $this->assertRaw('Processor with form');
     $this->assertTrue(count($this->purgeProcessors->getPluginsEnabled()) === 2);
     $this->assertTrue(in_array('a', $this->purgeProcessors->getPluginsEnabled()));
     $this->assertTrue(in_array('b', $this->purgeProcessors->getPluginsEnabled()));
@@ -104,7 +104,7 @@ class ProcessorAddFormTest extends WebTestBase {
     $this->assertFalse(in_array('withform', $this->purgeProcessors->getPluginsEnabled()));
     // Test that adding the plugin succeeds and results in a redirect command,
     // which only happens when it was able to save the data.
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['id' => 'c'], ['op' => t('Add')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['id' => 'c'], ['op' => 'Add']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual('redirect', $json[2]['command']);
     $this->assertEqual(3, count($json));

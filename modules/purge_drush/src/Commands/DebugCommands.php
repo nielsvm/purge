@@ -2,10 +2,10 @@
 
 namespace Drupal\purge_drush\Commands;
 
-use Drush\Commands\DrushCommands;
-use Drush\Exceptions\UserAbortException;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\purge\Logger\LoggerServiceInterface;
+use Drush\Commands\DrushCommands;
+use Drush\Exceptions\UserAbortException;
 
 /**
  * Commands to help debugging caching and Purge.
@@ -110,7 +110,7 @@ class DebugCommands extends DrushCommands {
       throw new \Exception(dt("Debugging already enabled for all channels."));
     }
 
-    // Confirm interactively to make sure the user knows what he does.
+    // Ask the user to interactively confirm, given the potential consequences.
     if ($options['format'] == 'string') {
       $this->output()->writeln(dt("About to enable debugging for the following log channels:"));
       $this->io()->listing($disabled_channels());

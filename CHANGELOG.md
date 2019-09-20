@@ -22,7 +22,9 @@ and this project adheres to
   `$prefix_title`.
 
 ### Changed
-- **Improvement:** propelled codestyle into 2019 after thousands of fixes.
+- **Improvement:** thousands of fixes to pass all these these standards checks:
+    - `phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md`
+    - `phpcs --standard=AcquiaDrupalStrict`
 - **Improvement:** `PROJECTPAGE.md`, `README.md` and **new** `CHANGELOG.md`.
 - **Improvement:** Drupal's status report now only shows warning and error
   diagnostics.
@@ -98,7 +100,8 @@ and this project adheres to
   easier for downstreams to prevent heavy overhead code when this ain’t needed.
 
 ### Changed
-- **Improvement:** `drush p-queue-add` now allows adding multiple items to the queue using commas.
+- **Improvement:** `drush p-queue-add` now allows adding multiple items to the
+  queue using commas.
 - **Improvement:** `drush p-queue-work` now has a `--finish` argument.
 - **Improvement:** `drush p-invalidate` and `drush p-queue-add` now ask for
   confirmation when invalidating `everything`, to prevent users from

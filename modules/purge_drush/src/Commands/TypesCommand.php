@@ -2,13 +2,13 @@
 
 namespace Drupal\purge_drush\Commands;
 
-use Drush\Commands\DrushCommands;
-use Symfony\Component\Console\Input\InputInterface;
 use Consolidation\AnnotatedCommand\AnnotationData;
-use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
+use Drush\Commands\DrushCommands;
+use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * List all supported cache invalidation types.

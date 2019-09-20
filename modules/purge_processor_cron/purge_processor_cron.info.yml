@@ -4,4 +4,4 @@ description: 'Processes the queue every time cron runs, recommended for most con
 package: "Purge - processors"
 core: 8.x
 dependencies:
-  - purge
+  - purge:purge

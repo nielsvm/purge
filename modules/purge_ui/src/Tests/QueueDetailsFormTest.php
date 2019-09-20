@@ -68,8 +68,8 @@ class QueueDetailsFormTest extends WebTestBase {
     $this->drupalGet(Url::fromRoute($this->route, []));
     $this->assertRaw('Memory');
     $this->assertRaw('A non-persistent, per-request memory queue (not useful on production systems).');
-    $this->assertRaw(t('Close'));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, [])->toString(), [], ['op' => t('Close')]);
+    $this->assertRaw('Close');
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route, [])->toString(), [], ['op' => 'Close']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }

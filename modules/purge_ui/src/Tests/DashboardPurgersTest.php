@@ -81,10 +81,10 @@ class DashboardPurgersTest extends DashboardTestBase {
     $this->assertNoRaw('<img supports="id1-url"');
     $this->assertNoRaw('<img supports="id1-everything"');
     // Assert that 'Add purger' only shows up when it actually should.
-    $this->assertRaw(t('Add purger'));
+    $this->assertRaw('Add purger');
     $this->initializePurgersService(['a', 'b', 'c', 'withform', 'good']);
     $this->drupalGet($this->route);
-    $this->assertNoRaw(t('Add purger'));
+    $this->assertNoRaw('Add purger');
   }
 
 }

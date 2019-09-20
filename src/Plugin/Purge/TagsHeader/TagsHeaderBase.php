@@ -2,8 +2,8 @@
 
 namespace Drupal\purge\Plugin\Purge\TagsHeader;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\PluginBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base implementation for plugins that add and format a cache tags header.

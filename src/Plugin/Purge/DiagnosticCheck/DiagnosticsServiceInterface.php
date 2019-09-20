@@ -2,8 +2,8 @@
 
 namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Drupal\purge\ServiceInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
 /**
  * Describes a service that interacts with diagnostic checks.

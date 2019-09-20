@@ -2,9 +2,9 @@
 
 namespace Drupal\purge\Tests\Queuer;
 
-use Drupal\purge\Tests\KernelTestBase;
-use Drupal\purge\Tests\KernelServiceTestBase;
 use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
+use Drupal\purge\Tests\KernelServiceTestBase;
+use Drupal\purge\Tests\KernelTestBase;
 
 /**
  * Tests \Drupal\purge\Plugin\Purge\Queuer\QueuersService.
@@ -14,7 +14,19 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
  * @see \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface
  */
 class ServiceTest extends KernelServiceTestBase {
+
+  /**
+   * The name of the service as defined in services.yml.
+   *
+   * @var string
+   */
   protected $serviceId = 'purge.queuers';
+
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
   public static $modules = ['purge_queuer_test'];
 
   /**

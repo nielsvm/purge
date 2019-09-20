@@ -2,8 +2,8 @@
 
 namespace Drupal\purge\Logger;
 
-use Psr\Log\LoggerInterface;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
+use Psr\Log\LoggerInterface;
 
 /**
  * Provides a factory that creates LoggerChannelPartInterface instances.

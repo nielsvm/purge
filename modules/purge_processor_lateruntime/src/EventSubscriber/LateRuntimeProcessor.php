@@ -2,14 +2,14 @@
 
 namespace Drupal\purge_processor_lateruntime\EventSubscriber;
 
+use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\LockException;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Drupal\purge\Plugin\Purge\Purger\Exception\CapacityException;
-use Drupal\purge\Plugin\Purge\Purger\Exception\DiagnosticsException;
-use Drupal\purge\Plugin\Purge\Purger\Exception\LockException;
 
 /**
  * Processes queue items at the end of every request.

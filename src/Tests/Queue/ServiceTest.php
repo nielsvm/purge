@@ -2,8 +2,8 @@
 
 namespace Drupal\purge\Tests\Queue;
 
-use Drupal\purge\Tests\KernelServiceTestBase;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
+use Drupal\purge\Tests\KernelServiceTestBase;
 
 /**
  * Tests \Drupal\purge\Plugin\Purge\Queue\QueueService.
@@ -13,6 +13,12 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
  * @see \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface
  */
 class ServiceTest extends KernelServiceTestBase {
+
+  /**
+   * The name of the service as defined in services.yml.
+   *
+   * @var string
+   */
   protected $serviceId = 'purge.queue';
 
   /**

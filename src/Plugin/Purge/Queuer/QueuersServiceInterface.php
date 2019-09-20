@@ -2,8 +2,8 @@
 
 namespace Drupal\purge\Plugin\Purge\Queuer;
 
-use Drupal\purge\ServiceInterface;
 use Drupal\purge\ModifiableServiceInterface;
+use Drupal\purge\ServiceInterface;
 
 /**
  * Describes a service that provides access to loaded queuers.

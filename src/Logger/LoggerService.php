@@ -3,8 +3,8 @@
 namespace Drupal\purge\Logger;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\DestructableInterface;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
+use Drupal\Core\DestructableInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 
 /**

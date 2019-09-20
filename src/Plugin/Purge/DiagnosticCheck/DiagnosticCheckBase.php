@@ -2,9 +2,9 @@
 
 namespace Drupal\purge\Plugin\Purge\DiagnosticCheck;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\Exception\CheckNotImplementedCorrectly;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Describes a diagnostic check that tests a specific purging requirement.

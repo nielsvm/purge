@@ -2,8 +2,8 @@
 
 namespace Drupal\purge_ui\Form;
 
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Render plugin details.

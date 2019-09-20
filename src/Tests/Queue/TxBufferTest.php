@@ -2,10 +2,10 @@
 
 namespace Drupal\purge\Tests\Queue;
 
-use Drupal\purge\Tests\KernelTestBase;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Queue\TxBuffer;
 use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
+use Drupal\purge\Tests\KernelTestBase;
 
 /**
  * Tests \Drupal\purge\Tests\Queue\TxBufferTest.
@@ -217,6 +217,7 @@ class TxBufferTest extends KernelTestBase {
     $this->assertNull($this->purgeQueueTxbuffer->key());
     $this->purgeQueueTxbuffer->set($objects, TxBufferInterface::CLAIMED);
     $this->assertEqual($objects[0]->getId(), $this->purgeQueueTxbuffer->key());
+    // phpcs:ignore DrupalPractice.CodeAnalysis.VariableAnalysis.UnusedVariable
     foreach ($this->purgeQueueTxbuffer as $i) {
       // Just iterate, to advance the internal pointer.
     }

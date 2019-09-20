@@ -2,11 +2,11 @@
 
 namespace Drupal\purge\Plugin\Purge\Invalidation;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
-use Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException;
+use Drupal\purge\Plugin\Purge\Purger\Exception\BadPluginBehaviorException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides base implementations for the invalidation object.

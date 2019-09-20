@@ -2,9 +2,9 @@
 
 namespace Drupal\purge\Plugin\Purge\Queue;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Queue\DatabaseQueue as CoreDatabaseQueue;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * A QueueInterface compliant database backed queue.

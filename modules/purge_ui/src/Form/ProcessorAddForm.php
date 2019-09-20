@@ -2,12 +2,12 @@
 
 namespace Drupal\purge_ui\Form;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
+use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Add a processor.
@@ -64,7 +64,7 @@ class ProcessorAddForm extends ConfigFormBase {
     // List all available processors.
     $options = [];
     foreach ($this->purgeProcessors->getPluginsAvailable() as $plugin_id) {
-      $options[$plugin_id] = t("@label: @description", [
+      $options[$plugin_id] = $this->t("@label: @description", [
         '@label' => $definitions[$plugin_id]['label'],
         '@description' => $definitions[$plugin_id]['description'],
       ]);

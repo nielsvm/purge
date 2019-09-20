@@ -2,13 +2,13 @@
 
 namespace Drupal\purge_ui\Form;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\FormBase;
-use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\purge\Logger\LoggerServiceInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Configure logging behavior.

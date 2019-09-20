@@ -66,7 +66,7 @@ class PurgerConfigFormTest extends PurgerConfigFormTestBase {
     $edit = [
       'textfield' => "The moose in the noose ate the goose who was loose.",
     ];
-    $this->drupalPostForm($this->route, $edit, t('Save configuration'));
+    $this->drupalPostForm($this->route, $edit, 'Save configuration');
   }
 
 }

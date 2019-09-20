@@ -3,10 +3,10 @@
 namespace Drupal\purge\Plugin\Purge\Invalidation;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
-use Drupal\purge\ServiceBase;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Plugin\Purge\Queue\ProxyItemInterface;
+use Drupal\purge\ServiceBase;
 
 /**
  * Provides a service that instantiates invalidation objects on-demand.

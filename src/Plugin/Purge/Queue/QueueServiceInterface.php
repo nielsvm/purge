@@ -2,9 +2,9 @@
 
 namespace Drupal\purge\Plugin\Purge\Queue;
 
-use Drupal\purge\ServiceInterface;
 use Drupal\purge\ModifiableServiceInterface;
 use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
+use Drupal\purge\ServiceInterface;
 
 /**
  * Describes a service that lets invalidations interact with a queue backend.

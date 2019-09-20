@@ -2,17 +2,17 @@
 
 namespace Drupal\purge\Plugin\Purge\Queue;
 
-use Drupal\Core\DestructableInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
-use Drupal\purge\ServiceBase;
-use Drupal\purge\ModifiableServiceBaseTrait;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\DestructableInterface;
 use Drupal\purge\Logger\LoggerServiceInterface;
-use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
+use Drupal\purge\ModifiableServiceBaseTrait;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
-use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
 use Drupal\purge\Plugin\Purge\Queue\Exception\UnexpectedServiceConditionException;
+use Drupal\purge\Plugin\Purge\Queuer\QueuerInterface;
+use Drupal\purge\ServiceBase;
 
 /**
  * Provides the service that lets invalidations interact with a queue backend.
@@ -486,6 +486,7 @@ class QueueService extends ServiceBase implements QueueServiceInterface, Destruc
       $this->commit(FALSE);
     }
     $this->buffer->deleteEverything();
+    // phpcs:ignore DrupalPractice.Objects.GlobalDrupal.GlobalDrupal -- We're already injecting, this is needed for tests to work.
     $this->configFactory = \Drupal::configFactory();
     $this->queue = NULL;
   }

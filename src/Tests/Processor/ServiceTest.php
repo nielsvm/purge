@@ -2,9 +2,9 @@
 
 namespace Drupal\purge\Tests\Processor;
 
-use Drupal\purge\Tests\KernelTestBase;
-use Drupal\purge\Tests\KernelServiceTestBase;
 use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
+use Drupal\purge\Tests\KernelServiceTestBase;
+use Drupal\purge\Tests\KernelTestBase;
 
 /**
  * Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsService.
@@ -14,7 +14,19 @@ use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
  * @see \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface
  */
 class ServiceTest extends KernelServiceTestBase {
+
+  /**
+   * The name of the service as defined in services.yml.
+   *
+   * @var string
+   */
   protected $serviceId = 'purge.processors';
+
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
   public static $modules = ['purge_processor_test'];
 
   /**

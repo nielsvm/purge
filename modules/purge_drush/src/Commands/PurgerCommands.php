@@ -2,9 +2,9 @@
 
 namespace Drupal\purge_drush\Commands;
 
-use Drush\Commands\DrushCommands;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
+use Drush\Commands\DrushCommands;
 
 /**
  * Configure Purge Purgers from the command line.
@@ -49,7 +49,6 @@ class PurgerCommands extends DrushCommands {
    */
   public function purgerAdd($id, array $options = ['format' => 'string', 'if-not-exists' => FALSE]) {
     $enabled = $this->purgePurgers->getPluginsEnabled();
-    $available = $this->purgePurgers->getPluginsAvailable();
 
     // Verify that the plugin exists.
     if (!isset($this->purgePurgers->getPlugins()[$id])) {

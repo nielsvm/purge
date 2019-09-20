@@ -2,8 +2,8 @@
 
 namespace Drupal\purge\Plugin\Purge\TagsHeader;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Drupal\purge\ServiceInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
 /**
  * Describes a service that provides access to available tags headers.

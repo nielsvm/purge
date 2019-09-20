@@ -70,9 +70,9 @@ class PurgerAddFormTest extends WebTestBase {
     $this->initializePurgersService(['a', 'withform', 'good']);
     $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
-    $this->assertRaw(t('Add'));
+    $this->assertRaw('Add');
     $this->assertTrue(count($this->purgePurgers->getPluginsEnabled()) === 3);
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['plugin_id' => 'c'], ['op' => t('Add')]);
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), ['plugin_id' => 'c'], ['op' => 'Add']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual('redirect', $json[2]['command']);
     $this->purgePurgers->reload();
@@ -89,8 +89,8 @@ class PurgerAddFormTest extends WebTestBase {
   public function testCancel() {
     $this->drupalLogin($this->adminUser);
     $this->drupalGet(Url::fromRoute($this->route));
-    $this->assertRaw(t('Cancel'));
-    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => t('Cancel')]);
+    $this->assertRaw('Cancel');
+    $json = $this->drupalPostAjaxForm(Url::fromRoute($this->route)->toString(), [], ['op' => 'Cancel']);
     $this->assertEqual('closeDialog', $json[1]['command']);
     $this->assertEqual(2, count($json));
   }
@@ -108,8 +108,8 @@ class PurgerAddFormTest extends WebTestBase {
     $this->assertText('Purger A');
     $this->assertText('Purger B');
     $this->assertNoText('Configurable purger');
-    $this->assertFieldByName('op', t('Cancel'));
-    $this->assertFieldByName('op', t('Add'));
+    $this->assertFieldByName('op', 'Cancel');
+    $this->assertFieldByName('op', 'Add');
   }
 
 }

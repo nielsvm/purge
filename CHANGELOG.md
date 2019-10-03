@@ -10,6 +10,14 @@ and this project adheres to
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+## [8.x-3.0-beta9] - 2019-10-03
+
+### Added
 - Added `.gitattributes` to keep documentation out of built packages.
 - Added `composer.json` for integration with Composer-based workflows.
 - **API:** `Annotation\PurgeTagsHeader::$dependent_purger_plugins` to allow

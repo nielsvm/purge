@@ -34,8 +34,8 @@ abstract class DashboardTestBase extends WebTestBase {
   /**
    * Setup the test.
    */
-  public function setUp() {
-    parent::setUp();
+  public function setUp($switch_to_memory_queue = TRUE) {
+    parent::setUp($switch_to_memory_queue);
     $this->adminUser = $this->drupalCreateUser(['administer site configuration']);
     if (is_string($this->route)) {
       $this->route = Url::fromRoute($this->route);

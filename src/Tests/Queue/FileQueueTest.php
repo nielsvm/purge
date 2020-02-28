@@ -32,8 +32,8 @@ class FileQueueTest extends PluginTestBase {
   /**
    * Set up the test.
    */
-  public function setUp() {
-    parent::setUp();
+  public function setUp($switch_to_memory_queue = TRUE) {
+    parent::setUp($switch_to_memory_queue);
     $this->file = DRUPAL_ROOT . '/' . PublicStream::basePath() . '/' . $this->file;
   }
 

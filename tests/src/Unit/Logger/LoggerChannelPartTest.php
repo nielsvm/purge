@@ -23,7 +23,7 @@ class LoggerChannelPartTest extends UnitTestCase {
    * {@inheritdoc}
    */
   protected function setUp() {
-    $this->loggerChannelPurge = $this->getMock('\Psr\Log\LoggerInterface');
+    $this->loggerChannelPurge = $this->createMock('\Psr\Log\LoggerInterface');
   }
 
   /**

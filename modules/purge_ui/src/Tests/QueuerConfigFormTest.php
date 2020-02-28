@@ -74,8 +74,8 @@ class QueuerConfigFormTest extends WebTestBase {
   /**
    * Setup the test.
    */
-  public function setUp() {
-    parent::setUp();
+  public function setUp($switch_to_memory_queue = TRUE) {
+    parent::setUp($switch_to_memory_queue);
     $this->initializeQueuersService(['c', $this->queuer]);
     $this->urlValid = Url::fromRoute($this->route, ['id' => $this->queuer]);
     $this->urlValidDialog = Url::fromRoute($this->routeDialog, ['id' => $this->queuer]);

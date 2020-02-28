@@ -47,9 +47,9 @@ class LoggerServiceTest extends UnitTestCase {
    * {@inheritdoc}
    */
   protected function setUp() {
-    $this->loggerChannelPartFactory = $this->getMock('\Drupal\purge\Logger\LoggerChannelPartFactoryInterface');
+    $this->loggerChannelPartFactory = $this->createMock('\Drupal\purge\Logger\LoggerChannelPartFactoryInterface');
     $this->loggerChannelPartFactory->method('create')
-      ->willReturn($this->getMock('\Drupal\purge\Logger\LoggerChannelPartInterface'));
+      ->willReturn($this->createMock('\Drupal\purge\Logger\LoggerChannelPartInterface'));
   }
 
   /**

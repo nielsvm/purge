@@ -36,8 +36,8 @@ class HookRequirementsTest extends KernelTestBase {
     $this->assertTrue(isset($r['queuersavailable']));
     $this->assertTrue(isset($r['purgersavailable']));
     $this->assertTrue(isset($r['memoryqueuewarning']));
-    $this->assertTrue(isset($r['alwaysinfo']));
-    $this->assertTrue(isset($r['alwaysok']));
+    $this->assertFalse(isset($r['alwaysinfo']));
+    $this->assertFalse(isset($r['alwaysok']));
     $this->assertTrue(isset($r['alwayserror']));
     $this->assertTrue(isset($r['alwayswarning']));
     // Assert a couple of titles.

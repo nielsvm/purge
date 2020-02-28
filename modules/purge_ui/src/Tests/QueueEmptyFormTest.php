@@ -49,8 +49,8 @@ class QueueEmptyFormTest extends WebTestBase {
   /**
    * Setup the test.
    */
-  public function setUp() {
-    parent::setUp();
+  public function setUp($switch_to_memory_queue = TRUE) {
+    parent::setUp($switch_to_memory_queue);
     $this->initializeQueuersService();
     $this->queuer = $this->purgeQueuers->get('a');
     $this->adminUser = $this->drupalCreateUser(['administer site configuration']);

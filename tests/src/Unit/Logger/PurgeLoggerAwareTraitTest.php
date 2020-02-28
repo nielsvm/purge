@@ -21,7 +21,7 @@ class PurgeLoggerAwareTraitTest extends UnitTestCase {
    * {@inheritdoc}
    */
   protected function setUp() {
-    $this->logger = $this->getMock('\Psr\Log\LoggerInterface');
+    $this->logger = $this->createMock('\Psr\Log\LoggerInterface');
   }
 
   /**

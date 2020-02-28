@@ -121,7 +121,7 @@ class CacheTagsQueuerTest extends UnitTestCase {
       ->expects($this->exactly($invs_added_total))
       ->method('get')
       ->with('tag')
-      ->willReturn($this->getMock(InvalidationInterface::class)
+      ->willReturn($this->createMock(InvalidationInterface::class)
     );
     // Assert the precise calls to QueueServiceInterface::add().
     $number_queue_add_calls = count(array_filter($sets, function ($set) {

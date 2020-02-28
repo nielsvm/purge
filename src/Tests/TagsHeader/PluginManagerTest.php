@@ -39,6 +39,7 @@ class PluginManagerTest extends KernelServiceTestBase {
     'class',
     'id',
     'header_name',
+    'dependent_purger_plugins',
   ];
 
   /**

@@ -44,7 +44,7 @@ class LoggingConfigFormTest extends UnitTestCase {
         'grants' => [2, 4, 1],
       ],
     ];
-    $this->purgeLogger = $this->getMock('Drupal\purge\Logger\LoggerServiceInterface');
+    $this->purgeLogger = $this->createMock('Drupal\purge\Logger\LoggerServiceInterface');
     $this->purgeLogger->method('getChannels')->willReturn($defaults);
     $this->purgeLogger->method('hasChannel')
       ->will($this->returnCallback(function ($subject) {
@@ -55,7 +55,7 @@ class LoggingConfigFormTest extends UnitTestCase {
     $this->container = new ContainerBuilder();
     $this->container->set('purge.logger', $this->purgeLogger);
     $this->container->set('string_translation', $this->getStringTranslationStub());
-    $this->container->set('url_generator', $this->getMock('Drupal\Core\Routing\UrlGeneratorInterface'));
+    $this->container->set('url_generator', $this->createMock('Drupal\Core\Routing\UrlGeneratorInterface'));
 
     \Drupal::setContainer($this->container);
     $this->form = LoggingConfigForm::create($this->container);

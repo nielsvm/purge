@@ -1,8 +1,9 @@
-name: Purge UI
+core_version_requirement: '^8 || ^9'
+core: 8.x
+name: 'Purge UI'
 type: module
 description: 'Administrative interface for Purge.'
 package: Purge
-core: 8.x
 configure: purge_ui.dashboard
 dependencies:
   - purge:purge

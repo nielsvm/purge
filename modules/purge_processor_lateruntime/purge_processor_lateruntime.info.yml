@@ -1,7 +1,8 @@
-name: Late runtime processor
+core_version_requirement: '^8 || ^9'
+core: 8.x
+name: 'Late runtime processor'
 type: module
 description: 'Process the queue on every request, this is only recommended on high latency configurations.'
 package: "Purge - processors"
-core: 8.x
 dependencies:
   - purge:purge

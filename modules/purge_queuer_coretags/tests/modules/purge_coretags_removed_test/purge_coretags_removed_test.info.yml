@@ -1,8 +1,9 @@
+core_version_requirement: '^8 || ^9'
+core: 8.x
 name: 'Remove core tags queuer.'
 type: module
 description: 'Remove "purge_queuer_coretags.queuer" from the container for testing.'
 package: Testing
-core: 8.x
 dependencies:
   - purge:purge
   - purge:purge_queuer_coretags

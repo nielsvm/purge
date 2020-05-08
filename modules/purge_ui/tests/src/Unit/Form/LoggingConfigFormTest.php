@@ -37,7 +37,7 @@ class LoggingConfigFormTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     $defaults = [
       [
         'id' => 'testchannel',
@@ -64,7 +64,7 @@ class LoggingConfigFormTest extends UnitTestCase {
   /**
    * @covers ::buildForm
    */
-  public function testBuildForm() {
+  public function testBuildForm(): void {
     $form = $this->form->buildForm([], new FormState());
     // Test the attached dialog behavior.
     $this->assertTrue(isset($form['#attached']['library'][0]));
@@ -100,7 +100,7 @@ class LoggingConfigFormTest extends UnitTestCase {
   /**
    * @covers ::setChannels
    */
-  public function testSetChannels() {
+  public function testSetChannels(): void {
     $form = $this->form->buildForm([], new FormState());
     // Assert that empty submits only close the dialog, nothing else.
     $ajax = $this->form->setChannels($form, new FormState());
@@ -130,7 +130,7 @@ class LoggingConfigFormTest extends UnitTestCase {
   /**
    * @covers ::submitForm
    */
-  public function testSubmitForm() {
+  public function testSubmitForm(): void {
     $form = $this->form->buildForm([], new FormState());
     // Verify that the returned $has_resulted_in_changes is FALSE without data.
     $this->assertFalse($this->form->submitForm($form, new FormState()));

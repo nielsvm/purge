@@ -4,6 +4,7 @@ namespace Drupal\purge_ui\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvStatesInterface;
@@ -27,6 +28,13 @@ class PurgeBlockForm extends FormBase {
    * @var string[]
    */
   protected $config;
+
+  /**
+   * The Messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
 
   /**
    * The 'purge_ui_block_processor' plugin.
@@ -68,6 +76,8 @@ class PurgeBlockForm extends FormBase {
    *
    * @param string[] $config
    *   The form's configuration array, which determines how and what we purge.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger service.
    * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface $purge_processors
    *   The purge processors service.
    * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
@@ -79,11 +89,12 @@ class PurgeBlockForm extends FormBase {
    * @param \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface $purge_queuers
    *   The purge queuers service.
    */
-  public function __construct(array $config, ProcessorsServiceInterface $purge_processors, PurgersServiceInterface $purge_purgers, InvalidationsServiceInterface $purge_invalidation_factory, QueueServiceInterface $purge_queue, QueuersServiceInterface $purge_queuers) {
+  final public function __construct(array $config, MessengerInterface $messenger, ProcessorsServiceInterface $purge_processors, PurgersServiceInterface $purge_purgers, InvalidationsServiceInterface $purge_invalidation_factory, QueueServiceInterface $purge_queue, QueuersServiceInterface $purge_queuers) {
     if (is_null($config)) {
       throw new \LogicException('\Drupal\purge_ui\Form\PurgeBlockForm should be directly instantiated with block configuration passed in.');
     }
     $this->config = $config;
+    $this->messenger = $messenger;
     $this->processor = $purge_processors->get('purge_ui_block_processor');
     $this->queuer = $purge_queuers->get('purge_ui_block_queuer');
     $this->purgePurgers = $purge_purgers;
@@ -102,6 +113,7 @@ class PurgeBlockForm extends FormBase {
   public static function create(ContainerInterface $container, array $config = NULL) {
     return new static(
       $config,
+      $container->get('messenger'),
       $container->get('purge.processors'),
       $container->get('purge.purgers'),
       $container->get('purge.invalidation.factory'),
@@ -153,12 +165,12 @@ class PurgeBlockForm extends FormBase {
     $form_state->addBuildInfo('expressions', $this->gatherInvalidationsData());
     $form = [];
     if (($this->config['execution'] === 'direct') && (!$this->processor)) {
-      drupal_set_message($this->t('Please contact your site administrator to enable the block processor plugin.'), 'error');
+      $this->messenger->addError($this->t('Please contact your site administrator to enable the block processor plugin.'));
       return ['messages' => ['#type' => 'status_messages']];
 
     }
     if (($this->config['execution'] === 'queue') && (!$this->queuer)) {
-      drupal_set_message($this->t('Please contact your site administrator to enable the block queuer plugin.'), 'error');
+      $this->messenger->addError($this->t('Please contact your site administrator to enable the block queuer plugin.'));
       return ['messages' => ['#type' => 'status_messages']];
     }
     if (!empty($this->config['description'])) {
@@ -205,12 +217,11 @@ class PurgeBlockForm extends FormBase {
         );
       }
       catch (TypeUnsupportedException $e) {
-        drupal_set_message(
+        $this->messenger->addError(
           $this->t(
             "No purger supports the type '@type', please install one!",
             ['@type' => $this->config['type']]
-          ),
-          'error'
+          )
         );
         return;
       }
@@ -219,7 +230,7 @@ class PurgeBlockForm extends FormBase {
     // Queue execution is the easiest, as it always succeeds.
     if ($this->config['execution'] === 'queue') {
       $this->purgeQueue->add($this->queuer, $invalidations);
-      drupal_set_message($this->t('Please wait for the queue to be processed!'), 'status');
+      $this->messenger->addStatus($this->t('Please wait for the queue to be processed!'));
     }
 
     // Process direct execution, which may fail in various ways.
@@ -239,24 +250,26 @@ class PurgeBlockForm extends FormBase {
             );
           }
           if ($invalidation->getState() === InvStatesInterface::SUCCEEDED) {
-            drupal_set_message($this->t('Succesfully cleared @object.', ['@object' => $object]));
+            $this->messenger->addMessage($this->t('Succesfully cleared @object.', ['@object' => $object]));
           }
           elseif ($invalidation->getState() === InvStatesInterface::PROCESSING) {
-            drupal_set_message($this->t('Requested to clear multistep object of type @object!', ['@object' => $object]), 'warning');
+            $this->messenger->addWarning(
+              $this->t('Requested to clear multistep object of type @object!', ['@object' => $object])
+            );
           }
           else {
-            drupal_set_message($this->t('Failed to clear @object!', ['@object' => $object]), 'error');
+            $this->messenger->addError($this->t('Failed to clear @object!', ['@object' => $object]));
           }
         }
       }
       catch (DiagnosticsException $e) {
-        drupal_set_message($e->getMessage(), 'error');
+        $this->messenger->addError($e->getMessage());
       }
       catch (CapacityException $e) {
-        drupal_set_message($e->getMessage(), 'error');
+        $this->messenger->addError($e->getMessage());
       }
       catch (LockException $e) {
-        drupal_set_message($e->getMessage(), 'error');
+        $this->messenger->addError($e->getMessage());
       }
     }
   }

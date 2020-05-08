@@ -29,7 +29,7 @@ class LoggingConfigForm extends FormBase {
    * @param \Drupal\purge\Logger\LoggerServiceInterface $purge_logger
    *   Logging services for the purge module and its submodules.
    */
-  public function __construct(LoggerServiceInterface $purge_logger) {
+  final public function __construct(LoggerServiceInterface $purge_logger) {
     $this->purgeLogger = $purge_logger;
   }
 

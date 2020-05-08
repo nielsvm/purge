@@ -28,7 +28,7 @@ class QueuerAddForm extends ConfigFormBase {
    * @param \Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface $purge_queuers
    *   The purge queuers service.
    */
-  public function __construct(QueuersServiceInterface $purge_queuers) {
+  final public function __construct(QueuersServiceInterface $purge_queuers) {
     $this->purgeQueuers = $purge_queuers;
   }
 

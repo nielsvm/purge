@@ -28,7 +28,7 @@ class ProcessorAddForm extends ConfigFormBase {
    * @param \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface $purge_processors
    *   The purge processors service.
    */
-  public function __construct(ProcessorsServiceInterface $purge_processors) {
+  final public function __construct(ProcessorsServiceInterface $purge_processors) {
     $this->purgeProcessors = $purge_processors;
   }
 

@@ -25,7 +25,7 @@ class TagInvalidation extends InvalidationBase implements InvalidationInterface 
   public function validateExpression() {
     parent::validateExpression();
     if (strpos($this->expression, '*') !== FALSE) {
-      throw new InvalidExpressionException($this->t('Tag invalidations cannot contain asterisks.'));
+      throw new InvalidExpressionException('Tag invalidations cannot contain asterisks.');
     }
   }
 

@@ -42,7 +42,7 @@ interface PurgerInterface extends ContainerFactoryPluginInterface, PurgerCapacit
    *
    * @see \Drupal\purge\Annotation\PurgePurger::$label
    *
-   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   * @return string|\Drupal\Core\StringTranslation\TranslatableMarkup
    *   The translated label.
    */
   public function getLabel();

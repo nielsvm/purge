@@ -24,7 +24,7 @@ class QueueFormController extends ControllerBase {
    * @param \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $purge_queue
    *   The purge queue service.
    */
-  public function __construct(QueueServiceInterface $purge_queue) {
+  final public function __construct(QueueServiceInterface $purge_queue) {
     $this->purgeQueue = $purge_queue;
   }
 

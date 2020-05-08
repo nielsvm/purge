@@ -32,7 +32,7 @@ class PurgeBlock extends BlockBase implements ContainerFactoryPluginInterface {
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  final public function __construct(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->setContainer($container);
   }
@@ -66,7 +66,7 @@ class PurgeBlock extends BlockBase implements ContainerFactoryPluginInterface {
     // Directly instantiate the form, to inject the configuration to its
     // constructor. Normally, instantiating with getForm() would pass in the
     // parameters only to FormBase::buildForm(), which is sadly too late as we
-    // need the unique form ID already in FormBase::getFormID().
+    // need the unique form ID already in FormBase::getFormId().
     // See https://www.drupal.org/node/2188851 for more information.
     $form = PurgeBlockForm::create($this->container, $config);
     return $this->container->get('form_builder')->getForm($form);

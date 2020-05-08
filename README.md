@@ -1,5 +1,3 @@
-[//]: # ( clear&&curl -s -F input_files[]=@README.md -F from=markdown -F to=html http://c.docverter.com/convert|tail -n+11|head -n-2 )
-
 # Purge
 ##### _The modular external cache invalidation framework._
 

@@ -37,7 +37,7 @@ class QueueSizeDiagnosticCheck extends DiagnosticCheckBase implements Diagnostic
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(StatsTrackerInterface $purge_queue_stats, array $configuration, $plugin_id, $plugin_definition) {
+  final public function __construct(StatsTrackerInterface $purge_queue_stats, array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->purgeQueueStats = $purge_queue_stats;
   }

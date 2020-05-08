@@ -20,14 +20,14 @@ class TxBuffer implements TxBufferInterface {
   /**
    * Instance<->state map of each object in the buffer.
    *
-   * @var int[int]
+   * @var array|array[int]
    */
   private $states = [];
 
   /**
    * Instance<->property map of each object in the buffer.
    *
-   * @var array[int]
+   * @var array|array[int]
    */
   private $properties = [];
 

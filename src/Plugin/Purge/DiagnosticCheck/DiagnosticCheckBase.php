@@ -41,7 +41,7 @@ abstract class DiagnosticCheckBase extends PluginBase implements DiagnosticCheck
   /**
    * A recommendation matching the severity level, may contain NULL.
    *
-   * @var \Drupal\Core\StringTranslation\TranslatableMarkup
+   * @var null|string|\Drupal\Core\StringTranslation\TranslatableMarkup
    */
   protected $recommendation;
 

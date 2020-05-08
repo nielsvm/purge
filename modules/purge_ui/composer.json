@@ -1,0 +1,22 @@
+{
+    "name": "drupal/purge_ui",
+    "type": "drupal-module",
+    "description": "Administrative interface for Purge.",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Niels van Mourik",
+            "homepage": "http://www.nielsvm.org"
+        }
+    ],
+    "require": {
+        "php": ">=7.3",
+        "drupal/core": "^8.7.7 || ^9",
+        "drupal/purge": "^3.0.0-beta9"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-8.x-3.x": "3.x-dev"
+        }
+    }
+}

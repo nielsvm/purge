@@ -1,5 +1,3 @@
-[//]: # ( clear&&curl -s -F input_files[]=@CHANGELOG.md -F from=markdown -F to=html http://c.docverter.com/convert|tail -n+11|head -n-2 )
-
 # Changelog
 All notable changes to this project will be documented in this file.
 
@@ -23,7 +21,7 @@ and this project adheres to
 
 ### Changed
 - **Improvement:** thousands of fixes to pass all these these standards checks:
-    - `phpcs --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md`
+    - `phpcs --standard=Drupal --extensions=php,module,inc,install,..`
     - `phpcs --standard=AcquiaDrupalStrict`
 - **Improvement:** `PROJECTPAGE.md`, `README.md` and **new** `CHANGELOG.md`.
 - **Improvement:** Drupal's status report now only shows warning and error

@@ -95,7 +95,7 @@ abstract class InvalidationBase extends ImmutableInvalidationBase implements Inv
    */
   public function setProperty($key, $value) {
     if (is_null($this->context)) {
-      throw new \LogicException('Call ::setStateContext() before deleting properties!');
+      throw new \LogicException('Call ::setStateContext() before setting properties!');
     }
     if (!isset($this->properties[$this->context])) {
       $this->properties[$this->context] = [];
@@ -153,18 +153,18 @@ abstract class InvalidationBase extends ImmutableInvalidationBase implements Inv
    */
   public function validateExpression() {
     $d = $this->getPluginDefinition();
-    $topt = ['@type' => strtolower($d['label'])];
+    $type = strtolower($d['label']);
     if ($d['expression_required'] && is_null($this->expression)) {
-      throw new MissingExpressionException($this->t("Argument required for @type invalidation.", $topt));
+      throw new MissingExpressionException(sprintf("Argument required for %s invalidation.", $type));
     }
     elseif ($d['expression_required'] && empty($this->expression) && !$d['expression_can_be_empty']) {
-      throw new InvalidExpressionException($this->t("Argument required for @type invalidation.", $topt));
+      throw new InvalidExpressionException(sprintf("Argument required for %s invalidation.", $type));
     }
     elseif (!$d['expression_required'] && !is_null($this->expression)) {
-      throw new InvalidExpressionException($this->t("Argument given for @type invalidation.", $topt));
+      throw new InvalidExpressionException(sprintf("Argument given for %s invalidation.", $type));
     }
     elseif (!is_null($this->expression) && !is_string($this->expression) && $d['expression_must_be_string']) {
-      throw new InvalidExpressionException($this->t("String argument required for @type invalidation.", $topt));
+      throw new InvalidExpressionException(sprintf("String argument required for %s invalidation.", $type));
     }
   }
 

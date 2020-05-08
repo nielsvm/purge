@@ -1,5 +1,4 @@
 core_version_requirement: '^8 || ^9'
-core: 8.x
 name: 'Purge tests support (error check)'
 type: module
 description: 'Provides a diagnostic check that always results in error.'

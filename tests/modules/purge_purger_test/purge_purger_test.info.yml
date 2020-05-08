@@ -1,5 +1,4 @@
 core_version_requirement: '^8 || ^9'
-core: 8.x
 name: 'Purge tests support (purgers)'
 type: module
 description: "Provides purgers for testing."

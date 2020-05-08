@@ -49,7 +49,7 @@ class PurgerMoveForm extends ConfirmFormBase {
    * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
    *   The purgers service.
    */
-  public function __construct(PurgersServiceInterface $purge_purgers) {
+  final public function __construct(PurgersServiceInterface $purge_purgers) {
     $this->purgePurgers = $purge_purgers;
   }
 

@@ -47,7 +47,7 @@ class PurgersAvailableDiagnosticCheck extends DiagnosticCheckBase implements Dia
    * @param \Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface $purge_purgers
    *   The purge executive service, which wipes content from external caches.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, PurgersServiceInterface $purge_purgers) {
+  final public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, PurgersServiceInterface $purge_purgers) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
     $this->purgePurgers = $purge_purgers;

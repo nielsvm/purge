@@ -36,7 +36,7 @@ class DatabaseQueue extends CoreDatabaseQueue implements QueueInterface {
    * @param \Drupal\Core\Database\Connection $connection
    *   The Connection object containing the key-value tables.
    */
-  public function __construct(Connection $connection) {
+  final public function __construct(Connection $connection) {
     parent::__construct('purge', $connection);
     $this->ensureTableExists();
   }
@@ -197,7 +197,7 @@ class DatabaseQueue extends CoreDatabaseQueue implements QueueInterface {
    * Implements \Drupal\Core\Queue\QueueInterface::releaseItem().
    */
   public function releaseItem($item) {
-    return $this->connection->update(static::TABLE_NAME)
+    return (bool) $this->connection->update(static::TABLE_NAME)
       ->fields([
         'expire' => 0,
         'data' => serialize($item->data),

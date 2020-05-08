@@ -117,7 +117,7 @@ class DashboardController extends ControllerBase {
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The current request from the request stack.
    */
-  public function __construct(DiagnosticsServiceInterface $purge_diagnostics, InvalidationsServiceInterface $purge_invalidation_factory, ProcessorsServiceInterface $purge_processors, PurgersServiceInterface $purge_purgers, QueueServiceInterface $purge_queue, QueuersServiceInterface $purge_queuers, Request $request) {
+  final public function __construct(DiagnosticsServiceInterface $purge_diagnostics, InvalidationsServiceInterface $purge_invalidation_factory, ProcessorsServiceInterface $purge_processors, PurgersServiceInterface $purge_purgers, QueueServiceInterface $purge_queue, QueuersServiceInterface $purge_queuers, Request $request) {
     $this->purgeDiagnostics = $purge_diagnostics;
     $this->purgeInvalidationFactory = $purge_invalidation_factory;
     $this->purgeProcessors = $purge_processors;

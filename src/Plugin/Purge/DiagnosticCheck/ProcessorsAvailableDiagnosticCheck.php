@@ -37,7 +37,7 @@ class ProcessorsAvailableDiagnosticCheck extends DiagnosticCheckBase implements 
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(ProcessorsServiceInterface $purge_processors, array $configuration, $plugin_id, $plugin_definition) {
+  final public function __construct(ProcessorsServiceInterface $purge_processors, array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->purgeProcessors = $purge_processors;
   }

@@ -37,7 +37,7 @@ class MaxAgeCheck extends DiagnosticCheckBase implements DiagnosticCheckInterfac
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, array $configuration, $plugin_id, $plugin_definition) {
+  final public function __construct(ConfigFactoryInterface $config_factory, array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->config = $config_factory->get('system.performance');
   }

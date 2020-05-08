@@ -15,7 +15,7 @@ class CounterTest extends UnitTestCase {
   /**
    * @covers ::disableDecrement
    */
-  public function testDisableDecrement() {
+  public function testDisableDecrement(): void {
     $counter = new Counter();
     $counter->disableDecrement();
     $this->expectException(\LogicException::class);
@@ -26,7 +26,7 @@ class CounterTest extends UnitTestCase {
   /**
    * @covers ::disableIncrement
    */
-  public function testDisableIncrement() {
+  public function testDisableIncrement(): void {
     $counter = new Counter();
     $counter->disableIncrement();
     $this->expectException(\LogicException::class);
@@ -37,7 +37,7 @@ class CounterTest extends UnitTestCase {
   /**
    * @covers ::disableSet
    */
-  public function testDisableSet() {
+  public function testDisableSet(): void {
     $counter = new Counter();
     $counter->disableSet();
     $this->expectException(\LogicException::class);
@@ -50,7 +50,7 @@ class CounterTest extends UnitTestCase {
    *
    * @dataProvider providerTestGet()
    */
-  public function testGet($value) {
+  public function testGet($value): void {
     $counter = new Counter($value);
     $this->assertEquals($value, $counter->get());
     $this->assertTrue(is_float($counter->get()));
@@ -60,7 +60,7 @@ class CounterTest extends UnitTestCase {
   /**
    * Provides test data for testGet().
    */
-  public function providerTestGet() {
+  public function providerTestGet(): array {
     return [
       [0],
       [5],
@@ -74,7 +74,7 @@ class CounterTest extends UnitTestCase {
    *
    * @dataProvider providerTestGetInteger()
    */
-  public function testGetInteger($value) {
+  public function testGetInteger($value): void {
     $counter = new Counter($value);
     $this->assertEquals((int) $value, $counter->getInteger());
     $this->assertFalse(is_float($counter->getInteger()));
@@ -84,7 +84,7 @@ class CounterTest extends UnitTestCase {
   /**
    * Provides test data for testGetInteger().
    */
-  public function providerTestGetInteger() {
+  public function providerTestGetInteger(): array {
     return [
       [0],
       [5],
@@ -97,7 +97,7 @@ class CounterTest extends UnitTestCase {
    * @covers ::disableSet
    * @dataProvider providerTestSetNotFloatOrInt()
    */
-  public function testSetNotFloatOrInt($value) {
+  public function testSetNotFloatOrInt($value): void {
     $counter = new Counter();
     $this->expectException(BadBehaviorException::class);
     $this->expectExceptionMessage('Given $value is not a integer or float.');
@@ -107,7 +107,7 @@ class CounterTest extends UnitTestCase {
   /**
    * Provides test data for testSetNotFloatOrInt().
    */
-  public function providerTestSetNotFloatOrInt() {
+  public function providerTestSetNotFloatOrInt(): array {
     return [
       [FALSE],
       ["0"],
@@ -118,7 +118,7 @@ class CounterTest extends UnitTestCase {
   /**
    * @covers ::disableSet
    */
-  public function testSetNegative() {
+  public function testSetNegative(): void {
     $counter = new Counter();
     $this->expectException(BadBehaviorException::class);
     $this->expectExceptionMessage('Given $value can only be zero or positive.');
@@ -130,7 +130,7 @@ class CounterTest extends UnitTestCase {
    *
    * @dataProvider providerTestSet()
    */
-  public function testSet($value) {
+  public function testSet($value): void {
     $counter = new Counter();
     $counter->set($value);
     $this->assertEquals($value, $counter->get());
@@ -139,7 +139,7 @@ class CounterTest extends UnitTestCase {
   /**
    * Provides test data for testSet().
    */
-  public function providerTestSet() {
+  public function providerTestSet(): array {
     return [
       [0],
       [5],
@@ -153,7 +153,7 @@ class CounterTest extends UnitTestCase {
    *
    * @dataProvider providerTestDecrement()
    */
-  public function testDecrement($start, $subtract, $result) {
+  public function testDecrement($start, $subtract, $result): void {
     $counter = new Counter($start);
     $counter->decrement($subtract);
     $this->assertEquals($result, $counter->get());
@@ -162,7 +162,7 @@ class CounterTest extends UnitTestCase {
   /**
    * Provides test data for testDecrement().
    */
-  public function providerTestDecrement() {
+  public function providerTestDecrement(): array {
     return [
       [4.0, 0.2, 3.8],
       [2, 1, 1],
@@ -174,7 +174,7 @@ class CounterTest extends UnitTestCase {
    * @covers ::decrement
    * @dataProvider providerTestDecrementInvalidValue()
    */
-  public function testDecrementInvalidValue($value) {
+  public function testDecrementInvalidValue($value): void {
     $counter = new Counter(10);
     $this->expectException(BadBehaviorException::class);
     $this->expectExceptionMessage('Given $amount is zero or negative.');
@@ -184,7 +184,7 @@ class CounterTest extends UnitTestCase {
   /**
    * Provides test data for testDecrementInvalidValue().
    */
-  public function providerTestDecrementInvalidValue() {
+  public function providerTestDecrementInvalidValue(): array {
     return [
       [0],
       [0.0],
@@ -196,7 +196,7 @@ class CounterTest extends UnitTestCase {
    * @covers ::decrement
    * @dataProvider providerTestDecrementNotFloatOrInt()
    */
-  public function testDecrementNotFloatOrInt($value) {
+  public function testDecrementNotFloatOrInt($value): void {
     $counter = new Counter(10);
     $this->expectException(BadBehaviorException::class);
     $this->expectExceptionMessage('Given $amount is not a integer or float.');
@@ -206,7 +206,7 @@ class CounterTest extends UnitTestCase {
   /**
    * Provides test data for testDecrementNotFloatOrInt().
    */
-  public function providerTestDecrementNotFloatOrInt() {
+  public function providerTestDecrementNotFloatOrInt(): array {
     return [
       [FALSE],
       ["0"],
@@ -219,7 +219,7 @@ class CounterTest extends UnitTestCase {
    *
    * @dataProvider providerTestIncrement()
    */
-  public function testIncrement($start, $add, $result) {
+  public function testIncrement($start, $add, $result): void {
     $counter = new Counter($start);
     $counter->increment($add);
     $this->assertEquals($result, $counter->get());
@@ -228,7 +228,7 @@ class CounterTest extends UnitTestCase {
   /**
    * Provides test data for testIncrement().
    */
-  public function providerTestIncrement() {
+  public function providerTestIncrement(): array {
     return [
       [4.0, 0.2, 4.2],
       [0.1, 1, 1.1],
@@ -240,7 +240,7 @@ class CounterTest extends UnitTestCase {
    * @covers ::increment
    * @dataProvider providerTestIncrementInvalidValue()
    */
-  public function testIncrementInvalidValue($value) {
+  public function testIncrementInvalidValue($value): void {
     $counter = new Counter(10);
     $this->expectException(BadBehaviorException::class);
     $this->expectExceptionMessage('Given $amount is zero or negative.');
@@ -250,7 +250,7 @@ class CounterTest extends UnitTestCase {
   /**
    * Provides test data for testIncrementInvalidValue().
    */
-  public function providerTestIncrementInvalidValue() {
+  public function providerTestIncrementInvalidValue(): array {
     return [
       [0],
       [0.0],
@@ -262,7 +262,7 @@ class CounterTest extends UnitTestCase {
    * @covers ::increment
    * @dataProvider providerTestIncrementNotFloatOrInt()
    */
-  public function testIncrementNotFloatOrInt($value) {
+  public function testIncrementNotFloatOrInt($value): void {
     $counter = new Counter(10);
     $this->expectException(BadBehaviorException::class);
     $this->expectExceptionMessage('Given $amount is not a integer or float.');
@@ -272,7 +272,7 @@ class CounterTest extends UnitTestCase {
   /**
    * Provides test data for testIncrementNotFloatOrInt().
    */
-  public function providerTestIncrementNotFloatOrInt() {
+  public function providerTestIncrementNotFloatOrInt(): array {
     return [
       [FALSE],
       ["0"],
@@ -285,7 +285,7 @@ class CounterTest extends UnitTestCase {
    *
    * @dataProvider providerTestSetWriteCallback()
    */
-  public function testSetWriteCallback($value_start, $call, $value_end) {
+  public function testSetWriteCallback($value_start, $call, $value_end): void {
     $counter = new Counter($value_start);
 
     // Pass a callback that modifies the local $passed_value.
@@ -304,7 +304,7 @@ class CounterTest extends UnitTestCase {
   /**
    * Provides test data for testSetWriteCallback().
    */
-  public function providerTestSetWriteCallback() {
+  public function providerTestSetWriteCallback(): array {
     return [
       [0, ['set', 5], 5],
       [1.8, ['increment', 2.3], 4.1],

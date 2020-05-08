@@ -25,16 +25,16 @@ class PathInvalidation extends InvalidationBase implements InvalidationInterface
   public function validateExpression($wildcard_check = TRUE) {
     parent::validateExpression();
     if ($wildcard_check && (strpos($this->expression, '*') !== FALSE)) {
-      throw new InvalidExpressionException($this->t('Path invalidations should not contain asterisks.'));
+      throw new InvalidExpressionException('Path invalidations should not contain asterisks.');
     }
     if ($wildcard_check && $this->expression === '*') {
-      throw new InvalidExpressionException($this->t('Path invalidations cannot be "*".'));
+      throw new InvalidExpressionException('Path invalidations cannot be "*".');
     }
     if (strpos($this->expression, ' ') !== FALSE) {
-      throw new InvalidExpressionException($this->t('Path invalidations cannot contain spaces, use %20 instead.'));
+      throw new InvalidExpressionException('Path invalidations cannot contain spaces, use %20 instead.');
     }
     if (strpos($this->expression, '/') === 0) {
-      throw new InvalidExpressionException($this->t('Path invalidations cannot start with slashes.'));
+      throw new InvalidExpressionException('Path invalidations cannot start with slashes.');
     }
   }
 

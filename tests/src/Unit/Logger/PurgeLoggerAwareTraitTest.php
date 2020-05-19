@@ -6,7 +6,6 @@ use Drupal\Tests\UnitTestCase;
 
 /**
  * @coversDefaultClass \Drupal\purge\Logger\PurgeLoggerAwareTrait
- * @group purge
  */
 class PurgeLoggerAwareTraitTest extends UnitTestCase {
 

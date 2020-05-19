@@ -1,23 +1,28 @@
 <?php
 
-namespace Drupal\Tests\purge_ui\Functional;
+namespace Drupal\Tests\purge_ui\Functional\Form;
 
-use Drupal\Core\Url;
-use Drupal\Tests\purge\Functional\BrowserTestBase;
+use Drupal\Tests\purge_ui\Functional\Form\AjaxFormTestBase;
+use Drupal\purge_ui\Form\QueueBrowserForm;
 
 /**
  * Tests \Drupal\purge_ui\Form\QueueBrowserForm.
- *
- * @group purge_ui
  */
-class QueueBrowserFormTest extends BrowserTestBase {
+class QueueBrowserFormTest extends AjaxFormTestBase {
 
   /**
-   * The Drupal user entity.
-   *
-   * @var \Drupal\user\Entity\User
+   * {@inheritdoc}
    */
-  protected $adminUser;
+  public static $modules = [
+    'purge_ui',
+    'purge_queuer_test',
+    'purge_purger_test',
+  ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $formClass = QueueBrowserForm::class;
 
   /**
    * The route that renders the form.
@@ -29,11 +34,7 @@ class QueueBrowserFormTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
-    'purge_ui',
-    'purge_queuer_test',
-    'purge_purger_test',
-  ];
+  protected $routeTitle = 'Purge queue browser';
 
   /**
    * The queuer plugin.
@@ -49,18 +50,14 @@ class QueueBrowserFormTest extends BrowserTestBase {
     parent::setUp($switch_to_memory_queue);
     $this->initializeQueuersService();
     $this->queuer = $this->purgeQueuers->get('a');
-    $this->adminUser = $this->drupalCreateUser(['administer site configuration']);
   }
 
   /**
-   * Tests access to the form and empty conditions.
+   * Tests basic expectations of the form.
    */
-  public function testAccess(): void {
-    $this->drupalGet(Url::fromRoute($this->route));
-    $this->assertSession()->statusCodeEquals(403);
+  public function testPresence(): void {
     $this->drupalLogin($this->adminUser);
-    $this->drupalGet(Url::fromRoute($this->route));
-    $this->assertSession()->statusCodeEquals(200);
+    $this->drupalGet($this->getPath());
     $this->assertSession()->titleEquals("Purge queue browser | Drupal");
     $this->assertSession()->pageTextContains("Your queue is empty.");
     $this->assertSession()->fieldNotExists('edit-1');
@@ -74,11 +71,11 @@ class QueueBrowserFormTest extends BrowserTestBase {
    */
   public function testClose(): void {
     $this->drupalLogin($this->adminUser);
-    $this->drupalGet(Url::fromRoute($this->route));
+    $this->drupalGet($this->getPath());
     $this->assertSession()->pageTextContains("Close");
-    $json = $this->drupalPostForm(Url::fromRoute($this->route)->toString(), [], 'Close');
-    $this->assertEquals('closeDialog', $json[1]['command']);
-    $this->assertEquals(2, count($json));
+    $ajax = $this->postAjaxForm([], 'Close');
+    $this->assertAjaxCommandCloseModalDialog($ajax);
+    $this->assertAjaxCommandsTotal($ajax, 1);
   }
 
   /**
@@ -88,9 +85,10 @@ class QueueBrowserFormTest extends BrowserTestBase {
    * @see \Drupal\purge_ui\Form\CloseDialogTrait::closeDialog
    */
   public function testData(): void {
+    $this->drupalLogin($this->adminUser);
     $this->initializeInvalidationFactoryService();
     $this->initializePurgersService(['id' => 'good']);
-    $this->initializeQueueService('file');
+    $this->initializeQueueService('database');
     // Add 30 tags to the queue and collect the strings we're adding.
     $tags = $needles = [];
     for ($i = 1; $i <= 30; $i++) {
@@ -104,18 +102,17 @@ class QueueBrowserFormTest extends BrowserTestBase {
     $this->assertEquals(30, count($this->purgeQueue->selectPage()));
     $this->purgeQueue->reload();
     // Render the interface and find the first 15 tags, the is on page 2.
-    $this->drupalLogin($this->adminUser);
-    $this->drupalGet(Url::fromRoute($this->route));
+    $this->drupalGet($this->getPath());
     $this->assertSession()->pageTextContains("Type");
     $this->assertSession()->pageTextContains("State");
     $this->assertSession()->pageTextContains("Expression");
     $this->assertSession()->pageTextContains("New");
-    $this->assertSession()->fieldExists('edit-1');
-    $this->assertSession()->fieldExists('edit-2');
-    $this->assertSession()->fieldNotExists('edit-3');
+    $this->assertActionExists('edit-1', '1');
+    $this->assertActionExists('edit-2', '2');
+    $this->assertActionNotExists('edit-3', '3');
     foreach ($needles as $i => $needle) {
-      // @see \Drupal\purge_ui\Form\QueueBrowserForm::$numberOfItems.
-      if ($i <= 15) {
+      $needle = "<td>$needle</td>";
+      if ($i >= 16) {
         $this->assertSession()->responseContains($needle);
       }
       else {

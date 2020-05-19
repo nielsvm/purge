@@ -5,7 +5,6 @@ namespace Drupal\Tests\purge\Kernel\Invalidation;
 /**
  * Tests \Drupal\purge\Plugin\Purge\Invalidation\WildcardPathInvalidation.
  *
- * @group purge
  * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
  */
 class WildcardPathInvalidationTest extends PluginTestBase {

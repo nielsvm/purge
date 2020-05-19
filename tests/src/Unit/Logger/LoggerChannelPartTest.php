@@ -8,7 +8,6 @@ use Drupal\Tests\UnitTestCase;
 
 /**
  * @coversDefaultClass \Drupal\purge\Logger\LoggerChannelPart
- * @group purge
  */
 class LoggerChannelPartTest extends UnitTestCase {
 

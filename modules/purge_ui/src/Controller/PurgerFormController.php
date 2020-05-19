@@ -162,6 +162,9 @@ class PurgerFormController extends ControllerBase {
    *   The page title.
    */
   public function detailFormTitle($id) {
+    if (!($definition = $this->getPurgerPluginDefinition($id))) {
+      return $this->t('Purger');
+    }
     return $this->purgePurgers->getLabels()[$id];
   }
 

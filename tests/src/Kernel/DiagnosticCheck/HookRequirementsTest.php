@@ -6,8 +6,6 @@ use Drupal\Tests\purge\Kernel\KernelTestBase;
 
 /**
  * Tests that purge_requirements() passes on our diagnostic checks.
- *
- * @group purge
  */
 class HookRequirementsTest extends KernelTestBase {
 

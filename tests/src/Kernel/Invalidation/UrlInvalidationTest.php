@@ -5,7 +5,6 @@ namespace Drupal\Tests\purge\Kernel\Invalidation;
 /**
  * Tests \Drupal\purge\Plugin\Purge\Invalidation\UrlInvalidation.
  *
- * @group purge
  * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
  */
 class UrlInvalidationTest extends PluginTestBase {

@@ -50,7 +50,6 @@ abstract class DashboardTestBase extends BrowserTestBase {
     $this->drupalGet($this->route);
     $this->assertSession()->responseContains('When content on your website changes, your purge setup will take care of refreshing external caching systems and CDNs.');
     $this->assertSession()->statusCodeEquals(200);
-    $this->drupalGet(Url::fromRoute('system.performance_settings'));
   }
 
 }

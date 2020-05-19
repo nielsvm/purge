@@ -60,6 +60,9 @@ class QueueBrowserForm extends FormBase {
     $form['#prefix'] = '<div id="browserwrapper">';
     $form['#suffix'] = '</div>';
 
+    // This is rendered as a modal dialog, so we need to set some extras.
+    $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
+
     // Store paging information in form state so we can easily update it.
     if (is_null($form_state->get('pages'))) {
       $form_state->set('pages', $this->purgeQueue->selectPageMax());

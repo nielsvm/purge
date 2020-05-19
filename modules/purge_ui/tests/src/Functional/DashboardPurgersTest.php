@@ -6,8 +6,6 @@ use Drupal\Core\Url;
 
 /**
  * Tests \Drupal\purge_ui\Controller\DashboardController::buildPurgers().
- *
- * @group purge_ui
  */
 class DashboardPurgersTest extends DashboardTestBase {
 
@@ -18,11 +16,6 @@ class DashboardPurgersTest extends DashboardTestBase {
 
   /**
    * Test the purgers section of the configuration form.
-   *
-   * @warning
-   *   This test depends on raw HTML, which is a bit of a maintenance cost. At
-   *   the same time, core's markup guarantees should keep us safe. Having that
-   *   said, for the purpose of testing, raw HTML checking is very accurate :-).
    *
    * @see \Drupal\purge_ui\Controller\DashboardController::buildPurgers
    */

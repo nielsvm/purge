@@ -9,7 +9,6 @@ use Drupal\Tests\purge\Kernel\KernelTestBase;
 /**
  * Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsService.
  *
- * @group purge
  * @see \Drupal\purge\Plugin\Purge\Processor\ProcessorsService
  * @see \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface
  */

@@ -6,8 +6,6 @@ use Drupal\Core\Url;
 
 /**
  * Tests \Drupal\purge_ui\Controller\DashboardController::buildLoggingSection().
- *
- * @group purge_ui
  */
 class DashboardLoggingTest extends DashboardTestBase {
 

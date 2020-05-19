@@ -8,6 +8,15 @@ and this project adheres to
 ## [Unreleased]
 
 ### Added
+
+### Changed
+- **Improvement:** Rewrote the entire UI testsuite to pass and ready for D9.
+
+### Fixed
+
+## [8.x-3.0-beta9] - 2019-10-03
+
+### Added
 - Added `.gitattributes` to keep documentation out of built packages.
 - Added `composer.json` for integration with Composer-based workflows.
 - **API:** `Annotation\PurgeTagsHeader::$dependent_purger_plugins` to allow

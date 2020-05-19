@@ -15,7 +15,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * @coversDefaultClass \Drupal\purge_queuer_coretags\CacheTagsQueuer
- * @group purge_queuer_coretags
  */
 class CacheTagsQueuerTest extends UnitTestCase {
 

@@ -22,7 +22,7 @@ class PluginDetailsForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'purge_ui.plugin_details_form';
+    return 'purge_ui.plugin_detail_form';
   }
 
   /**

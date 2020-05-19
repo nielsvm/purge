@@ -7,8 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Tests \Drupal\purge\EventSubscriber\CacheableResponseSubscriber.
- *
- * @group purge
  */
 class CacheableResponseSubscriberTest extends KernelTestBase {
 

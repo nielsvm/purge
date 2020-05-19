@@ -8,7 +8,6 @@ use Drupal\Tests\purge\Kernel\KernelTestBase;
 /**
  * Tests \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersService.
  *
- * @group purge
  * @see \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersService
  * @see \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersServiceInterface
  */

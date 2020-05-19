@@ -8,7 +8,6 @@ use Drupal\Tests\UnitTestCase;
 
 /**
  * @coversDefaultClass \Drupal\purge\Counter\Counter
- * @group purge
  */
 class CounterTest extends UnitTestCase {
 

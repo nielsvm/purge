@@ -4,8 +4,6 @@ namespace Drupal\Tests\purge_ui\Functional;
 
 /**
  * Tests \Drupal\purge_ui\Controller\DashboardController in no modules state.
- *
- * @group purge_ui
  */
 class DashboardEmptyTest extends DashboardTestBase {
 
@@ -44,6 +42,8 @@ class DashboardEmptyTest extends DashboardTestBase {
    * Test that a unconfigured pipeline results in 'nothing available' messages.
    */
   public function testMissingMessages(): void {
+    $this->drupalLogin($this->adminUser);
+    $this->drupalGet($this->route);
     $this->assertSession()->responseContains('Please install a module to add at least one queuer.');
     $this->assertSession()->responseNotContains('Add queuer');
     $this->assertSession()->responseContains('Please install a module to add at least one purger.');

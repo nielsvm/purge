@@ -8,7 +8,6 @@ use Drupal\Tests\purge\Kernel\KernelServiceTestBase;
 /**
  * Tests \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService.
  *
- * @group purge
  * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService
  * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
  */

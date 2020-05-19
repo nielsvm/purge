@@ -2,12 +2,11 @@
 
 namespace Drupal\Tests\purge_processor_test\Functional;
 
-use Drupal\Tests\purge_ui\Functional\ProcessorConfigFormTestBase;
+use Drupal\Tests\purge_ui\Functional\Form\Config\ProcessorConfigFormTestBase;
+use Drupal\purge_processor_test\Form\ProcessorConfigForm;
 
 /**
  * Tests \Drupal\purge_processor_test\Form\ProcessorConfigForm.
- *
- * @group purge_processor_test
  */
 class ProcessorConfigFormTest extends ProcessorConfigFormTestBase {
 
@@ -17,25 +16,26 @@ class ProcessorConfigFormTest extends ProcessorConfigFormTestBase {
   public static $modules = ['purge_processor_test'];
 
   /**
-   * The plugin ID for which the form tested is rendered for.
-   *
-   * @var string
+   * {@inheritdoc}
    */
-  protected $plugin = 'withform';
+  protected $pluginId = 'withform';
 
   /**
-   * The full class of the form being tested.
-   *
-   * @var string
+   * {@inheritdoc}
    */
-  protected $formClass = 'Drupal\purge_processor_test\Form\ProcessorConfigForm';
+  protected $formClass = ProcessorConfigForm::class;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $formId = 'purge_processor_test.configform';
 
   /**
    * Verify that the form contains all fields we require.
    */
   public function testFieldExistence(): void {
     $this->drupalLogin($this->adminUser);
-    $this->drupalGet($this->route);
+    $this->drupalGet($this->getPath());
     $this->assertSession()->fieldExists('edit-textfield');
     $this->assertSession()->pageTextContains("Test");
   }
@@ -46,25 +46,25 @@ class ProcessorConfigFormTest extends ProcessorConfigFormTestBase {
   public function testFormValidation(): void {
     // Assert that no validation errors occur in the testing form.
     $form_state = $this->getFormStateInstance();
-    $form_state->addBuildInfo('args', [$this->formArgs]);
+    $form_state->addBuildInfo('args', $this->formArgs);
     $form_state->setValues([
       'textfield' => "The moose in the noose ate the goose who was loose.",
     ]);
     $form = $this->getFormInstance();
-    $this->formBuilder->submitForm($form, $form_state);
+    $this->formBuilder()->submitForm($form, $form_state);
     $errors = $form_state->getErrors();
     $this->assertEquals(0, count($errors));
   }
 
   /**
-   * Test posting data to the form.
+   * {@inheritdoc}
    */
-  public function testFormSubmit(): void {
+  public function testSaveConfigurationSubmit(): void {
     $this->drupalLogin($this->adminUser);
     $edit = [
       'textfield' => "The moose in the noose ate the goose who was loose.",
     ];
-    $this->drupalPostForm($this->route, $edit, 'Save configuration');
+    $this->drupalPostForm($this->getPath(), $edit, 'Save configuration');
   }
 
 }

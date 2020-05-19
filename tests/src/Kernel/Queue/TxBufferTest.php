@@ -13,8 +13,6 @@ use Drupal\Tests\purge\Kernel\KernelTestBase;
  * @todo
  *   This really, really needs to be a unit test but the effort failed the last
  *   time. Anyone willing to convert it entirely - much appreciated!
- *
- * @group purge
  */
 class TxBufferTest extends KernelTestBase {
 

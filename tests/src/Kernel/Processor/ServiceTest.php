@@ -4,7 +4,6 @@ namespace Drupal\Tests\purge\Kernel\Processor;
 
 use Drupal\purge\Plugin\Purge\Processor\ProcessorInterface;
 use Drupal\Tests\purge\Kernel\KernelServiceTestBase;
-use Drupal\Tests\purge\Kernel\KernelTestBase;
 
 /**
  * Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsService.

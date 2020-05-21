@@ -89,7 +89,7 @@ class ProcessorCommands extends DrushCommands {
    *   label: Label
    *   description: Description
    *
-   * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+   * @return array|\Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Row-based structure of data.
    */
   public function processorList(array $options = ['format' => 'table']) {
@@ -134,7 +134,7 @@ class ProcessorCommands extends DrushCommands {
    *   label: Label
    *   description: Description
    *
-   * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+   * @return array|\Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Row-based structure of data.
    */
   public function processorListAvailable(array $options = ['format' => 'table']) {

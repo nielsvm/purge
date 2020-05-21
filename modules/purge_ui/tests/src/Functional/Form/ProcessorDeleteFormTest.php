@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\purge_ui\Functional\Form;
 
-use Drupal\Tests\purge_ui\Functional\Form\AjaxFormTestBase;
 use Drupal\purge_ui\Form\ProcessorDeleteForm;
 
 /**

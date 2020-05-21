@@ -2,8 +2,6 @@
 
 namespace Drupal\Tests\purge_ui\Functional\Form\Config;
 
-use Drupal\Tests\purge_ui\Functional\Form\Config\PluginConfigFormTestBase;
-
 /**
  * Testbase for \Drupal\purge_ui\Form\PurgerConfigFormBase derivatives.
  */

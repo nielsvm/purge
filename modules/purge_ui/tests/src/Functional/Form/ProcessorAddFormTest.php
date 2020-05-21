@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\purge_ui\Functional\Form;
 
-use Drupal\Tests\purge_ui\Functional\Form\AjaxFormTestBase;
 use Drupal\purge_ui\Form\ProcessorAddForm;
 
 /**
@@ -47,7 +46,7 @@ class ProcessorAddFormTest extends AjaxFormTestBase {
         'c',
         'withform',
         'purge_ui_block_processor',
-      ],
+      ]
     );
     $this->drupalGet($this->getPath());
     $this->assertSession()->statusCodeEquals(404);

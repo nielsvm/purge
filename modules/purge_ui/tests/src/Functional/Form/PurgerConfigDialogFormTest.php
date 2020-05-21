@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\purge_ui\Functional\Form;
 
-use Drupal\Tests\purge_ui\Functional\Form\Config\PurgerConfigFormTestBase;
 use Drupal\purge_purger_test\Form\PurgerConfigForm;
+use Drupal\Tests\purge_ui\Functional\Form\Config\PurgerConfigFormTestBase;
 
 /**
  * Tests the drop-in configuration form for purgers (modal dialog).

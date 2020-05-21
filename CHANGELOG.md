@@ -10,7 +10,10 @@ and this project adheres to
 ### Added
 
 ### Changed
-- **Improvement:** Rewrote the entire UI testsuite to pass and ready for D9.
+- **Functionality:** Drush 8 legacy wrappers have been removed, sorry!
+- **Improvement:** Code quality improved (drupal-check, phpcs).
+- **Improvement:** Rewrote the entire UI testsuite to pass (D9 readiness).
+- **Improvement:** Rewrote the entire kernel testsuite to pass (D9 readiness).
 
 ### Fixed
 

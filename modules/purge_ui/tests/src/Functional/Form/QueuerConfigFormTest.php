@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\purge_ui\Functional\Form;
 
-use Drupal\Tests\purge_ui\Functional\Form\Config\QueuerConfigFormTestBase;
 use Drupal\purge_queuer_test\Form\QueuerConfigForm;
+use Drupal\Tests\purge_ui\Functional\Form\Config\QueuerConfigFormTestBase;
 
 /**
  * Tests the drop-in configuration form for queuers.

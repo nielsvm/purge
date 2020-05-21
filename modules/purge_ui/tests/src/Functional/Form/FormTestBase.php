@@ -2,11 +2,11 @@
 
 namespace Drupal\Tests\purge_ui\Functional\Form;
 
-use Drupal\Core\Url;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\Tests\purge\Functional\BrowserTestBase;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -129,7 +129,7 @@ abstract class FormTestBase extends BrowserTestBase {
     return $this->formBuilder;
   }
 
- /**
+  /**
    * Fetch a built form array fetched via its controller.
    *
    * This helper exists because several purge_ui forms rely route argument which
@@ -147,7 +147,7 @@ abstract class FormTestBase extends BrowserTestBase {
    *
    * @see \Drupal\Core\Form\FormBuilderInterface::getForm()
    */
-  protected function getBuiltForm($route_parameters = [], $options = []): array {
+  protected function getBuiltForm(array $route_parameters = [], array $options = []): array {
     $path = $this->getPath($route_parameters, $options);
     $request = Request::create($path);
     $match = $this->container
@@ -195,7 +195,7 @@ abstract class FormTestBase extends BrowserTestBase {
    *
    * @see \Drupal\Core\Url::fromRoute()
    */
-  protected function getPath($route_parameters = [], $options = []): string {
+  protected function getPath(array $route_parameters = [], array $options = []): string {
     $this->propagateRouteParameters($route_parameters);
     return Url::fromRoute(
       $this->route,
@@ -210,7 +210,7 @@ abstract class FormTestBase extends BrowserTestBase {
    * @param array $route_parameters
    *   (optional) An associative array of route parameter names and values.
    */
-  protected function propagateRouteParameters(&$route_parameters) {
+  protected function propagateRouteParameters(array &$route_parameters) {
     if (empty($route_parameters)) {
       $route_parameters = $this->routeParameters;
     }

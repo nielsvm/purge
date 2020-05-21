@@ -101,7 +101,7 @@ class PurgerCommands extends DrushCommands {
    *   label: Label
    *   description: Description
    *
-   * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+   * @return array|\Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Row-based structure of data.
    */
   public function purgerList(array $options = ['format' => 'table']) {
@@ -151,7 +151,7 @@ class PurgerCommands extends DrushCommands {
    *   label: Label
    *   description: Description
    *
-   * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+   * @return array|\Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Row-based structure of data.
    */
   public function purgerListAvailable(array $options = ['format' => 'table']) {

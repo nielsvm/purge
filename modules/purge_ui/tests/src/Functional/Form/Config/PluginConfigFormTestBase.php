@@ -38,11 +38,11 @@ abstract class PluginConfigFormTestBase extends AjaxFormTestBase {
    * @var array
    */
   protected $formArgs = [
-      0 => [
-        'id' => NULL,
-        'dialog' => FALSE,
-      ],
-    ];
+    0 => [
+      'id' => NULL,
+      'dialog' => FALSE,
+    ],
+  ];
 
   /**
    * {@inheritdoc}
@@ -130,6 +130,5 @@ abstract class PluginConfigFormTestBase extends AjaxFormTestBase {
       $this->assertFalse(FALSE, "Don't mark this test as risky!");
     }
   }
-
 
 }

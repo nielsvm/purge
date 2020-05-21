@@ -89,7 +89,7 @@ class QueuerCommands extends DrushCommands {
    *   label: Label
    *   description: Description
    *
-   * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+   * @return array|\Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Row-based structure of data.
    */
   public function queuerList(array $options = ['format' => 'table']) {
@@ -134,7 +134,7 @@ class QueuerCommands extends DrushCommands {
    *   label: Label
    *   description: Description
    *
-   * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+   * @return array|\Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Row-based structure of data.
    */
   public function queuerListAvailable(array $options = ['format' => 'table']) {

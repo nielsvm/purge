@@ -77,7 +77,7 @@ class TypesCommand extends DrushCommands {
    *   type: Type
    *   supported: Supported
    *
-   * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+   * @return array|\Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Row-based structure of data.
    */
   public function types(array $options = ['format' => 'table']) {

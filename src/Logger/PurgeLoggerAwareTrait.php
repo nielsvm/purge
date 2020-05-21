@@ -11,6 +11,13 @@ trait PurgeLoggerAwareTrait {
   use LoggerAwareTrait;
 
   /**
+   * Channel logger.
+   *
+   * @var null|\Drupal\purge\Logger\LoggerChannelPartInterface
+   */
+  protected $logger;
+
+  /**
    * {@inheritdoc}
    */
   public function logger() {

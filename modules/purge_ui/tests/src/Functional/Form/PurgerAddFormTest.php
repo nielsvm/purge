@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\purge_ui\Functional\Form;
 
-use Drupal\Tests\purge_ui\Functional\Form\AjaxFormTestBase;
 use Drupal\purge_ui\Form\PurgerAddForm;
 
 /**
@@ -46,8 +45,8 @@ class PurgerAddFormTest extends AjaxFormTestBase {
         'b',
         'c',
         'withform',
-        'good'
-      ],
+        'good',
+      ]
     );
     $this->drupalGet($this->getPath());
     $this->assertSession()->statusCodeEquals(404);

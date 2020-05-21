@@ -20,9 +20,9 @@ class LateRuntimeProcessor implements EventSubscriberInterface, ContainerAwareIn
   /**
    * The processor plugin or FALSE when disabled.
    *
-   * @var false|\Drupal\purge_processor_lateruntime\Plugin\Purge\Processor\LateRuntimeProcessor
+   * @var null|false|\Drupal\purge_processor_lateruntime\Plugin\Purge\Processor\LateRuntimeProcessor
    */
-  protected $processor;
+  protected $processor = NULL;
 
   /**
    * The purge executive service, which wipes content from external caches.

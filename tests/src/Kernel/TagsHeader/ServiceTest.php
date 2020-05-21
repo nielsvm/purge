@@ -3,7 +3,6 @@
 namespace Drupal\Tests\purge\Kernel\TagsHeader;
 
 use Drupal\Tests\purge\Kernel\KernelServiceTestBase;
-use Drupal\Tests\purge\Kernel\KernelTestBase;
 
 /**
  * Tests \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersService.

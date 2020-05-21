@@ -2,11 +2,9 @@
 
 namespace Drupal\Tests\purge_ui\Functional\Form;
 
-use Drupal\Component\Serialization\Json;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\EventSubscriber\MainContentViewSubscriber;
 use Drupal\Core\Form\FormBuilderInterface;
-use Drupal\Tests\purge_ui\Functional\Form\FormTestBase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
@@ -14,16 +12,6 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
  * Testbase for Ajax-based purge_ui forms.
  */
 abstract class AjaxFormTestBase extends FormTestBase {
-
-  /**
-   * Assert that the given Ajax submit property is defined.
-   *
-   * @param string $property
-   *   Name of the submit property, e.g. 'submit' or 'close'.
-   */
-  protected function assertAjaxButton($property): void {
-    $this->assertSame(TRUE, isset($form['actions'][$property]['#ajax']['callback']));
-  }
 
   /**
    * Assert that a \Drupal\Core\Ajax\CloseModalDialogCommand is issued.
@@ -35,7 +23,7 @@ abstract class AjaxFormTestBase extends FormTestBase {
    * @param string[] $parameters
    *   Expected parameters present in the command array.
    */
-  protected function assertAjaxCommand(AjaxResponse $ajax, $command, $parameters = []): void {
+  protected function assertAjaxCommand(AjaxResponse $ajax, $command, array $parameters = []): void {
     $commands = $ajax->getCommands();
     $commandsString = var_export($commands, TRUE);
     $match = array_search($command, array_column($commands, 'command'));
@@ -102,19 +90,9 @@ abstract class AjaxFormTestBase extends FormTestBase {
    * @param array $form
    *   The form array.
    */
-  protected function assertAjaxDialog($form): void {
+  protected function assertAjaxDialog(array $form): void {
     $this->assertSame(TRUE, isset($form['#attached']['library'][0]));
     $this->assertSame('core/drupal.dialog.ajax', $form['#attached']['library'][0]);
-  }
-
-  /**
-   * Assert that the given Ajax submit property is not defined.
-   *
-   * @param string $property
-   *   Name of the submit property, e.g. 'submit' or 'close'.
-   */
-  protected function assertNoAjaxButton($property): void {
-    $this->assertSame(FALSE, isset($form['actions'][$property]['#ajax']['callback']));
   }
 
   /**
@@ -123,7 +101,7 @@ abstract class AjaxFormTestBase extends FormTestBase {
    * @param array $form
    *   The form array.
    */
-  protected function assertNoAjaxDialog($form): void {
+  protected function assertNoAjaxDialog(array $form): void {
     $this->assertSame(FALSE, isset($form['#attached']['library'][0]));
   }
 
@@ -190,12 +168,12 @@ abstract class AjaxFormTestBase extends FormTestBase {
    *
    * @see \Drupal\Tests\UiHelperTrait::submitForm()
    */
-  protected function postAjaxForm(array $edit, $submit, $route_parameters = []): AjaxResponse {
+  protected function postAjaxForm(array $edit, $submit, array $route_parameters = []): AjaxResponse {
     $form_builder = $this->formBuilder();
     $form_state = $this->getFormStateInstance();
     $form = $this->getFormInstance();
 
-    // Get a path appended with ?ajax_form=1&_wrapper_format=drupal_ajax
+    // Get a path appended with ?ajax_form=1&_wrapper_format=drupal_ajax.
     $this->propagateRouteParameters($route_parameters);
     $route_parameters[FormBuilderInterface::AJAX_FORM_REQUEST] = TRUE;
     $route_parameters[MainContentViewSubscriber::WRAPPER_FORMAT] = 'drupal_ajax';

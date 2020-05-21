@@ -4,8 +4,8 @@ namespace Drupal\Tests\purge\Kernel\Invalidation;
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
-use Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidStateException;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\MissingExpressionException;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\TypeUnsupportedException;
 use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationBase;
 use Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationInterface;
@@ -111,7 +111,7 @@ abstract class PluginTestBase extends KernelTestBase {
   }
 
   /**
-   * Test that instances initialize with no properties
+   * Test that instances initialize with no properties.
    *
    * @see \Drupal\purge\Plugin\Purge\Invalidation\ImmutableInvalidationInterface::getProperties
    */

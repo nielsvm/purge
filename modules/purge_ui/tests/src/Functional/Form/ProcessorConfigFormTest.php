@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\purge_ui\Functional\Form;
 
-use Drupal\Tests\purge_ui\Functional\Form\Config\ProcessorConfigFormTestBase;
 use Drupal\purge_processor_test\Form\ProcessorConfigForm;
+use Drupal\Tests\purge_ui\Functional\Form\Config\ProcessorConfigFormTestBase;
 
 /**
  * Tests the drop-in configuration form for processors.

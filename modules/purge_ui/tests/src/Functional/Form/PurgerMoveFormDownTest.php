@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\purge_ui\Functional;
 
-use Drupal\Tests\purge_ui\Functional\Form\AjaxFormTestBase;
 use Drupal\purge_ui\Form\PurgerMoveForm;
+use Drupal\Tests\purge_ui\Functional\Form\AjaxFormTestBase;
 
 /**
  * Tests \Drupal\purge_ui\Form\PurgerMoveForm.

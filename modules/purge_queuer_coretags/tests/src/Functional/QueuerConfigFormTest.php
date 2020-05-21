@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\purge_queuer_coretags\Functional;
 
-use Drupal\Tests\purge_ui\Functional\Form\Config\QueuerConfigFormTestBase;
 use Drupal\purge_queuer_coretags\Form\ConfigurationForm;
+use Drupal\Tests\purge_ui\Functional\Form\Config\QueuerConfigFormTestBase;
 
 /**
  * Tests \Drupal\purge_queuer_coretags\Form\ConfigurationForm.

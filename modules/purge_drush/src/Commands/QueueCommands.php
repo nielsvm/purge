@@ -3,7 +3,6 @@
 namespace Drupal\purge_drush\Commands;
 
 use Consolidation\AnnotatedCommand\AnnotationData;
-use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Consolidation\SiteAlias\SiteAliasManagerAwareInterface;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
@@ -327,10 +326,12 @@ class QueueCommands extends DrushCommands implements SiteAliasManagerAwareInterf
         }
         // Finish execution for [q]uit or --> pressed on the last page.
         elseif (($char === 113) || ((!$next) && ($char === 67))) {
-          return;
+          return NULL;
         }
       }
     }
+
+    return NULL;
   }
 
   /**

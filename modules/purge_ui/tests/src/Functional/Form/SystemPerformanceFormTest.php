@@ -48,7 +48,7 @@ class SystemPerformanceFormTest extends BrowserTestBase {
     $option_1months = $this->assertSession()->optionExists($id, '2764800')->getText();
     $option_6months = $this->assertSession()->optionExists($id, '16588800')->getText();
     $option_week = $this->assertSession()->optionExists($id, '604800')->getText();
-    $option_year =$this->assertSession()->optionExists($id, '31536000')->getText();
+    $option_year = $this->assertSession()->optionExists($id, '31536000')->getText();
     $this->assertTrue($option_default->hasAttribute('selected'));
     $this->assertSame('1 month', $option_1months);
     $this->assertSame('6 months', $option_6months);

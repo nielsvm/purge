@@ -7,6 +7,8 @@ use Drupal\Tests\purge\Functional\BrowserTestBase;
 
 /**
  * Tests purge_ui_form_system_performance_settings_alter().
+ *
+ * @group purge_ui
  */
 class SystemPerformanceFormTest extends BrowserTestBase {
 

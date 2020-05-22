@@ -8,8 +8,7 @@ use Drupal\Tests\purge\Kernel\KernelServiceTestBase;
 /**
  * Tests \Drupal\purge\Plugin\Purge\Queue\QueueService.
  *
- * @see \Drupal\purge\Plugin\Purge\Queue\QueueService
- * @see \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface
+ * @group purge
  */
 class ServiceTest extends KernelServiceTestBase {
 

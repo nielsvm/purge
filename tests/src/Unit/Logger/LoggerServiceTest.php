@@ -8,6 +8,8 @@ use Drupal\Tests\UnitTestCase;
 
 /**
  * @coversDefaultClass \Drupal\purge\Logger\LoggerService
+ *
+ * @group purge
  */
 class LoggerServiceTest extends UnitTestCase {
   use FixGetConfigFactoryStubTrait;

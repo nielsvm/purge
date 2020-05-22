@@ -6,6 +6,8 @@ use Drupal\purge_ui\Form\QueueEmptyForm;
 
 /**
  * Tests \Drupal\purge_ui\Form\QueueEmptyForm.
+ *
+ * @group purge_ui
  */
 class QueueEmptyFormTest extends AjaxFormTestBase {
 

@@ -1,4 +1,4 @@
-core_version_requirement: '^8 || ^9'
+core_version_requirement: '^8.8.6 || ^9.0.0'
 name: 'Remove block queuer and processor.'
 type: module
 description: 'Replace ProcessorsService and QueuersService to load Drupal without plugins.'

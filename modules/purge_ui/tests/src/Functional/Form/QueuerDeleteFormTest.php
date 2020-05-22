@@ -6,6 +6,8 @@ use Drupal\purge_ui\Form\QueuerDeleteForm;
 
 /**
  * Tests \Drupal\purge_ui\Form\QueuerDeleteForm.
+ *
+ * @group purge_ui
  */
 class QueuerDeleteFormTest extends AjaxFormTestBase {
 

@@ -6,6 +6,8 @@ use Drupal\purge_ui\Form\QueueBrowserForm;
 
 /**
  * Tests \Drupal\purge_ui\Form\QueueBrowserForm.
+ *
+ * @group purge_ui
  */
 class QueueBrowserFormTest extends AjaxFormTestBase {
 

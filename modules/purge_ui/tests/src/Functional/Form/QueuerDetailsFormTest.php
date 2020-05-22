@@ -7,8 +7,7 @@ use Drupal\purge_ui\Form\PluginDetailsForm;
 /**
  * Tests \Drupal\purge_ui\Form\PluginDetailsForm (for queuers).
  *
- * @see \Drupal\purge_ui\Controller\QueuerFormController::detailForm().
- * @see \Drupal\purge_ui\Controller\QueuerFormController::detailFormTitle().
+ * @group purge_ui
  */
 class QueuerDetailsFormTest extends AjaxFormTestBase {
 

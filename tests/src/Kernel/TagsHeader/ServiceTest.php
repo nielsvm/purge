@@ -7,8 +7,7 @@ use Drupal\Tests\purge\Kernel\KernelServiceTestBase;
 /**
  * Tests \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersService.
  *
- * @see \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersService
- * @see \Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersServiceInterface
+ * @group purge
  */
 class ServiceTest extends KernelServiceTestBase {
 

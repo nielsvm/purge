@@ -4,6 +4,8 @@ namespace Drupal\Tests\purge_ui\Functional;
 
 /**
  * Tests \Drupal\purge_ui\Controller\DashboardController in no modules state.
+ *
+ * @group purge_ui
  */
 class DashboardEmptyTest extends DashboardTestBase {
 

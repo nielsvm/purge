@@ -7,6 +7,8 @@ use Drupal\Tests\purge_ui\Functional\Form\Config\PurgerConfigFormTestBase;
 
 /**
  * Tests the drop-in configuration form for purgers.
+ *
+ * @group purge_ui
  */
 class PurgerConfigFormTest extends PurgerConfigFormTestBase {
 

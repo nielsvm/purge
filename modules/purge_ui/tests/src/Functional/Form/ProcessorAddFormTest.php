@@ -6,6 +6,8 @@ use Drupal\purge_ui\Form\ProcessorAddForm;
 
 /**
  * Tests \Drupal\purge_ui\Form\ProcessorAddForm.
+ *
+ * @group purge_ui
  */
 class ProcessorAddFormTest extends AjaxFormTestBase {
 

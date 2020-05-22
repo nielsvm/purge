@@ -8,7 +8,7 @@ use Drupal\Core\StreamWrapper\PublicStream;
 /**
  * Tests \Drupal\purge\Plugin\Purge\Queue\FileQueue.
  *
- * @see \Drupal\purge\Plugin\Purge\Queue\QueueInterface
+ * @group purge
  */
 class FileQueueTest extends PluginTestBase {
 

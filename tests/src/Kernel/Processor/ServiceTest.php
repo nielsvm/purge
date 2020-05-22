@@ -8,8 +8,7 @@ use Drupal\Tests\purge\Kernel\KernelServiceTestBase;
 /**
  * Tests \Drupal\purge\Plugin\Purge\Processor\ProcessorsService.
  *
- * @see \Drupal\purge\Plugin\Purge\Processor\ProcessorsService
- * @see \Drupal\purge\Plugin\Purge\Processor\ProcessorsServiceInterface
+ * @group purge
  */
 class ServiceTest extends KernelServiceTestBase {
 

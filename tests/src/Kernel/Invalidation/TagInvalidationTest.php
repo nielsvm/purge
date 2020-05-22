@@ -5,7 +5,7 @@ namespace Drupal\Tests\purge\Kernel\Invalidation;
 /**
  * Tests \Drupal\purge\Plugin\Purge\Invalidation\TagInvalidation.
  *
- * @see \Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface
+ * @group purge
  */
 class TagInvalidationTest extends PluginTestBase {
 

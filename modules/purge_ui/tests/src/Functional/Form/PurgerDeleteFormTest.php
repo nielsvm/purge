@@ -6,6 +6,8 @@ use Drupal\purge_ui\Form\PurgerDeleteForm;
 
 /**
  * Tests \Drupal\purge_ui\Form\PurgerDeleteForm.
+ *
+ * @group purge_ui
  */
 class PurgerDeleteFormTest extends AjaxFormTestBase {
 

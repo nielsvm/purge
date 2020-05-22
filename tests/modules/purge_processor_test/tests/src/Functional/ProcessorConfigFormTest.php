@@ -7,6 +7,8 @@ use Drupal\Tests\purge_ui\Functional\Form\Config\ProcessorConfigFormTestBase;
 
 /**
  * Tests \Drupal\purge_processor_test\Form\ProcessorConfigForm.
+ *
+ * @group purge_processor_test
  */
 class ProcessorConfigFormTest extends ProcessorConfigFormTestBase {
 

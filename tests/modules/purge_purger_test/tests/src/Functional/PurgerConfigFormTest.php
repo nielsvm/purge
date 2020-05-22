@@ -7,6 +7,8 @@ use Drupal\Tests\purge_ui\Functional\Form\Config\PurgerConfigFormTestBase;
 
 /**
  * Tests \Drupal\purge_purger_test\Form\PurgerConfigForm.
+ *
+ * @group purge_purger_test
  */
 class PurgerConfigFormTest extends PurgerConfigFormTestBase {
 

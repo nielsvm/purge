@@ -5,7 +5,7 @@ namespace Drupal\Tests\purge\Kernel\Queue;
 /**
  * Tests \Drupal\purge\Plugin\Purge\Queue\MemoryQueue.
  *
- * @see \Drupal\purge\Plugin\Purge\Queue\QueueInterface
+ * @group purge
  */
 class MemoryQueueTest extends PluginTestBase {
 

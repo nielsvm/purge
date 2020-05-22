@@ -9,8 +9,7 @@ use Drupal\Tests\purge\Kernel\KernelServiceTestBase;
 /**
  * Tests DiagnosticsService.
  *
- * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsService
- * @see \Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticsServiceInterface
+ * @group purge
  */
 class ServiceTest extends KernelServiceTestBase {
 
@@ -215,13 +214,16 @@ class ServiceTest extends KernelServiceTestBase {
    */
   public function testIsSystemShowingSmoke(): void {
     $this->assertTrue($this->service->isSystemShowingSmoke() instanceof DiagnosticCheckInterface);
+    $warning_plugin_id = $this->service->isSystemShowingSmoke()->getPluginId();
     $possibilities = [
       'alwayswarning',
       'capacity',
       'queuersavailable',
+      'memoryqueuewarning',
       'page_cache',
     ];
-    $this->assertTrue(in_array($this->service->isSystemShowingSmoke()->getPluginId(), $possibilities));
+    $warning_known = in_array($warning_plugin_id, $possibilities);
+    $this->assertTrue($warning_known, "Can't find '$warning_plugin_id'.");
   }
 
   /**

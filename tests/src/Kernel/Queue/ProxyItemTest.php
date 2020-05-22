@@ -10,6 +10,8 @@ use Drupal\Tests\purge\Kernel\KernelTestBase;
 
 /**
  * Tests \Drupal\purge\Tests\Queue\ProxyItem.
+ *
+ * @group purge
  */
 class ProxyItemTest extends KernelTestBase {
 

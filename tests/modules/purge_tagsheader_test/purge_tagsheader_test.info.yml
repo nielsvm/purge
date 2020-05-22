@@ -1,4 +1,4 @@
-core_version_requirement: '^8 || ^9'
+core_version_requirement: '^8.8.6 || ^9.0.0'
 name: 'Purge tests support (tagsheaders)'
 type: module
 description: "Provides tagsheaders for testing."

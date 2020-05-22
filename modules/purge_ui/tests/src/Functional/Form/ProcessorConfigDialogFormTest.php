@@ -7,6 +7,8 @@ use Drupal\Tests\purge_ui\Functional\Form\Config\ProcessorConfigFormTestBase;
 
 /**
  * Tests the drop-in configuration form for processors (modal dialog).
+ *
+ * @group purge_ui
  */
 class ProcessorConfigDialogFormTest extends ProcessorConfigFormTestBase {
 

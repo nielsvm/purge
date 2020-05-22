@@ -8,7 +8,7 @@ use Drupal\Tests\purge\Kernel\KernelPluginManagerTestBase;
 /**
  * Tests \Drupal\purge\Plugin\Purge\Processor\PluginManager.
  *
- * @see \Drupal\Core\Plugin\DefaultPluginManager
+ * @group purge
  */
 class PluginManagerTest extends KernelPluginManagerTestBase {
 

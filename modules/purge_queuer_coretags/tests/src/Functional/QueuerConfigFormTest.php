@@ -7,6 +7,8 @@ use Drupal\Tests\purge_ui\Functional\Form\Config\QueuerConfigFormTestBase;
 
 /**
  * Tests \Drupal\purge_queuer_coretags\Form\ConfigurationForm.
+ *
+ * @group purge_queuer_coretags
  */
 class QueuerConfigFormTest extends QueuerConfigFormTestBase {
 

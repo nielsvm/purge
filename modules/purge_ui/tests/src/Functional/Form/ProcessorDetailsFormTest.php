@@ -7,7 +7,7 @@ use Drupal\purge_ui\Form\PluginDetailsForm;
 /**
  * Tests \Drupal\purge_ui\Form\PluginDetailsForm (for processors).
  *
- * @group purge_ui
+ * @group purge
  */
 class ProcessorDetailsFormTest extends AjaxFormTestBase {
 

@@ -5,7 +5,7 @@ namespace Drupal\Tests\purge_ui\Functional;
 /**
  * Tests \Drupal\purge_ui\Controller\DashboardController::buildDiagnosticReport.
  *
- * @group purge_ui
+ * @group purge
  */
 class DashboardDiagnosticsTest extends DashboardTestBase {
 

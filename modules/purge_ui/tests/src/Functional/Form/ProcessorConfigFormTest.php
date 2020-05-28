@@ -8,7 +8,7 @@ use Drupal\Tests\purge_ui\Functional\Form\Config\ProcessorConfigFormTestBase;
 /**
  * Tests the drop-in configuration form for processors.
  *
- * @group purge_ui
+ * @group purge
  */
 class ProcessorConfigFormTest extends ProcessorConfigFormTestBase {
 

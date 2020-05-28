@@ -7,7 +7,7 @@ use Drupal\Core\Url;
 /**
  * Tests \Drupal\purge_ui\Controller\DashboardController::buildQueuersQueueProcessors().
  *
- * @group purge_ui
+ * @group purge
  */
 class DashboardQueuersQueueProcessorsTest extends DashboardTestBase {
 

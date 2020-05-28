@@ -8,7 +8,7 @@ use Drupal\Tests\purge_ui\Functional\Form\Config\QueuerConfigFormTestBase;
 /**
  * Tests the drop-in configuration form for queuers (modal dialog).
  *
- * @group purge_ui
+ * @group purge
  */
 class QueuerConfigDialogFormTest extends QueuerConfigFormTestBase {
 

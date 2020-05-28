@@ -7,7 +7,7 @@ use Drupal\purge_ui\Form\QueuerAddForm;
 /**
  * Tests \Drupal\purge_ui\Form\QueuerAddForm.
  *
- * @group purge_ui
+ * @group purge
  */
 class QueuerAddFormTest extends AjaxFormTestBase {
 

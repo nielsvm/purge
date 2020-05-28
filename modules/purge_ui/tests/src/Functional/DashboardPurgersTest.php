@@ -7,7 +7,7 @@ use Drupal\Core\Url;
 /**
  * Tests \Drupal\purge_ui\Controller\DashboardController::buildPurgers().
  *
- * @group purge_ui
+ * @group purge
  */
 class DashboardPurgersTest extends DashboardTestBase {
 

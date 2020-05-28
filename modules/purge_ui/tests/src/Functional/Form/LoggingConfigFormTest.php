@@ -8,7 +8,7 @@ use Drupal\purge_ui\Form\LoggingConfigForm;
 /**
  * Tests \Drupal\purge_ui\Form\LoggingConfigForm.
  *
- * @group purge_ui
+ * @group purge
  */
 class LoggingConfigFormTest extends AjaxFormTestBase {
 

@@ -7,7 +7,7 @@ use Drupal\purge_ui\Form\PluginDetailsForm;
 /**
  * Tests \Drupal\purge_ui\Form\PluginDetailsForm (for queue backends).
  *
- * @group purge_ui
+ * @group purge
  */
 class QueueDetailsFormTest extends AjaxFormTestBase {
 

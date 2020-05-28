@@ -7,7 +7,7 @@ use Drupal\purge_ui\Form\ProcessorDeleteForm;
 /**
  * Tests \Drupal\purge_ui\Form\ProcessorDeleteForm.
  *
- * @group purge_ui
+ * @group purge
  */
 class ProcessorDeleteFormTest extends AjaxFormTestBase {
 

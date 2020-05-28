@@ -8,7 +8,7 @@ use Drupal\Tests\purge_ui\Functional\Form\AjaxFormTestBase;
 /**
  * Tests \Drupal\purge_ui\Form\PurgerMoveForm.
  *
- * @group purge_ui
+ * @group purge
  */
 class PurgerMoveFormUpTest extends AjaxFormTestBase {
 

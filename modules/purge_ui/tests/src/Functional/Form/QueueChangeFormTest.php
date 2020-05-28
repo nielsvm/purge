@@ -7,7 +7,7 @@ use Drupal\purge_ui\Form\QueueChangeForm;
 /**
  * Tests \Drupal\purge_ui\Form\QueueChangeForm.
  *
- * @group purge_ui
+ * @group purge
  */
 class QueueChangeFormTest extends AjaxFormTestBase {
 

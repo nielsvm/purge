@@ -1,3 +1,4 @@
 /.gitattributes export-ignore
 /documentation export-ignore
 /documentation/* export-ignore
+/PROJECTPAGE.md export-ignore

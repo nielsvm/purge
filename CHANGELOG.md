@@ -14,19 +14,23 @@ and this project adheres to
 ## [8.x-3.0] - 2020-05-29
 
 ### Added
+- **Improvement:** added more tags to the default blacklist of the core tags
+  queuer: ``config:core.extension``, ``extensions``, ``config:purge``,
+  ``config:field.storage``.
 
 ### Changed
 - **Important:** Purge now requires Drupal 8 to be updated to a recent stable
   version, which is ``8.8.6``. This requirement supports the ongoing commitment
   to stability, quality and functional equivalent on Drupal 8, while paving
   the way for equal Drupal 9 quality with a single codebase.
+- **Important:** Purge now requires at least PHP 7.2 or newer.
 - **Important:** Drush 8 legacy wrappers have been removed.
-- **Improvement:** Code quality has been brought up to date (D9 readiness).
-- **Improvement:** Rewrote the entire UI testsuite to pass (D9 readiness).
-- **Improvement:** Rewrote the entire kernel testsuite to pass (D9 readiness).
 
 ### Fixed
 - **D9 support:** Various little fixes have been made to run smooth on D9.
+- **Improvement:** Code quality has been brought up to date (D9 readiness).
+- **Improvement:** Rewrote the entire UI testsuite to pass (D9 readiness).
+- **Improvement:** Rewrote the entire kernel testsuite to pass (D9 readiness).
 
 ## [8.x-3.0-beta9] - 2019-10-03
 

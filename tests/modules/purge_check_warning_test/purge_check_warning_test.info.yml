@@ -1,4 +1,3 @@
-core_version_requirement: '^8.8.6 || ^9.0.0'
 name: 'Purge tests support (warning check)'
 type: module
 description: 'Provides a diagnostic check that always results in a warning.'

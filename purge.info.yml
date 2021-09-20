@@ -1,5 +1,5 @@
-core_version_requirement: '^8.8.6 || ^9.0.0'
 name: 'Purge'
 type: module
 description: 'Provides a generic external cache invalidation API and queue service.'
 package: Purge
+core_version_requirement: '^8.9 || ^9'

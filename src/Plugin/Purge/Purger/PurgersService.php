@@ -238,6 +238,7 @@ class PurgersService extends ServiceBase implements PurgersServiceInterface {
       // Put the plugin instances into $setting and use the order as key.
       if (!is_null($plugins)) {
         $setting = [];
+        $plugins = array_filter($plugins);
         foreach ($plugins as $inst) {
           if (!in_array($inst['plugin_id'], $plugin_ids)) {
             // When a third-party provided purger was configured and its module

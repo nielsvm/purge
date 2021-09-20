@@ -8,7 +8,7 @@ use Drupal\purge\Plugin\Purge\Purger\Exception\LockException;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -42,7 +42,12 @@ class LateRuntimeProcessor implements EventSubscriberInterface, ContainerAwareIn
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-    $events[KernelEvents::FINISH_REQUEST][] = 'onKernelFinishRequest';
+    // Set a high priority so it is executed before services are destructed. Not
+    // doing this would, for example, result in successful invalidation never
+    // being deleted from the queue.
+    // @see \Drupal\Core\EventSubscriber\KernelDestructionSubscriber::getSubscribedEvents()
+    // @see \Drupal\purge\Plugin\Purge\Queue\QueueService::destruct()
+    $events[KernelEvents::TERMINATE][] = ['onKernelTerminate', 1000];
     return $events;
   }
 
@@ -66,12 +71,12 @@ class LateRuntimeProcessor implements EventSubscriberInterface, ContainerAwareIn
   }
 
   /**
-   * Invoked by the FINISH_REQUEST kernel event.
+   * Invoked by the TERMINATE kernel event.
    *
-   * @param \Symfony\Component\HttpKernel\Event\FinishRequestEvent $event
+   * @param \Symfony\Component\HttpKernel\Event\PostResponseEvent $event
    *   The event object.
    */
-  public function onKernelFinishRequest(FinishRequestEvent $event) {
+  public function onKernelTerminate(PostResponseEvent $event) {
 
     // Immediately stop if our plugin is disabled.
     if (!$this->initialize()) {

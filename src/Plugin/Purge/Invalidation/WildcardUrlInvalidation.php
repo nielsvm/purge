@@ -21,8 +21,9 @@ class WildcardUrlInvalidation extends UrlInvalidation implements InvalidationInt
   /**
    * {@inheritdoc}
    */
-  public function validateExpression($wildcard_check = TRUE) {
-    $url = parent::validateExpression(FALSE);
+  public function validateExpression() {
+    $this->wildCardCheck = FALSE;
+    $url = parent::validateExpression();
     if (strpos($url, '*') === FALSE) {
       throw new InvalidExpressionException('Wildcard invalidations should contain an asterisk.');
     }

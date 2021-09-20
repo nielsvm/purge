@@ -35,6 +35,13 @@ class UrlInvalidation extends InvalidationBase implements InvalidationInterface 
   protected $url;
 
   /**
+   * Whether wildcard should be checked.
+   *
+   * @var bool
+   */
+  protected $wildCardCheck = TRUE;
+
+  /**
    * Get the URL object.
    *
    * @return \Drupal\Core\Url
@@ -65,7 +72,7 @@ class UrlInvalidation extends InvalidationBase implements InvalidationInterface 
   /**
    * {@inheritdoc}
    */
-  public function validateExpression($wildcard_check = TRUE) {
+  public function validateExpression() {
     parent::validateExpression();
 
     // Set $this->url by calling getUrl and do some more validation.
@@ -76,7 +83,7 @@ class UrlInvalidation extends InvalidationBase implements InvalidationInterface 
     if (!UrlHelper::isValid($url, TRUE)) {
       throw new InvalidExpressionException('The URL is invalid.');
     }
-    if ($wildcard_check && (strpos($url, '*') !== FALSE)) {
+    if ($this->wildCardCheck && (strpos($url, '*') !== FALSE)) {
       throw new InvalidExpressionException('URL invalidations should not contain asterisks!');
     }
     if (strpos($url, ' ') !== FALSE) {

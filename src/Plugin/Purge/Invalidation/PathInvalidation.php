@@ -20,14 +20,21 @@ use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 class PathInvalidation extends InvalidationBase implements InvalidationInterface {
 
   /**
+   * Whether wildcard should be checked.
+   *
+   * @var bool
+   */
+  protected $wildCardCheck = TRUE;
+
+  /**
    * {@inheritdoc}
    */
-  public function validateExpression($wildcard_check = TRUE) {
+  public function validateExpression() {
     parent::validateExpression();
-    if ($wildcard_check && (strpos($this->expression, '*') !== FALSE)) {
+    if ($this->wildCardCheck && (strpos($this->expression, '*') !== FALSE)) {
       throw new InvalidExpressionException('Path invalidations should not contain asterisks.');
     }
-    if ($wildcard_check && $this->expression === '*') {
+    if ($this->wildCardCheck && $this->expression === '*') {
       throw new InvalidExpressionException('Path invalidations cannot be "*".');
     }
     if (strpos($this->expression, ' ') !== FALSE) {

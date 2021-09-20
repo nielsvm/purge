@@ -87,7 +87,7 @@ function purge_tokens_tokens($type, $tokens, array $data, array $options, Bubble
           $expressions[] = $expression;
         }
       }
-      return implode($separator, $expressions);
+      return implode($separator, array_unique($expressions));
     };
 
     foreach ($tokens as $name => $original) {

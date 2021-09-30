@@ -11,6 +11,23 @@ and this project adheres to
 
 ### Changed
 
+## [8.x-3.1] - 2021-10-01
+
+### Changed
+- **Improvement:** Refactor info.yml core_version_requirement formats.
+
+### Fixed
+- **#2976480:** Do not send Cache-Tags header if Cache-control: no-cache.
+- **#2803607:** Remove PageCacheCheck.
+- **#2425093:** Purge declares 'Performance' task on behalf of system module.
+- **#3034525:** Clean up duplicate cache tags created by invalidation tokens.
+- **#3006680:** Fix PHP7.2 subclass signature error.
+- **#3163002:** Make late runtime processor compatible with drush.
+- **#3224426:** Possibility to disable some purge plugins in config.
+- **Improvement:** fixed various deprecations to futureproof for Drupal 10.
+- **Improvement:** fixed codestyle issues.
+- **Improvement:** fixed several testcases.
+
 ## [8.x-3.0] - 2020-05-29
 
 ### Added

@@ -1,11 +1,11 @@
 # Purge
 ##### _The modular external cache invalidation framework._
 
-The Purge module for Drupal 8 enables invalidation of content from external
-caches, reverse proxies and CDN platforms. The technology-agnostic plugin
-architecture allows for different server configurations and use cases. Last but
-not least, it enforces a separation of concerns and should be seen as a
-**middleware** solution.
+The Purge module for Drupal 8 and Drupal 9 enables invalidation of content from
+external caches, reverse proxies and CDN platforms. The technology-agnostic
+plugin architecture allows for different server configurations and use
+cases. Last but not least, it enforces a separation of concerns and should be
+seen as a **middleware** solution.
 
 ##### Drush commands
 The ``purge_drush`` module adds the following commands for Drush administration:

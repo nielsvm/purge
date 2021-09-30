@@ -220,7 +220,13 @@ class DashboardController extends ControllerBase {
       }
       $build['t']['#header'][$type['id']] = [
         'data' => $label,
-        'title' => $this->t('@type - @description', ['@type' => $type['label'], '@description' => $type['description']]),
+        'title' => $this->t(
+            '@type - @description',
+            [
+              '@type' => $type['label'],
+              '@description' => $type['description'],
+            ]
+        ),
         'class' => [
           in_array($type['id'], ['tag', 'path', 'url']) ? RESPONSIVE_PRIORITY_MEDIUM : RESPONSIVE_PRIORITY_LOW,
         ],
@@ -260,15 +266,27 @@ class DashboardController extends ControllerBase {
       $ops = [];
       $ops['detail'] = $button($label, ['purger_detail', 'id' => $id]);
       if (isset($definition['configform']) && !empty($definition['configform'])) {
-        $ops['configure'] = $button($this->t("Configure"), ['purger_configd', 'id' => $id]);
+        $ops['configure'] = $button(
+          $this->t("Configure"),
+          ['purger_configd', 'id' => $id]
+        );
       }
-      $ops['delete'] = $button($this->t("Delete"), ['purger_delete', 'id' => $id]);
+      $ops['delete'] = $button(
+        $this->t("Delete"),
+        ['purger_delete', 'id' => $id]
+      );
       if (count($enabled) !== 1) {
         if ($rindex !== 1) {
-          $ops['up'] = $button($this->t("Move up"), ['purger_up', 'id' => $id]);
+          $ops['up'] = $button(
+            $this->t("Move up"),
+            ['purger_up', 'id' => $id]
+          );
         }
         if ($rindex !== count($enabled)) {
-          $ops['down'] = $button($this->t("Move down"), ['purger_down', 'id' => $id]);
+          $ops['down'] = $button(
+            $this->t("Move down"),
+            ['purger_down', 'id' => $id]
+          );
         }
       }
       // Render the operation links into the 'layer' cell.
@@ -332,11 +350,20 @@ class DashboardController extends ControllerBase {
       $definition = $queuer->getPluginDefinition();
       $id = $queuer->getPluginId();
       $ops = [];
-      $ops['detail'] = $button($queuer->getLabel(), ['queuer_detail', 'id' => $id]);
+      $ops['detail'] = $button(
+        $queuer->getLabel(),
+        ['queuer_detail', 'id' => $id]
+      );
       if (isset($definition['configform']) && !empty($definition['configform'])) {
-        $ops['configure'] = $button($this->t("Configure"), ['queuer_configd', 'id' => $id]);
+        $ops['configure'] = $button(
+          $this->t("Configure"),
+          ['queuer_configd', 'id' => $id]
+        );
       }
-      $ops['delete'] = $button($this->t("Delete"), ['queuer_delete', 'id' => $id]);
+      $ops['delete'] = $button(
+        $this->t("Delete"),
+        ['queuer_delete', 'id' => $id]
+      );
       $cols['queuers'][] = $cell_ops($ops);
     }
 
@@ -352,11 +379,20 @@ class DashboardController extends ControllerBase {
       $definition = $processor->getPluginDefinition();
       $id = $processor->getPluginId();
       $ops = [];
-      $ops['detail'] = $button($processor->getLabel(), ['processor_detail', 'id' => $id]);
+      $ops['detail'] = $button(
+        $processor->getLabel(),
+        ['processor_detail', 'id' => $id]
+      );
       if (isset($definition['configform']) && !empty($definition['configform'])) {
-        $ops['configure'] = $button($this->t("Configure"), ['processor_configd', 'id' => $id]);
+        $ops['configure'] = $button(
+          $this->t("Configure"),
+          ['processor_configd', 'id' => $id]
+        );
       }
-      $ops['delete'] = $button($this->t("Delete"), ['processor_delete', 'id' => $id]);
+      $ops['delete'] = $button(
+        $this->t("Delete"),
+        ['processor_delete', 'id' => $id]
+      );
       $cols['processors'][] = $cell_ops($ops);
     }
     $col_equalize($cols);

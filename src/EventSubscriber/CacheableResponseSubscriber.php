@@ -3,11 +3,11 @@
 namespace Drupal\purge\EventSubscriber;
 
 use Drupal\Core\Cache\CacheableResponseInterface;
+use Drupal\dynamic_page_cache\EventSubscriber\DynamicPageCacheSubscriber;
 use Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Drupal\dynamic_page_cache\EventSubscriber\DynamicPageCacheSubscriber;
 
 /**
  * Add cache tags headers on cacheable responses, for external caching systems.
@@ -46,7 +46,7 @@ class CacheableResponseSubscriber implements EventSubscriberInterface {
    *   The event to process.
    */
   public function onRespond(FilterResponseEvent $event) {
-    if (!$event->isMasterRequest()) {
+    if (!$event->isMainRequest()) {
       return;
     }
 

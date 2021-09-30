@@ -14,10 +14,8 @@ trait FixGetConfigFactoryStubTrait {
    *
    * @see \Drupal\Tests\UnitTestCase::getConfigFactoryStub
    *
-   * @todo
-   *   Lines 52-57 have been added in order to make mutable stub calls
+   * @todo Fix lines 55-63 which have been added in order to make mutable stub calls
    *   work in unit tests, e.g.: ->getEditable()->set()->save().
-   *   This hasn't yet been reported to drupal.org, feel free!
    */
   public function getConfigFactoryStub(array $configs = []) {
     $config_get_map = [];

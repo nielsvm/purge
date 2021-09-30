@@ -8,7 +8,7 @@ use Drupal\purge\Plugin\Purge\Queue\TxBufferInterface;
 use Drupal\Tests\purge\Kernel\KernelTestBase;
 
 /**
- * Tests \Drupal\purge\Tests\Queue\TxBufferTest.
+ * Tests \Drupal\purge\Plugin\Purge\Queue\TxBuffer.
  *
  * @group purge
  */

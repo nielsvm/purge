@@ -15,7 +15,7 @@ class CacheableResponseSubscriberTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['system', 'purge_tagsheader_test'];
+  protected static $modules = ['system', 'purge_tagsheader_test'];
 
   /**
    * Assert that a particular cache tags header is set.

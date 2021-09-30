@@ -15,7 +15,7 @@ class PurgerMoveFormUpTest extends AjaxFormTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_ui', 'purge_purger_test'];
+  protected static $modules = ['purge_ui', 'purge_purger_test'];
 
   /**
    * {@inheritdoc}

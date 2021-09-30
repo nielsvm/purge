@@ -15,7 +15,7 @@ class QueuerConfigFormTest extends QueuerConfigFormTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_queuer_coretags', 'purge_coretags_removed_test'];
+  protected static $modules = ['purge_queuer_coretags', 'purge_coretags_removed_test'];
 
   /**
    * {@inheritdoc}

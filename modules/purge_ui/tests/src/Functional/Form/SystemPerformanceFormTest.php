@@ -29,7 +29,7 @@ class SystemPerformanceFormTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_ui'];
+  protected static $modules = ['purge_ui'];
 
   /**
    * Setup the test.

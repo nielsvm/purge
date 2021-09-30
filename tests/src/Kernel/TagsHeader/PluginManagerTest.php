@@ -20,7 +20,7 @@ class PluginManagerTest extends KernelPluginManagerTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_tagsheader_test'];
+  protected static $modules = ['purge_tagsheader_test'];
 
   /**
    * All metadata from \Drupal\purge\Annotation\PurgeTagsHeader.

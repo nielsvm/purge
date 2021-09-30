@@ -14,7 +14,7 @@ class QueuerAddFormTest extends AjaxFormTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_ui', 'purge_queuer_test'];
+  protected static $modules = ['purge_ui', 'purge_queuer_test'];
 
   /**
    * {@inheritdoc}

@@ -12,7 +12,7 @@ class DashboardDiagnosticsTest extends DashboardTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'purge_check_test',
     'purge_check_error_test',
     'purge_check_warning_test',

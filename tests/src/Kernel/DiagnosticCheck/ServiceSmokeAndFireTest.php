@@ -22,7 +22,7 @@ class ServiceSmokeAndFireTest extends KernelServiceTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_purger_test', 'purge_processor_test'];
+  protected static $modules = ['purge_purger_test', 'purge_processor_test'];
 
   /**
    * Set up the test.

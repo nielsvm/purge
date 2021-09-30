@@ -14,7 +14,7 @@ class DashboardPurgersTest extends DashboardTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_purger_test'];
+  protected static $modules = ['purge_purger_test'];
 
   /**
    * Test the purgers section of the configuration form.

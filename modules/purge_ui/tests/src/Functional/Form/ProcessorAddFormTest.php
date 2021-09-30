@@ -14,7 +14,7 @@ class ProcessorAddFormTest extends AjaxFormTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_ui', 'purge_processor_test'];
+  protected static $modules = ['purge_ui', 'purge_processor_test'];
 
   /**
    * {@inheritdoc}

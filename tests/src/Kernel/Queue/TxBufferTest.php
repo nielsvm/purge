@@ -17,7 +17,7 @@ class TxBufferTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_purger_test'];
+  protected static $modules = ['purge_purger_test'];
 
   /**
    * {@inheritdoc}

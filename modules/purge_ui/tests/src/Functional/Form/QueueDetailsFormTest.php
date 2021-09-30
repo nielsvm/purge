@@ -14,7 +14,7 @@ class QueueDetailsFormTest extends AjaxFormTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_ui', 'purge_queue_test'];
+  protected static $modules = ['purge_ui', 'purge_queue_test'];
 
   /**
    * {@inheritdoc}

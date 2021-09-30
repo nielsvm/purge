@@ -17,7 +17,7 @@ abstract class KernelTestBase extends RealKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge'];
+  protected static $modules = ['purge'];
 
   /**
    * Set up the test object.

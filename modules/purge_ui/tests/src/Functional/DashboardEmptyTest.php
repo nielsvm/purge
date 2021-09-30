@@ -12,7 +12,7 @@ class DashboardEmptyTest extends DashboardTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_ui_remove_block_plugins_test'];
+  protected static $modules = ['purge_ui_remove_block_plugins_test'];
 
   /**
    * Test the logging section.

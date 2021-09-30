@@ -18,7 +18,7 @@ abstract class FormTestBase extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_ui'];
+  protected static $modules = ['purge_ui'];
 
   /**
    * The Drupal user entity.

@@ -15,7 +15,7 @@ class PurgerConfigDialogFormTest extends PurgerConfigFormTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_purger_test', 'purge_ui'];
+  protected static $modules = ['purge_purger_test', 'purge_ui'];
 
   /**
    * {@inheritdoc}

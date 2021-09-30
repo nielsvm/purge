@@ -15,7 +15,7 @@ class ProcessorConfigFormTest extends ProcessorConfigFormTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_processor_test', 'purge_ui'];
+  protected static $modules = ['purge_processor_test', 'purge_ui'];
 
   /**
    * {@inheritdoc}

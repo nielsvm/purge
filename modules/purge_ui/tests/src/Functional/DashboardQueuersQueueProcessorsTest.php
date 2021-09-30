@@ -14,7 +14,7 @@ class DashboardQueuersQueueProcessorsTest extends DashboardTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['purge_queuer_test', 'purge_processor_test'];
+  protected static $modules = ['purge_queuer_test', 'purge_processor_test'];
 
   /**
    * Test the queuers section of the dashboard.

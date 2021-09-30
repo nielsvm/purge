@@ -14,7 +14,7 @@ class HookRequirementsTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'system',
     'purge_check_test',
     'purge_check_error_test',

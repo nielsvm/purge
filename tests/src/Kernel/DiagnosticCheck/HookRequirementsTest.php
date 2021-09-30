@@ -32,7 +32,6 @@ class HookRequirementsTest extends KernelTestBase {
     $this->assertSame(TRUE, isset($req["capacity"]));
     $this->assertSame(TRUE, isset($req["maxage"]));
     $this->assertSame(TRUE, isset($req["memoryqueuewarning"]));
-    $this->assertSame(TRUE, isset($req["page_cache"]));
     $this->assertSame(TRUE, isset($req["processorsavailable"]));
     $this->assertSame(TRUE, isset($req["purgersavailable"]));
     $this->assertSame(TRUE, isset($req["queuersavailable"]));

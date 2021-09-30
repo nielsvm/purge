@@ -50,7 +50,6 @@ class PluginManagerTest extends KernelPluginManagerTestBase {
     'capacity',
     'maxage',
     'memoryqueuewarning',
-    'page_cache',
     'processorsavailable',
     'purgersavailable',
     'queuersavailable',

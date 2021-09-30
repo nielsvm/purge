@@ -121,7 +121,7 @@ class ServiceTest extends KernelServiceTestBase {
   public function testCount(): void {
     $this->initializeService();
     $this->assertTrue($this->service instanceof \Countable);
-    $this->assertEquals(12, count($this->service));
+    $this->assertEquals(11, count($this->service));
   }
 
   /**
@@ -143,7 +143,6 @@ class ServiceTest extends KernelServiceTestBase {
         'capacity',
         'processorsavailable',
         'memoryqueuewarning',
-        'page_cache',
         'alwaysok',
         'alwaysinfo',
         'alwayserror',
@@ -184,11 +183,11 @@ class ServiceTest extends KernelServiceTestBase {
     foreach ($this->service->filterOk() as $check) {
       $this->assertTrue($check instanceof DiagnosticCheckInterface);
     }
-    $this->assertEquals(6, count($this->service->filterWarnings()));
+    $this->assertEquals(5, count($this->service->filterWarnings()));
     foreach ($this->service->filterWarnings() as $check) {
       $this->assertTrue($check instanceof DiagnosticCheckInterface);
     }
-    $this->assertEquals(8, count($this->service->filterWarningAndErrors()));
+    $this->assertEquals(7, count($this->service->filterWarningAndErrors()));
     foreach ($this->service->filterWarningAndErrors() as $check) {
       $this->assertTrue($check instanceof DiagnosticCheckInterface);
     }
@@ -220,7 +219,6 @@ class ServiceTest extends KernelServiceTestBase {
       'capacity',
       'queuersavailable',
       'memoryqueuewarning',
-      'page_cache',
     ];
     $warning_known = in_array($warning_plugin_id, $possibilities);
     $this->assertTrue($warning_known, "Can't find '$warning_plugin_id'.");
@@ -241,7 +239,7 @@ class ServiceTest extends KernelServiceTestBase {
     $this->assertTrue(isset($list['error']));
     $this->assertEquals(1, count($list['info']));
     $this->assertEquals(3, count($list['ok']));
-    $this->assertEquals(6, count($list['warning']));
+    $this->assertEquals(5, count($list['warning']));
     $this->assertEquals(2, count($list['error']));
     foreach ($list as $type => $msgs) {
       $this->assertTrue(in_array($type, ['info', 'ok', 'warning', 'error']));
@@ -260,7 +258,7 @@ class ServiceTest extends KernelServiceTestBase {
     $this->initializeService();
     // Test the standard output as Drupal expects it.
     $requirements = $this->service->toRequirementsArray($this->service);
-    $this->assertEquals(12, count($requirements));
+    $this->assertEquals(11, count($requirements));
     foreach ($requirements as $id => $requirement) {
       $this->assertTrue(is_string($id));
       $this->assertFalse(empty($id));

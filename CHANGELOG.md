@@ -16,6 +16,7 @@ and this project adheres to
 ### Fixed
 - **#3240230:** Don't hard depend on dunamic_page_cache module anymore.
 - **#3240238:** Revert FilterResponseEvent::isMainRequest() deprecation fix.
+- Revert: `Tests: deprecation warning in src/Functional/DashboardPurgersTest.php`
 
 ## [8.x-3.1] - 2021-10-01
 

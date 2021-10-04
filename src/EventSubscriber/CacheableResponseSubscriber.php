@@ -3,7 +3,6 @@
 namespace Drupal\purge\EventSubscriber;
 
 use Drupal\Core\Cache\CacheableResponseInterface;
-use Drupal\dynamic_page_cache\EventSubscriber\DynamicPageCacheSubscriber;
 use Drupal\purge\Plugin\Purge\TagsHeader\TagsHeadersServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
@@ -59,8 +58,8 @@ class CacheableResponseSubscriber implements EventSubscriberInterface {
     // fallback on testing that at least 'no-cache' cache directive is not
     // present in the response headers.
     $cacheTagsNeeded = $response instanceof CacheableResponseInterface;
-    if ($response->headers->has(DynamicPageCacheSubscriber::HEADER)) {
-      $cacheTagsNeeded = $cacheTagsNeeded && $response->headers->get(DynamicPageCacheSubscriber::HEADER) !== 'UNCACHEABLE';
+    if ($response->headers->has('X-Drupal-Dynamic-Cache')) {
+      $cacheTagsNeeded = $cacheTagsNeeded && $response->headers->get('X-Drupal-Dynamic-Cache') !== 'UNCACHEABLE';
     }
     $cacheTagsNeeded = $cacheTagsNeeded && !$response->headers->hasCacheControlDirective('no-cache');
 

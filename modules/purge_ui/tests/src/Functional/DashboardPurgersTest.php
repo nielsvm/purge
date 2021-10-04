@@ -47,7 +47,7 @@ class DashboardPurgersTest extends DashboardTestBase {
     $this->assertSession()->linkByHrefExists(Url::fromRoute('purge_ui.purger_config_dialog_form', $purger_1_route_params)->toString());
     $this->assertSession()->linkByHrefExists(Url::fromRoute('purge_ui.purger_delete_form', $purger_1_route_params)->toString());
     // Assert that the purger-type supportability matrix shows the checkmarks.
-    $expected_checkmark_image_url = \Drupal::service('file_url_generator')->generateString('core/misc/icons/73b355/check.svg');
+    $expected_checkmark_image_url = file_url_transform_relative(file_create_url('core/misc/icons/73b355/check.svg'));
     $this->assertFalse(empty($this->cssSelect('img[width=18][height=18][alt=Supported][title=Supported][src="' . $expected_checkmark_image_url . '"]')));
     $this->assertSession()->responseNotContains('<img supports="drupal-domain"');
     $this->assertSession()->responseNotContains('<img supports="drupal-path"');

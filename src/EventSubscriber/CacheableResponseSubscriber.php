@@ -45,7 +45,7 @@ class CacheableResponseSubscriber implements EventSubscriberInterface {
    *   The event to process.
    */
   public function onRespond(FilterResponseEvent $event) {
-    if (!$event->isMainRequest()) {
+    if (!$event->isMasterRequest()) {
       return;
     }
 

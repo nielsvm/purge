@@ -21,7 +21,11 @@ class CacheableResponseSubscriberTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['purge_tagsheader_test', 'system_test', 'early_rendering_controller_test'];
+  protected static $modules = [
+    'purge_tagsheader_test',
+    'system_test',
+    'early_rendering_controller_test'
+  ];
 
   /**
    * {@inheritdoc}
@@ -39,11 +43,12 @@ class CacheableResponseSubscriberTest extends BrowserTestBase {
   protected function assertCacheTagsHeader($path, $header_name): void {
     // Verify a cache hit, but also the presence of the correct cache tags.
     $this->drupalGet($path);
-    $this->assertEqual($this->drupalGetHeader('X-Drupal-Cache'), 'HIT');
+    $this->assertEquals($this->getSession()->getResponseHeader('X-Drupal-Cache'), 'HIT');
 
-    $this->assertResponse(200);
-    $this->assertNotNull($this->drupalGetHeader($header_name), "$header_name header exists.");
-    $this->assertTrue(strpos($this->drupalGetHeader('Cache-Control'), 'public') !== FALSE);
+    $this->assertSession()->statusCodeEquals(200);
+
+    $this->assertNotNull($this->getSession()->getResponseHeader($header_name), "$header_name header exists.");
+    $this->assertTrue(strpos($this->getSession()->getResponseHeader('Cache-Control'), 'public') !== FALSE);
   }
 
   /**
@@ -57,7 +62,7 @@ class CacheableResponseSubscriberTest extends BrowserTestBase {
 
     // Prefetch the page to get a cache miss.
     $this->drupalGet($path);
-    $this->assertEqual($this->drupalGetHeader('X-Drupal-Cache'), 'MISS');
+    $this->assertEquals($this->getSession()->getResponseHeader('X-Drupal-Cache'), 'MISS');
 
     $this->assertCacheTagsHeader($path, 'Header-A');
     $this->assertCacheTagsHeader($path, 'Header-B');
